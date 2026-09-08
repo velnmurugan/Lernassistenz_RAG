@@ -1,0 +1,23 @@
+# Forschungsdaten -- NIEMALS öffentlich teilen, auch nicht pseudonymisiert,
+# solange keine formale Ethikfreigabe vorliegt (siehe README.md,
+# "Bekannte offene Punkte").
+evaluationsdaten/
+
+# Urheberrechtlich geschütztes Quellmaterial (z. B. Springer-Handbuch) --
+# nicht zur Weiterverbreitung bestimmt. Falls deine Wissensbasis aus
+# geschütztem Material aufgebaut wurde, gilt dasselbe für die Ausgabe:
+quellmaterial/
+knowledge_base.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Streamlit
+.streamlit/
+
+# OS
+.DS_Store
+Thumbs.db
