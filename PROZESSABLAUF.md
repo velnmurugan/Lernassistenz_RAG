@@ -1,15 +1,8 @@
 # Prozessablauf — KI-Lernassistent
 
-> **Wichtig:** Diese Datei bei jeder strukturellen Änderung an `app.py`,
-> `rag_pipeline.py` oder `admin_app.py` mit aktualisieren — z. B. wenn ein
-> Verarbeitungsschritt hinzukommt, wegfällt oder sich die Reihenfolge
-> ändert. Ziel: Diese Datei zeigt IMMER den tatsächlichen, aktuellen
-> Ablauf des Systems, nicht einen veralteten Planungsstand.
->
-> Bewusst als reiner ASCII-Text gehalten — lesbar in jedem Editor, ohne
-> Mermaid- oder Markdown-Renderer nötig.
 
----
+
+
 
 ## 1. Wissensbasis-Aufbau (offline, vor der Studie)
 
@@ -58,51 +51,59 @@ Studien-App selbst (siehe `Design_Entscheidungen_Literatur.md`, Punkt 4).
                                 │
                                 ▼
                 ┌───────────────────────────────┐
-                │ Retrieval (Embeddings)          │
-                │ top_k = 4                       │
+                │ Retrieval                       │
+                │ Embedding-Modell:                │
+                │ paraphrase-multilingual-         │
+                │ MiniLM-L12-v2                    │
+                │ top_k = 4, Kosinus-Ähnlichkeit   │
                 └───────┬───────────────┬─────────┘
                         │               │
-             Score < Schwelle   Score ≥ Schwelle
+             Score < 0.35        Score ≥ 0.35
+             (RELEVANZ_SCHWELLE)  (RELEVANZ_SCHWELLE)
                         │               │
                         ▼               ▼
         ┌───────────────────────┐   ┌───────────────────────────┐
         │ Ehrliche Verweigerung │   │ Scaffolding-Antwort         │
         │ (keine Quelle über     │   │ Hinweis → Erklärung →       │
-        │  Schwelle)              │   │ Lösung                      │
+        │  Schwelle, kein         │   │ Lösung                      │
+        │  LLM-Aufruf)             │   │ Modell: Qwen3.5:9b (Ollama) │
+        │                          │   │ think = False               │
         └───────────┬─────────────┘   └─────────────┬───────────────┘
                     │                               ▼
                     │                 ┌───────────────────────────┐
                     │                 │ Sicherheitsprüfung          │
+                    │                 │ Schlüsselwortbasiert         │
+                    │                 │ (9 Begriffe, z. B. "Strom",  │
+                    │                 │  "Gefahr", "Not-Aus")        │
                     │                 └─────────────┬───────────────┘
                     │                               ▼
                     │                 ┌───────────────────────────┐
                     │                 │ Protokollierung (CSV)       │
+                    │                 │ inkl. scaffolding_stufe_    │
+                    │                 │ erreicht (1-3)               │
                     │                 └─────────────┬───────────────┘
                     │                               │
                     └───────────────┬───────────────┘
                                     ▼
                             TAM-Fragebogen
-                    (erreichbar über "Zur Bewertung →"
+                    (10 Items, 5-Punkte-Likert,
+                     erreichbar über "Zur Bewertung →"
                      nach mind. einer Frage)
 ```
 
-**Relevante Funktionen** (`rag_pipeline.py`): `retrieval()`,
-`RELEVANZ_SCHWELLE`, `baue_scaffolding_prompt()`,
-`parse_scaffolding_antwort()`, `sicherheitspruefung()`,
-`protokolliere_interaktion()` (inkl. `scaffolding_stufe_erreicht` für
-Uptake-Messung, siehe Neagu et al. 2026), `FRAGEBOGEN_ITEMS`.
+### Technische Details je Schritt
+
+| Schritt | Funktion (`rag_pipeline.py`) | Parameter / Werte |
+|---|---|---|
+| Retrieval | `retrieval()` | **Embedding-Modell:** `paraphrase-multilingual-MiniLM-L12-v2`<br>**top_k:** 4<br>**Ähnlichkeitsmaß:** Kosinus-Ähnlichkeit |
+| Relevanz-Prüfung | `beantworte_frage()`, `RELEVANZ_SCHWELLE` | Schwellenwert: **0.35** — darunter keine Generierung, nur Verweigerung |
+| Scaffolding-Generierung | `baue_scaffolding_prompt()`, `frage_llm()` | **LLM:** `qwen3.5:9b` via Ollama<br>`think = False` (kein sichtbares Reasoning)<br>Ein Aufruf liefert alle 3 Stufen (Marker-Format) |
+| Parsing der Stufen | `parse_scaffolding_antwort()` | Fallback: komplette Rohantwort als "Lösung", falls Format nicht eingehalten |
+| Sicherheitsprüfung | `sicherheitspruefung()`, `SICHERHEITS_SCHLUESSELWOERTER` | 9 Schlüsselwörter: spannung, strom, not-aus, gefahr, schutzausrüstung, psa, druckluft, sicherheitsregel, fehlerstrom |
+| Protokollierung | `protokolliere_interaktion()` | Schreibt `evaluationsdaten/interaktionen.csv`; wird bei jedem Scaffolding-Klick erneut aufgerufen (Uptake-Messung) |
+| Fragebogen | `FRAGEBOGEN_ITEMS`, `speichere_fragebogen()` | **10 Items:** PU (2), PEOU (2), Trust (3), Scaffolding (2), ITU (1) — TAM nach Davis (1989) |
+
 
 ---
 
-## Änderungsprotokoll
 
-Jede strukturelle Änderung hier kurz eintragen, damit nachvollziehbar
-bleibt, wann und warum sich der Ablauf verändert hat.
-
-| Datum | Änderung | Betroffene Datei(en) |
-|---|---|---|
-| 2026-09-01 | Grundstruktur: Wissensbasis-Aufbau + Frage-Antwort-Ablauf dokumentiert | `rag_pipeline.py`, `app.py`, `admin_app.py` |
-| 2026-09-02 | Scaffolding (Hinweis/Erklärung/Lösung) eingeführt | `rag_pipeline.py`, `app.py` |
-| 2026-09-03 | Section-aware Chunking (Gliederungserkennung), Überlappung, atomares Schreiben ergänzt | `rag_pipeline.py`, `admin_app.py`, `baue_wissensbasis.py` |
-| 2026-09-04 | Von farbigen Mermaid-Diagrammen auf reines ASCII umgestellt | `PROZESSABLAUF.md` |
-| | | |
