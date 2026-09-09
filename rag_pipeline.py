@@ -358,8 +358,7 @@ RELEVANZ_SCHWELLE = 0.35
 # Phase 1/2 (siehe Systemkonzept-Säule "Sicherheit"); eine echte
 # Klassifikator-Lösung ist für Phase 3 vorgesehen.
 SICHERHEITS_SCHLUESSELWOERTER = [
-    "spannung", "strom", "not-aus", "gefahr", "schutzausrüstung",
-    "psa", "druckluft", "sicherheitsregel", "fehlerstrom",
+    
 ]
 
 EMBEDDING_MODELL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
