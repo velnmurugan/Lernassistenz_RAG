@@ -135,19 +135,3 @@ Studien-App selbst (siehe `Design_Entscheidungen_Literatur.md`, Punkt 4).
 |---|---|---|---|
 | `think=False` bei Ollama-Aufruf | Antwortzeit als Usability-Faktor (Perceived Ease of Use) | Davis (1989), TAM | Nicht separat gemessen (kein A/B-Vergleich think=True vs. False), aber plausibel begründet. |
 | Embedding-Retrieval statt TF-IDF | Bedeutungserfassung statt Wortoberfläche; bessere Handhabung deutscher Wortformvarianten | Reimers & Gurevych (2019) + eigener Testbefund ("einfachwirkenden" vs. "einfachwirkender") | Ursprünglicher TF-IDF-Vergleich dokumentiert (Phase 1) — **kein quantifizierter Vorher-Nachher-Vergleich** der Retrieval-Genauigkeit. |
-| `sicherheitspruefung()` (Keyword-Matching) | Systemkonzept-Säule "Sicherheit" | Bisher **kein spezifisches Zitat** — als "bewusst einfache Version für Phase 1/2" im Code selbst gekennzeichnet, echter Klassifikator für Phase 3 vorgesehen | **Falsch-Positiv bereits dokumentiert** ("Drehstrom" via "strom") + neu bestätigt in Live-Test ("Spannung" im Fotodioden-Kontext). Konkrete Fixaufgabe (Wortgrenzen + Kontext-Whitelist, siehe separate Code-Vorschläge). |
-
----
-
-## Zusammenfassung für den Methodenteil
-
-Von den 10 zitierten Design-Entscheidungen sind:
-- **2 durch Live-Tests bestätigt** (Grounding-Refusal bei vollständiger Irrelevanz; Wortformvarianten-Vorteil von Embeddings gegenüber TF-IDF, historisch)
-- **3 durch Live-Tests widerlegt oder als Lücke identifiziert** (Selbsterklärungseffekt im Hinweis verletzt; Stufen-Redundanz; Grounding bei partieller Relevanz nicht gekennzeichnet)
-- **5 bisher nur als Designabsicht dokumentiert, ohne systematische Prüfung** (Schwellenwert-Kalibrierung, top_k-Ablation, Formathaltungsrate, Sprachniveau-Prüfung, think=False-Wirkung)
-
-Diese Aufstellung selbst — insbesondere die Spalte "Empirisch geprüft?" — ist der entscheidende Unterschied zur rezensierten JOTED-Einreichung: dort wurden Design-Prinzipien zitiert und behauptet, aber nie gegen das tatsächliche Modellverhalten geprüft. Eine solche Tabelle (ggf. mit systematischerer Stichprobe statt Ad-hoc-Tests) wäre ein eigenständiger, publizierbarer Beitrag zum Methodenteil.
-
----
-
-
