@@ -28,6 +28,8 @@ from pathlib import Path
 import requests
 from sklearn.metrics.pairwise import cosine_similarity
 
+import hashlib
+
 MODEL_NAME = "qwen3.5:9b"
 
 
@@ -558,16 +560,20 @@ def parse_scaffolding_antwort(rohtext):
     return ergebnis
 
 
-def frage_llm(prompt, model=MODEL_NAME):
+def frage_llm(prompt, model=MODEL_NAME, options=None):
     """think=False: unterdrückt Qwen3.5s sichtbare Reasoning-Kette, damit
     Proband:innen eine direkte, nicht durch Zwischenschritte verlängerte
     Antwort erhalten (relevant für Antwortzeit als Usability-Faktor,
-    vgl. Perceived Ease of Use im TAM, Davis 1989)."""
-    response = requests.post(
-        OLLAMA_URL,
-        json={"model": model, "prompt": prompt, "stream": False, "think": False},
-        timeout=120,
-    )
+    vgl. Perceived Ease of Use im TAM, Davis 1989).
+
+    options: optionale Ollama-Parameter (z. B. {"temperature": 0, "seed": 42}).
+    Wird von der Studien-App NICHT gesetzt (unverändertes Verhalten), aber von
+    ragas_auswertung.py genutzt, damit die LLM-als-Richter-Bewertung
+    reproduzierbar ist."""
+    payload = {"model": model, "prompt": prompt, "stream": False, "think": False}
+    if options:
+        payload["options"] = options
+    response = requests.post(OLLAMA_URL, json=payload, timeout=120)
     response.raise_for_status()
     return response.json()["response"].strip()
 
@@ -649,7 +655,7 @@ def protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=
             writer.writerow([
                 "zeitstempel", "sitzungs_id", "frage", "bester_score",
                 "genuegend_relevanz", "hinweis", "erklaerung", "loesung",
-                "scaffolding_stufe_erreicht", "quellen", "sicherheitshinweis",
+                "scaffolding_stufe_erreicht", "quellen", "sicherheitshinweis" , "kb_hash",
             ])
         writer.writerow([
             datetime.datetime.now().isoformat(timespec="seconds"),
@@ -662,8 +668,24 @@ def protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=
             ergebnis.get("loesung", ""),
             scaffolding_stufe_erreicht,
             "; ".join(q["id"] for q in ergebnis["quellen"]),
-            "; ".join(ergebnis["sicherheitshinweis"]) if ergebnis["sicherheitshinweis"] else "",
+            "; ".join(ergebnis["sicherheitshinweis"]) if ergebnis["sicherheitshinweis"] else "", ergebnis.get("kb_hash", ""),
         ])
+
+
+def berechne_kb_hash(pfad="knowledge_base.json"):
+    """
+    Kurzer Fingerabdruck (SHA-256, erste 12 Zeichen) der Wissensbasis-Datei.
+    Wird pro Interaktion protokolliert, damit die spätere RAGAS-Auswertung
+    (ragas_auswertung.py) prüfen kann, ob die geloggten Chunk-IDs noch auf
+    denselben Text zeigen. Bei Neuaufbau im Modus "ERSETZEN" werden IDs neu
+    vergeben — ohne diesen Abgleich würden alte Logs stillschweigend gegen
+    falschen Kontext bewertet.
+    """
+    h = hashlib.sha256()
+    with open(pfad, "rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()[:12]
 
 
 # =============================================================================

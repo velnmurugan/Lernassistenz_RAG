@@ -1,0 +1,46 @@
+fall_id,frage_original,generierte_frage,cosinus
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,"Wie berechne ich das Drehmoment eines Elektromotors, wenn die Leistung 10 kW und die Drehzahl 1000 U/min beträgt?",0.8914
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,Welches Drehmoment ergibt sich bei einer Leistung von 10 kW und einer Drehzahl von 1000 U/min nach der Formel M = 9550 · P/n?,0.8015
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,"Wie lautet das Ergebnis für das Drehmoment, wenn ich in die Formel (M = 9550 · P/n) die Werte 10 kW und 1000 U/min einsetze?",0.735
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,Welche Eigenschaften kennzeichnen kristalline Gitter mit metallischer Bindung bei den meisten Metallen?,0.7855
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,Warum gelten Wolfram und Molybdän als Ausnahmen im Vergleich zum klassischen metallischen Charakter?,0.433
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,Wie unterscheidet sich das Verhalten von Alkalimetallen von dem der meisten anderen Metalle?,0.6159
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Warum wird Mangan in Automatenstähle gegeben?,0.9371
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Welche Aufgabe erfüllt das Mangan bezüglich der Eisenverbindungen beim Spanen?,0.5637
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Wie verbessert Mangan das Spanverhalten durch die Erweiterung des Austenitbereichs?,0.7026
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,"Welche Art von Fasern wird im Text erwähnt, um die Sprödheit der Keramik zu kompensieren?",0.7888
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,"Wie wirken SiC-Fasern in einem Verbundwerkstoff, um die Rissausbreitung zu verhindern?",0.4412
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Warum verhält sich ein keramischer Verbundwerkstoff mit Kurzfasern stabiler als reine Keramik?,0.7834
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Wie viel besser leitet ruhendes Wasser Wärme im Vergleich zu ruhender Luft?,0.8925
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,"Gibt es einen genauen Zahlenwert dafür, wie effizienter ruhendes Wasser Wärme überträgt als ruhende Luft?",0.8226
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Nennen Sie direkte physikalische Vergleichswerte für die Wärmeleitung von ruhendem Wasser gegenüber ruhender Luft.,0.7304
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,1.0
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,Welche Schäden könnten durch den hohen Anlaufstrom beim direkten Einschalten entstehen?,0.5046
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,"Wie werden große Motoren in der Praxis angelassen, um den Stromstoß zu begrenzen?",0.7603
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Wann reicht das vereinfachte Pendelmodell aus?,0.9775
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,"Welche Bedingungen müssen erfüllt sein, damit man das Pendel als masselosen Faden mit punktförmiger Masse idealisieren kann?",0.5277
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Unter welcher Voraussetzung ist die Annahme eines masselosen Fadens und einer punktförmigen Masse gerechtfertigt?,0.3535
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Wie viele ISO-Toleranzgrade gibt es insgesamt?,0.9699
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Welcher ISO-Toleranzgrad ist der genaueste und warum?,0.9559
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Was bedeutet IT 01 in Bezug auf die Toleranz und Genauigkeit?,0.4317
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,Welche drei Eigenschaften muss der Werkstoff für den Zylinderkopf aufweisen?,0.91
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,Warum benötigt der Zylinderkopf eine große Formstabilität und eine gute Wärmeleitung?,0.6859
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,Welchen Zweck erfüllt die geringe Wärmedehnung beim Werkstoff für den Zylinderkopf?,0.7523
+F016,Was macht eigentlich das Motorsteuergerät?,Wie funktioniert das Motorsteuergerät (ECU) bei der Erfüllung der vom Fahrer gewünschten Motordrehmoment-Anforderung?,0.7111
+F016,Was macht eigentlich das Motorsteuergerät?,"Welche Systeme beeinflusst das Motorsteuergerät zusätzlich, um einen optimalen Fahrstil zu gewährleisten?",0.7346
+F016,Was macht eigentlich das Motorsteuergerät?,Was erfasst das Motorsteuergerät über Sensoren und wie steuert es daraufhin die Aktoren an?,0.7907
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Wann spannt man ein Werkstück auf der Drehmaschine besser auf eine Planscheibe statt ins Spannfutter?,0.9564
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Was ist der Vorteil einer Planscheibe gegenüber einem Spannfutter bei prismatischen Werkstücken?,0.5232
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,"Warum verwendet man eine Planscheibe, wenn das Teil in einer beliebigen Position bearbeitet werden soll?",0.6564
+F018,Wie ist ein CNC-Programm aufgebaut?,Wie genau ist ein CNC-Programm aufgebaut?,0.9928
+F018,Wie ist ein CNC-Programm aufgebaut?,Welche konkreten Strukturelemente hat der Programmcode einer CNC-Steuerung?,0.837
+F018,Wie ist ein CNC-Programm aufgebaut?,Was sind die Syntaxregeln für einen CNC-Programmaufbau?,0.8141
+F019,In welchen Bereichen wird Hydraulik hauptsächlich eingesetzt?,Wo wird Hydraulik hauptsächlich eingesetzt?,0.9724
+F019,In welchen Bereichen wird Hydraulik hauptsächlich eingesetzt?,In welchen Branchen finden sich weitere Hauptanwendungsgebiete für Hydraulik?,0.9254
+F019,In welchen Bereichen wird Hydraulik hauptsächlich eingesetzt?,Warum sind die Eigenschaften des Betriebsmittels Öl in der Flugzeughydraulik wichtig?,0.657
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,Wie funktioniert eine Zweihandverriegelung in einer SPS?,0.9938
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,"Was muss passieren, damit bei einer Zweihandverriegelung der Prozessablauf eintritt?",0.5326
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,"Warum lässt die SPS keine Stellglieder aktivieren, solange nicht beide Signale verifiziert sind?",0.7292
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Wie hoch ist der Deckungsbeitrag für das Produkt?,0.799
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Wo finde ich Informationen zum Deckungsbeitrag im Text?,0.2419
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Warum kann der Deckungsbeitrag nicht berechnet werden?,0.4378

@@ -15,7 +15,7 @@ Start: streamlit run app.py --server.fileWatcherType none
 import streamlit as st
 from rag_pipeline import (
     lade_wissensbasis, beantworte_frage, protokolliere_interaktion,
-    speichere_fragebogen, FRAGEBOGEN_ITEMS,
+    speichere_fragebogen, FRAGEBOGEN_ITEMS, berechne_kb_hash,
 )
 
 st.set_page_config(page_title="KI-Lernassistent", layout="centered")
@@ -28,6 +28,7 @@ if "sitzungs_id" not in st.session_state:
     st.session_state["sitzungs_id"] = ""
 
 CHUNKS = lade_wissensbasis("knowledge_base.json")
+KB_HASH = berechne_kb_hash("knowledge_base.json")
 
 
 # =============================================================================
@@ -141,6 +142,7 @@ def seite_chat():
     if frage:
         with st.spinner("Der Assistent sucht eine Antwort..."):
             ergebnis = beantworte_frage(frage, CHUNKS)
+            ergebnis["kb_hash"] = KB_HASH
 
         protokolliere_interaktion(st.session_state["sitzungs_id"], ergebnis, scaffolding_stufe_erreicht=1)
         st.session_state["verlauf"].append(ergebnis)
