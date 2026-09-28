@@ -38,9 +38,13 @@ with st.expander("📚 Aktuelle Wissensbasis anzeigen", expanded=False):
         try:
             aktuelle_chunks = lade_wissensbasis(str(ZIEL_DATEI))
             themen = sorted(set(c["thema"] for c in aktuelle_chunks))
-            st.write(f"**{len(aktuelle_chunks)} Chunks** aktuell gespeichert, Themen: {', '.join(themen)}")
-            for c in aktuelle_chunks:
+            st.write(f"**{len(aktuelle_chunks)} Chunks** aktuell gespeichert, Themen: {', '.join(themen[:30])}"
+                     + (f" ... und {len(themen)-30} weitere" if len(themen) > 30 else ""))
+            # Nur eine kleine Stichprobe zeigen, nicht alle Chunks (siehe MAX_VORSCHAU-Begründung unten)
+            for c in aktuelle_chunks[:20]:
                 st.markdown(f"**{c['id']}** [{c['thema']}]: {c['text'][:150]}{'...' if len(c['text']) > 150 else ''}")
+            if len(aktuelle_chunks) > 20:
+                st.caption(f"... und {len(aktuelle_chunks) - 20} weitere Chunks (nicht angezeigt).")
         except Exception as e:
             st.error(f"Konnte aktuelle Wissensbasis nicht lesen: {e}")
     else:

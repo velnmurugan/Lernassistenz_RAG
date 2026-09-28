@@ -1,0 +1,22 @@
+fall_id,sitzungs_id,frage,stufe_max,geparst,richter,modell_verweigerung,n_aussagen,n_gestuetzt,n_unlesbar,faithfulness
+F001,TEST-01,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,3,True,qwen3.5:9b,,8,2,0,0.25
+F002,TEST-01,Welche Kristallgitter findet man bei den meisten Metallen?,3,True,qwen3.5:9b,,28,14,0,0.5
+F003,TEST-01,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",3,True,qwen3.5:9b,,12,4,0,0.3333
+F004,TEST-01,Welche Messing-Legierung nimmt man für kaltgeformte Rohre oder Lagerbuchsen?,3,True,qwen3.5:9b,True,,,,
+F005,TEST-01,Was ist der Unterschied zwischen Polymerisation und Polyaddition?,3,True,qwen3.5:9b,True,,,,
+F006,TEST-01,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,3,False,qwen3.5:9b,,15,9,0,0.6
+F007,TEST-01,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,3,True,qwen3.5:9b,,9,7,0,0.7778
+F011,TEST-01,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,3,True,qwen3.5:9b,True,,,,
+F012,TEST-01,Warum rechnet man Keilverbindungen in der Praxis meistens nicht nach?,3,True,qwen3.5:9b,True,,,,
+F013,TEST-01,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,3,True,qwen3.5:9b,True,,,,
+F014,TEST-01,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,3,True,qwen3.5:9b,True,,,,
+F018,TEST-01,Wie ist ein CNC-Programm aufgebaut?,3,True,qwen3.5:9b,True,,,,
+F021,TEST-01,Was bringt der D-Anteil in einem Regler?,3,True,qwen3.5:9b,True,,,,
+F023,TEST-01,Wie schnell darf sich eine Schleifscheibe maximal drehen?,3,True,qwen3.5:9b,True,,,,
+F024,TEST-01,"Welche Rautiefe schafft man mit Hartdrehen allein, ohne Schleifen?",3,True,qwen3.5:9b,True,,,,
+F025,TEST-01,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,3,True,qwen3.5:9b,True,,,,
+F026,TEST-01,Wie viele Urlaubstage stehen mir im ersten Ausbildungsjahr zu?,3,True,qwen3.5:9b,True,,,,
+F027,TEST-01,Wie schreibe ich in Python eine for-Schleife?,3,True,qwen3.5:9b,True,,,,
+F028,TEST-01,Wie wechsle ich die Bremsbeläge an meinem Auto?,3,True,qwen3.5:9b,True,,,,
+F029,TEST-01,Welche Zutaten brauche ich für einen Pizzateig?,3,True,qwen3.5:9b,True,,,,
+F030,TEST-01,Wer hat die Fußball-WM 2014 gewonnen?,3,True,qwen3.5:9b,True,,,,
