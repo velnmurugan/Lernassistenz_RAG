@@ -4,20 +4,28 @@ fuehre_testfragen_aus.py
 Schickt alle Fragen aus testfragen_v1.csv durch die echte Pipeline
 (beantworte_frage), protokolliert sie wie die Studien-App in
 evaluationsdaten/interaktionen.csv und schreibt einen Retrieval-Bericht
-(evaluationsdaten/testlauf_retrieval.csv).
+(evaluationsdaten/testlauf_retrieval_<SITZUNGS_ID>.csv).
+
+Die Sitzungs-ID dient als Versionskennung (z. B. V1-HYBRID) und wird später
+in ragas_auswertung.py als Filter verwendet.
 
 Setzt einen abgebrochenen Lauf automatisch fort: Fragen, die für dieselbe
 Sitzungs-ID schon im Log stehen, werden übersprungen.
 
-Start: python fuehre_testfragen_aus.py [SITZUNGS_ID]   (Standard: TEST-01)
+Start:
+  python fuehre_testfragen_aus.py V0-DENSE  --retrieval dense
+  python fuehre_testfragen_aus.py V1-HYBRID --retrieval hybrid --rrf-k 2
+  python fuehre_testfragen_aus.py V1-BM25   --retrieval bm25
+  python fuehre_testfragen_aus.py TEST-01                     # Standard (RETRIEVAL_METHODE)
 """
+import argparse
 import csv
-import sys
 import time
 from pathlib import Path
 
 import requests
 
+import rag_pipeline
 from rag_pipeline import (
     lade_wissensbasis, berechne_kb_hash, beantworte_frage, retrieval,
     protokolliere_interaktion, INTERAKTIONS_LOG, LOG_VERZEICHNIS,
@@ -25,8 +33,6 @@ from rag_pipeline import (
 
 TESTFRAGEN = Path("testfragen_v1.csv")
 KB_PFAD = "knowledge_base.json"
-BERICHT = LOG_VERZEICHNIS / "testlauf_retrieval.csv"
-SITZUNGS_ID = sys.argv[1] if len(sys.argv) > 1 else "TEST-01"
 TOP_K = 4
 FELDER = ["nr", "typ", "frage", "erwarteter_chunk", "top_ids", "bester_score",
           "genuegend_relevanz", "vollstaendig_geparst", "sekunden",
@@ -44,11 +50,11 @@ def ist_wahr(x):
     return x if isinstance(x, bool) else str(x) == "True"
 
 
-def mit_wiederholung(frage, chunks, versuche=3, wartezeit=20):
+def mit_wiederholung(frage, chunks, methode, versuche=3, wartezeit=20):
     """Fängt kurze Ollama-Ausfälle ab (z. B. Neustart nach Absturz)."""
     for v in range(1, versuche + 1):
         try:
-            return beantworte_frage(frage, chunks, top_k=TOP_K)
+            return beantworte_frage(frage, chunks, top_k=TOP_K, methode=methode)
         except requests.exceptions.ConnectionError:
             if v == versuche:
                 raise
@@ -57,17 +63,30 @@ def mit_wiederholung(frage, chunks, versuche=3, wartezeit=20):
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("sitzungs_id", nargs="?", default="TEST-01", help="Versionskennung, z. B. V1-HYBRID")
+    ap.add_argument("--retrieval", choices=["dense", "bm25", "hybrid"], default=None,
+                    help=f"Retrieval-Methode (Standard: {rag_pipeline.RETRIEVAL_METHODE})")
+    ap.add_argument("--rrf-k", type=int, default=None,
+                    help=f"RRF-Konstante für hybrid (Standard: {rag_pipeline.RRF_K})")
+    args = ap.parse_args()
+    sitzungs_id = args.sitzungs_id
+    methode = args.retrieval or rag_pipeline.RETRIEVAL_METHODE
+    if args.rrf_k is not None:
+        rag_pipeline.RRF_K = args.rrf_k
+    bericht_datei = LOG_VERZEICHNIS / f"testlauf_retrieval_{sitzungs_id}.csv"
+
     # Fortsetzung: bereits geloggte Fragen dieser Sitzung überspringen
     bereits = set()
     if INTERAKTIONS_LOG.exists():
         with open(INTERAKTIONS_LOG, encoding="utf-8") as f:
-            bereits = {r["frage"] for r in csv.DictReader(f) if r.get("sitzungs_id") == SITZUNGS_ID}
+            bereits = {r["frage"] for r in csv.DictReader(f) if r.get("sitzungs_id") == sitzungs_id}
 
     bericht = []
-    if bereits and BERICHT.exists():
-        with open(BERICHT, encoding="utf-8") as f:
+    if bereits and bericht_datei.exists():
+        with open(bericht_datei, encoding="utf-8") as f:
             bericht = [z for z in csv.DictReader(f) if not z.get("fehler") and z["frage"] in bereits]
-        print(f"Fortsetzung: {len(bereits)} Fragen von '{SITZUNGS_ID}' bereits im Log — werden übersprungen.")
+        print(f"Fortsetzung: {len(bereits)} Fragen von '{sitzungs_id}' bereits im Log — werden übersprungen.")
 
     with open(TESTFRAGEN, encoding="utf-8") as f:
         fragen = [q for q in csv.DictReader(f) if q["frage"] not in bereits]
@@ -77,12 +96,14 @@ def main():
     else:
         chunks = lade_wissensbasis(KB_PFAD)
         kb_hash = berechne_kb_hash(KB_PFAD)
-        print(f"{len(fragen)} offene Fragen, {len(chunks)} Chunks, kb_hash={kb_hash}, Sitzung={SITZUNGS_ID}\n")
+        print(f"{len(fragen)} offene Fragen, {len(chunks)} Chunks, kb_hash={kb_hash}, "
+              f"Sitzung={sitzungs_id}, Retrieval={methode}, RRF_K={rag_pipeline.RRF_K}, "
+              f"Generierung={rag_pipeline.GENERIERUNGS_OPTIONEN}\n")
 
     for q in fragen:
         t0 = time.time()
         try:
-            ergebnis = mit_wiederholung(q["frage"], chunks)
+            ergebnis = mit_wiederholung(q["frage"], chunks, methode)
         except Exception as e:
             print(f"[{q['nr']:>2}] FEHLER: {e}")
             bericht.append({"nr": q["nr"], "typ": q["typ"], "frage": q["frage"], "fehler": str(e)})
@@ -91,8 +112,8 @@ def main():
 
         ergebnis["kb_hash"] = kb_hash
         # Stufe 3: im Batchlauf gilt die volle Antwort als 'gesehen'. Uptake-Werte
-        # aus TEST-Sitzungen werden nicht als Nutzungsverhalten interpretiert.
-        protokolliere_interaktion(SITZUNGS_ID, ergebnis, scaffolding_stufe_erreicht=3)
+        # aus Testsitzungen werden nicht als Nutzungsverhalten interpretiert.
+        protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=3)
 
         top_ids = [c["id"] for c in ergebnis["top_chunks"]]
         erwartet = q["chunk_id"].strip()
@@ -105,7 +126,7 @@ def main():
             "sekunden": round(dauer, 1),
         }
         if erwartet:
-            _, alle = retrieval(q["frage"], chunks, top_k=TOP_K)
+            _, alle = retrieval(q["frage"], chunks, top_k=TOP_K, methode=methode)
             zeile["rang_erwartet"] = next((i + 1 for i, c in enumerate(alle) if c["id"] == erwartet), "")
             zeile["treffer_exakt"] = erwartet in top_ids
             zeile["treffer_inkl_nachbar"] = erwartet in top_ids or bool(nachbar_ids(erwartet) & set(top_ids))
@@ -115,7 +136,7 @@ def main():
         print(f"[{q['nr']:>2}] {q['typ']:<12} score={zeile['bester_score']:.3f}  {status:<12} {dauer:5.1f}s")
 
     bericht.sort(key=lambda z: int(z["nr"]))
-    with open(BERICHT, "w", newline="", encoding="utf-8") as f:
+    with open(bericht_datei, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=FELDER, extrasaction="ignore", restval="")
         w.writeheader()
         w.writerows(bericht)
@@ -124,7 +145,7 @@ def main():
     mit_chunk = [z for z in ok if z.get("erwarteter_chunk")]
     aussen = [z for z in ok if z["typ"] == "ausserhalb"]
     generiert = [z for z in ok if ist_wahr(z["genuegend_relevanz"])]
-    print(f"\n--- Zusammenfassung ({len(ok)}/{len(bericht)} Fragen ohne Fehler) ---")
+    print(f"\n--- Zusammenfassung {sitzungs_id} / {methode} ({len(ok)}/{len(bericht)} Fragen ohne Fehler) ---")
     if mit_chunk:
         print(f"Recall@{TOP_K} exakt:           {sum(ist_wahr(z['treffer_exakt']) for z in mit_chunk)}/{len(mit_chunk)}")
         print(f"Recall@{TOP_K} inkl. Nachbar:   {sum(ist_wahr(z['treffer_inkl_nachbar']) for z in mit_chunk)}/{len(mit_chunk)}")
@@ -132,7 +153,7 @@ def main():
         print(f"Korrekt verweigert (außerhalb): {sum(not ist_wahr(z['genuegend_relevanz']) for z in aussen)}/{len(aussen)}")
     if generiert:
         print(f"3-Stufen-Format eingehalten:    {sum(ist_wahr(z['vollstaendig_geparst']) for z in generiert)}/{len(generiert)}")
-    print(f"Bericht: {BERICHT}")
+    print(f"Bericht: {bericht_datei}")
 
 
 if __name__ == "__main__":

@@ -17,18 +17,19 @@ Eine konsolidierte Übersicht steht zusätzlich in
 Design_Entscheidungen_Literatur.md.
 """
 
+import hashlib
 import json
 import os
+import pickle
 import re
 import subprocess
 import csv
 import datetime
 from pathlib import Path
 
+import numpy as np
 import requests
 from sklearn.metrics.pairwise import cosine_similarity
-
-import hashlib
 
 MODEL_NAME = "qwen3.5:9b"
 
@@ -365,6 +366,26 @@ SICHERHEITS_SCHLUESSELWOERTER = [
 
 EMBEDDING_MODELL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
 
+# Retrieval-Methode (siehe retrieval()):
+#   "dense"  — nur Embeddings (Baseline V0, bisheriges Verhalten der Studien-App)
+#   "bm25"   — nur Schlüsselwortsuche
+#   "hybrid" — beide Ranglisten per Reciprocal Rank Fusion kombiniert (V1)
+# Die Studien-App nutzt diesen Standard; Testläufe können pro Aufruf eine
+# andere Methode übergeben (fuehre_testfragen_aus.py --retrieval ...).
+RETRIEVAL_METHODE = "dense"
+RRF_K = 2  # Cormack et al. (2009) nutzen 60; hier empirisch gewählt (retrieval_vergleich.py,
+           # 25 Testfragen): k=2 mit bestem MRR und R@4+Nachbar. Bei k=60 schlugen Chunks, die
+           # in beiden Listen mittelmäßig rangierten, Chunks auf Spitzenplätzen einer Liste.
+
+# Generierungs-Einstellungen für qwen (Studien-App UND Testläufe identisch).
+# Ohne feste Werte nutzt Ollama seine Standard-Stichprobe; derselbe Kontext führte
+# dann mal zu Verweigerung, mal zu Antwort (Befund V1-HYBRID2 vs. V1-HYBRID2-CLEAN:
+# gleiche Retrieval-Ränge, 12 vs. 7 Verweigerungen). temperature=0 + fester seed:
+# (1) reproduzierbare Evaluation, (2) inhaltlich gewollt — ein quellengebundener
+# Lernassistent soll nicht kreativ variieren. Restvarianz durch GPU-Arithmetik möglich.
+GENERIERUNGS_OPTIONEN = {"temperature": 0, "seed": 42}
+BM25_CACHE_VERZEICHNIS = Path("cache")  # nicht committen (.gitignore)
+
 LOG_VERZEICHNIS = Path("evaluationsdaten")
 LOG_VERZEICHNIS.mkdir(exist_ok=True)
 INTERAKTIONS_LOG = LOG_VERZEICHNIS / "interaktionen.csv"
@@ -387,6 +408,22 @@ def lade_wissensbasis(pfad="knowledge_base.json"):
     with open(pfad, "r", encoding="utf-8") as f:
         daten = json.load(f)
     return daten["chunks"]
+
+
+def berechne_kb_hash(pfad="knowledge_base.json"):
+    """
+    Kurzer Fingerabdruck (SHA-256, erste 12 Zeichen) der Wissensbasis-Datei.
+    Wird pro Interaktion protokolliert, damit die spätere RAGAS-Auswertung
+    (ragas_auswertung.py) prüfen kann, ob die geloggten Chunk-IDs noch auf
+    denselben Text zeigen. Bei Neuaufbau im Modus "ERSETZEN" werden IDs neu
+    vergeben — ohne diesen Abgleich würden alte Logs stillschweigend gegen
+    falschen Kontext bewertet.
+    """
+    h = hashlib.sha256()
+    with open(pfad, "rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()[:12]
 
 
 # =============================================================================
@@ -422,21 +459,116 @@ def _embeddings_fuer_chunks(chunks):
     return _chunk_embedding_cache[schluessel]
 
 
-def retrieval(frage, chunks, top_k=4):
+# -----------------------------------------------------------------------------
+# BM25 (Schlüsselwortsuche) — Ergänzung für V1 "hybrid"
+# -----------------------------------------------------------------------------
+# Begründung: Fachbegriffe (Zweihandverriegelung, D-Anteil, DIN EN 13001-2,
+# CNC) sind exakte Wörter, die ein kleines Embedding-Modell "verwischt".
+# Eigener Testbefund V0 (TEST-01): Recall@4 nur 6/25, Quell-Chunk oft auf
+# Rang > 100. Gegenposition zur ursprünglichen Nur-Embedding-Entscheidung:
+# "From BM25 to Corrective RAG" (EACL 2026) — BM25 bei terminologie- und
+# tabellenlastigen Dokumenten überlegen. BM25: Robertson & Zaragoza (2009).
+BM25_STOPPWOERTER = set("""
+aber alle allem allen aller alles als also am an ander andere anderem anderen anderer anderes
+auch auf aus bei beim bin bis bist da damit dann das dass dein deine dem den der des dessen die
+dies diese diesem diesen dieser dieses doch dort du durch ein eine einem einen einer eines er es
+etwa euch euer für gegen hat hatte hätte habe haben hier hin hinter ich ihr ihre im in indem ins
+ist ja jede jedem jeden jeder jedes jetzt kann kein keine können könnte man mein meine mich mir
+mit muss müssen nach nicht nichts noch nun nur ob oder ohne sehr sein seine sich sie sind so
+solche soll sollte sondern um und uns unser unter vom von vor war wäre waren was weil welche
+welchem welchen welcher welches wenn wer werden wie wieder will wir wird wo wurde würde zu zum
+zur zwar zwischen eigentlich mal
+""".split())
+
+_stemmer = None
+_bm25_cache = {}
+
+
+def tokenisiere(text):
+    """Für BM25: Silbentrennung aus der PDF-Extraktion zusammenführen
+    ("Kurbel-\\numdrehungen" -> "kurbelumdrehungen"), Kleinschreibung,
+    Wörter/Zahlen, Stoppwörter entfernen, deutsches Snowball-Stemming
+    (damit z. B. "Verriegelung"/"Verriegelungen" zusammenfallen)."""
+    global _stemmer
+    if _stemmer is None:
+        import snowballstemmer
+        _stemmer = snowballstemmer.stemmer("german")
+    text = re.sub(r"(\w)-\s*\n\s*(\w)", r"\1\2", text)
+    woerter = re.findall(r"[a-zäöüß0-9]+", text.lower())
+    return _stemmer.stemWords([w for w in woerter if len(w) >= 2 and w not in BM25_STOPPWOERTER])
+
+
+def _bm25_index(chunks):
+    """BM25-Index über alle Chunks. Zwischengespeichert im Speicher (pro
+    Prozess) und auf Platte (pro Inhalt der Wissensbasis), weil das
+    Tokenisieren von ~32.000 Chunks sonst bei jedem Start ~1 Minute dauert."""
+    from rank_bm25 import BM25Okapi
+    schluessel = tuple(c["text"] for c in chunks)
+    if schluessel not in _bm25_cache:
+        fingerabdruck = hashlib.sha256("\x1e".join(schluessel).encode("utf-8")).hexdigest()[:12]
+        BM25_CACHE_VERZEICHNIS.mkdir(exist_ok=True)
+        datei = BM25_CACHE_VERZEICHNIS / f"bm25_tokens_{fingerabdruck}.pkl"
+        if datei.exists():
+            with open(datei, "rb") as f:
+                korpus = pickle.load(f)
+        else:
+            korpus = [tokenisiere(t) for t in schluessel]
+            with open(datei, "wb") as f:
+                pickle.dump(korpus, f)
+        _bm25_cache[schluessel] = BM25Okapi(korpus)
+    return _bm25_cache[schluessel]
+
+
+def _raenge(scores):
+    """scores -> Rang pro Element (1 = bester), stabil bei Gleichstand."""
+    reihenfolge = np.argsort(-scores, kind="stable")
+    rang = np.empty(len(scores), dtype=np.int64)
+    rang[reihenfolge] = np.arange(1, len(scores) + 1)
+    return rang
+
+
+def retrieval(frage, chunks, top_k=4, methode=None):
     """
-    Embedding-basiertes Retrieval. top_k=4 (statt z. B. 2) reduziert das in
-    Phase 1 beobachtete Risiko, dass ein einzelner, kurzer Fakt (z. B. eine
-    konkrete ECTS-Zahl) durch eng verwandte, aber nicht antworttragende
-    Passagen aus dem Kontext verdrängt wird (siehe eigene Testbefunde zur
-    "Retrieval-Vollständigkeit", dokumentiert in Design_Entscheidungen_Literatur.md).
+    Retrieval mit wählbarer Methode (Standard: RETRIEVAL_METHODE).
+
+    "dense": Embedding-basiert (Reimers & Gurevych 2019), bisheriges Verhalten.
+    top_k=4 (statt z. B. 2) reduziert das in Phase 1 beobachtete Risiko, dass
+    ein einzelner, kurzer Fakt (z. B. eine konkrete ECTS-Zahl) durch eng
+    verwandte, aber nicht antworttragende Passagen verdrängt wird (siehe
+    Design_Entscheidungen_Literatur.md, "Retrieval-Vollständigkeit").
+    "bm25": reine Schlüsselwortsuche (siehe tokenisiere/_bm25_index).
+    "hybrid": Reciprocal Rank Fusion beider Ranglisten, score = Σ 1/(RRF_K + rang)
+    (Cormack, Clarke & Büttcher 2009). RRF statt gewichteter Score-Summe, weil
+    BM25-Werte und Kosinus-Ähnlichkeiten nicht auf derselben Skala liegen.
+
+    Wichtig: Das Feld "score" jedes Ergebnisses ist IMMER die Kosinus-
+    Ähnlichkeit (auch bei bm25/hybrid). Damit bleiben RELEVANZ_SCHWELLE und das
+    Feld bester_score im Log zwischen den Varianten identisch definiert — nur
+    die Auswahl der Chunks ändert sich (eine Variable pro Version).
+    Sortiert wird nach "rangwert" (je nach Methode Kosinus, BM25 oder RRF).
     """
+    methode = methode or RETRIEVAL_METHODE
     modell = _lade_embedding_modell()
     chunk_embeddings = _embeddings_fuer_chunks(chunks)
     frage_embedding = modell.encode([frage], convert_to_numpy=True, normalize_embeddings=True)
-    scores = cosine_similarity(frage_embedding, chunk_embeddings)[0]
+    dense = cosine_similarity(frage_embedding, chunk_embeddings)[0]
 
-    ergebnisse = [{**chunk, "score": float(score)} for chunk, score in zip(chunks, scores)]
-    ergebnisse.sort(key=lambda x: x["score"], reverse=True)
+    if methode == "dense":
+        rangwert = dense
+    elif methode in ("bm25", "hybrid"):
+        bm25 = np.asarray(_bm25_index(chunks).get_scores(tokenisiere(frage)), dtype=np.float64)
+        if methode == "bm25":
+            rangwert = bm25
+        else:
+            rangwert = 1.0 / (RRF_K + _raenge(dense)) + 1.0 / (RRF_K + _raenge(bm25))
+    else:
+        raise ValueError(f"Unbekannte Retrieval-Methode: {methode!r} (dense | bm25 | hybrid)")
+
+    ergebnisse = [
+        {**chunk, "score": float(d), "rangwert": float(r)}
+        for chunk, d, r in zip(chunks, dense, rangwert)
+    ]
+    ergebnisse.sort(key=lambda x: x["rangwert"], reverse=True)
     return ergebnisse[:top_k], ergebnisse
 
 
@@ -584,7 +716,7 @@ def sicherheitspruefung(text):
     return (len(treffer) > 0), treffer
 
 
-def beantworte_frage(frage, chunks, top_k=4):
+def beantworte_frage(frage, chunks, top_k=4, methode=None):
     """
     Vollständige Pipeline: Retrieval -> Schwellenwert-Prüfung -> gestufte
     Generierung (Scaffolding) -> Sicherheitsprüfung. Verweigerung statt
@@ -593,9 +725,14 @@ def beantworte_frage(frage, chunks, top_k=4):
     Grounding-Prinzip bei Lewis et al. 2020). Die dreistufige Antwort
     (Hinweis/Erklärung/Lösung) setzt die Säule "Lernunterstützung" um
     (siehe baue_scaffolding_prompt-Modulkommentar für Quellen).
+
+    methode: Retrieval-Methode (None = RETRIEVAL_METHODE, siehe retrieval()).
+    bester_score = höchste Kosinus-Ähnlichkeit über ALLE Chunks, unabhängig von
+    der Methode — bei "dense" identisch zum bisherigen Verhalten, bei
+    bm25/hybrid bleibt die Schwellenprüfung dadurch unverändert.
     """
-    top_chunks, alle_chunks = retrieval(frage, chunks, top_k=top_k)
-    bester_score = top_chunks[0]["score"] if top_chunks else 0.0
+    top_chunks, alle_chunks = retrieval(frage, chunks, top_k=top_k, methode=methode)
+    bester_score = max((c["score"] for c in alle_chunks), default=0.0)
     genuegend_relevanz = bester_score >= RELEVANZ_SCHWELLE
 
     ergebnis = {
@@ -620,7 +757,7 @@ def beantworte_frage(frage, chunks, top_k=4):
         return ergebnis
 
     prompt = baue_scaffolding_prompt(frage, top_chunks)
-    rohantwort = frage_llm(prompt)
+    rohantwort = frage_llm(prompt, options=GENERIERUNGS_OPTIONEN)
     stufen = parse_scaffolding_antwort(rohantwort)
     ist_relevant, treffer = sicherheitspruefung(frage + " " + stufen["loesung"])
 
@@ -655,7 +792,8 @@ def protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=
             writer.writerow([
                 "zeitstempel", "sitzungs_id", "frage", "bester_score",
                 "genuegend_relevanz", "hinweis", "erklaerung", "loesung",
-                "scaffolding_stufe_erreicht", "quellen", "sicherheitshinweis" , "kb_hash",
+                "scaffolding_stufe_erreicht", "quellen", "sicherheitshinweis",
+                "kb_hash",
             ])
         writer.writerow([
             datetime.datetime.now().isoformat(timespec="seconds"),
@@ -668,24 +806,9 @@ def protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=
             ergebnis.get("loesung", ""),
             scaffolding_stufe_erreicht,
             "; ".join(q["id"] for q in ergebnis["quellen"]),
-            "; ".join(ergebnis["sicherheitshinweis"]) if ergebnis["sicherheitshinweis"] else "", ergebnis.get("kb_hash", ""),
+            "; ".join(ergebnis["sicherheitshinweis"]) if ergebnis["sicherheitshinweis"] else "",
+            ergebnis.get("kb_hash", ""),
         ])
-
-
-def berechne_kb_hash(pfad="knowledge_base.json"):
-    """
-    Kurzer Fingerabdruck (SHA-256, erste 12 Zeichen) der Wissensbasis-Datei.
-    Wird pro Interaktion protokolliert, damit die spätere RAGAS-Auswertung
-    (ragas_auswertung.py) prüfen kann, ob die geloggten Chunk-IDs noch auf
-    denselben Text zeigen. Bei Neuaufbau im Modus "ERSETZEN" werden IDs neu
-    vergeben — ohne diesen Abgleich würden alte Logs stillschweigend gegen
-    falschen Kontext bewertet.
-    """
-    h = hashlib.sha256()
-    with open(pfad, "rb") as f:
-        for block in iter(lambda: f.read(1 << 20), b""):
-            h.update(block)
-    return h.hexdigest()[:12]
 
 
 # =============================================================================
