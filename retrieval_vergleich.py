@@ -17,7 +17,7 @@ Metriken (nur Fragen mit bekanntem Quell-Chunk in testfragen_v1.csv):
 Werte sind eine UNTERGRENZE: Steht dieselbe Information zusätzlich in einem
 anderen Chunk, zählt ein Treffer dort nicht.
 
-Varianten-Syntax: dense | bm25 | hybrid | hybrid@K  (K = RRF-Konstante, Standard
+Varianten-Syntax: dense | bm25 | graph | hybrid | hybrid_kg | hybrid@K | hybrid_kg@K  (K = RRF-Konstante, Standard
 RRF_K aus rag_pipeline). Kleines K gewichtet Spitzenplätze stärker: ein Chunk
 auf Platz 2 in EINER Liste schlägt dann einen Chunk auf Platz 10 in beiden.
 Zusätzlich: "Vereinigung@k" = Anteil Fragen, deren Quell-Chunk in den Top-k
@@ -51,8 +51,23 @@ def nachbar_ids(chunk_id):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--varianten", default="dense,bm25,hybrid@60,hybrid@20,hybrid@10,hybrid@5,hybrid@2")
+    ap.add_argument("--varianten", default="dense,bm25,graph,hybrid@2,hybrid_kg@2,hybrid_kg@5,hybrid_kg@10")
+    ap.add_argument("--kg", action="append", default=[], metavar="PARAM=WERT",
+                    help="Wissensgraph-Parameter überschreiben, z. B. --kg KG_SYN_MODUS=aus (mehrfach möglich)")
     args = ap.parse_args()
+    if args.kg:
+        import ast
+        import wissensgraph
+        for eintrag in args.kg:
+            name, _, wert = eintrag.partition("=")
+            if not hasattr(wissensgraph, name):
+                raise SystemExit(f"Unbekannter Parameter: {name}")
+            try:
+                wert = ast.literal_eval(wert)
+            except (ValueError, SyntaxError):
+                pass
+            setattr(wissensgraph, name, wert)
+        print("Wissensgraph:", {k: v for k, v in wissensgraph.parameter().items() if k in [e.split('=')[0] for e in args.kg]})
     varianten = [v.strip() for v in args.varianten.split(",") if v.strip()]
 
     chunks = lade_wissensbasis(KB_PFAD)
@@ -85,25 +100,31 @@ def main():
     print(f"Laufzeit {time.time() - t0:.0f}s\n")
 
     n = len(zeilen)
-    kopf = f"{'Variante':<11}" + "".join(f"{'R@' + str(k):>8}" for k in K_WERTE) + f"{'R@4+Nb':>9}{'MRR':>8}{'Median':>9}"
+    kopf = f"{'Variante':<13}" + "".join(f"{'R@' + str(k):>8}" for k in K_WERTE) + f"{'R@4+Nb':>9}{'MRR':>8}{'Median':>9}"
     print(kopf)
     print("-" * len(kopf))
     for v in varianten:
         r = [z[f"rang_{v}"] for z in zeilen]
         rn = [z[f"rang_nachbar_{v}"] for z in zeilen]
         rec = "".join(f"{sum(x <= k for x in r):>5}/{n:<2}" for k in K_WERTE)
-        print(f"{v:<11}{rec}{sum(x <= 4 for x in rn):>6}/{n:<2}"
+        print(f"{v:<13}{rec}{sum(x <= 4 for x in rn):>6}/{n:<2}"
               f"{statistics.mean(1 / x for x in r):>8.3f}{statistics.median(r):>9.0f}")
 
     if "dense" in varianten and "bm25" in varianten:
         for k in (10, 20, 50):
             u = sum(z["rang_dense"] <= k or z["rang_bm25"] <= k for z in zeilen)
-            print(f"{'Vereinigung@' + str(k):<11}{u:>5}/{n:<2}  (Quell-Chunk in Top-{k} von dense ODER bm25)")
+            print(f"{'Vereinigung@' + str(k):<13}{u:>5}/{n:<2}  (Quell-Chunk in Top-{k} von dense ODER bm25)")
+    if all(v in varianten for v in ("dense", "bm25", "graph")):
+        for k in (10, 20, 50):
+            u = sum(z["rang_dense"] <= k or z["rang_bm25"] <= k or z["rang_graph"] <= k for z in zeilen)
+            print(f"{'Vereinig.3@' + str(k):<13}{u:>5}/{n:<2}  (… von dense ODER bm25 ODER graph)")
+        nur_graph = [z["nr"] for z in zeilen if z["rang_graph"] <= 10 and z["rang_dense"] > 10 and z["rang_bm25"] > 10]
+        print(f"Nur der Graph findet in Top-10: Fragen {nur_graph or '—'}")
 
     print("\nRang des Quell-Chunks pro Frage (✓ = in Top-4):")
-    print(f"{'Nr':>3} {'Typ':<12}" + "".join(f"{v:>11}" for v in varianten) + "  Frage")
+    print(f"{'Nr':>3} {'Typ':<12}" + "".join(f"{v:>13}" for v in varianten) + "  Frage")
     for z in zeilen:
-        werte = "".join(f"{z[f'rang_{v}']:>10}{'✓' if z[f'rang_{v}'] <= 4 else ' '}" for v in varianten)
+        werte = "".join(f"{z[f'rang_{v}']:>12}{'✓' if z[f'rang_{v}'] <= 4 else ' '}" for v in varianten)
         print(f"{z['nr']:>3} {z['typ']:<12}{werte}  {z['frage'][:55]}")
 
     felder = ["nr", "typ", "frage", "erwarteter_chunk"]

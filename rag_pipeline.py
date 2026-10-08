@@ -370,6 +370,8 @@ EMBEDDING_MODELL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
 #   "dense"  — nur Embeddings (Baseline V0, bisheriges Verhalten der Studien-App)
 #   "bm25"   — nur Schlüsselwortsuche
 #   "hybrid" — beide Ranglisten per Reciprocal Rank Fusion kombiniert (V1)
+#   "graph"  — nur Konzept-Wissensgraph (Personalized PageRank, siehe wissensgraph.py)
+#   "hybrid_kg" — dense + BM25 + Wissensgraph per RRF (V2)
 # Die Studien-App nutzt diesen Standard; Testläufe können pro Aufruf eine
 # andere Methode übergeben (fuehre_testfragen_aus.py --retrieval ...).
 RETRIEVAL_METHODE = "dense"
@@ -384,6 +386,7 @@ RRF_K = 2  # Cormack et al. (2009) nutzen 60; hier empirisch gewählt (retrieval
 # (1) reproduzierbare Evaluation, (2) inhaltlich gewollt — ein quellengebundener
 # Lernassistent soll nicht kreativ variieren. Restvarianz durch GPU-Arithmetik möglich.
 GENERIERUNGS_OPTIONEN = {"temperature": 0, "seed": 42}
+KG_GEWICHT = 1.0  # Gewicht der Graph-Liste in der RRF-Summe ("hybrid_kg"); 1.0 = gleichrangig
 BM25_CACHE_VERZEICHNIS = Path("cache")  # nicht committen (.gitignore)
 
 LOG_VERZEICHNIS = Path("evaluationsdaten")
@@ -561,8 +564,22 @@ def retrieval(frage, chunks, top_k=4, methode=None):
             rangwert = bm25
         else:
             rangwert = 1.0 / (RRF_K + _raenge(dense)) + 1.0 / (RRF_K + _raenge(bm25))
+    elif methode in ("graph", "hybrid_kg"):
+        # V2: Konzept-Wissensgraph (HippoRAG-Prinzip, Gutiérrez et al. 2024), siehe
+        # wissensgraph.py. Chunks ohne Graph-Bezug (Score 0) erhalten KEINEN RRF-Beitrag —
+        # findet der Graph nichts, ist "hybrid_kg" damit identisch zu "hybrid" (V1).
+        import wissensgraph
+        graph = wissensgraph.graph_scores(frage, chunks, frage_embedding=frage_embedding[0])
+        if methode == "graph":
+            rangwert = graph + 1e-6 * dense  # dense nur als Gleichstands-Auflösung
+        else:
+            bm25 = np.asarray(_bm25_index(chunks).get_scores(tokenisiere(frage)), dtype=np.float64)
+            graph_rrf = np.where(graph > 0, 1.0 / (RRF_K + _raenge(graph)), 0.0)
+            rangwert = (1.0 / (RRF_K + _raenge(dense)) + 1.0 / (RRF_K + _raenge(bm25))
+                        + KG_GEWICHT * graph_rrf)
     else:
-        raise ValueError(f"Unbekannte Retrieval-Methode: {methode!r} (dense | bm25 | hybrid)")
+        raise ValueError(f"Unbekannte Retrieval-Methode: {methode!r} "
+                         "(dense | bm25 | hybrid | graph | hybrid_kg)")
 
     ergebnisse = [
         {**chunk, "score": float(d), "rangwert": float(r)}
