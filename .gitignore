@@ -1,2 +1,6 @@
 cache/
 knowledge_base*.json
+cache/
+*.pdf
+evaluationsdaten/interaktionen.csv
+evaluationsdaten/fragebogen.csv
