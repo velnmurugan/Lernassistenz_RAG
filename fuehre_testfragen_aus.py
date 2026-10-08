@@ -20,6 +20,9 @@ Start:
 """
 import argparse
 import csv
+import datetime
+import json
+import subprocess
 import time
 from pathlib import Path
 
@@ -62,6 +65,46 @@ def mit_wiederholung(frage, chunks, methode, versuche=3, wartezeit=20):
             time.sleep(wartezeit)
 
 
+def schreibe_lauf_konfiguration(sitzungs_id, methode, kb_hash, n_chunks):
+    """Speichert alle Einstellungen dieses Laufs in evaluationsdaten/lauf_<ID>.json,
+    damit jedes Ergebnis seiner exakten Konfiguration zugeordnet werden kann
+    (Reproduzierbarkeit, Methodenteil)."""
+    def befehl(*args):
+        try:
+            return subprocess.run(args, capture_output=True, text=True, timeout=5).stdout.strip()
+        except Exception:
+            return ""
+    try:
+        ollama_version = requests.get(rag_pipeline.OLLAMA_URL.replace("/api/generate", "/api/version"),
+                                      timeout=3).json().get("version", "")
+    except Exception:
+        ollama_version = ""
+    konfig = {
+        "sitzungs_id": sitzungs_id,
+        "zeitstempel": datetime.datetime.now().isoformat(timespec="seconds"),
+        "git_commit": befehl("git", "rev-parse", "--short", "HEAD"),
+        "git_uncommitted_changes": bool(befehl("git", "status", "--porcelain", "--untracked-files=no")),
+        "kb_hash": kb_hash,
+        "anzahl_chunks": n_chunks,
+        "retrieval_methode": methode,
+        "rrf_k": rag_pipeline.RRF_K,
+        "top_k": TOP_K,
+        "relevanz_schwelle": rag_pipeline.RELEVANZ_SCHWELLE,
+        "generator_modell": rag_pipeline.MODEL_NAME,
+        "generierungs_optionen": rag_pipeline.GENERIERUNGS_OPTIONEN,
+        "embedding_modell": rag_pipeline.EMBEDDING_MODELL_NAME,
+        "ollama_version": ollama_version,
+        "testfragen_datei": str(TESTFRAGEN),
+    }
+    pfad = LOG_VERZEICHNIS / f"lauf_{sitzungs_id}.json"
+    if not pfad.exists():  # bei Fortsetzung eines Laufs die ursprüngliche Konfiguration behalten
+        with open(pfad, "w", encoding="utf-8") as f:
+            json.dump(konfig, f, ensure_ascii=False, indent=2)
+    if konfig["git_uncommitted_changes"]:
+        print("HINWEIS: Code hat nicht committete Änderungen — für saubere Läufe vorher committen.")
+    return pfad
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("sitzungs_id", nargs="?", default="TEST-01", help="Versionskennung, z. B. V1-HYBRID")
@@ -96,6 +139,8 @@ def main():
     else:
         chunks = lade_wissensbasis(KB_PFAD)
         kb_hash = berechne_kb_hash(KB_PFAD)
+        konfig_pfad = schreibe_lauf_konfiguration(sitzungs_id, methode, kb_hash, len(chunks))
+        print(f"Konfiguration: {konfig_pfad}")
         print(f"{len(fragen)} offene Fragen, {len(chunks)} Chunks, kb_hash={kb_hash}, "
               f"Sitzung={sitzungs_id}, Retrieval={methode}, RRF_K={rag_pipeline.RRF_K}, "
               f"Generierung={rag_pipeline.GENERIERUNGS_OPTIONEN}\n")
