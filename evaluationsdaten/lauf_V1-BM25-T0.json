@@ -1,0 +1,20 @@
+{
+  "sitzungs_id": "V1-BM25-T0",
+  "zeitstempel": "2026-10-08T12:05:26",
+  "git_commit": "4de94f1",
+  "git_uncommitted_changes": true,
+  "kb_hash": "97da9ea85ed3",
+  "anzahl_chunks": 31990,
+  "retrieval_methode": "bm25",
+  "rrf_k": 2,
+  "top_k": 4,
+  "relevanz_schwelle": 0.35,
+  "generator_modell": "qwen3.5:9b",
+  "generierungs_optionen": {
+    "temperature": 0,
+    "seed": 42
+  },
+  "embedding_modell": "paraphrase-multilingual-MiniLM-L12-v2",
+  "ollama_version": "0.33.0",
+  "testfragen_datei": "testfragen_v1.csv"
+}

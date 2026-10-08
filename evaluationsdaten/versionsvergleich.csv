@@ -1,0 +1,5 @@
+version,sitzungs_id,richter,retrieval,rrf_k,temperatur,kb_hash,faelle,recall4,recall4_nachbar,n_mit_chunk,verw_korrekt,n_nicht_beantwortbar,verw_falsch,n_beantwortbar,beantwortet,sauber,kritisch,faithfulness,answer_relevance,ausweichend,ar_roh_nicht_ausweichend,context_relevance,context_relevance_beantwortet,antwortzeit_median_s
+V0-DENSE-T0,V0-DENSE-T0,mistral-nemo,dense,2,0,97da9ea85ed3,30,6,8,25,8,8,9,22,13,6,4,0.7509153846153847,0.5315538461538462,4,0.7678,0.07078666666666666,0.11273846153846154,5.3
+V1-BM25-T0,V1-BM25-T0,mistral-nemo,bm25,2,0,97da9ea85ed3,29,8,11,24,6,7,4,22,19,7,7,0.5719315789473685,0.5417105263157894,4,0.6884857142857143,0.11148275862068965,0.12893157894736842,5.45
+V1-HYBRID-T0a,V1-HYBRID-T0a,mistral-nemo,hybrid,2,0,97da9ea85ed3,30,8,12,25,5,8,4,22,21,8,6,0.6627,0.6394333333333333,3,0.7517529411764706,0.10166666666666667,0.12482857142857143,5.5
+V1-HYBRID-T0b,V1-HYBRID-T0b,mistral-nemo,hybrid,2,0,97da9ea85ed3,30,8,12,25,5,8,4,22,21,8,6,0.6627,0.6394333333333333,3,0.7517529411764706,0.10166666666666667,0.12482857142857143,5.4

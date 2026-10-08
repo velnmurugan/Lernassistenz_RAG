@@ -1,0 +1,55 @@
+fall_id,frage_original,generierte_frage,cosinus
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,Wie berechnet sich das Drehmoment bei einer Leistung von 10 kW und einer Drehzahl von 1000 min⁻¹?,0.8461
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,"Was ist die Lösungsformel für das Drehmoment, wenn die Leistung 10 kW und die Drehzahl 1000 min⁻¹ beträgt?",0.7882
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,"Wie viel beträgt das Drehmoment, wenn man die Leistung durch die Drehzahl dividiert und das Ergebnis mit 9550 multipliziert?",0.7453
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Was bewirkt Mangan in Automatenstählen?,0.8824
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Wie kann Mangan die Entstehung von Eisenschwefel verhindern?,0.6132
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Welche Auswirkungen hat die Verwendung von Mangan auf die Formbarkeit und Schmiedbarkeit von Stahl?,0.5972
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Wie kann man die Sprödigkeit von Keramik bei Verbundwerkstoffen verbessern?,0.9462
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Welche Art von Fasern eignet sich am besten für die Verstärkung von gesinterter Keramik?,0.84
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,"Warum sind Kurzfasern bei gesinterter Keramik erforderlich, um die Zähigkeit zu erreichen?",0.7595
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Wie viel besser ist die Wärmeleitung von Wasser im Vergleich zu Luft?,0.8626
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Warum ist die Wärmeleitung von Wasser besser als die von Luft?,0.8299
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Wie beeinflusst Bewegung die Wärmeleitung in der Luft?,0.5926
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,Wie kann man einen großen Drehstrommotor sicher einschalten?,0.8269
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,"Was sind die Gründe, warum man einen großen Drehstrommotor nicht direkt einschalten sollte?",0.9631
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,"Welche Methoden gibt es, um den Strom eines großen Drehstrommotors sanft zu erhöhen?",0.7566
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Wann ist das vereinfachte Modell beim Pendel ausreichend?,0.9747
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Bei welchen Ausschlägen liefern beide Modelle nahezu identische Werte?,0.4564
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Ist der rechnerisch aufwendigere Ansatz immer nötig?,0.4098
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Wie viele ISO-Toleranzgrade gibt es insgesamt?,0.9699
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Welcher ISO-Toleranzgrad ist der genaueste?,0.96
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Welcher ISO-Toleranzgrad hat den geringsten Genauigkeitsgrad?,0.8601
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,Wie berechnet man die Flächenpressung am Bolzen in einer Gabel?,0.9631
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,"Was sind die Faktoren, die bei der Berechnung der Flächenpressung am Bolzen in einer Gabel berücksichtigt werden müssen?",0.7409
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,Kann man die Abscherbeanspruchung bei Bolzenverbindungen vernachlässigen?,0.4312
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Wie kann man den spezifischen Arbeitsauftrag bei mehrstufigen Kompressoren reduzieren?,0.6553
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Was bewirkt eine Zwischenkühlung im h-s-Diagramm?,0.5874
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,"Wie viele Male sollte man das Gas zwischen den Stufen kühlen, um den spezifischen Arbeitsauftrag zu reduzieren?",0.5017
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,Welche Eigenschaften muss ein Werkstoff für einen Zylinderkopf besitzen?,0.9913
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,Welche Art von Gusseisenwerkstoffen wird für Zylinderköpfe verwendet?,0.8266
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,Welche Rolle spielt die Wärmeleitfähigkeit bei der Wahl des Werkstoffs für einen Zylinderkopf?,0.7721
+F016,Was macht eigentlich das Motorsteuergerät?,Wie steuert das Motorsteuergerät den Motorbetrieb direkt?,0.9001
+F016,Was macht eigentlich das Motorsteuergerät?,Welche Sensoren überwacht das Motorsteuergerät?,0.7148
+F016,Was macht eigentlich das Motorsteuergerät?,Welche Aktoren steuert das Motorsteuergerät in verschiedenen Systemteilen an?,0.818
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Wie kann ich ein prismatisches Werkstück auf einer Planscheibe spannen?,0.4422
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Was ist der Unterschied zwischen dem Spannen eines prismatischen und eines rotationssymmetrischen Werkstücks?,0.3138
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Kann ich ein rotationssymmetrisches Werkstück auf einer Planscheibe spannen?,0.5248
+F018,Wie ist ein CNC-Programm aufgebaut?,Was sind die drei Hauptbestandteile eines CNC-Programms nach DIN 66025?,0.7724
+F018,Wie ist ein CNC-Programm aufgebaut?,Wie beginnt ein CNC-Programm?,0.9416
+F018,Wie ist ein CNC-Programm aufgebaut?,Wie endet ein CNC-Programm?,0.8827
+F019,In welchen Bereichen wird Hydraulik hauptsächlich eingesetzt?,Wo wird Hydraulik hauptsächlich eingesetzt?,0.9724
+F019,In welchen Bereichen wird Hydraulik hauptsächlich eingesetzt?,Welche Branchen nutzen Hydraulik?,0.9302
+F019,In welchen Bereichen wird Hydraulik hauptsächlich eingesetzt?,In welchen Bereichen wird Hydraulik angewendet?,0.9868
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,Wie funktioniert die Zweihandverriegelung genau?,0.6727
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,"Was muss ich tun, um den Prozess freizugeben?",0.18
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,Wie kann ich versehentliches Einfädeln verhindern?,0.1867
+F021,Was bringt der D-Anteil in einem Regler?,Was ist der D-Anteil in einem Regler und welche Funktion hat er?,0.9382
+F021,Was bringt der D-Anteil in einem Regler?,Wie wirkt der D-Anteil schnellen Änderungen der Regelgröße entgegen?,0.6792
+F021,Was bringt der D-Anteil in einem Regler?,Welche Rolle spielt der D-Anteil bei der Stabilisierung des Systems gegen schnelle Störungen?,0.635
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,"Was sind die Kostenarten, die von den Gesamtkosten abgezogen werden müssen, um die Marge pro Einheit zu ermitteln?",0.5564
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Welche Kosten werden bei der Berechnung des Deckungsbeitrags berücksichtigt?,0.5537
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Wie wird der Deckungsbeitrag eines Produkts berechnet?,0.9309
+F025,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,"Was sind die verschiedenen Gruppen von regelmäßigen Lasten, die die DIN EN 13001-2 für Kranen unterscheidet?",0.8196
+F025,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,Wie lassen sich die regelmäßigen Lasten bei Kranen in spezifische Gruppen einteilen?,0.4315
+F025,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,Welche Faktoren beeinflussen die Lasten aus der Beschleunigung aller Kranantriebe?,0.3216

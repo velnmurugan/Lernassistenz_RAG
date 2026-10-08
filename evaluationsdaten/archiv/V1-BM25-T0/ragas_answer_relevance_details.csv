@@ -1,0 +1,58 @@
+fall_id,frage_original,generierte_frage,cosinus
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,Wie berechnet sich das Drehmoment in Nm?,0.5287
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,Was ist die Bedeutung von $n$ in der Leistungsformel $P = M \cdot n$?,0.3242
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,Wie wird die Winkelgeschwindigkeit in rad/s berechnet?,0.5767
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,Was für Kristallgitter gibt es bei den meisten Metallen?,0.9818
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,Wie verhält sich das Kristallgitter von Metallen bei Wärme?,0.7368
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,Was ist Diffusion im Zusammenhang mit Kristallgittern?,0.5426
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?","Was wird in schwefelhaltige Automatenstähle gegeben, um den Schwefel zu binden?",0.4554
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?","Was bildet sich, wenn Mangan mit Schwefel in Verbindung tritt?",0.7871
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Was ist der Vorteil von Mangansulfid (MnS) gegenüber Eisen-Sulfid (FeS) beim Schmieden oder Warmbearbeiten?,0.5198
+F004,Welche Messing-Legierung nimmt man für kaltgeformte Rohre oder Lagerbuchsen?,Welche spezifische Messing-Legierung wird für kaltgeformte Rohre verwendet?,0.9119
+F004,Welche Messing-Legierung nimmt man für kaltgeformte Rohre oder Lagerbuchsen?,"Kannst du mir sagen, welche Legierung für Lagerbuchsen verwendet wird?",0.6208
+F004,Welche Messing-Legierung nimmt man für kaltgeformte Rohre oder Lagerbuchsen?,"Gibt es einen allgemeinen Werkstoff für Cu-Legierungen, der für meine Anwendung geeignet ist?",0.4789
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Wie kann man die Sprödigkeit von Keramik in Verbundwerkstoffen verbessern?,0.9408
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,"Welche Art von Werkstoff kann man mit Keramik kombinieren, um die Zähigkeit des Verbundwerkstoffs zu erhöhen?",0.8828
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Welche Rolle spielt der zweite Bestandteil in einem Verbundwerkstoff aus Keramik und einem anderen Werkstoff?,0.735
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Warum ist Wasser ein besserer Wärmeleiter als Luft?,0.8434
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Wie viel besser ist Wasser als Luft im Wärmeleitvermögen?,0.864
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Welche Werte hat das Wärmeleitvermögen von Luft und Wasser?,0.7122
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,"Wie kann man einen großen Drehstrommotor sicher einschalten, ohne das Netz zu überlasten?",0.7995
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,Was sind Anlassschaltungen oder Frequenzumrichter und wofür werden sie bei großen Drehstrommotoren verwendet?,0.6836
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,"Warum ist es wichtig, den Anlaufstrom eines großen Drehstrommotors zu begrenzen?",0.8781
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Wann ist das vereinfachte Modell beim Pendel ausreichend?,0.9747
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,In welchen Fällen ist das komplexere Modell notwendig?,0.6256
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,"Was ist der Grund dafür, dass das einfache Modell in bestimmten Bereichen ausreichend ist?",0.6972
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Wie viele ISO-Toleranzgrade gibt es insgesamt?,0.9699
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Welcher ist der genaueste Toleranzgrad nach DIN EN ISO 286-1?,0.7511
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Was bedeutet IT 01 im System der DIN EN ISO 286-1?,0.4303
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,1.0
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,"Welche Formel muss ich verwenden, um die Flächenpressung zu berechnen?",0.6452
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,"Welche Einheiten sollte ich für die Kraft und die Auflagefläche verwenden, um den Druck in N/mm² zu erhalten?",0.4898
+F013,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,Wie wähle ich die Breite des Großrads ($b_2$) in Abhängigkeit zur Ritzelbreite ($b_1$)?,0.5718
+F013,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,Welche Faktoren beeinflussen die Wahl der Breite des Großrads ($b_2$)?,0.5122
+F013,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,"Wie kann ich Radversetzungen vermeiden und Einbauungenauigkeiten ausgleichen, wenn die Wellendurchmesser unbekannt sind oder größere Leistungen übertragen werden sollen?",0.1428
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Wie kann man den Energieverbrauch eines mehrstufigen Kompressors senken?,0.7279
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Was bewirkt eine Zwischenkühlung bei einem mehrstufigen Kompressor?,0.8941
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Warum ist eine Zwischenkühlung bei mehrstufigen Kompressoren notwendig?,0.9894
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,Welche drei Eigenschaften muss ein Werkstoff für einen Zylinderkopf besitzen?,0.9194
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,"Was ist der Grund dafür, dass der Werkstoff eine große Formsteifigkeit besitzen muss?",0.7187
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,Welche Rolle spielt die Wärmeleitungsfähigkeit des Werkstoffs für den Zylinderkopf?,0.77
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Wie kann ich ein prismatisches Werkstück auf einer Drehmaschine aufspannen?,0.5779
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Was ist der Unterschied zwischen dem Aufspannen auf eine Planscheibe und ins Spannfutter?,0.5679
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Kann ich ein nicht rotationssymmetrisches Werkstück zentrisch im Spannfutter aufnehmen?,0.4424
+F018,Wie ist ein CNC-Programm aufgebaut?,Was sind die drei genormten Teile eines CNC-Programms nach DIN 66025?,0.7466
+F018,Wie ist ein CNC-Programm aufgebaut?,Was ist der Unterschied zwischen dem Programmende und dem Programmstart?,0.3521
+F018,Wie ist ein CNC-Programm aufgebaut?,Was enthält die Folge von Sätzen in einem CNC-Programm?,0.8626
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,Wie funktioniert eine Zweihandverriegelung in einer SPS?,0.9938
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,"Was muss passieren, damit eine Maschine mit einer Zweihandverriegelung startet?",0.4709
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,"Wie prüft die Steuerung, ob beide Sicherheitsschalter betätigt wurden?",0.5017
+F021,Was bringt der D-Anteil in einem Regler?,Was bringt der D-Anteil im Reglerverhalten?,0.9403
+F021,Was bringt der D-Anteil in einem Regler?,Wie kann der D-Anteil die Funktion der Dämpfung von Überschwingen erfüllen?,0.8168
+F021,Was bringt der D-Anteil in einem Regler?,Welche konkrete Funktion erfüllt der D-Anteil im Reglerverhalten?,0.8789
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Wie berechnet man den Deckungsbeitrag eines Produkts?,0.9151
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,"Welche Kosten müssen abgezogen werden, um den Deckungsbeitrag zu berechnen?",0.5449
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Was gibt der Deckungsbeitrag an?,0.5393
+F024,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,"Was sind die verschiedenen Kategorien von Lasten, die die DIN EN 13001-2 unterscheidet?",0.899
+F024,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,Welche spezifischen Lasteinwirkungen umfassen die Regelmäßigen Lasten?,0.2488
+F024,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,"Wie gruppiert die Norm die Einwirkungen, um den Kran für den normalen Betrieb auszulegen?",0.3967

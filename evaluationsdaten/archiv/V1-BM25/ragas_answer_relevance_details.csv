@@ -1,0 +1,64 @@
+fall_id,frage_original,generierte_frage,cosinus
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,Wie lässt sich das Drehmoment aus der Leistung und der Drehzahl ableiten?,0.6036
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,Wie kann man die Winkelgeschwindigkeit von der gegebenen Umdrehungszahl herleiten?,0.5216
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,"Wie berechnet man das Drehmoment eines Motors, wenn die Leistung und die Umdrehungszahl bekannt sind?",0.7363
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,Welche Kristallgitter liegen bei den meisten Metallen vor?,0.9835
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,"Kannst du mir sagen, welche Metallgitter bei Standardmetallen vorliegen?",0.8222
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,Was ist der Unterschied zwischen dem Idealkristall und den konkreten Gitterstrukturen für Standardmetalle?,0.7186
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Was bewirkt die Zugabe von Mangan in Automatenstähle?,0.8974
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Wie wird durch Mangan die Bildung von Eisenschwefel verhindert?,0.6991
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Welche Vorteile hat die Bildung von Manganschwefel gegenüber Eisenschwefel?,0.5809
+F005,Was ist der Unterschied zwischen Polymerisation und Polyaddition?,Was ist der Unterschied zwischen Polymerisation und Polyaddition?,1.0
+F005,Was ist der Unterschied zwischen Polymerisation und Polyaddition?,Kannst du mir eine Definition von Polymerisation geben?,0.8315
+F005,Was ist der Unterschied zwischen Polymerisation und Polyaddition?,Was sind die spezifischen chemischen Mechanismen von Polyaddition?,0.7133
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Wie kann man die Sprödigkeit von Keramik in Verbundwerkstoffen verbessern?,0.9408
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Gibt es spezifische Verbesserungsmechanismen für Keramik-Verbundwerkstoffe?,0.912
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Welche Legierungen bilden einen Übergang zur Keramik mit etwas höherer Zähigkeit?,0.8492
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Wie gut ist Wasser im Vergleich zu Luft als Wärmeträger?,0.8372
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,"Kannst du mir sagen, wie viel besser Wasser als Luft Wärmeenergie transportiert?",0.8354
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Was ist der Unterschied im Wärmeübertragungsvermögen zwischen Wasser und Luft?,0.7501
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,"Wie kann ich einen großen Drehstrommotor sicher einschalten, ohne das Netz zu belasten?",0.7776
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,Was sind die Gründe für den hohen Anlaufstrom bei großen Drehstrommotoren?,0.7776
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,"Welche Schaltungen oder Geräte kann ich verwenden, um den Anlaufstrom eines großen Drehstrommotors zu reduzieren?",0.7031
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Wann ist das vereinfachte Pendelmodell nicht mehr gültig?,0.8856
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Ab welcher Amplitude ist das vereinfachte Pendelmodell nicht mehr anwendbar?,0.6127
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Ab welchen Winkeln ist das vereinfachte Pendelmodell nicht mehr gültig?,0.76
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Welche Anzahl von ISO-Toleranzgraden gibt es insgesamt nach DIN EN ISO 286-1?,0.817
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Welcher Toleranzgrad ist der genaueste nach DIN EN ISO 286-1?,0.7566
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Welche Toleranz hat der genauste Toleranzgrad IT 01 nach DIN EN ISO 286-1?,0.6923
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,1.0
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,"Welche Formel verwende ich, um die Flächenpressung zu berechnen?",0.6318
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,"Welche Faktoren sind wichtig, um die korrekte Berührungsfläche zu bestimmen?",0.3958
+F013,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,"Wie kann ich die Breite des Großrades im Vergleich zum Ritzel wählen, um mögliche radiale Versetzungen auszugleichen?",0.6916
+F013,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,Welche Mindestabstandsregel gilt für die Breite des Großrades im Vergleich zum Ritzel bei ungenauen Einbauten?,0.6706
+F013,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,Welche Bedeutung hat die zusätzliche Breite des Großrades für die Zuverlässigkeit der Leistungstransmission?,0.1711
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Wie kann man die spezifische Verdichterarbeit bei mehrstufigen Kompressoren verringern?,0.7424
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Was bewirkt die Zwischenkühlung bei mehrstufigen Kompressoren?,0.9136
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Wie kann man die Energieeffizienz von Verdichtungsprozessen verbessern?,0.532
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,"Was sind die drei wichtigsten Eigenschaften, die der Werkstoff eines Zylinderkopfes aufweisen muss?",0.9031
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,"Wie muss sich der Werkstoff eines Zylinderkopfes verhalten, um die Dichtigkeit des Verbrennungsraums sicherzustellen?",0.7691
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,"Welche Eigenschaft muss der Werkstoff eines Zylinderkopfes haben, um abgegebene Hitze schnell weiterzuleiten?",0.7744
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Wann wird ein Werkstück auf einer Drehmaschine auf eine Planscheibe statt ins Spannfutter gespannt?,0.9676
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Welche Art von Werkstücken erfordert das Spannen auf einer Planscheibe?,0.6537
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Warum wird die Planscheibe anstelle des Spannfutters verwendet?,0.6238
+F018,Wie ist ein CNC-Programm aufgebaut?,Was ist der erste Teil eines CNC-Programms?,0.8958
+F018,Wie ist ein CNC-Programm aufgebaut?,Was enthält die Folge von Sätzen in einem CNC-Programm?,0.8626
+F018,Wie ist ein CNC-Programm aufgebaut?,Wie endet ein CNC-Programm?,0.8827
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,Wie funktioniert eine Zweihandverriegelung in einer SPS?,0.9938
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,"Was muss passieren, damit eine Maschine über eine Zweihandverriegelung gesteuert werden kann?",0.5046
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,"Wie kann man verhindern, dass ein Unfall durch eine Zweihandverriegelung verursacht wird?",0.2794
+F021,Was bringt der D-Anteil in einem Regler?,Was bewirkt der D-Anteil im Regler?,0.9281
+F021,Was bringt der D-Anteil in einem Regler?,Wie beeinflusst der D-Anteil das Regelverhalten?,0.8545
+F021,Was bringt der D-Anteil in einem Regler?,Welche Auswirkungen hat der D-Anteil auf schnelle Änderungen der Regelabweichung?,0.6866
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Wie berechnet man den Deckungsbeitrag eines Produkts?,0.9151
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Was sind die variablen Selbstkosten und wie setzt man sie zusammen?,0.494
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Was bleibt nach der Subtraktion der variablen Selbstkosten vom Erlös übrig?,0.467
+F024,"Welche Rautiefe schafft man mit Hartdrehen allein, ohne Schleifen?",Wie tief kann ich mit Hartdrehen allein Rautiefe erreichen?,0.6267
+F024,"Welche Rautiefe schafft man mit Hartdrehen allein, ohne Schleifen?","Gibt es eine Möglichkeit, Rautiefen von weniger als 1 µm nur durch Hartdrehen zu erreichen?",0.5001
+F024,"Welche Rautiefe schafft man mit Hartdrehen allein, ohne Schleifen?",Was ist der Unterschied zwischen Hartdrehen und Feinschleifen bei der Erreichung von Rautiefen unter 1 µm?,0.4457
+F025,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,"Was sind die verschiedenen Lastkategorien, die in der DIN EN 13001-2 für Krane unterschieden werden?",0.9306
+F025,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,"Kannst du mir erklären, welche Lasten auf den Kran wirken, wenn er angehoben wird?",0.2802
+F025,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,"Welche Faktoren beeinflussen die Lasten, die beim Fahren über Unebenheiten auf den Kran einwirken?",0.2086
+F027,Wie schreibe ich in Python eine for-Schleife?,Wie schreibt man eine for-Schleife in Python?,0.9844
+F027,Wie schreibe ich in Python eine for-Schleife?,Was ist die Syntax für eine for-Schleife in Python?,0.8189
+F027,Wie schreibe ich in Python eine for-Schleife?,Kannst du mir ein Beispiel für eine for-Schleife in Python geben?,0.8366
