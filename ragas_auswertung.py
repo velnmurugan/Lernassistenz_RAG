@@ -65,7 +65,7 @@ from rag_pipeline import (
 )
 
 KB_PFAD = "knowledge_base.json"
-JUDGE_MODELL_STANDARD = "mistral-nemo"
+JUDGE_MODELL_STANDARD = "qwen3.5:9b"
 JUDGE_OPTIONEN = {"temperature": 0, "seed": 42}
 PROMPT_VERSION = "F-v2/AR-v3/CR-v1"
 AR_ANZAHL_FRAGEN = 3
@@ -155,10 +155,29 @@ _VERWEIGERUNG = re.compile(
 )
 _TEILANTWORT = re.compile(r"nicht vollständig|nur teilweise|nur zum teil", re.IGNORECASE)
 
+# Detektor v2 (Befund V2-KG, F004/F012/F021/F028): v1 erkannte Verweigerungen nicht, wenn
+#   - das Verb VOR der Verneinung steht ("Der Kontext beantwortet Ihre Frage nicht ausreichend"),
+#   - Singular "Information" statt "Informationen" ("enthält keine Information dazu"),
+#   - ohne das Wort "Kontext" ("kann ich Ihnen leider nicht sagen").
+# Diese Antworten wurden als inhaltliche Antworten bewertet -> fälschlich "ausweichend" bzw.
+# niedrige Faithfulness (Ratschläge wie "Fachbetrieb fragen" stehen nicht im Kontext).
+# Eindeutige Formulierungen gelten als Verweigerung, auch wenn sie erklären, was der Kontext
+# stattdessen enthält; diese gelten bewusst NICHT als Teilantwort-Ausnahme.
+VERWEIGERUNGS_DETEKTOR = "v2"
+_VERWEIGERUNG_V2 = re.compile(
+    r"(kontext|text\w*|unterlagen|lernmaterial\w*|informationen|quellen?)\s+"
+    r"(beantwortet|enthält|liefert|nennt|beschreibt|erklärt|gibt)\s+(\w+\s+){0,4}?(nicht|kein\w*)"
+    r"|beantwortet\s+(\w+\s+){0,3}?nicht\s+(ausreichend|vollständig|direkt)"
+    r"|(kann|könnte)\s+ich\s+(\w+\s+){0,3}?(leider\s+)?nicht\s+(sagen|beantworten|erklären|angeben)"
+    r"|lässt\s+sich\s+(\w+\s+){0,6}?nicht\s+(ableiten|beantworten|entnehmen)",
+    re.IGNORECASE | re.DOTALL,
+)
+
 
 def ist_modell_verweigerung(loesung):
     anfang = loesung[:300]
-    return bool(_VERWEIGERUNG.search(anfang)) and not _TEILANTWORT.search(anfang)
+    treffer = _VERWEIGERUNG_V2.search(anfang) or _VERWEIGERUNG.search(anfang)
+    return bool(treffer) and not _TEILANTWORT.search(anfang)
 
 
 # =============================================================================

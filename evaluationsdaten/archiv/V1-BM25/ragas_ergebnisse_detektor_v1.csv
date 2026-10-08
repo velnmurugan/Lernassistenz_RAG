@@ -1,0 +1,31 @@
+fall_id,sitzungs_id,frage,stufe_max,geparst,richter,prompt_version,modell_verweigerung,n_aussagen,n_gestuetzt,n_unlesbar,n_meta_verworfen,faithfulness,answer_relevance,ar_roh,ausweichend,n_kontext_saetze,n_benoetigt,context_relevance
+F001,V1-BM25,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,3,False,mistral-nemo,F-v2/AR-v3/CR-v1,False,5,0,0,0,0.0,0.6205,0.6205,False,7,0,0.0
+F002,V1-BM25,Welche Kristallgitter findet man bei den meisten Metallen?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,4,3,0,2,0.75,0.0,0.8414,True,8,0,0.0
+F003,V1-BM25,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,3,1,0,0,0.3333,0.7258,0.7258,False,5,1,0.2
+F004,V1-BM25,Welche Messing-Legierung nimmt man für kaltgeformte Rohre oder Lagerbuchsen?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,True,,,,,,,,,7,1,0.1429
+F005,V1-BM25,Was ist der Unterschied zwischen Polymerisation und Polyaddition?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,3,3,0,2,1.0,0.0,0.8483,True,4,1,0.25
+F006,V1-BM25,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,3,1,0,1,0.3333,0.0,0.9007,True,8,1,0.125
+F007,V1-BM25,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,1,1,0,0,1.0,0.8076,0.8076,False,9,1,0.1111
+F008,V1-BM25,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,3,1,0,0,0.3333,0.7527,0.7527,False,9,1,0.1111
+F009,V1-BM25,Wann reicht beim Pendel das vereinfachte Modell aus?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,3,3,0,0,1.0,0.7528,0.7528,False,7,1,0.1429
+F010,V1-BM25,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,2,2,0,0,1.0,0.7553,0.7553,False,8,1,0.125
+F011,V1-BM25,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,4,0,0,0,0.0,0.6759,0.6759,False,7,2,0.2857
+F012,V1-BM25,Warum rechnet man Keilverbindungen in der Praxis meistens nicht nach?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,True,,,,,,,,,7,0,0.0
+F013,V1-BM25,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,3,False,mistral-nemo,F-v2/AR-v3/CR-v1,False,7,3,0,0,0.4286,0.5111,0.5111,False,6,1,0.1667
+F014,V1-BM25,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,5,4,0,0,0.8,0.7294,0.7294,False,9,1,0.1111
+F015,V1-BM25,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,3,3,0,0,1.0,0.8155,0.8155,False,9,1,0.1111
+F016,V1-BM25,Was macht eigentlich das Motorsteuergerät?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,True,,,,,,,,,6,2,0.3333
+F017,V1-BM25,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,4,4,0,0,1.0,0.7484,0.7484,False,8,0,0.0
+F018,V1-BM25,Wie ist ein CNC-Programm aufgebaut?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,6,6,0,0,1.0,0.8803,0.8803,False,8,2,0.25
+F019,V1-BM25,In welchen Bereichen wird Hydraulik hauptsächlich eingesetzt?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,True,,,,,,,,,7,0,0.0
+F020,V1-BM25,Wie funktioniert eine Zweihandverriegelung in der SPS?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,4,0,0,0,0.0,0.5926,0.5926,False,5,0,0.0
+F021,V1-BM25,Was bringt der D-Anteil in einem Regler?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,5,3,0,0,0.6,0.8231,0.8231,False,7,1,0.1429
+F022,V1-BM25,Wie kommt man auf den Deckungsbeitrag eines Produkts?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,3,2,0,0,0.6667,0.6254,0.6254,False,7,1,0.1429
+F023,V1-BM25,Wie schnell darf sich eine Schleifscheibe maximal drehen?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,True,,,,,,,,,7,0,0.0
+F024,V1-BM25,"Welche Rautiefe schafft man mit Hartdrehen allein, ohne Schleifen?",3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,0,0,0,1,,0.0,0.5242,True,8,0,0.0
+F025,V1-BM25,Welche Lastkategorien unterscheidet DIN EN 13001-2 bei Kranen?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,5,5,0,0,1.0,0.4731,0.4731,False,11,1,0.0909
+F026,V1-BM25,Wie viele Urlaubstage stehen mir im ersten Ausbildungsjahr zu?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,True,,,,,,,,,8,0,0.0
+F027,V1-BM25,Wie schreibe ich in Python eine for-Schleife?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,False,2,1,0,2,0.5,0.0,0.8799,True,5,0,0.0
+F028,V1-BM25,Wie wechsle ich die Bremsbeläge an meinem Auto?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,True,,,,,,,,,6,0,0.0
+F029,V1-BM25,Welche Zutaten brauche ich für einen Pizzateig?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,True,,,,,,,,,7,0,0.0
+F030,V1-BM25,Wer hat die Fußball-WM 2014 gewonnen?,3,True,mistral-nemo,F-v2/AR-v3/CR-v1,True,,,,,,,,,7,0,0.0
