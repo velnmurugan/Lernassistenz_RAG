@@ -4,3 +4,4 @@ cache/
 *.pdf
 evaluationsdaten/interaktionen.csv
 evaluationsdaten/fragebogen.csv
+evaluationsdaten/**/ragas_context_relevance_details.csv
