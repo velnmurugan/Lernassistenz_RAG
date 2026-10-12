@@ -375,7 +375,7 @@ EMBEDDING_MODELL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
 # Die Studien-App nutzt diesen Standard; Testläufe können pro Aufruf eine
 # andere Methode übergeben (fuehre_testfragen_aus.py --retrieval ...).
 RETRIEVAL_METHODE = "dense"
-RRF_K = 2  # Cormack et al. (2009) nutzen 60; hier empirisch gewählt (retrieval_vergleich.py,
+RRF_K = 5  # Cormack et al. (2009) nutzen 60; hier empirisch gewählt (retrieval_vergleich.py,
            # 25 Testfragen): k=2 mit bestem MRR und R@4+Nachbar. Bei k=60 schlugen Chunks, die
            # in beiden Listen mittelmäßig rangierten, Chunks auf Spitzenplätzen einer Liste.
 

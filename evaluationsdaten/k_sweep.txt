@@ -1,0 +1,47 @@
+31990 Chunks, 25 Fragen mit Quell-Chunk, Varianten=['dense', 'bm25', 'hybrid@60', 'hybrid@20', 'hybrid@10', 'hybrid@5', 'hybrid@2']
+(erster Aufruf: Embeddings + BM25-Index werden aufgebaut)
+
+Laufzeit 68s
+
+Variante          R@4    R@10    R@50   R@4+Nb     MRR   Median
+---------------------------------------------------------------
+dense            6/25    7/25   11/25     8/25   0.182       94
+bm25             9/25   14/25   18/25    12/25   0.248        8
+hybrid@60        7/25   10/25   19/25     8/25   0.209       15
+hybrid@20        9/25   14/25   18/25    10/25   0.236        8
+hybrid@10        8/25   16/25   18/25    10/25   0.241        7
+hybrid@5         8/25   16/25   18/25    11/25   0.264        8
+hybrid@2         8/25   15/25   18/25    12/25   0.292        8
+Vereinigung@10   17/25  (Quell-Chunk in Top-10 von dense ODER bm25)
+Vereinigung@20   17/25  (Quell-Chunk in Top-20 von dense ODER bm25)
+Vereinigung@50   23/25  (Quell-Chunk in Top-50 von dense ODER bm25)
+
+Rang des Quell-Chunks pro Frage (✓ = in Top-4):
+ Nr Typ                 dense         bm25    hybrid@60    hybrid@20    hybrid@10     hybrid@5     hybrid@2  Frage
+  1 rechnung               2✓           7            1✓           1✓           1✓           1✓           1✓  Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro 
+  2 fakt                 444            8           26           20           20           19           17   Welche Kristallgitter findet man bei den meisten Metall
+  3 konzept                1✓           8            4✓           4✓           3✓           3✓           2✓  Wieso gibt man Mangan in Automatenstähle, die Schwefel 
+  4 tabelle            19234           46           95           92           90           90           90   Welche Messing-Legierung nimmt man für kaltgeformte Roh
+  5 konzept               94         8467          192          192          192          192          190   Was ist der Unterschied zwischen Polymerisation und Pol
+  6 konzept                4✓          56            9            7            5            6            7   Keramik ist ja spröde. Wie kann man das bei Verbundwerk
+  7 tabelle              507            2✓          15            4✓           4✓           4✓           4✓  Wie viel besser überträgt ruhendes Wasser Wärme an eine
+  8 sicherheit            37            4✓           2✓           2✓           3✓           5            7   Warum darf man einen großen Drehstrommotor nicht einfac
+  9 konzept               67            1✓           4✓           4✓           3✓           2✓           1✓  Wann reicht beim Pendel das vereinfachte Modell aus?
+ 10 fakt                   2✓           1✓           1✓           1✓           1✓           1✓           1✓  Wie viele ISO-Toleranzgrade gibt es und welcher ist der
+ 11 rechnung            2433            5           17           11            9            9            9   Wie berechne ich die Flächenpressung am Bolzen in einer
+ 12 konzept              407          112          137          163          166          168          171   Warum rechnet man Keilverbindungen in der Praxis meiste
+ 13 fakt                 300            2✓          12            7            7            6            6   Wie breit wählt man das Großrad im Vergleich zum Ritzel
+ 14 konzept                6           58            4✓           3✓           7            9           11   Warum braucht man bei mehrstufigen Kompressoren eine Zw
+ 15 fakt                 355            4✓          27           10           10           10            8   Welche Eigenschaften muss der Werkstoff eines Zylinderk
+ 16 konzept               39        20734           80           79           79           78           78   Was macht eigentlich das Motorsteuergerät?
+ 17 konzept                1✓           1✓           1✓           1✓           1✓           1✓           1✓  Wann spannt man ein Werkstück auf der Drehmaschine auf 
+ 18 fakt                  40           42           27           32           38           40           41   Wie ist ein CNC-Programm aufgebaut?
+ 19 aufzaehlung            1✓         112            8            3✓           2✓           1✓           1✓  In welchen Bereichen wird Hydraulik hauptsächlich einge
+ 20 sicherheit          8547           42           88           85           82           82           81   Wie funktioniert eine Zweihandverriegelung in der SPS?
+ 21 konzept               44          278           46           67           71           75           76   Was bringt der D-Anteil in einem Regler?
+ 22 konzept              187            2✓          12            8            6            4✓           3✓  Wie kommt man auf den Deckungsbeitrag eines Produkts?
+ 23 teilrelevant        8773           29           67           62           60           60           59   Wie schnell darf sich eine Schleifscheibe maximal drehe
+ 24 teilrelevant        1173            4✓           5            7            7            7            7   Welche Rautiefe schafft man mit Hartdrehen allein, ohne
+ 25 teilrelevant        6984            5           19           11            9            8            8   Welche Lastkategorien unterscheidet DIN EN 13001-2 bei 
+
+Details: evaluationsdaten/retrieval_vergleich.csv
