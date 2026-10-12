@@ -156,6 +156,8 @@ def main():
     felder = ["nr", "typ", "frage", "erwarteter_chunk"]
     for v in varianten:
         felder += [f"rang_{v}", f"rang_nachbar_{v}", f"top4_{v}"]
+        if "_rr" in v:
+            felder += [f"kand_{v}", f"kand_nachbar_{v}"]
     with open(ERGEBNIS, "w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=felder)
         w.writeheader()
