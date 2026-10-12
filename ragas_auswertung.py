@@ -65,7 +65,7 @@ from rag_pipeline import (
 )
 
 KB_PFAD = "knowledge_base.json"
-JUDGE_MODELL_STANDARD = "qwen3.5:9b"
+JUDGE_MODELL_STANDARD = "mistral-nemo"
 JUDGE_OPTIONEN = {"temperature": 0, "seed": 42}
 PROMPT_VERSION = "F-v2/AR-v3/CR-v1"
 AR_ANZAHL_FRAGEN = 3

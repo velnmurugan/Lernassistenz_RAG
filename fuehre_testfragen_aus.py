@@ -16,7 +16,8 @@ Start:
   python fuehre_testfragen_aus.py V0-DENSE  --retrieval dense
   python fuehre_testfragen_aus.py V1-HYBRID --retrieval hybrid --rrf-k 2
   python fuehre_testfragen_aus.py V1-BM25   --retrieval bm25
-  python fuehre_testfragen_aus.py V2-KG     --retrieval hybrid_kg --rrf-k 2
+  python fuehre_testfragen_aus.py V2-KG     --retrieval hybrid_kg --rrf-k 5
+  python fuehre_testfragen_aus.py V3-RR     --retrieval hybrid_kg_rr --rrf-k 5
   python fuehre_testfragen_aus.py TEST-01                     # Standard (RETRIEVAL_METHODE)
 """
 import argparse
@@ -97,7 +98,10 @@ def schreibe_lauf_konfiguration(sitzungs_id, methode, kb_hash, n_chunks):
         "ollama_version": ollama_version,
         "testfragen_datei": str(TESTFRAGEN),
     }
-    if methode in ("graph", "hybrid_kg"):
+    if methode.endswith("_rr"):
+        import reranker
+        konfig["reranker"] = reranker.parameter()
+    if methode.replace("_rr", "") in ("graph", "hybrid_kg"):
         import wissensgraph
         konfig["kg_gewicht"] = rag_pipeline.KG_GEWICHT
         konfig["kg_parameter"] = wissensgraph.parameter()
@@ -113,7 +117,7 @@ def schreibe_lauf_konfiguration(sitzungs_id, methode, kb_hash, n_chunks):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("sitzungs_id", nargs="?", default="TEST-01", help="Versionskennung, z. B. V1-HYBRID")
-    ap.add_argument("--retrieval", choices=["dense", "bm25", "hybrid", "graph", "hybrid_kg"], default=None,
+    ap.add_argument("--retrieval", choices=["dense", "bm25", "hybrid", "graph", "hybrid_kg", "hybrid_rr", "hybrid_kg_rr"], default=None,
                     help=f"Retrieval-Methode (Standard: {rag_pipeline.RETRIEVAL_METHODE})")
     ap.add_argument("--rrf-k", type=int, default=None,
                     help=f"RRF-Konstante für hybrid (Standard: {rag_pipeline.RRF_K})")

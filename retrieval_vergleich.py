@@ -51,7 +51,10 @@ def nachbar_ids(chunk_id):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--varianten", default="dense,bm25,graph,hybrid@2,hybrid_kg@2,hybrid_kg@5,hybrid_kg@10")
+    ap.add_argument("--varianten", default="dense,bm25,hybrid@5,hybrid_kg@5,hybrid_rr@5,hybrid_kg_rr@5")
+    ap.add_argument("--reranker", default=None, help="Cross-Encoder für *_rr-Varianten (Standard: reranker.RERANKER_MODELL)")
+    ap.add_argument("--kandidaten", type=int, default=None, help="Anzahl neu bewerteter Kandidaten (Standard: reranker.RERANK_KANDIDATEN)")
+    ap.add_argument("--geraet", default=None, help="cpu | cuda (Standard: reranker.RERANKER_GERAET)")
     ap.add_argument("--kg", action="append", default=[], metavar="PARAM=WERT",
                     help="Wissensgraph-Parameter überschreiben, z. B. --kg KG_SYN_MODUS=aus (mehrfach möglich)")
     args = ap.parse_args()
@@ -69,6 +72,15 @@ def main():
             setattr(wissensgraph, name, wert)
         print("Wissensgraph:", {k: v for k, v in wissensgraph.parameter().items() if k in [e.split('=')[0] for e in args.kg]})
     varianten = [v.strip() for v in args.varianten.split(",") if v.strip()]
+    if any("_rr" in v for v in varianten):
+        import reranker
+        if args.reranker:
+            reranker.RERANKER_MODELL = args.reranker
+        if args.kandidaten:
+            reranker.RERANK_KANDIDATEN = args.kandidaten
+        if args.geraet:
+            reranker.RERANKER_GERAET = args.geraet
+        print("Reranker:", reranker.parameter())
 
     chunks = lade_wissensbasis(KB_PFAD)
     ids = {c["id"] for c in chunks}
@@ -79,6 +91,7 @@ def main():
 
     zeilen = []
     t0 = time.time()
+    zeit = {v: 0.0 for v in varianten}
     for q in fragen:
         erwartet = q["chunk_id"].strip()
         nachbarn = nachbar_ids(erwartet)
@@ -88,14 +101,20 @@ def main():
             rrf_alt = rag_pipeline.RRF_K
             if k:
                 rag_pipeline.RRF_K = int(k)
+            t_v = time.time()
             try:
                 top, alle = retrieval(q["frage"], chunks, top_k=4, methode=methode)
             finally:
                 rag_pipeline.RRF_K = rrf_alt
+            zeit[v] += time.time() - t_v
             rang = {c["id"]: i for i, c in enumerate(alle, start=1)}
             zeile[f"rang_{v}"] = rang[erwartet]
             zeile[f"rang_nachbar_{v}"] = min([rang[erwartet]] + [rang[n] for n in nachbarn if n in rang])
             zeile[f"top4_{v}"] = "; ".join(c["id"] for c in top)
+            if methode.endswith("_rr"):  # lag der Quell-Chunk (oder Nachbar) überhaupt unter den Kandidaten?
+                kand = {c["id"] for c in alle if "rerank_score" in c}
+                zeile[f"kand_{v}"] = erwartet in kand
+                zeile[f"kand_nachbar_{v}"] = erwartet in kand or bool(nachbarn & kand)
         zeilen.append(zeile)
     print(f"Laufzeit {time.time() - t0:.0f}s\n")
 
@@ -110,6 +129,13 @@ def main():
         print(f"{v:<13}{rec}{sum(x <= 4 for x in rn):>6}/{n:<2}"
               f"{statistics.mean(1 / x for x in r):>8.3f}{statistics.median(r):>9.0f}")
 
+    print(f"\n{'Zeit/Frage':<13}" + "  ".join(f"{v}: {zeit[v] / n:.2f}s" for v in varianten))
+    for v in varianten:
+        if f"kand_{v}" in zeilen[0]:
+            ob = sum(z[f"kand_{v}"] for z in zeilen)
+            obn = sum(z[f"kand_nachbar_{v}"] for z in zeilen)
+            print(f"{'Obergrenze':<13}{v}: Quell-Chunk unter den Kandidaten {ob}/{n}, inkl. Nachbar {obn}/{n}"
+                  "  (mehr kann der Reranker in die Top-4 nicht holen)")
     if "dense" in varianten and "bm25" in varianten:
         for k in (10, 20, 50):
             u = sum(z["rang_dense"] <= k or z["rang_bm25"] <= k for z in zeilen)

@@ -372,12 +372,15 @@ EMBEDDING_MODELL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
 #   "hybrid" — beide Ranglisten per Reciprocal Rank Fusion kombiniert (V1)
 #   "graph"  — nur Konzept-Wissensgraph (Personalized PageRank, siehe wissensgraph.py)
 #   "hybrid_kg" — dense + BM25 + Wissensgraph per RRF (V2)
+#   "<methode>_rr" — Vorstufe <methode>, danach Cross-Encoder-Reranking der besten
+#                 Kandidaten (V3: "hybrid_kg_rr"; Kontrolle ohne Graph: "hybrid_rr"), siehe reranker.py
 # Die Studien-App nutzt diesen Standard; Testläufe können pro Aufruf eine
 # andere Methode übergeben (fuehre_testfragen_aus.py --retrieval ...).
 RETRIEVAL_METHODE = "dense"
-RRF_K = 5  # Cormack et al. (2009) nutzen 60; hier empirisch gewählt (retrieval_vergleich.py,
-           # 25 Testfragen): k=2 mit bestem MRR und R@4+Nachbar. Bei k=60 schlugen Chunks, die
-           # in beiden Listen mittelmäßig rangierten, Chunks auf Spitzenplätzen einer Liste.
+RRF_K = 5  # Cormack et al. (2009) nutzen 60. V1 (hybrid): k=2 empirisch gewählt (retrieval_vergleich.py,
+           # 25 Testfragen; bestes MRR und R@4+Nachbar; bei k=60 schlugen Chunks, die in beiden Listen
+           # mittelmäßig rangierten, Chunks auf Spitzenplätzen einer Liste). V2 (hybrid_kg): k=5
+           # (R@4 13 vs. 11 bei k=2). Standard = aktuelle Version; V1 nachstellen mit --rrf-k 2.
 
 # Generierungs-Einstellungen für qwen (Studien-App UND Testläufe identisch).
 # Ohne feste Werte nutzt Ollama seine Standard-Stichprobe; derselbe Kontext führte
@@ -551,6 +554,9 @@ def retrieval(frage, chunks, top_k=4, methode=None):
     Sortiert wird nach "rangwert" (je nach Methode Kosinus, BM25 oder RRF).
     """
     methode = methode or RETRIEVAL_METHODE
+    rerank = methode.endswith("_rr")
+    if rerank:
+        methode = methode[:-3]
     modell = _lade_embedding_modell()
     chunk_embeddings = _embeddings_fuer_chunks(chunks)
     frage_embedding = modell.encode([frage], convert_to_numpy=True, normalize_embeddings=True)
@@ -579,13 +585,29 @@ def retrieval(frage, chunks, top_k=4, methode=None):
                         + KG_GEWICHT * graph_rrf)
     else:
         raise ValueError(f"Unbekannte Retrieval-Methode: {methode!r} "
-                         "(dense | bm25 | hybrid | graph | hybrid_kg)")
+                         "(dense | bm25 | hybrid | graph | hybrid_kg, jeweils optional mit _rr)")
 
     ergebnisse = [
         {**chunk, "score": float(d), "rangwert": float(r)}
         for chunk, d, r in zip(chunks, dense, rangwert)
     ]
     ergebnisse.sort(key=lambda x: x["rangwert"], reverse=True)
+
+    if rerank:
+        # V3: die besten Kandidaten der Vorstufe per Cross-Encoder neu ordnen (reranker.py).
+        # Neu bewertete Kandidaten stehen vorn (Reihenfolge = Reranker-Wert), alle übrigen
+        # Chunks folgen in der Reihenfolge der Vorstufe. "score" bleibt der dense-Kosinus
+        # (Schwelle unverändert), der Reranker-Wert steht zusätzlich in "rerank_score".
+        import reranker
+        n = min(reranker.RERANK_KANDIDATEN, len(ergebnisse))
+        kandidaten = ergebnisse[:n]
+        werte = reranker.bewerte(frage, [c["text"] for c in kandidaten])
+        for rang, (c, w) in enumerate(zip(kandidaten, werte), start=1):
+            c["rerank_score"] = w
+            c["rang_vorstufe"] = rang
+        kandidaten.sort(key=lambda c: c["rerank_score"], reverse=True)
+        ergebnisse = kandidaten + ergebnisse[n:]
+
     return ergebnisse[:top_k], ergebnisse
 
 
