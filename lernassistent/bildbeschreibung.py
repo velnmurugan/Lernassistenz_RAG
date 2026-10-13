@@ -25,9 +25,9 @@ from pathlib import Path
 
 import requests
 
-VLM_MODELL = "qwen2.5vl:3b"
-BILD_PROMPT_VERSION = "B-v2"
-VLM_OPTIONEN = {"temperature": 0, "seed": 42}
+VLM_MODELL = "qwen2.5vl:7b"  # 13 Oct 2026: 7b statt 3b nach Pilotvergleich (3b erfand Achsen/Bauteile)
+BILD_PROMPT_VERSION = "B-v3"
+VLM_OPTIONEN = {"temperature": 0, "seed": 42, "num_predict": 300, "repeat_penalty": 1.15}  # Längenbremse gegen Wiederholungsschleifen
 MIN_KANTE_PX = 80  # kleinere Bilder (Symbole, Zierelemente) werden übersprungen
 
 
@@ -37,19 +37,48 @@ def _ollama_url():
 
 
 def bild_prompt(bildunterschrift):
-    """B-v2 (13 Oct 2026). Änderung gegenüber B-v1 nach dem Pilot: qwen2.5vl:3b hat Bauteile und
-    Bedeutungen erfunden (Rotor, Stator, Transformator in einem einfachen Stromkreis) und
-    Abkürzungen gedeutet. B-v2 verlangt Art + wörtliche Beschriftungen + bei Diagrammen Achsen
-    und Verlauf, verbietet Deutungen und Abkürzungserklärungen und lässt Unsicheres weg."""
+    """B-v3 (13 Oct 2026). Verlauf: B-v1 -> erfundene Bauteile (Rotor, Stator in einem einfachen
+    Stromkreis). B-v2 -> Wiederholungsschleife (Beschriftungsliste 100-fach) und erfundene
+    Achsen/Kurven bei einer Ersatzschaltung, weil die Achsenregel für jede Abbildung galt.
+    B-v3: kurz (2-4 Sätze), Beschriftungen je einmal, Achsen nur bei echten Diagrammen."""
     hinweis = f"\nBildunterschrift (nur zur Orientierung, nicht wiederholen): {bildunterschrift}" if bildunterschrift else ""
-    return f"""Beschreibe diese Abbildung aus einem Lehrbuch. Gib nur wieder, was eindeutig zu sehen ist.
+    return f"""Beschreibe diese Abbildung aus einem technischen Lehrbuch in 2 bis 4 Sätzen. Gib nur wieder, was eindeutig zu sehen ist.
 
-1. Art der Abbildung in einem Satz (zum Beispiel Schaltplan, Diagramm, Kennlinie, Zeigerdiagramm, Schnittbild, Foto, Tabelle).
-2. Alle lesbaren Beschriftungen, Formelzeichen, Zahlen und Einheiten wörtlich.
-3. Bei Diagrammen: welche Größe auf welcher Achse steht (mit Einheit) und wie die Kurven verlaufen (steigt, fällt, Maximum, Schnittpunkt).
-4. Erkläre keine Abkürzungen und keine Funktion. Nenne keine Bauteile, die nicht eindeutig erkennbar sind. Was unsicher ist, lässt du weg.
+Erster Satz: Art der Abbildung (zum Beispiel Schaltplan, Ersatzschaltbild, Diagramm mit Achsen, Zeigerdiagramm, Schnittbild, Foto).
+Danach: die lesbaren Beschriftungen und Formelzeichen, jede nur einmal.
+Nur wenn die Abbildung ein Diagramm mit Achsen ist: welche Größen an den Achsen stehen und wie die Kurven verlaufen.
 
-Antworte als Fließtext ohne Aufzählungszeichen und ohne Markdown, höchstens 100 Wörter, auf Deutsch.{hinweis}"""
+Erkläre keine Abkürzungen und keine Funktion. Nenne keine Bauteile, die nicht eindeutig erkennbar sind.
+Ohne Markdown, ohne LaTeX, höchstens 80 Wörter, auf Deutsch.{hinweis}"""
+
+
+def saeubere(text, max_woerter=120):
+    """Entfernt Markdown/LaTeX-Klammern, schneidet Wiederholungsschleifen ab (eine Wortfolge,
+    die sich direkt mehr als zweimal wiederholt) und begrenzt die Länge.
+    Rückgabe (text, wiederholung_gefunden)."""
+    text = re.sub(r"\\[()\[\]]", "", text)
+    text = re.sub(r"[*#`]+", "", text)
+    text = re.sub(r"_\{([^{}]*)\}", r"_\1", text)          # R_{thJC} -> R_thJC
+    text = re.sub(r"\s*\n\s*[-•]\s*", ", ", text)
+    text = re.sub(r"\s*\n\s*", " ", text)
+    text = re.sub(r"\s+([,.;:])", r"\1", text).strip()
+    w = text.split()
+    wiederholung = False
+    for k in range(1, 25):
+        for i in range(0, max(0, len(w) - 3 * k) + 1):
+            if w[i:i + k] == w[i + k:i + 2 * k] == w[i + 2 * k:i + 3 * k]:
+                w = w[:i + k]
+                wiederholung = True
+                break
+        if wiederholung:
+            break
+    if len(w) > max_woerter:
+        w = w[:max_woerter]
+    text = " ".join(w).rstrip(",;")
+    if wiederholung or len(w) == max_woerter:
+        ende = max(text.rfind(". "), text.rfind("."))
+        text = text[:ende + 1] if ende > len(text) // 2 else text + " …"
+    return text, wiederholung
 
 
 def _bildgroesse(pfad):
@@ -68,9 +97,7 @@ def beschreibe(pfad, bildunterschrift="", modell=VLM_MODELL, timeout=300):
                "stream": False, "options": VLM_OPTIONEN}
     r = requests.post(_ollama_url(), json=payload, timeout=timeout)
     r.raise_for_status()
-    text = r.json().get("response", "").strip()
-    text = re.sub(r"[*#`]+", "", text)                  # Markdown entfernen
-    return re.sub(r"\s*\n\s*[-•]\s*", "; ", text).strip()
+    return r.json().get("response", "").strip()
 
 
 def beschreibe_alle(eintraege, bildordner, cache_datei, modell=VLM_MODELL, max_bilder=None):
@@ -78,7 +105,8 @@ def beschreibe_alle(eintraege, bildordner, cache_datei, modell=VLM_MODELL, max_b
     beschriebene Bilder (Cache-JSON) werden übersprungen. Rückgabe {img_path: beschreibung}."""
     cache_datei = Path(cache_datei)
     cache = json.loads(cache_datei.read_text(encoding="utf-8")) if cache_datei.exists() else {}
-    bilder = [e for e in eintraege if e.get("type") == "image" and e.get("img_path")]
+    from pdf_struktur import ist_abbildung, bildunterschrift
+    bilder = [e for e in eintraege if ist_abbildung(e)]
     if max_bilder:
         bilder = bilder[:max_bilder]
     print(f"{len(bilder)} Abbildungen, {len(cache)} bereits beschrieben (Cache), Modell {modell}", flush=True)
@@ -90,14 +118,15 @@ def beschreibe_alle(eintraege, bildordner, cache_datei, modell=VLM_MODELL, max_b
             continue
         pfad = Path(bildordner) / rel
         groesse = _bildgroesse(pfad)
-        unterschrift = " ".join(e.get("image_caption") or e.get("img_caption") or [])
+        unterschrift = bildunterschrift(e)
         if groesse and min(groesse) < MIN_KANTE_PX:
             cache[rel] = {"beschreibung": "", "grund": "zu_klein", "seite": e.get("page_idx", 0) + 1}
             continue
         t0 = time.time()
         try:
-            text = beschreibe(pfad, unterschrift, modell)
-            cache[rel] = {"beschreibung": text, "sekunden": round(time.time() - t0, 1),
+            roh = beschreibe(pfad, unterschrift, modell)
+            text, schleife = saeubere(roh)
+            cache[rel] = {"beschreibung": text, "wiederholung": schleife, "roh_woerter": len(roh.split()), "sekunden": round(time.time() - t0, 1),
                           "seite": e.get("page_idx", 0) + 1, "bildunterschrift": unterschrift,
                           "modell": modell, "prompt_version": BILD_PROMPT_VERSION,
                           "sha1": hashlib.sha1(pfad.read_bytes()).hexdigest()[:12]}

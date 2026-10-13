@@ -68,7 +68,30 @@ def lade_content_list(pfad):
     pfad = Path(pfad)
     with open(pfad, encoding="utf-8") as f:
         eintraege = json.load(f)
-    return eintraege, pfad.parent  # Bildpfade sind relativ zu diesem Ordner
+    return bildunterschriften_zuordnen(eintraege), pfad.parent  # Bildpfade relativ zu diesem Ordner
+
+
+_UNTERSCHRIFT = re.compile(r"^\s*(Abb|Bild|Fig)\.?\s?\d")
+
+
+def bildunterschriften_zuordnen(eintraege):
+    """MinerU erkennt Bildunterschriften nicht immer (Pilot: Abb. 2.10 und 4.44 kamen als
+    normaler Text). Eine Abbildung ohne Unterschrift bekommt den nächstgelegenen Text derselben
+    Seite, der mit "Abb./Bild/Fig. <Nr>" beginnt; dieser Text wird dann nicht doppelt geführt."""
+    for e in eintraege:
+        if not (e.get("img_path") and e.get("type") not in ("table", "equation", "text", "list")):
+            continue
+        if any(k.endswith("_caption") and v for k, v in e.items()):
+            continue
+        kandidaten = [(abs(j - eintraege.index(e)), t) for j, t in enumerate(eintraege)
+                      if t.get("type") == "text" and t.get("page_idx") == e.get("page_idx")
+                      and _UNTERSCHRIFT.match(t.get("text", "")) and not t.get("_als_unterschrift")]
+        if kandidaten:
+            _, t = min(kandidaten, key=lambda x: x[0])
+            e[f"{e.get('type', 'image')}_caption"] = [t["text"]]
+            t["_als_unterschrift"] = True
+            t["type"] = "discarded"
+    return eintraege
 
 
 # ---------------------------------------------------------------------------
@@ -264,6 +287,28 @@ def _woerter(t):
     return len(t.split())
 
 
+# Abbildungsartige Einträge: MinerU-Versionen nennen sie unterschiedlich ("image", "chart",
+# "figure" ...). Alles mit Bildpfad, das keine Tabelle/Formel ist, gilt als Abbildung.
+def ist_abbildung(e):
+    return bool(e.get("img_path")) and e.get("type") not in ("table", "equation", "text", "list")
+
+
+def _feld(e, endung):
+    """Erstes Feld, dessen Name auf endung endet (image_caption, chart_caption, img_caption ...)."""
+    for k, v in e.items():
+        if k.endswith(endung) and v:
+            return v
+    return None
+
+
+def bildunterschrift(e):
+    return _liste(_feld(e, "_caption"))
+
+
+def bildfussnote(e):
+    return _liste(_feld(e, "_footnote"))
+
+
 # Satzgrenzen: nur vor Großbuchstaben, nicht nach Abkürzungen ("z. B.", "Abb.", "Gl.") oder
 # Ordnungszahlen ("1."). Ohne diesen Schutz entstanden Chunks wie "Teppichboden erreicht, ...".
 _ABK = {"abb", "gl", "tab", "abschn", "kap", "bzw", "ca", "evtl", "vgl", "nr", "bsp", "usw", "etc",
@@ -359,7 +404,7 @@ def strukturchunks(eintraege, bildbeschreibungen=None, mit_beschreibungen=False)
                    "page_footnote", "aside_text"):
             continue
 
-        if typ == "text" or typ == "list" or (typ not in ("image", "table", "equation") and e.get("text")):
+        if typ == "text" or typ == "list" or (not ist_abbildung(e) and typ not in ("table", "equation") and e.get("text")):
             if typ == "list" and e.get("list_items"):
                 text = bereinige(" ".join(e.get("list_items")))
             else:
@@ -403,9 +448,9 @@ def strukturchunks(eintraege, bildbeschreibungen=None, mit_beschreibungen=False)
                 neuer_chunk(text.strip(), seite, "tabelle", e.get("img_path", ""))
             continue
 
-        if typ == "image":
-            titel = _liste(e.get("image_caption") or e.get("img_caption"))
-            fuss = _liste(e.get("image_footnote") or e.get("img_footnote"))
+        if ist_abbildung(e):
+            titel = bildunterschrift(e)
+            fuss = bildfussnote(e)
             bild = e.get("img_path", "")
             beschreibung = bildbeschreibungen.get(bild, "") if mit_beschreibungen else ""
             if not (titel or beschreibung):

@@ -34,8 +34,8 @@ def mineru_seitentexte(eintraege):
         typ = e.get("type")
         if typ == "table":
             t = "[TABELLE] " + ps._liste(e.get("table_caption")) + "\n" + ps.tabelle_als_text(e.get("table_body", ""))
-        elif typ == "image":
-            t = "[ABBILDUNG] " + ps._liste(e.get("image_caption") or e.get("img_caption"))
+        elif ps.ist_abbildung(e):
+            t = f"[ABBILDUNG/{typ}] " + ps.bildunterschrift(e)
         elif typ == "equation":
             t = "[FORMEL] " + (e.get("text") or "")
         else:
@@ -54,7 +54,7 @@ def main():
     args = ap.parse_args()
     seiten = [int(s) for s in args.seiten.split(",")]
 
-    basis = Path("daten/extraktion") / f"pilot_{args.name}"
+    basis = Path("daten/extraktion") / f"pilot_{args.name}_{'-'.join(map(str, seiten))}"  # je Seitenauswahl eigener MinerU-Cache
     basis.mkdir(parents=True, exist_ok=True)
     quelle = pymupdf.open(args.pdf)
     klein = pymupdf.open()
@@ -88,7 +88,7 @@ def main():
     if basis_methode:
         eintraege, bildordner = ergebnisse[basis_methode]
         try:
-            beschreibungen = bb.beschreibe_alle(eintraege, bildordner, basis / "bildbeschreibungen_pilot.json",
+            beschreibungen = bb.beschreibe_alle(eintraege, bildordner, basis / f"bildbeschreibungen_pilot_{args.vlm_modell.replace(':', '-')}.json",
                                                 args.vlm_modell, args.max_bilder)
         except Exception as ex:
             print(f"VLM FEHLER: {ex}")
@@ -123,7 +123,7 @@ pre{{white-space:pre-wrap;font-size:12px}}img{{max-width:380px}}.chunk,.vlm{{bor
 <h2>3. Bildbeschreibungen ({html.escape(args.vlm_modell)})</h2>{vlm_html or '<p>nicht verfügbar</p>'}
 </body></html>"""
     Path("protokolle").mkdir(exist_ok=True)
-    ziel = Path("protokolle") / f"pilot_{args.name}.html"
+    ziel = Path("protokolle") / f"pilot_{args.name}_{args.vlm_modell.replace(':', '-')}.html"
     ziel.write_text(seite, encoding="utf-8")
     print(f"Pilotseite: {ziel}")
 
