@@ -41,16 +41,16 @@ modelle_entladen
 python skripte/wissensbasis/ordne_chunks_zu.py "$FRAGEN_F" "$KB_F7A" daten/testfragen/testfragen_fischer_v1_v7a.csv
 python skripte/wissensbasis/ordne_chunks_zu.py "$FRAGEN_F" "$KB_F7B" daten/testfragen/testfragen_fischer_v1_v7b.csv
 
-schritt "5 Generierung V7A-FISCHER und V7B-FISCHER"
+schritt "5 Generierung V7A-FISCHER und V7B2-FISCHER"
 if [ -f "$KB_F7A" ]; then
   python skripte/evaluation/fuehre_testfragen_aus.py V7A-FISCHER $RET --scaffolding G-v1 \
       --kb "$KB_F7A" --fragen daten/testfragen/testfragen_fischer_v1_v7a.csv
   merke "Generierung V7A-FISCHER" $?
 fi
 if [ -f "$KB_F7B" ]; then
-  python skripte/evaluation/fuehre_testfragen_aus.py V7B-FISCHER $RET --scaffolding G-v1 \
+  python skripte/evaluation/fuehre_testfragen_aus.py V7B2-FISCHER $RET --scaffolding G-v1 \
       --kb "$KB_F7B" --fragen daten/testfragen/testfragen_fischer_v1_v7b.csv
-  merke "Generierung V7B-FISCHER" $?
+  merke "Generierung V7B2-FISCHER" $?
 fi
 modelle_entladen
 
@@ -64,14 +64,14 @@ if [ -f "$KB_F7A" ]; then
   merke "RAGAS V7A-FISCHER" $?
 fi
 if [ -f "$KB_F7B" ]; then
-  python skripte/evaluation/ragas_auswertung.py V7B-FISCHER --kb "$KB_F7B" && python skripte/evaluation/archiviere_version.py V7B-FISCHER
-  merke "RAGAS V7B-FISCHER" $?
+  python skripte/evaluation/ragas_auswertung.py V7B2-FISCHER --kb "$KB_F7B" && python skripte/evaluation/archiviere_version.py V7B2-FISCHER
+  merke "RAGAS V7B2-FISCHER" $?
 fi
 python skripte/evaluation/ragas_auswertung.py V4-S2 --judge-prompts J-v1 && python skripte/evaluation/archiviere_version.py V4-S2 V4-S2_J-v1
 merke "RAGAS V4-S2 mit J-v1" $?
 
 schritt "7 Stufen-Check"
-python skripte/evaluation/stufen_check.py V4-S2 V6-BOEGE V6-FISCHER V7A-FISCHER V7B-FISCHER
+python skripte/evaluation/stufen_check.py V4-S2 V6-BOEGE V6-FISCHER V7A-FISCHER V7B2-FISCHER
 
 schritt "Übersicht"
 printf '%s\n' "${STATUS[@]}"

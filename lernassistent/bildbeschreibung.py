@@ -90,9 +90,29 @@ def _bildgroesse(pfad):
         return None
 
 
+MAX_KANTE_PX = 1024  # Qwen2.5-VL rechnet in nativer Auflösung; große Bilder sprengen sonst den VRAM
+
+
+def _bild_b64(pfad):
+    """Bild als Base64, längste Kante auf MAX_KANTE_PX verkleinert (Nachtlauf 13 Oct 2026:
+    Ollama stürzte während der Bildbeschreibungen ab; große Bilder sind der wahrscheinlichste Grund)."""
+    try:
+        import io
+        from PIL import Image
+        with Image.open(pfad) as im:
+            im = im.convert("RGB")
+            if max(im.size) > MAX_KANTE_PX:
+                im.thumbnail((MAX_KANTE_PX, MAX_KANTE_PX))
+            puffer = io.BytesIO()
+            im.save(puffer, format="JPEG", quality=90)
+            return base64.b64encode(puffer.getvalue()).decode()
+    except Exception:
+        with open(pfad, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+
+
 def beschreibe(pfad, bildunterschrift="", modell=VLM_MODELL, timeout=300):
-    with open(pfad, "rb") as f:
-        b64 = base64.b64encode(f.read()).decode()
+    b64 = _bild_b64(pfad)
     payload = {"model": modell, "prompt": bild_prompt(bildunterschrift), "images": [b64],
                "stream": False, "options": VLM_OPTIONEN}
     r = requests.post(_ollama_url(), json=payload, timeout=timeout)
@@ -124,7 +144,16 @@ def beschreibe_alle(eintraege, bildordner, cache_datei, modell=VLM_MODELL, max_b
             continue
         t0 = time.time()
         try:
-            roh = beschreibe(pfad, unterschrift, modell)
+            roh = None
+            for versuch in range(1, 6):  # Ollama-Neustart abwarten statt alle restlichen Bilder zu verlieren
+                try:
+                    roh = beschreibe(pfad, unterschrift, modell)
+                    break
+                except requests.exceptions.ConnectionError:
+                    if versuch == 5:
+                        raise
+                    print(f"  [{n}] Ollama nicht erreichbar, neuer Versuch in 30 s ({versuch}/5)", flush=True)
+                    time.sleep(30)
             text, schleife = saeubere(roh)
             cache[rel] = {"beschreibung": text, "wiederholung": schleife, "roh_woerter": len(roh.split()), "sekunden": round(time.time() - t0, 1),
                           "seite": e.get("page_idx", 0) + 1, "bildunterschrift": unterschrift,
