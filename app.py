@@ -13,6 +13,8 @@ Ablauf für Proband:innen:
 Start: streamlit run app.py --server.fileWatcherType none
 (Ollama muss vorher laufen, Modell: qwen3.5:9b)
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 
 import streamlit as st
 from rag_pipeline import (
@@ -30,7 +32,7 @@ if "verlauf" not in st.session_state:
 if "sitzungs_id" not in st.session_state:
     st.session_state["sitzungs_id"] = ""
 
-CHUNKS = lade_wissensbasis("knowledge_base.json")
+CHUNKS = lade_wissensbasis("daten/wissensbasen/knowledge_base_boege.json")
 
 
 # =============================================================================

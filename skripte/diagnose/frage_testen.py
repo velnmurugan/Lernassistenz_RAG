@@ -13,13 +13,15 @@ Start:
   python frage_testen.py "Was bringt der D-Anteil in einem Regler?" --retrieval hybrid,hybrid_kg
   python frage_testen.py "…" --retrieval hybrid_kg --rrf-k 5 --nur-retrieval
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 import argparse
 import textwrap
 
 import rag_pipeline
 from rag_pipeline import lade_wissensbasis, retrieval, beantworte_frage
 
-KB_PFAD = "knowledge_base.json"
+KB_PFAD = "daten/wissensbasen/knowledge_base_boege.json"
 BREITE = 100
 
 

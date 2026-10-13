@@ -9,7 +9,11 @@ Kopiert die Ergebnisse einer Version nach evaluationsdaten/archiv/<VERSION>/:
   - lauf_<VERSION>.json und testlauf_retrieval_<VERSION>.csv, falls vorhanden
 
 Start:  python archiviere_version.py V4-S2
+        python archiviere_version.py V4-S2 V4-S2_J-v1   (eigener Archivordner, z. B. nach erneuter
+                                                         Bewertung mit anderen Richter-Prompts)
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 import csv
 import shutil
 import sys
@@ -18,8 +22,8 @@ from pathlib import Path
 EVAL = Path("evaluationsdaten")
 
 
-def main(version):
-    ziel = EVAL / "archiv" / version
+def main(version, ordner=None):
+    ziel = EVAL / "archiv" / (ordner or version)
     ziel.mkdir(parents=True, exist_ok=True)
 
     with open(EVAL / "interaktionen.csv", encoding="utf-8", newline="") as f:
@@ -50,6 +54,6 @@ def main(version):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        sys.exit("Aufruf: python archiviere_version.py <VERSION>")
-    main(sys.argv[1])
+    if len(sys.argv) not in (2, 3):
+        sys.exit("Aufruf: python archiviere_version.py <VERSION> [<ARCHIVORDNER>]")
+    main(*sys.argv[1:])

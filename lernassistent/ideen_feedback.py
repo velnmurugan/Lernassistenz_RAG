@@ -37,7 +37,7 @@ import time
 
 from rag_pipeline import frage_llm, GENERIERUNGS_OPTIONEN, MODEL_NAME, LOG_VERZEICHNIS
 
-FEEDBACK_PROMPT_VERSION = "IF-v1"
+FEEDBACK_PROMPT_VERSION = "IF-v2"
 MAX_VERSUCHE = 3
 IDEEN_LOG = LOG_VERZEICHNIS / "ideen_feedback.csv"
 URTEILE = ("richtig", "teilweise", "falsch", "keine_idee")
@@ -56,34 +56,40 @@ FALLBACK_RUECKMELDUNG = (
 
 
 def baue_feedback_prompt(frage, top_chunks, hinweis, loesung, idee):
-    kontext = "\n\n".join(f"[{c['thema']}]: {c['text']}" for c in top_chunks)
-    return f"""Du bist ein Lernassistent für Auszubildende in technischen Berufen. Ein:e Auszubildende:r hat eine Frage gestellt, einen Hinweis bekommen und schreibt jetzt eine eigene Idee zur Antwort. Gib eine kurze Rückmeldung zu dieser Idee.
-
-=== Nur für dich (die/der Auszubildende sieht das NICHT) ===
-Lernmaterial:
-{kontext}
-
-Musterlösung (geheim):
-{loesung}
-
-=== Was die/der Auszubildende gesehen und geschrieben hat ===
-Frage: {frage}
-Hinweis: {hinweis}
-Eigene Idee: {idee}
+    """IF-v2 (fester Prompt-Satz G2, claude/Prompt_Set_Spezifikation.md §4.2). Die Lösung ist die
+    Referenz; das Lernmaterial wird nicht mehr mitgeschickt (top_chunks bleibt nur für die
+    Schnittstelle). Regeln F1–F5: Petukhova et al. (2026); Kochmar et al. (2025); Maurya et al.
+    (2025); Wood et al. (1976); Abrar et al. (2027); Knievel et al. (2025). ÜBERLEGUNG zuerst:
+    Zhao, Knežević & Käser (2026)."""
+    return f"""Du gibst einer lernenden Person eine kurze Rückmeldung auf ihre eigene Idee zu einer Frage. Du kennst
+die richtige Lösung; die lernende Person kennt sie nicht und hat bisher nur die Frage und den Hinweis
+gesehen.
 
 Regeln:
-1. Beurteile die Idee nur anhand des Lernmaterials und der Musterlösung.
-2. Verrate die Lösung NICHT: keine Ergebnisse, Zahlenwerte oder Formeln aus der Musterlösung und nicht die gesuchte Kernaussage, wenn sie nicht schon in der Idee steht.
-3. Beginne mit dem, was an der Idee stimmt (falls etwas stimmt).
-4. Ist die Idee teilweise richtig oder falsch: nenne genau EINE Stelle, die nicht stimmt oder fehlt, ohne sie zu korrigieren. Stelle dann eine Frage oder nenne einen nächsten Denkschritt.
-5. Ist die Idee richtig: bestätige das kurz.
-6. Ist keine Idee erkennbar (z. B. „keine Ahnung"): ermutige und nenne einen ersten kleinen Denkschritt.
-7. Sprich die/den Auszubildende:n mit „du" an. Höchstens 3 Sätze. Schreibe nicht „der Kontext", „das Lernmaterial" oder „die Musterlösung", denn die/der Auszubildende sieht sie nicht.
+F1 Beurteile die Idee anhand der Lösung: RICHTIG, TEILWEISE, FALSCH oder KEINE_IDEE (keine fachliche Idee
+   erkennbar).
+F2 Benenne, was an der Idee stimmt, und wo genau eine Abweichung liegt.
+F3 Gib einen konkreten nächsten Denkschritt, ohne die Lösung zu verraten, auch nicht mit anderen Worten
+   und ohne Zahlenwerte aus der Lösung.
+F4 Ist die Idee RICHTIG, bestätige sie und sage, dass die Lösung jetzt angezeigt werden kann.
+F5 Zwei bis drei kurze Sätze, freundlich und sachlich, sprich die Person mit „du" an.
 
-Antworte GENAU in diesem Format:
-UEBERLEGUNG: <kurz, nur für dich: Was stimmt, was fehlt, wie lenke ich, ohne die Lösung zu verraten?>
-URTEIL: <richtig | teilweise | falsch | keine_idee>
-RUECKMELDUNG: <deine Rückmeldung an die/den Auszubildende:n>"""
+### Frage
+{frage}
+
+### Hinweis (hat die lernende Person gesehen)
+{hinweis}
+
+### Lösung (geheim)
+{loesung}
+
+### Idee der lernenden Person
+{idee}
+
+Antworte genau in diesem Format:
+ÜBERLEGUNG: <nur für dich: was stimmt, was fehlt, wie lenke ich, ohne zu verraten?>
+URTEIL: RICHTIG oder TEILWEISE oder FALSCH oder KEINE_IDEE
+RÜCKMELDUNG: <Rückmeldung nach F2 bis F5>"""
 
 
 _MARKER = {
@@ -156,6 +162,8 @@ def idee_moeglich(ergebnis):
     geparst und keine Modell-Verweigerung (Detektor v2 aus ragas_auswertung.py)."""
     if not ergebnis.get("genuegend_relevanz") or not ergebnis.get("vollstaendig_geparst"):
         return False
+    if ergebnis.get("status"):  # ab G-v1: STATUS statt Detektor
+        return ergebnis["status"] in ("BEANTWORTET", "TEILWEISE")
     try:
         from ragas_auswertung import ist_modell_verweigerung
     except Exception as e:  # Feld lieber zeigen als die App abbrechen, aber sichtbar melden

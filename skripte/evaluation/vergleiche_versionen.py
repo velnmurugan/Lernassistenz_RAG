@@ -30,6 +30,8 @@ Start:
   python vergleiche_versionen.py --versionen V0-DENSE-T0,V1-BM25-T0,V1-HYBRID-T0a,V1-HYBRID-T0b
   python vergleiche_versionen.py --richter mistral-nemo   # nur Versionen mit diesem Richter
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 import argparse
 import csv
 import html
@@ -39,7 +41,7 @@ from pathlib import Path
 
 EVAL = Path("evaluationsdaten")
 ARCHIV = EVAL / "archiv"
-TESTFRAGEN = Path("testfragen_v1.csv")
+TESTFRAGEN = Path("daten/testfragen/testfragen_v1.csv")
 NICHT_BEANTWORTBAR = {"ausserhalb", "teilrelevant"}
 
 

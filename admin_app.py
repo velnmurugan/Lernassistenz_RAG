@@ -13,6 +13,8 @@ dieses Vorbereitungswerkzeug).
 Start (auf einem ANDEREN Port als die Studien-App, z. B. 8502):
     streamlit run admin_app.py --server.port 8502 --server.fileWatcherType none
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 
 import json
 from pathlib import Path
@@ -22,7 +24,7 @@ from rag_pipeline import verarbeite_pdf_seitenweise, lade_wissensbasis
 
 st.set_page_config(page_title="Admin: Wissensbasis verwalten", layout="wide")
 
-ZIEL_DATEI = Path("knowledge_base.json")
+ZIEL_DATEI = Path("daten/wissensbasen/knowledge_base_boege.json")
 
 st.title("🛠️ Admin: Wissensbasis aus PDFs aufbauen")
 st.caption(

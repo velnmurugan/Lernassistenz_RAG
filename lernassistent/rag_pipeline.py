@@ -401,7 +401,7 @@ FRAGEBOGEN_LOG = LOG_VERZEICHNIS / "fragebogen.csv"
 # =============================================================================
 # Wissensbasis
 # =============================================================================
-def lade_wissensbasis(pfad="knowledge_base.json"):
+def lade_wissensbasis(pfad="daten/wissensbasen/knowledge_base_boege.json"):
     """
     Lädt die kuratierte, für ALLE Proband:innen identische Wissensbasis.
 
@@ -416,7 +416,7 @@ def lade_wissensbasis(pfad="knowledge_base.json"):
     return daten["chunks"]
 
 
-def berechne_kb_hash(pfad="knowledge_base.json"):
+def berechne_kb_hash(pfad="daten/wissensbasen/knowledge_base_boege.json"):
     """
     Kurzer Fingerabdruck (SHA-256, erste 12 Zeichen) der Wissensbasis-Datei.
     Wird pro Interaktion protokolliert, damit die spätere RAGAS-Auswertung
@@ -677,11 +677,20 @@ Antwort:"""
 # Hinweis gleichzeitig mit der Lösung schreibt, "weiß" nicht explizit, was es nicht
 # verraten darf. Muster übernommen aus ideen_feedback.py (IF-v1): sieht die Lösung,
 # verdecktes Überlegungsfeld vor der Ausgabe.
-SCAFFOLDING_VERSION = "S2-v2"
+#
+# V6 (G-v1, 13 Oct 2026): fester, domänenunabhängiger Prompt-Satz (claude/Prompt_Set_Spezifikation.md).
+# EIN Aufruf: STATUS -> LÖSUNG -> verdeckte ÜBERLEGUNG -> HINWEIS. Die Lösung wird zuerst geschrieben,
+# damit der Hinweis "answer-aware" ist (Bhaskar & Hamouda 2025; Petukhova et al. 2026); die
+# Überlegung davor senkt das Verraten (Zhao, Knežević & Käser 2026). STATUS ersetzt den
+# Verweigerungs-Detektor (Regex) und erlaubt Teilantworten (Gala et al. 2026; Oche et al. 2025).
+# Keine Beispiele, keine Fachwörter, keine dokumentspezifischen Hinweise (P1).
+SCAFFOLDING_VERSION = "G-v1"
+STATUS_WERTE = ("BEANTWORTET", "TEILWEISE", "NICHT_IM_MATERIAL")
 SCAFFOLDING_MARKER_VERSIONEN = {
     "S3-v0": {"hinweis": "STUFE1_HINWEIS:", "erklaerung": "STUFE2_ERKLAERUNG:", "loesung": "STUFE3_LOESUNG:"},
     "S2-v1": {"hinweis": "STUFE1_HINWEIS:", "loesung": "STUFE2_LOESUNG:"},
     "S2-v2": {"hinweis": "STUFE1_HINWEIS:", "loesung": "STUFE2_LOESUNG:"},  # Aufruf 1 = S2-v1
+    "G-v1": {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"},  # Stufen für App/Batch: Hinweis, Lösung
 }
 HINWEIS_PROMPT_VERSION = "H-v3"  # nur bei S2-v2 genutzt
 
@@ -757,7 +766,102 @@ Kontext:
 Frage: {frage}"""
 
 
-_PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1, "S2-v2": _prompt_s2_v1}
+def _material_text(ausgewaehlte_chunks):
+    """G-v1: nur die Texte, ohne IDs und Kapitelüberschriften (Kapitelzuordnung ist teils
+    fehlerhaft). Allgemeine, dokumentunabhängige Bereinigung: Unicode-Normalisierung (Ligaturen),
+    Silbentrennung am Zeilenende zusammenführen, Leerraum vereinheitlichen."""
+    import unicodedata
+    teile = []
+    for c in ausgewaehlte_chunks:
+        t = unicodedata.normalize("NFKC", c["text"])  # Ligaturen ("ﬂ" -> "fl"), allgemein
+        t = re.sub(r"(\w)-\s*\n\s*(\w)", r"\1\2", t)
+        teile.append(re.sub(r"\s+", " ", t).strip())
+    return "\n\n".join(teile)
+
+
+def _prompt_g_v1(frage, ausgewaehlte_chunks):
+    """V6: fester Prompt-Satz G1 (Spezifikation §4.1). Regeln L1–L4, Status, H1–H5."""
+    return f"""Du bist ein Lernassistent für Auszubildende. Du beantwortest eine Frage ausschließlich mit dem
+Lernmaterial unten und bereitest dazu einen Denkanstoß vor.
+
+Regeln für die Lösung:
+L1 Nutze nur Aussagen, die im Lernmaterial stehen oder direkt daraus folgen. Ergänze kein eigenes
+   Wissen, auch keine zusätzlichen Begründungen.
+L2 Nenne zuerst die Antwort, dann kurz die Begründung aus dem Lernmaterial.
+L3 Bei einer Rechnung: Formel, eingesetzte Werte und Ergebnis mit Einheit.
+L4 Schreibe verständlich für Auszubildende.
+
+Status:
+- BEANTWORTET: Das Lernmaterial beantwortet die Frage.
+- TEILWEISE: Das Lernmaterial beantwortet nur einen Teil. Beantworte diesen Teil und nenne, was fehlt.
+- NICHT_IM_MATERIAL: Das Lernmaterial beantwortet die Frage nicht. Rate nicht.
+
+Regeln für den Hinweis (die lernende Person sieht nur die Frage, nicht das Lernmaterial und nicht
+die Lösung):
+H1 Verrate die Lösung nicht, auch nicht mit anderen Worten.
+H2 Lenke auf den Begriff, die Größe oder den nächsten Denkschritt, der zur Lösung führt.
+H3 Verweise nur auf die Frage und auf Grundwissen, nie auf das Lernmaterial.
+H4 Rege zum Nachdenken über einen Zusammenhang an, ohne zu überfordern.
+H5 Ein bis zwei kurze Sätze, sprich die lernende Person mit „du" an; du darfst mit einer Frage enden.
+
+### Lernmaterial
+{_material_text(ausgewaehlte_chunks)}
+
+### Frage
+{frage}
+
+Antworte genau in diesem Format:
+STATUS: BEANTWORTET oder TEILWEISE oder NICHT_IM_MATERIAL
+LÖSUNG: <Lösung nach L1 bis L4; bei NICHT_IM_MATERIAL ein Satz, dass das Lernmaterial dazu nichts enthält>
+ÜBERLEGUNG: <nur für dich: welche Kernaussage der Lösung darf der Hinweis nicht verraten, und welcher Denkschritt führt dorthin?>
+HINWEIS: <Hinweis nach H1 bis H5; bei NICHT_IM_MATERIAL: –>"""
+
+
+_G_FELD = re.compile(r"(?im)^[^\w\n]*(STATUS|L(?:Ö|OE)SUNG|(?:Ü|UE)BERLEGUNG|HINWEIS)[^\w\n]*:")
+_G_SCHLUESSEL = {"STATUS": "status", "LÖSUNG": "loesung", "LOESUNG": "loesung",
+                 "ÜBERLEGUNG": "ueberlegung", "UEBERLEGUNG": "ueberlegung", "HINWEIS": "hinweis"}
+
+
+def parse_g_v1(rohtext):
+    """Zerlegt die G-v1-Antwort (Spezifikation §4.1, Parsing und Fallback).
+    Rückgabe hat dieselben Schlüssel wie parse_scaffolding_antwort plus status,
+    hinweis_ueberlegung und format_fehler."""
+    treffer = list(_G_FELD.finditer(rohtext))
+    felder = {"status": "", "loesung": "", "ueberlegung": "", "hinweis": ""}
+    for i, m in enumerate(treffer):
+        name = _G_SCHLUESSEL[m.group(1).upper()]
+        ende = treffer[i + 1].start() if i + 1 < len(treffer) else len(rohtext)
+        if not felder[name]:  # erstes Vorkommen gilt
+            felder[name] = rohtext[m.end():ende].strip().strip("*").strip()
+    status_roh = re.sub(r"[^A-ZÄÖÜ]", "", felder["status"].upper())
+    status = ("NICHT_IM_MATERIAL" if status_roh.startswith("NICHT") else
+              "TEILWEISE" if status_roh.startswith("TEILWEISE") else
+              "BEANTWORTET" if status_roh.startswith("BEANTWORTET") else "")
+    format_fehler = []
+    if not status:
+        format_fehler.append("status")
+        status = "BEANTWORTET"
+    loesung = felder["loesung"]
+    if not loesung:
+        format_fehler.append("loesung")
+        loesung = _G_FELD.sub("", rohtext).strip()
+    hinweis = felder["hinweis"]
+    if hinweis.strip(" –-—.") == "":
+        hinweis = ""
+        if status != "NICHT_IM_MATERIAL":
+            format_fehler.append("hinweis")
+    if status == "NICHT_IM_MATERIAL":
+        hinweis = ""
+    return {
+        "hinweis": hinweis, "erklaerung": "", "loesung": loesung,
+        # App: ohne Hinweis direkt die Lösung zeigen (bei NICHT_IM_MATERIAL kein Ideen-Feld)
+        "vollstaendig_geparst": bool(hinweis) and "loesung" not in format_fehler,
+        "status": status, "hinweis_ueberlegung": felder["ueberlegung"],
+        "format_fehler": ",".join(format_fehler),
+    }
+
+
+_PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1, "S2-v2": _prompt_s2_v1, "G-v1": _prompt_g_v1}
 
 
 def baue_hinweis_prompt(frage, ausgewaehlte_chunks, loesung):
@@ -935,13 +1039,14 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None):
         ergebnis["erklaerung"] = ""
         ergebnis["loesung"] = verweigerung
         ergebnis["vollstaendig_geparst"] = False
+        ergebnis["status"] = "GATE"
         ergebnis["quellen"] = []
         ergebnis["sicherheitshinweis"] = None
         return ergebnis
 
     prompt = baue_scaffolding_prompt(frage, top_chunks)
     rohantwort = frage_llm(prompt, options=GENERIERUNGS_OPTIONEN)
-    stufen = parse_scaffolding_antwort(rohantwort)
+    stufen = parse_g_v1(rohantwort) if SCAFFOLDING_VERSION == "G-v1" else parse_scaffolding_antwort(rohantwort)
     ist_relevant, treffer = sicherheitspruefung(frage + " " + stufen["loesung"])
 
     if SCAFFOLDING_VERSION == "S2-v2":
@@ -962,39 +1067,66 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None):
 # methodischen Vorgehen). Pseudonymisierte Sitzungs-ID statt Klarnamen
 # entspricht Standardpraxis der Forschungsethik (DSGVO-konform) und dem
 # in Design_Entscheidungen_Literatur.md dokumentierten Datenschutzprinzip.
+INTERAKTIONS_FELDER = [
+    "zeitstempel", "sitzungs_id", "frage", "bester_score",
+    "genuegend_relevanz", "hinweis", "erklaerung", "loesung",
+    "scaffolding_stufe_erreicht", "quellen", "sicherheitshinweis",
+    "kb_hash", "status", "scaffolding_version",
+]
+
+
+def _log_spalten_sicherstellen():
+    """Ab V6 hat interaktionen.csv die Spalten status und scaffolding_version. Ältere Logs
+    werden einmalig umgeschrieben (alte Zeilen: Spalten leer); vorher Sicherungskopie."""
+    if not INTERAKTIONS_LOG.exists():
+        return
+    with open(INTERAKTIONS_LOG, encoding="utf-8", newline="") as f:
+        r = csv.DictReader(f)
+        if r.fieldnames == INTERAKTIONS_FELDER:
+            return
+        zeilen = list(r)
+    sicherung = INTERAKTIONS_LOG.with_name("interaktionen_vor_V6_sicherung.csv")
+    if not sicherung.exists():
+        import shutil
+        shutil.copy2(INTERAKTIONS_LOG, sicherung)
+    with open(INTERAKTIONS_LOG, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=INTERAKTIONS_FELDER, restval="", extrasaction="ignore")
+        w.writeheader()
+        w.writerows(zeilen)
+    print(f"interaktionen.csv auf neue Spalten umgestellt (Sicherung: {sicherung.name})")
+
+
 def protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=1):
     """
     scaffolding_stufe_erreicht: wie weit die/der Proband:in tatsächlich
-    geklickt hat. Ab V4 (S2-v1): 1 = nur Hinweis gesehen, 2 = + Lösung.
-    V0–V3 (S3-v0): 1 = Hinweis, 2 = + Erklärung, 3 = + Lösung. Eigenes Uptake-Maß analog zu Neagu et al. (2026), die zeigen,
-    dass Lernende angebotenes Scaffolding in der Praxis oft umgehen —
-    dieses Feld macht messbar, ob dasselbe hier passiert, statt nur zu
-    protokollieren, DASS Scaffolding angeboten wurde.
+    geklickt hat. Ab V4: 1 = nur Hinweis gesehen, 2 = + Lösung.
+    V0–V3 (S3-v0): 1 = Hinweis, 2 = + Erklärung, 3 = + Lösung. Eigenes Uptake-Maß analog zu
+    Neagu et al. (2026), die zeigen, dass Lernende angebotenes Scaffolding oft umgehen.
+    Ab V6 zusätzlich: status (G-v1: BEANTWORTET / TEILWEISE / NICHT_IM_MATERIAL, GATE) und
+    scaffolding_version.
     """
+    _log_spalten_sicherstellen()
     neu = not INTERAKTIONS_LOG.exists()
     with open(INTERAKTIONS_LOG, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        w = csv.DictWriter(f, fieldnames=INTERAKTIONS_FELDER)
         if neu:
-            writer.writerow([
-                "zeitstempel", "sitzungs_id", "frage", "bester_score",
-                "genuegend_relevanz", "hinweis", "erklaerung", "loesung",
-                "scaffolding_stufe_erreicht", "quellen", "sicherheitshinweis",
-                "kb_hash",
-            ])
-        writer.writerow([
-            datetime.datetime.now().isoformat(timespec="seconds"),
-            sitzungs_id,
-            ergebnis["frage"],
-            round(ergebnis["bester_score"], 4),
-            ergebnis["genuegend_relevanz"],
-            ergebnis.get("hinweis", ""),
-            ergebnis.get("erklaerung", ""),
-            ergebnis.get("loesung", ""),
-            scaffolding_stufe_erreicht,
-            "; ".join(q["id"] for q in ergebnis["quellen"]),
-            "; ".join(ergebnis["sicherheitshinweis"]) if ergebnis["sicherheitshinweis"] else "",
-            ergebnis.get("kb_hash", ""),
-        ])
+            w.writeheader()
+        w.writerow({
+            "zeitstempel": datetime.datetime.now().isoformat(timespec="seconds"),
+            "sitzungs_id": sitzungs_id,
+            "frage": ergebnis["frage"],
+            "bester_score": round(ergebnis["bester_score"], 4),
+            "genuegend_relevanz": ergebnis["genuegend_relevanz"],
+            "hinweis": ergebnis.get("hinweis", ""),
+            "erklaerung": ergebnis.get("erklaerung", ""),
+            "loesung": ergebnis.get("loesung", ""),
+            "scaffolding_stufe_erreicht": scaffolding_stufe_erreicht,
+            "quellen": "; ".join(q["id"] for q in ergebnis["quellen"]),
+            "sicherheitshinweis": "; ".join(ergebnis["sicherheitshinweis"]) if ergebnis["sicherheitshinweis"] else "",
+            "kb_hash": ergebnis.get("kb_hash", ""),
+            "status": ergebnis.get("status", ""),
+            "scaffolding_version": SCAFFOLDING_VERSION,
+        })
 
 
 # =============================================================================

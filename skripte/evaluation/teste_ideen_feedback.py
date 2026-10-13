@@ -21,6 +21,8 @@ Start (Ollama muss laufen):
   python teste_ideen_feedback.py IF-v1 --retrieval hybrid_kg_rr --rrf-k 5
 Ergebnis: evaluationsdaten/test_ideen_feedback_<LABEL>.csv
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 import argparse
 import csv
 import time
@@ -31,9 +33,9 @@ import rag_pipeline
 from rag_pipeline import lade_wissensbasis, berechne_kb_hash, beantworte_frage, LOG_VERZEICHNIS
 from ideen_feedback import gib_feedback, idee_moeglich, FEEDBACK_PROMPT_VERSION
 
-TESTFRAGEN = Path("testfragen_v1.csv")
-TESTIDEEN = Path("testideen_v1.csv")
-KB_PFAD = "knowledge_base.json"
+TESTFRAGEN = Path("daten/testfragen/testfragen_v1.csv")
+TESTIDEEN = Path("daten/testfragen/testideen_v1.csv")
+KB_PFAD = "daten/wissensbasen/knowledge_base_boege.json"
 FELDER = ["nr", "frage", "ideentyp", "idee", "urteil_erwartet", "urteil", "urteil_treffer",
           "rueckmeldung", "ueberlegung", "geparst", "leck_zahlen", "sekunden",
           "hinweis", "loesung", "prompt_version", "retrieval",

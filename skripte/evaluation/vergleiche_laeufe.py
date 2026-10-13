@@ -7,6 +7,8 @@ Liest mit dem csv-Modul (mehrzeilige Felder werden korrekt gelesen).
 
 Start:  python vergleiche_laeufe.py V4-S2 V5-S2H
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 import csv
 import sys
 from pathlib import Path

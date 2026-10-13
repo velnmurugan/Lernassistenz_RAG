@@ -23,14 +23,16 @@ Verwendung:
     3. Ergebnis: knowledge_base.json (überschreibt eine vorhandene Datei
        nach Bestätigung).
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 
 import json
 from pathlib import Path
 
 from rag_pipeline import verarbeite_pdf_seitenweise
 
-QUELLORDNER = Path("quellmaterial")
-ZIEL_DATEI = Path("knowledge_base.json")
+QUELLORDNER = Path("daten/quellen/boege")
+ZIEL_DATEI = Path("daten/wissensbasen/knowledge_base_boege.json")
 # Automatische, inhaltsbasierte Chunk-Grenzen statt fester Satzanzahl
 # (siehe Design_Entscheidungen_Literatur.md, Punkt 11). MAX_SAETZE_PRO_CHUNK
 # wirkt hier nur noch als Sicherheitsobergrenze, nicht als Zielgröße.

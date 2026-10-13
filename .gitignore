@@ -9,3 +9,18 @@ evaluationsdaten/ideen_feedback.csv
 evaluationsdaten/hinweis_details_*.csv
 evaluationsdaten/retrieval_erklaerung_*.html
 evaluationsdaten/frage_erklaerung_*.html
+
+# --- ab Umstrukturierung V7 ---
+daten/quellen/
+daten/wissensbasen/
+daten/extraktion/
+protokolle/
+alt/
+__pycache__/
+evaluationsdaten/interaktionen*.csv
+evaluationsdaten/*erklaerung_*.html
+evaluationsdaten/graph_*.html
+ordne_projekt_protokoll.json
+*erklaerung_*.html
+*.bundle
+daten/testfragen/*fischer*

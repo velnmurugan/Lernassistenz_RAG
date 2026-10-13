@@ -54,6 +54,8 @@ Start:
   python ragas_auswertung.py TEST --metriken cr --limit 5   # nur Context Relevance testen
   Hinweis: Jeder Lauf überschreibt ragas_ergebnisse.csv mit den Metriken DIESES Laufs.
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 import argparse
 import csv
 import re
@@ -65,10 +67,14 @@ from rag_pipeline import (
     INTERAKTIONS_LOG, LOG_VERZEICHNIS, MODEL_NAME,
 )
 
-KB_PFAD = "knowledge_base.json"
+KB_PFAD = "daten/wissensbasen/knowledge_base_boege.json"
 JUDGE_MODELL_STANDARD = "mistral-nemo"  # bewusst NICHT der Generator (qwen3.5:9b): Selbstbevorzugung vermeiden
 JUDGE_OPTIONEN = {"temperature": 0, "seed": 42}
-PROMPT_VERSION = "F-v2/AR-v3/CR-v1"
+# Richter-Prompts: "J-v1" (ab V6, fester Prompt-Satz nach Es et al. 2024, ohne Beispiel und ohne
+# dokumentspezifische PDF-Hinweise; claude/Prompt_Set_Spezifikation.md §4.3–4.6) oder "F-v2/AR-v3/CR-v1"
+# (V0–V5, zur Reproduktion alter Ergebnisse). Werte sind nur innerhalb derselben Richter-Version vergleichbar.
+RICHTER_PROMPTS = {"J-v1": "J-v1", "F-v2": "F-v2/AR-v3/CR-v1"}
+PROMPT_VERSION = "J-v1"
 AR_ANZAHL_FRAGEN = 3
 ERGEBNIS_DATEI = LOG_VERZEICHNIS / "ragas_ergebnisse.csv"
 DETAIL_DATEI = LOG_VERZEICHNIS / "ragas_faithfulness_details.csv"
@@ -200,6 +206,9 @@ def antworttext(fall):
 def kontexttext(fall):
     # Bewusst OHNE Thema-Titel: Die Kapitelzuordnung ist teilweise fehlerhaft
     # (siehe thema_fuer_seite-Befund) und soll das Urteil nicht beeinflussen.
+    if PROMPT_VERSION == "J-v1":  # derselbe Text, den der Generator ab G-v1 sieht
+        from rag_pipeline import _material_text
+        return _material_text(fall["kontext_chunks"])
     return "\n\n".join(c["text"] for c in fall["kontext_chunks"])
 
 
@@ -212,9 +221,27 @@ _META_AUSSAGE = re.compile(
 )
 
 
+def _prompt_j1(frage, antwort):
+    return f"""Zerlege die Antwort in einzelne Aussagen.
+
+Regeln:
+- Jede Aussage enthält genau einen Sachverhalt.
+- Jede Aussage ist ohne die anderen verständlich: ersetze Pronomen durch das gemeinte Nomen.
+- Lass Aufforderungen an Lernende, Fragen und Aussagen über das Lernmaterial weg.
+- Ergänze nichts, was nicht in der Antwort steht.
+
+### Frage
+{frage}
+
+### Antwort
+{antwort}
+
+Gib jede Aussage in einer eigenen Zeile aus, beginnend mit „- ". Sonst nichts."""
+
+
 def extrahiere_statements(frage, antwort, modell):
     """Rückgabe: (sachaussagen, anzahl_verworfener_metaaussagen)."""
-    prompt = f"""Zerlege die Antwort in einfache, eigenständige SACHAUSSAGEN über das Fachthema.
+    prompt = _prompt_j1(frage, antwort) if PROMPT_VERSION == "J-v1" else f"""Zerlege die Antwort in einfache, eigenständige SACHAUSSAGEN über das Fachthema.
 
 Regeln:
 1. Jede Aussage enthält genau EINEN Sachverhalt.
@@ -252,9 +279,27 @@ Aussagen:"""
     return aussagen, verworfen
 
 
+def _prompt_j2(aussage, kontext):
+    return f"""Prüfe, ob die Aussage durch den Kontext gestützt ist. Nutze ausschließlich den Kontext, nicht dein
+eigenes Wissen.
+
+JA: Der Kontext enthält den Sachverhalt, auch mit anderen Worten, oder er folgt direkt daraus.
+NEIN: Der Sachverhalt fehlt im Kontext, widerspricht ihm oder geht deutlich über ihn hinaus.
+
+### Kontext
+{kontext}
+
+### Aussage
+{aussage}
+
+Antworte genau in diesem Format:
+BEGRÜNDUNG: <ein Satz>
+URTEIL: JA oder NEIN"""
+
+
 def pruefe_statement_gestuetzt(aussage, kontext, modell):
     """Rückgabe: (True/False/None, Begründung). None = Urteil nicht lesbar."""
-    prompt = f"""Prüfe, ob die Aussage durch den Kontext gestützt ist. Nutze AUSSCHLIESSLICH den Kontext, nicht dein eigenes Wissen.
+    prompt = _prompt_j2(aussage, kontext) if PROMPT_VERSION == "J-v1" else f"""Prüfe, ob die Aussage durch den Kontext gestützt ist. Nutze AUSSCHLIESSLICH den Kontext, nicht dein eigenes Wissen.
 
 Als GESTÜTZT (JA) gilt:
 - Der Kontext enthält den Sachverhalt, auch mit anderen Worten.
@@ -307,6 +352,15 @@ def generiere_fragen(loesung, modell, n=AR_ANZAHL_FRAGEN):
     Richter hier bewusst NICHT gezeigt: In AR-v2 (Frage im selben Prompt)
     kopierte das Modell sie teils wörtlich (Kosinus 1.00 bei F002/F007) und
     blähte so den Score auf. Entspricht dem Vorgehen bei Es et al. (2023)."""
+    if PROMPT_VERSION == "J-v1":
+        prompt = f"""Formuliere {n} unterschiedliche Fragen, auf die genau diese Antwort passt. Nutze nur, was in der
+Antwort steht.
+
+### Antwort
+{loesung}
+
+Gib jede Frage in einer eigenen Zeile aus, beginnend mit „- ". Sonst nichts."""
+        return _fragen_aus(richter(prompt, modell), n)
     prompt = f"""Hier ist eine Antwort eines Lernassistenten für die technische Berufsausbildung.
 Formuliere {n} unterschiedliche Fragen, auf die genau diese Antwort passt.
 - Die Fragen sollen so klingen, wie Auszubildende sie stellen würden.
@@ -317,7 +371,10 @@ Antwort:
 {loesung}
 
 Fragen:"""
-    roh = richter(prompt, modell)
+    return _fragen_aus(richter(prompt, modell), n)
+
+
+def _fragen_aus(roh, n):
     fragen = []
     for zeile in roh.splitlines():
         z = re.sub(r"^\s*(?:[-•*]|\d+[.)])\s*", "", zeile).strip()
@@ -334,6 +391,23 @@ def ist_ausweichend(frage, loesung, modell):
     beantworten (Testbefund F007, AR-v1: 0.82). Die ragas-Referenzimplementierung
     erfasst dies ebenfalls als eigenes Urteil und setzt den Score auf 0.
     Rückgabe: True/False/None (None = Urteil nicht lesbar)."""
+    if PROMPT_VERSION == "J-v1":
+        prompt = f"""Prüfe, ob die Antwort das Gefragte liefert. AUSWEICHEND = JA, wenn sie das Gefragte nicht liefert, z. B.
+weil sie allgemein bleibt, obwohl ein bestimmter Wert, eine Liste oder ein Vorgehen gefragt ist.
+Ob die Antwort richtig ist, spielt keine Rolle.
+
+### Frage
+{frage}
+
+### Antwort
+{loesung}
+
+Antworte genau in diesem Format:
+BEGRÜNDUNG: <ein Satz>
+AUSWEICHEND: JA oder NEIN"""
+        roh = richter(prompt, modell)
+        urteil = re.findall(r"AUSWEICHEND:\s*\**\s*(JA|NEIN)", roh, re.IGNORECASE)
+        return (urteil[-1].upper() == "JA") if urteil else None
     prompt = f"""Prüfe, ob die Antwort die Frage konkret beantwortet.
 
 AUSWEICHEND = JA, wenn die Antwort das Gefragte nicht liefert, z. B.
@@ -412,7 +486,22 @@ def berechne_context_relevance(fall, modell):
     if not saetze:
         return None, 0, None, [], ""
     nummeriert = "\n".join(f"[{i}] {satz}" for i, satz in enumerate(saetze, start=1))
-    prompt = f"""Hier sind eine Frage und nummerierte Sätze aus Lernmaterialien, die ein Suchsystem zu dieser Frage gefunden hat.
+    if PROMPT_VERSION == "J-v1":
+        prompt = f"""Welche der nummerierten Sätze werden benötigt, um die Frage zu beantworten? Wähle nur Sätze, die direkt
+zur Antwort beitragen. Trägt kein Satz dazu bei, antworte mit KEINE. Nutze nur die Sätze, nicht dein
+eigenes Wissen.
+
+### Frage
+{fall["frage"]}
+
+### Sätze
+{nummeriert}
+
+Antworte genau in diesem Format:
+BEGRÜNDUNG: <ein Satz>
+BENÖTIGT: <Nummern, kommagetrennt> oder KEINE"""
+    else:
+        prompt = f"""Hier sind eine Frage und nummerierte Sätze aus Lernmaterialien, die ein Suchsystem zu dieser Frage gefunden hat.
 Welche Sätze werden TATSÄCHLICH benötigt, um die Frage zu beantworten?
 
 Regeln:
@@ -451,21 +540,28 @@ def main():
     ap.add_argument("praefix", nargs="?", default=None, help="nur Sitzungen mit diesem Präfix, z. B. TEST")
     ap.add_argument("--limit", type=int, default=None, help="nur die ersten N Fälle")
     ap.add_argument("--judge", default=JUDGE_MODELL_STANDARD, help="Richter-Modell (Ollama-Tag)")
+    ap.add_argument("--judge-prompts", choices=sorted(RICHTER_PROMPTS), default="J-v1",
+                    help="Richter-Prompts: J-v1 (ab V6) oder F-v2 (= F-v2/AR-v3/CR-v1, V0–V5)")
+    ap.add_argument("--kb", default=KB_PFAD, help="Wissensbasis (Standard: knowledge_base.json)")
     ap.add_argument("--metriken", default="f,ar,cr",
                     help="Kommagetrennt: f = Faithfulness, ar = Answer Relevance, "
                          "cr = Context Relevance (Standard: alle)")
     args = ap.parse_args()
     args.metriken = [m.strip() for m in args.metriken.split(",") if m.strip()]
+    global PROMPT_VERSION
+    PROMPT_VERSION = RICHTER_PROMPTS[args.judge_prompts]
     mit_f, mit_ar, mit_cr = ("f" in args.metriken), ("ar" in args.metriken), ("cr" in args.metriken)
 
-    chunks = lade_wissensbasis(KB_PFAD)
-    kb_hash = berechne_kb_hash(KB_PFAD)
+    chunks = lade_wissensbasis(args.kb)
+    kb_hash = berechne_kb_hash(args.kb)
     zeilen = lade_interaktionen(sitzungs_praefix=args.praefix)
     bewertbar, ausgeschlossen = bereite_faelle_vor(zeilen, chunks, kb_hash)
     n_faelle = len(bewertbar) + len(ausgeschlossen)
 
     for f in bewertbar:
-        f["modell_verweigerung"] = ist_modell_verweigerung(f["loesung"])
+        # Ab G-v1 entscheidet das STATUS-Feld; ältere Versionen: Verweigerungs-Detektor v2 (Regex)
+        status = (f.get("status") or "").strip()
+        f["modell_verweigerung"] = (status == "NICHT_IM_MATERIAL") if status else ist_modell_verweigerung(f["loesung"])
     verweigert = [f for f in bewertbar if f["modell_verweigerung"]]
     inhaltlich = [f for f in bewertbar if not f["modell_verweigerung"]]
     gate = sum(a["grund"] == "gate_verweigerung" for a in ausgeschlossen)

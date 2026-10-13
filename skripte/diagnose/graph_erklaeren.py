@@ -14,6 +14,8 @@ Start:
   python graph_erklaeren.py "Was bringt der D-Anteil in einem Regler?" > graph_erklaerung.txt
   python graph_erklaeren.py "…" --chunks pdf_29143,pdf_29074 --rrf-k 5
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 import argparse
 
 import numpy as np
@@ -32,7 +34,7 @@ def main():
     ap.add_argument("--nachbarn", type=int, default=8)
     args = ap.parse_args()
 
-    chunks = rag_pipeline.lade_wissensbasis("knowledge_base.json")
+    chunks = rag_pipeline.lade_wissensbasis("daten/wissensbasen/knowledge_base_boege.json")
     g = wg.lade_graph(chunks)
     N = len(chunks)
     L, idf, df = g["labels"], g["idf"], g["df"]

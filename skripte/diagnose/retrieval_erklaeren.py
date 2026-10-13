@@ -28,6 +28,8 @@ Ausgabe: evaluationsdaten/frage_erklaerung_<frage>.html
 ⚠ Die Seite enthält wörtliche Handbuch-Auszüge -> nicht ins Git (siehe .gitignore),
   nicht hochladen; nur lokal / in der Besprechung zeigen.
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 import argparse
 import csv
 import html
@@ -80,7 +82,7 @@ def markiere_stamm(text, stamm_menge):
 
 
 def erwarteten_chunk_finden(frage):
-    pfad = Path("testfragen_v1.csv")
+    pfad = Path("daten/testfragen/testfragen_v1.csv")
     if not pfad.exists():
         return []
     with open(pfad, encoding="utf-8") as f:
@@ -467,13 +469,17 @@ def generierung(frage, res, chunks, top4_final):
     out["prompt"] = rp.baue_scaffolding_prompt(frage, top)
     t0 = time.time()
     out["roh"] = rp.frage_llm(out["prompt"], options=rp.GENERIERUNGS_OPTIONEN)
-    stufen = rp.parse_scaffolding_antwort(out["roh"])
+    stufen = (rp.parse_g_v1(out["roh"]) if rp.SCAFFOLDING_VERSION == "G-v1"
+              else rp.parse_scaffolding_antwort(out["roh"]))
     if rp.SCAFFOLDING_VERSION == "S2-v2" and hasattr(rp, "_hinweis_separat"):
         stufen.update(rp._hinweis_separat(frage, top, stufen))
     out["sekunden"] = time.time() - t0
     out["stufen"] = stufen
-    from ragas_auswertung import ist_modell_verweigerung
-    out["verweigerung"] = ist_modell_verweigerung(stufen["loesung"])
+    if stufen.get("status"):
+        out["verweigerung"] = stufen["status"] == "NICHT_IM_MATERIAL"
+    else:
+        from ragas_auswertung import ist_modell_verweigerung
+        out["verweigerung"] = ist_modell_verweigerung(stufen["loesung"])
     return out
 
 
@@ -508,18 +514,22 @@ Relevanzschwelle {rp.RELEVANZ_SCHWELLE} → kein LLM-Aufruf, feste Verweigerung.
     h3 = sc.H3.findall(st["hinweis"]) if st["hinweis"] else []
     leck = sorted(sc.zahlen_leck({"frage": gen.get("frage", ""), "hinweis": st["hinweis"], "loesung": st["loesung"]})) if st["hinweis"] else []
     anrede = "du" if sc.DU.search(st["hinweis"] + " " + st["loesung"]) else ("Sie" if sc.SIE.search(st["hinweis"] + " " + st["loesung"]) else "–")
-    zwei_aufrufe = gen["version"] == "S2-v2"
+    zwei_aufrufe = gen["version"] in ("S2-v2", "G-v1")
     hinweis_info = ""
     if zwei_aufrufe:
         quelle = st.get("hinweis_quelle", "")
-        hinweis_info = (f'<p class="klein">Version S2-v2: Hinweis in einem zweiten Aufruf erzeugt, der die Lösung kennt '
+        hinweis_info = (f'<p class="klein">Version G-v1: Lösung zuerst, dann verdeckte Überlegung, dann Hinweis (ein Aufruf).</p>'
+                        if gen["version"] == "G-v1" else
+                        f'<p class="klein">Version S2-v2: Hinweis in einem zweiten Aufruf erzeugt, der die Lösung kennt '
                         f'(Quelle: <code>{esc(quelle)}</code>).</p>')
         if st.get("hinweis_ueberlegung"):
             hinweis_info += (f'<details><summary>Verdeckte Überlegung des Modells (wird Lernenden nicht gezeigt)</summary>'
                              f'<pre>{esc(st["hinweis_ueberlegung"])}</pre></details>')
     pruef = (f'<table class="schmal"><tr><th>Prüfung (regelbasiert)</th><th>Ergebnis</th></tr>'
              f'<tr><td>Format: beide Marker gefunden</td><td>{"ja" if st["vollstaendig_geparst"] else "nein (ganze Antwort als Lösung)"}</td></tr>'
-             f'<tr><td>Modell-Verweigerung erkannt</td><td>{"ja" if gen["verweigerung"] else "nein"}</td></tr>'
+             + (f'<tr><td>STATUS (G-v1)</td><td><b>{esc(st["status"])}</b></td></tr>' if st.get("status") else "")
+             + (f'<tr><td>Formatfehler</td><td>{esc(st["format_fehler"])}</td></tr>' if st.get("format_fehler") else "")
+             + f'<tr><td>Modell-Verweigerung</td><td>{"ja" if gen["verweigerung"] else "nein"}</td></tr>'
              f'<tr><td>Hinweis verweist auf Text, den Lernende nicht sehen</td><td>{esc(", ".join(h3)) if h3 else "nein"}</td></tr>'
              f'<tr><td>Hinweis verrät Zahl aus der Lösung</td><td>{esc(", ".join(leck)) if leck else "nein"}</td></tr>'
              f'<tr><td>Anrede</td><td>{anrede}</td></tr></table>')
@@ -690,7 +700,7 @@ def main():
     ap.add_argument("--ohne-bewertung", action="store_true", help="Generierung ja, RAGAS-Bewertung nein")
     ap.add_argument("--scaffolding", default=None, help=f"Stufen-Prompt (Standard: {rp.SCAFFOLDING_VERSION})")
     ap.add_argument("--judge", default=None, help="Richter-Modell (Standard: wie ragas_auswertung.py)")
-    ap.add_argument("--kb", default="knowledge_base.json")
+    ap.add_argument("--kb", default="daten/wissensbasen/knowledge_base_boege.json")
     args = ap.parse_args()
     if args.scaffolding:
         rp.SCAFFOLDING_VERSION = args.scaffolding

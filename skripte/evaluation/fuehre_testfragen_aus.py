@@ -21,6 +21,8 @@ Start:
   python fuehre_testfragen_aus.py V4-S2     --retrieval hybrid_kg_rr --rrf-k 5   # 2 Stufen (S2-v1)
   python fuehre_testfragen_aus.py TEST-01                     # Standard (RETRIEVAL_METHODE)
 """
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 import argparse
 import csv
 import datetime
@@ -37,11 +39,11 @@ from rag_pipeline import (
     protokolliere_interaktion, INTERAKTIONS_LOG, LOG_VERZEICHNIS,
 )
 
-TESTFRAGEN = Path("testfragen_v1.csv")
-KB_PFAD = "knowledge_base.json"
+TESTFRAGEN = Path("daten/testfragen/testfragen_v1.csv")
+KB_PFAD = "daten/wissensbasen/knowledge_base_boege.json"
 TOP_K = 4
 FELDER = ["nr", "typ", "frage", "erwarteter_chunk", "top_ids", "bester_score",
-          "genuegend_relevanz", "vollstaendig_geparst", "sekunden",
+          "genuegend_relevanz", "vollstaendig_geparst", "status", "format_fehler", "sekunden",
           "rang_erwartet", "treffer_exakt", "treffer_inkl_nachbar", "fehler"]
 
 
@@ -120,6 +122,7 @@ def schreibe_lauf_konfiguration(sitzungs_id, methode, kb_hash, n_chunks):
         "embedding_modell": rag_pipeline.EMBEDDING_MODELL_NAME,
         "ollama_version": ollama_version,
         "testfragen_datei": str(TESTFRAGEN),
+        "wissensbasis_datei": str(KB_PFAD),
     }
     if methode.endswith("_rr"):
         import reranker
@@ -144,9 +147,16 @@ def main():
                     help=f"Retrieval-Methode (Standard: {rag_pipeline.RETRIEVAL_METHODE})")
     ap.add_argument("--rrf-k", type=int, default=None,
                     help=f"RRF-Konstante für hybrid (Standard: {rag_pipeline.RRF_K})")
+    ap.add_argument("--kb", default=None, help="Wissensbasis (Standard: knowledge_base.json)")
+    ap.add_argument("--fragen", default=None, help="Testfragen-CSV (Standard: testfragen_v1.csv)")
     ap.add_argument("--scaffolding", choices=sorted(rag_pipeline.SCAFFOLDING_MARKER_VERSIONEN), default=None,
-                    help=f"Stufen-Prompt (Standard: {rag_pipeline.SCAFFOLDING_VERSION}; S3-v0 = V0–V3, S2-v1 = V4, S2-v2 = V5)")
+                    help=f"Stufen-Prompt (Standard: {rag_pipeline.SCAFFOLDING_VERSION}; S3-v0 = V0–V3, S2-v1 = V4, S2-v2 = V5, G-v1 = V6)")
     args = ap.parse_args()
+    global KB_PFAD, TESTFRAGEN
+    if args.kb:
+        KB_PFAD = args.kb
+    if args.fragen:
+        TESTFRAGEN = Path(args.fragen)
     sitzungs_id = args.sitzungs_id
     methode = args.retrieval or rag_pipeline.RETRIEVAL_METHODE
     if args.rrf_k is not None:
@@ -198,13 +208,15 @@ def main():
                                   scaffolding_stufe_erreicht=len(rag_pipeline.scaffolding_marker()))
 
         top_ids = [c["id"] for c in ergebnis["top_chunks"]]
-        erwartet = q["chunk_id"].strip()
+        erwartet = (q.get("chunk_id") or "").strip()
         zeile = {
             "nr": q["nr"], "typ": q["typ"], "frage": q["frage"],
             "erwarteter_chunk": erwartet, "top_ids": "; ".join(top_ids),
             "bester_score": round(ergebnis["bester_score"], 4),
             "genuegend_relevanz": ergebnis["genuegend_relevanz"],
             "vollstaendig_geparst": ergebnis["vollstaendig_geparst"],
+            "status": ergebnis.get("status", ""),
+            "format_fehler": ergebnis.get("format_fehler", ""),
             "sekunden": round(dauer, 1),
         }
         if erwartet:
@@ -237,6 +249,15 @@ def main():
         print(f"Korrekt verweigert (außerhalb): {sum(not ist_wahr(z['genuegend_relevanz']) for z in aussen)}/{len(aussen)}")
     if generiert:
         print(f"Stufen-Format eingehalten:      {sum(ist_wahr(z['vollstaendig_geparst']) for z in generiert)}/{len(generiert)}")
+    mit_status = [z for z in ok if z.get("status")]
+    if mit_status:  # ab G-v1: Status je Fragetyp (Abnahmekriterien, Spezifikation §8)
+        from collections import Counter
+        print("Status je Fragetyp:")
+        for typ in sorted({z["typ"] for z in mit_status}):
+            c = Counter(z["status"] for z in mit_status if z["typ"] == typ)
+            print(f"  {typ:<13} " + ", ".join(f"{k} {v}" for k, v in sorted(c.items())))
+        ff = [z for z in mit_status if z.get("format_fehler")]
+        print(f"Formatfehler: {len(ff)}/{len(mit_status)}" + (f"  (Nr. {[z['nr'] for z in ff]})" if ff else ""))
     print(f"Bericht: {bericht_datei}")
 
 

@@ -1,11 +1,13 @@
 """Exportiert eine über Kapitel verteilte Stichprobe sauberer Chunks
 zur Erstellung eines Testfragen-Sets (einmaliges Hilfsskript)."""
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
 import json, random, re
 
 random.seed(42)
 ANZAHL = 60
 
-with open("knowledge_base.json", encoding="utf-8") as f:
+with open("daten/wissensbasen/knowledge_base_boege.json", encoding="utf-8") as f:
     chunks = json.load(f)["chunks"]
 
 def ist_sauber(text):
@@ -24,7 +26,7 @@ themen = sorted(nach_thema)
 schritt = max(1, len(themen) // ANZAHL)
 auswahl = [random.choice(nach_thema[t]) for t in themen[::schritt]][:ANZAHL]
 
-with open("stichprobe_testfragen.json", "w", encoding="utf-8") as f:
+with open("daten/testfragen/stichprobe_testfragen.json", "w", encoding="utf-8") as f:
     json.dump([{k: c.get(k) for k in ("id", "thema", "seite", "text")} for c in auswahl],
               f, ensure_ascii=False, indent=2)
 

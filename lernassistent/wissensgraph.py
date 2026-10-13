@@ -492,7 +492,7 @@ new vis.Network(document.getElementById("g"),
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--kb", default="knowledge_base.json")
+    ap.add_argument("--kb", default="daten/wissensbasen/knowledge_base_boege.json")
     ap.add_argument("--stats", action="store_true")
     ap.add_argument("--frage")
     ap.add_argument("--knoten", type=int, default=40)
