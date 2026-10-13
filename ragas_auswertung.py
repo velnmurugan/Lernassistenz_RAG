@@ -14,7 +14,8 @@ Bewusste Abweichungen vom Original (im Methodenteil zu nennen):
   - Richter-LLM lokal (Standard qwen3.5:9b, per --judge austauschbar) statt GPT-3.5
   - Prompts auf Deutsch (Quellmaterial deutschsprachig)
   - Aussagenprüfung einzeln pro Aussage statt gebündelt (robuster bei kleinen Modellen)
-  - Bewerteter Antworttext = Hinweis + Erklärung + Lösung (alles, was Lernende sehen)
+  - Bewerteter Antworttext = Hinweis + Erklärung + Lösung (alles, was Lernende sehen;
+    ab V4 ohne Erklärung, die Spalte bleibt leer)
   - Meta-Aussagen (Tipps an Lernende, Aussagen über den Kontext) werden verworfen und gezählt
   - Modellseitige Verweigerungen werden erkannt und NICHT bewertet (weder Faithfulness
     noch Answer Relevance), sondern separat gezählt
@@ -61,11 +62,11 @@ from collections import Counter
 
 from rag_pipeline import (
     lade_wissensbasis, berechne_kb_hash, frage_llm, _lade_embedding_modell, _satzsplit,
-    INTERAKTIONS_LOG, LOG_VERZEICHNIS,
+    INTERAKTIONS_LOG, LOG_VERZEICHNIS, MODEL_NAME,
 )
 
 KB_PFAD = "knowledge_base.json"
-JUDGE_MODELL_STANDARD = "mistral-nemo"
+JUDGE_MODELL_STANDARD = "mistral-nemo"  # bewusst NICHT der Generator (qwen3.5:9b): Selbstbevorzugung vermeiden
 JUDGE_OPTIONEN = {"temperature": 0, "seed": 42}
 PROMPT_VERSION = "F-v2/AR-v3/CR-v1"
 AR_ANZAHL_FRAGEN = 3
@@ -132,7 +133,9 @@ def bereite_faelle_vor(zeilen, chunks, kb_hash_aktuell):
             ausgeschlossen.append({**fall, "grund": "chunks_fehlen"})
             continue
         fall["kontext_chunks"] = kontext
-        fall["geparst"] = bool(fall["hinweis"].strip() and fall["erklaerung"].strip())
+        # Hinweis ist nur bei erfolgreichem Parsen gefüllt (Fallback: alles in loesung).
+        # Gilt für 3 Stufen (V0–V3, S3-v0) und 2 Stufen (ab V4, S2-v1) gleichermaßen.
+        fall["geparst"] = bool(fall["hinweis"].strip())
         bewertbar.append(fall)
     return bewertbar, ausgeschlossen
 
@@ -468,6 +471,10 @@ def main():
     gate = sum(a["grund"] == "gate_verweigerung" for a in ausgeschlossen)
 
     print(f"kb_hash={kb_hash}  Filter={args.praefix or '(alle)'}  Richter={args.judge}  Prompt={PROMPT_VERSION}")
+    if args.judge.split(":")[0] == MODEL_NAME.split(":")[0]:
+        print(f"\n!!! WARNUNG: Richter ({args.judge}) = Generator ({MODEL_NAME}) -> Selbstbewertung, "
+              f"Ergebnisse NICHT mit anderen Versionen vergleichbar. Strg+C zum Abbrechen, sonst weiter in 10 s ...\n")
+        time.sleep(10)
     print(f"Log-Zeilen {len(zeilen)} -> Fälle {n_faelle}")
     for grund, n in Counter(a["grund"] for a in ausgeschlossen).items():
         print(f"  ausgeschlossen ({grund}): {n}")

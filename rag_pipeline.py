@@ -637,94 +637,150 @@ Antwort:"""
 
 
 # =============================================================================
-# Pädagogisches Scaffolding: Hinweis -> Erklärung -> Lösung
+# Pädagogisches Scaffolding
 # =============================================================================
-# Statt die vollständige Antwort sofort zu zeigen, generiert das System DREI
-# aufeinander aufbauende Stufen in einer Antwort, die im Interface schrittweise
-# freigeschaltet werden. Dies setzt die im Systemkonzept (Säule
-# "Lernunterstützung") bereits benannte Struktur tatsächlich um.
+# V4 (S2-v1, 12 Oct 2026): ZWEI Stufen statt drei — Hinweis -> Lösung mit kurzer
+# Begründung. Dazwischen kann die/der Lernende eine eigene Idee eingeben und
+# bekommt eine Rückmeldung (ideen_feedback.py). Die frühere Erklärungs-Stufe
+# entfällt: Erklärung und Lösung waren in V3 weitgehend redundant (Median 48 vs.
+# 42 Wörter; die Erklärung nannte oft schon das Ergebnis), und die Ideen-Rückmeldung
+# übernimmt die Zwischenstufe ("targeted feedback", Zourlidou et al. 2026).
+# Einordnung (van de Pol et al. 2010, via Chen et al. 2026): Hinweis = hinting,
+# Rückmeldung = feedback, Lösung = explaining + modeling.
+# Zusätzlich die Hinweis-Regeln H1–H3 aus claude/Scaffolding_Spezifikation.md:
+#   H1 Antwort nicht verraten (Jangra et al. 2025; MRBench "Revealing Answer"),
+#   H2 Begriff / Größe / nächsten Denkschritt nennen (Zourlidou-Stufe 1),
+#   H3 nicht auf den Kontext verweisen — die/der Lernende sieht ihn nicht
+#      (V3-Basislinie: 5 von 21 Hinweisen sagten "Suchen Sie im Kontext ...").
+# Feste Längenvorgabe ("3-4 Sätze") entfällt.
+# Verweigerung: Formulierung "Die Lernmaterialien enthalten ... keine ..." wird vom
+# Verweigerungs-Detektor v2 (ragas_auswertung.py) erkannt.
 #
-# Quellen:
-#   - Happe, L., Fuchß, D., Hüttner, L., Marquardt, K. & Koziolek, A. (2025).
-#     An Experience Report on a Pedagogically Controlled, Curriculum-
-#     Constrained AI Tutor for SE Education. — nutzen exakt diese Struktur
-#     (Hints, Explanations, Solutions als getaggte Abschnitte), dort jedoch
-#     von Kursautor:innen VORAUTORIERT statt vom LLM generiert. Da uns diese
-#     manuelle Autorenkapazität in Phase 2 fehlt (siehe eigene Notiz zu
-#     Happe et al.: "Qualität des Scaffoldings hängt direkt vom
-#     Autorenaufwand ab"), wird die Stufung hier stattdessen dynamisch per
-#     Prompting erzeugt — pragmatischer Kompromiss, keine Behauptung
-#     gleichwertiger Qualität.
-#   - Modran, H. A. (2025). Leveraging RAG with ACP & MCP for Adaptive
-#     Intelligent Tutoring. — nutzt ein steuerbares hinting_level statt
-#     fester Tags; unser dreistufiges Modell ist eine vereinfachte,
-#     nicht-kontinuierliche Variante desselben Grundgedankens.
-#   - Neagu, A., Wong, J. T. H., Messer, M., Nelson, R. & Johnson, P. B.
-#     (2026). Rethinking Scaffolding in LLM Tutors. — zeigen, dass Lernende
-#     angebotenes Scaffolding in echten Deployments häufig umgehen und
-#     direkte Antworten verlangen. Deshalb wird hier nicht nur ANGEBOTEN,
-#     sondern auch PROTOKOLLIERT, wie weit einzelne Proband:innen die
-#     Stufen tatsächlich durchlaufen (siehe protokolliere_interaktion,
-#     Feld "scaffolding_stufe_erreicht") — als eigenes Uptake-Maß analog
-#     zu Neagu et al., nicht nur als Angebot ohne Wirkungskontrolle.
-SCAFFOLDING_MARKER = {"hinweis": "STUFE1_HINWEIS:", "erklaerung": "STUFE2_ERKLAERUNG:", "loesung": "STUFE3_LOESUNG:"}
+# Die alte 3-Stufen-Version (S3-v0, V0–V3) bleibt für Reproduzierbarkeit wählbar:
+# SCAFFOLDING_VERSION = "S3-v0".
+#
+# Quellen der Grundstruktur:
+#   - Happe et al. (2025): Hints/Explanations/Solutions als getaggte Abschnitte,
+#     dort von Kursautor:innen vorautoriert statt LLM-generiert.
+#   - Modran (2025): steuerbares hinting_level; unser Stufenmodell ist eine
+#     vereinfachte, nicht-kontinuierliche Variante.
+#   - Neagu et al. (2026): Lernende umgehen Scaffolding oft -> protokolliert wird,
+#     wie weit Proband:innen die Stufen tatsächlich öffnen
+#     (protokolliere_interaktion, Feld "scaffolding_stufe_erreicht").
+SCAFFOLDING_VERSION = "S2-v1"
+SCAFFOLDING_MARKER_VERSIONEN = {
+    "S3-v0": {"hinweis": "STUFE1_HINWEIS:", "erklaerung": "STUFE2_ERKLAERUNG:", "loesung": "STUFE3_LOESUNG:"},
+    "S2-v1": {"hinweis": "STUFE1_HINWEIS:", "loesung": "STUFE2_LOESUNG:"},
+}
 
 
-def baue_scaffolding_prompt(frage, ausgewaehlte_chunks):
-    """Fordert das Modell auf, EINE Antwort in drei klar markierten,
-    aufeinander aufbauenden Stufen zu liefern (siehe Modulkommentar oben)."""
-    kontext = "\n\n".join(
+def scaffolding_marker():
+    return SCAFFOLDING_MARKER_VERSIONEN[SCAFFOLDING_VERSION]
+
+
+def _kontext_text(ausgewaehlte_chunks):
+    return "\n\n".join(
         f"[Quelle {c['id']} – {c['thema']}]: {c['text']}" for c in ausgewaehlte_chunks
     )
+
+
+def _prompt_s3_v0(frage, ausgewaehlte_chunks):
+    """V0–V3: drei Stufen (unverändert, für Reproduzierbarkeit)."""
+    m = SCAFFOLDING_MARKER_VERSIONEN["S3-v0"]
     return f"""Du bist ein Lernassistent für die technische und berufliche Bildung.
 Beantworte die folgende Frage NUR auf Basis des gegebenen Kontexts, in DREI
 aufeinander aufbauenden Stufen. Wenn der Kontext die Frage nicht ausreichend
 beantwortet, sage das ehrlich in allen drei Stufen, anstatt zu raten.
 
-{SCAFFOLDING_MARKER['hinweis']} Ein kurzer Hinweis (1-2 Sätze), der in die
+{m['hinweis']} Ein kurzer Hinweis (1-2 Sätze), der in die
 richtige Richtung lenkt, OHNE die Antwort direkt zu verraten. Soll zum
 eigenen Nachdenken anregen.
 
-{SCAFFOLDING_MARKER['erklaerung']} Eine ausführlichere Erklärung des
+{m['erklaerung']} Eine ausführlichere Erklärung des
 relevanten Konzepts aus dem Kontext (3-4 Sätze), die der Antwort schon
 näherkommt, aber noch nicht die vollständige, direkte Antwort ist.
 
-{SCAFFOLDING_MARKER['loesung']} Die vollständige, direkte Antwort auf die
+{m['loesung']} Die vollständige, direkte Antwort auf die
 Frage, verständlich auf dem Niveau von Auszubildenden erklärt.
 
 Halte dich EXAKT an dieses Format mit allen drei Markern.
 
 Kontext:
-{kontext}
+{_kontext_text(ausgewaehlte_chunks)}
 
 Frage: {frage}"""
 
 
+def _prompt_s2_v1(frage, ausgewaehlte_chunks):
+    """V4: zwei Stufen + Hinweis-Regeln H1–H3 (siehe Modulkommentar)."""
+    m = SCAFFOLDING_MARKER_VERSIONEN["S2-v1"]
+    return f"""Du bist ein Lernassistent für Auszubildende in technischen Berufen.
+Beantworte die folgende Frage NUR auf Basis des gegebenen Kontexts, in ZWEI Stufen.
+
+Wichtig: Die/der Auszubildende sieht den Kontext NICHT. Schreibe deshalb nie
+„im Kontext", „im Text", „in der Quelle" oder „suche nach dem Abschnitt".
+
+{m['hinweis']} Ein Denkanstoß in 1-2 Sätzen, der in die richtige Richtung lenkt:
+- Nenne den Begriff, die Größe oder den nächsten Denkschritt, um den es geht.
+- Verrate die Antwort NICHT: kein Ergebnis, kein Zahlenwert, keine Formel und
+  nicht die gesuchte Kernaussage.
+- Du darfst mit einer Frage an die/den Auszubildende:n enden.
+
+{m['loesung']} Die vollständige Antwort mit kurzer Begründung, verständlich für
+Auszubildende:
+- Zuerst die Antwort, dann warum. Begründe nur mit Zusammenhängen aus dem Kontext.
+- Bei Rechnungen: Formel, Rechenweg mit Zahlen und Ergebnis.
+- Kein Widerspruch zum Hinweis.
+
+Wenn der Kontext die Frage nicht ausreichend beantwortet, rate nicht. Schreibe dann
+in beiden Stufen ehrlich, dass die Lernmaterialien dazu keine ausreichende Antwort
+enthalten.
+
+Sprich die/den Auszubildende:n mit „du" an. Halte dich EXAKT an dieses Format mit
+beiden Markern.
+
+Kontext:
+{_kontext_text(ausgewaehlte_chunks)}
+
+Frage: {frage}"""
+
+
+_PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1}
+
+
+def baue_scaffolding_prompt(frage, ausgewaehlte_chunks):
+    """Prompt der aktuellen SCAFFOLDING_VERSION (siehe Modulkommentar oben)."""
+    return _PROMPTS[SCAFFOLDING_VERSION](frage, ausgewaehlte_chunks)
+
+
 def parse_scaffolding_antwort(rohtext):
     """
-    Zerlegt die vom Modell gelieferte, dreistufige Rohantwort in die
-    einzelnen Stufen. Bewusst als reine, vom LLM-Aufruf getrennte Funktion,
+    Zerlegt die gestufte Rohantwort in die einzelnen Stufen (Marker der aktuellen
+    SCAFFOLDING_VERSION). Bewusst als reine, vom LLM-Aufruf getrennte Funktion,
     damit sie ohne Modell getestet werden kann.
 
-    Fallback: Liefert das Modell nicht alle drei Marker (LLMs halten
-    Formatvorgaben nicht immer exakt ein), wird der GESAMTE Rohtext als
-    'loesung' verwendet und Hinweis/Erklärung leer gelassen — die
-    Studien-App zeigt in diesem Fall direkt die volle Antwort, statt
-    Proband:innen mit einer leeren Stufe hängenzulassen.
+    Rückgabe hat immer die Schlüssel hinweis / erklaerung / loesung (bei S2-v1 ist
+    erklaerung leer), damit das Format von interaktionen.csv und alle
+    Auswertungsskripte unverändert bleiben.
+
+    Fallback: Fehlt ein Marker (LLMs halten Formatvorgaben nicht immer exakt ein),
+    wird der GESAMTE Rohtext als 'loesung' verwendet und der Rest leer gelassen —
+    die Studien-App zeigt dann direkt die volle Antwort.
     """
+    marker = scaffolding_marker()
     marker_positionen = {}
-    for stufe, marker in SCAFFOLDING_MARKER.items():
-        pos = rohtext.find(marker)
+    for stufe, m in marker.items():
+        pos = rohtext.find(m)
         if pos != -1:
             marker_positionen[stufe] = pos
 
-    if len(marker_positionen) < 3:
+    if len(marker_positionen) < len(marker):
         return {"hinweis": "", "erklaerung": "", "loesung": rohtext.strip(), "vollstaendig_geparst": False}
 
     sortiert = sorted(marker_positionen.items(), key=lambda x: x[1])
-    ergebnis = {"vollstaendig_geparst": True}
+    ergebnis = {"hinweis": "", "erklaerung": "", "loesung": "", "vollstaendig_geparst": True}
     for i, (stufe, pos) in enumerate(sortiert):
-        start = pos + len(SCAFFOLDING_MARKER[stufe])
+        start = pos + len(marker[stufe])
         ende = sortiert[i + 1][1] if i + 1 < len(sortiert) else len(rohtext)
         ergebnis[stufe] = rohtext[start:ende].strip()
 
@@ -762,7 +818,7 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None):
     Raten bei bester_score < Schwelle ist die zentrale Sicherheitsmaßnahme
     des Systems (Systemkonzept-Säule "Sicherheit"; siehe auch
     Grounding-Prinzip bei Lewis et al. 2020). Die dreistufige Antwort
-    (Hinweis/Erklärung/Lösung) setzt die Säule "Lernunterstützung" um
+    (Hinweis -> Lösung, ab V4; siehe SCAFFOLDING_VERSION) setzt die Säule "Lernunterstützung" um
     (siehe baue_scaffolding_prompt-Modulkommentar für Quellen).
 
     methode: Retrieval-Methode (None = RETRIEVAL_METHODE, siehe retrieval()).
@@ -818,8 +874,8 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None):
 def protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=1):
     """
     scaffolding_stufe_erreicht: wie weit die/der Proband:in tatsächlich
-    geklickt hat (1 = nur Hinweis gesehen, 2 = + Erklärung, 3 = + volle
-    Lösung). Eigenes Uptake-Maß analog zu Neagu et al. (2026), die zeigen,
+    geklickt hat. Ab V4 (S2-v1): 1 = nur Hinweis gesehen, 2 = + Lösung.
+    V0–V3 (S3-v0): 1 = Hinweis, 2 = + Erklärung, 3 = + Lösung. Eigenes Uptake-Maß analog zu Neagu et al. (2026), die zeigen,
     dass Lernende angebotenes Scaffolding in der Praxis oft umgehen —
     dieses Feld macht messbar, ob dasselbe hier passiert, statt nur zu
     protokollieren, DASS Scaffolding angeboten wurde.
@@ -876,11 +932,11 @@ FRAGEBOGEN_ITEMS = [
     {"id": "TRUST3", "dimension": "Vertrauen (Trust)",
      "text": "Ich fand es gut, dass der Assistent auch mal 'Ich weiß es nicht' sagt, statt zu raten."},
     # Scaffolding-Items: operationalisieren direkt die Systemkonzept-Säule
-    # "Lernunterstützung" (Hinweis -> Erklärung -> Lösung). SCAFF2 misst
+    # "Lernunterstützung" (Hinweis -> eigene Idee -> Lösung, ab V4). SCAFF2 misst
     # bewusst nicht nur Zustimmung, sondern das Bypass-Verhalten selbst
     # (vgl. Neagu et al. 2026, Instrumentelles vs. exekutives Hilfesuchen).
     {"id": "SCAFF1", "dimension": "Lernunterstützung / Scaffolding",
-     "text": "Die abgestuften Hinweise (Hinweis → Erklärung → Lösung) haben mir beim eigenständigen Lernen geholfen."},
+     "text": "Die schrittweise Hilfe (Hinweis → eigene Idee mit Rückmeldung → Lösung) hat mir beim eigenständigen Lernen geholfen."},
     {"id": "SCAFF2", "dimension": "Lernunterstützung / Scaffolding",
      "text": "Ich habe meistens versucht, erst mit dem Hinweis selbst weiterzukommen, bevor ich die volle Lösung angesehen habe."},
     {"id": "ITU1", "dimension": "Nutzungsabsicht (Intention to Use)",

@@ -84,10 +84,11 @@ def main():
                 print(f"VERWEIGERT (Schwelle): bester Kosinus {ergebnis['bester_score']:.3f} "
                       f"< {rag_pipeline.RELEVANZ_SCHWELLE}")
             block("STUFE 1 – Hinweis:", ergebnis.get("hinweis"))
-            block("STUFE 2 – Erklärung:", ergebnis.get("erklaerung"))
-            block("STUFE 3 – Lösung:", ergebnis.get("loesung"))
+            if ergebnis.get("erklaerung"):  # nur 3-Stufen-Version (S3-v0)
+                block("STUFE 2 – Erklärung:", ergebnis.get("erklaerung"))
+            block("LÖSUNG:", ergebnis.get("loesung"))
             if not ergebnis.get("vollstaendig_geparst"):
-                print("\n  (Hinweis: Antwort nicht im 3-Stufen-Format geparst)")
+                print(f"\n  (Hinweis: Antwort nicht im Stufen-Format {rag_pipeline.SCAFFOLDING_VERSION} geparst)")
 
 
 if __name__ == "__main__":

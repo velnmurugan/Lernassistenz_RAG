@@ -1,0 +1,56 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+32 Ideen zu 8 Fragen, Retrieval=hybrid_kg_rr, RRF_K=5, Prompt=IF-v1, kb_hash=97da9ea85ed3
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:  36%|███▌      | 72/199 [00:00<00:00, 718.77it/s]Loading weights:  91%|█████████ | 181/199 [00:00<00:00, 933.31it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 980.06it/s]
+Loading weights:   0%|          | 0/393 [00:00<?, ?it/s]Loading weights:   7%|▋         | 27/393 [00:00<00:01, 196.76it/s]Loading weights:  14%|█▎        | 54/393 [00:00<00:01, 225.78it/s]Loading weights:  21%|██        | 83/393 [00:00<00:01, 246.23it/s]Loading weights:  27%|██▋       | 108/393 [00:00<00:01, 233.03it/s]Loading weights:  34%|███▎      | 132/393 [00:00<00:01, 226.16it/s]Loading weights:  39%|███▉      | 155/393 [00:00<00:01, 160.80it/s]Loading weights:  44%|████▍     | 174/393 [00:00<00:01, 156.56it/s]Loading weights:  49%|████▉     | 193/393 [00:01<00:01, 162.02it/s]Loading weights:  55%|█████▌    | 218/393 [00:01<00:00, 179.72it/s]Loading weights:  61%|██████▏   | 241/393 [00:01<00:00, 189.96it/s]Loading weights:  69%|██████▉   | 273/393 [00:01<00:00, 222.13it/s]Loading weights:  77%|███████▋  | 301/393 [00:01<00:00, 232.13it/s]Loading weights:  83%|████████▎ | 326/393 [00:01<00:00, 236.79it/s]Loading weights:  90%|████████▉ | 352/393 [00:01<00:00, 236.00it/s]Loading weights: 100%|██████████| 393/393 [00:01<00:00, 231.71it/s]
+[Q1] Antwort in 75s: Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minut
+      richtig     -> richtig    ok  
+      teilweise   -> teilweise  ok  
+      falsch      -> falsch     ok  
+      keine_idee  -> keine_idee ok  
+[Q3] Antwort in 32s: Wieso gibt man Mangan in Automatenstähle, die Schwefel entha
+      richtig     -> richtig    ok  
+      teilweise   -> teilweise  ok  
+      falsch      -> falsch     ok  
+      keine_idee  -> keine_idee ok  
+[Q8] Antwort in 18s: Warum darf man einen großen Drehstrommotor nicht einfach dir
+      richtig     -> teilweise  ABW 
+      teilweise   -> teilweise  ok  
+      falsch      -> falsch     ok  
+      keine_idee  -> keine_idee ok  
+[Q10] Antwort in 30s: Wie viele ISO-Toleranzgrade gibt es und welcher ist der gena
+      richtig     -> richtig    ok  
+      teilweise   -> teilweise  ok  
+      falsch      -> falsch     ok  
+      keine_idee  -> keine_idee ok  
+[Q14] Antwort in 27s: Warum braucht man bei mehrstufigen Kompressoren eine Zwische
+      richtig     -> teilweise  ABW 
+      teilweise   -> teilweise  ok  
+      falsch      -> falsch     ok  
+      keine_idee  -> keine_idee ok  
+[Q17] Antwort in 477s: Wann spannt man ein Werkstück auf der Drehmaschine auf eine 
+      richtig     -> richtig    ok  
+      teilweise   -> teilweise  ok  
+      falsch      -> falsch     ok  
+      keine_idee  -> keine_idee ok  
+[Q20] Antwort in 18s: Wie funktioniert eine Zweihandverriegelung in der SPS?
+      richtig     -> teilweise  ABW 
+      teilweise   -> teilweise  ok  
+      falsch      -> falsch     ok  
+      keine_idee  -> keine_idee ok  
+[Q21] Antwort in 19s: Was bringt der D-Anteil in einem Regler?
+      richtig     -> teilweise  ABW 
+      teilweise   -> teilweise  ok  
+      falsch      -> falsch     ok  
+      keine_idee  -> keine_idee ok  
+
+--- Zusammenfassung IF-v1 (32 Rückmeldungen) ---
+Format geparst:      32/32
+Urteil wie erwartet: 28/32
+   richtig     4/8   Urteile: {'richtig': 4, 'teilweise': 4}
+   teilweise   8/8   Urteile: {'teilweise': 8}
+   falsch      8/8   Urteile: {'falsch': 8}
+   keine_idee  8/8   Urteile: {'keine_idee': 8}
+Leck-Verdacht (Zahlen): 0/32
+Median Sekunden:     3.5
+Ergebnis: evaluationsdaten/test_ideen_feedback_IF-v1.csv  (Spalten S1/S2/fehler_erkannt von Hand ausfüllen)

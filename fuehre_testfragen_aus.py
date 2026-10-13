@@ -17,7 +17,8 @@ Start:
   python fuehre_testfragen_aus.py V1-HYBRID --retrieval hybrid --rrf-k 2
   python fuehre_testfragen_aus.py V1-BM25   --retrieval bm25
   python fuehre_testfragen_aus.py V2-KG     --retrieval hybrid_kg --rrf-k 5
-  python fuehre_testfragen_aus.py V3-RR     --retrieval hybrid_kg_rr --rrf-k 5
+  python fuehre_testfragen_aus.py V3-RR     --retrieval hybrid_kg_rr --rrf-k 5 --scaffolding S3-v0
+  python fuehre_testfragen_aus.py V4-S2     --retrieval hybrid_kg_rr --rrf-k 5   # 2 Stufen (S2-v1)
   python fuehre_testfragen_aus.py TEST-01                     # Standard (RETRIEVAL_METHODE)
 """
 import argparse
@@ -94,6 +95,7 @@ def schreibe_lauf_konfiguration(sitzungs_id, methode, kb_hash, n_chunks):
         "relevanz_schwelle": rag_pipeline.RELEVANZ_SCHWELLE,
         "generator_modell": rag_pipeline.MODEL_NAME,
         "generierungs_optionen": rag_pipeline.GENERIERUNGS_OPTIONEN,
+        "scaffolding_version": rag_pipeline.SCAFFOLDING_VERSION,
         "embedding_modell": rag_pipeline.EMBEDDING_MODELL_NAME,
         "ollama_version": ollama_version,
         "testfragen_datei": str(TESTFRAGEN),
@@ -121,11 +123,15 @@ def main():
                     help=f"Retrieval-Methode (Standard: {rag_pipeline.RETRIEVAL_METHODE})")
     ap.add_argument("--rrf-k", type=int, default=None,
                     help=f"RRF-Konstante für hybrid (Standard: {rag_pipeline.RRF_K})")
+    ap.add_argument("--scaffolding", choices=sorted(rag_pipeline.SCAFFOLDING_MARKER_VERSIONEN), default=None,
+                    help=f"Stufen-Prompt (Standard: {rag_pipeline.SCAFFOLDING_VERSION}; S3-v0 = V0–V3)")
     args = ap.parse_args()
     sitzungs_id = args.sitzungs_id
     methode = args.retrieval or rag_pipeline.RETRIEVAL_METHODE
     if args.rrf_k is not None:
         rag_pipeline.RRF_K = args.rrf_k
+    if args.scaffolding:
+        rag_pipeline.SCAFFOLDING_VERSION = args.scaffolding
     bericht_datei = LOG_VERZEICHNIS / f"testlauf_retrieval_{sitzungs_id}.csv"
 
     # Fortsetzung: bereits geloggte Fragen dieser Sitzung überspringen
@@ -152,7 +158,7 @@ def main():
         print(f"Konfiguration: {konfig_pfad}")
         print(f"{len(fragen)} offene Fragen, {len(chunks)} Chunks, kb_hash={kb_hash}, "
               f"Sitzung={sitzungs_id}, Retrieval={methode}, RRF_K={rag_pipeline.RRF_K}, "
-              f"Generierung={rag_pipeline.GENERIERUNGS_OPTIONEN}\n")
+              f"Generierung={rag_pipeline.GENERIERUNGS_OPTIONEN}, Stufen={rag_pipeline.SCAFFOLDING_VERSION}\n")
 
     for q in fragen:
         t0 = time.time()
@@ -165,9 +171,10 @@ def main():
         dauer = time.time() - t0
 
         ergebnis["kb_hash"] = kb_hash
-        # Stufe 3: im Batchlauf gilt die volle Antwort als 'gesehen'. Uptake-Werte
+        # Letzte Stufe (3 bei S3-v0, 2 bei S2-v1): im Batchlauf gilt die volle Antwort als 'gesehen'. Uptake-Werte
         # aus Testsitzungen werden nicht als Nutzungsverhalten interpretiert.
-        protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=3)
+        protokolliere_interaktion(sitzungs_id, ergebnis,
+                                  scaffolding_stufe_erreicht=len(rag_pipeline.scaffolding_marker()))
 
         top_ids = [c["id"] for c in ergebnis["top_chunks"]]
         erwartet = q["chunk_id"].strip()
@@ -206,7 +213,7 @@ def main():
     if aussen:
         print(f"Korrekt verweigert (außerhalb): {sum(not ist_wahr(z['genuegend_relevanz']) for z in aussen)}/{len(aussen)}")
     if generiert:
-        print(f"3-Stufen-Format eingehalten:    {sum(ist_wahr(z['vollstaendig_geparst']) for z in generiert)}/{len(generiert)}")
+        print(f"Stufen-Format eingehalten:      {sum(ist_wahr(z['vollstaendig_geparst']) for z in generiert)}/{len(generiert)}")
     print(f"Bericht: {bericht_datei}")
 
 
