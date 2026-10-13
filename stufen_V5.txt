@@ -1,0 +1,21 @@
+
+=== V3-RR (30 Antworten) ===
+Format geparst:            29/30
+Hinweis verweist auf Text: 13/29  (Fall-Nr.: [2, 4, 5, 7, 8, 13, 19, 23, 24, 27, 28, 29, 30])
+Hinweis verrät Zahl (H1):  3/29  (Fall-Nr.: [10, 20, 24])
+Anrede du / Sie:           10 / 9
+Median Wörter H / E / L:   32 / 48 / 42
+
+=== V4-S2 (30 Antworten) ===
+Format geparst:            29/30
+Hinweis verweist auf Text: 8/29  (Fall-Nr.: [2, 4, 5, 7, 13, 27, 29, 30])
+Hinweis verrät Zahl (H1):  0/29  (Fall-Nr.: [])
+Anrede du / Sie:           11 / 0
+Median Wörter H / E / L:   31 / 0 / 50
+
+=== V5-S2H (30 Antworten) ===
+Format geparst:            29/30
+Hinweis verweist auf Text: 3/29  (Fall-Nr.: [2, 26, 30])
+Hinweis verrät Zahl (H1):  0/29  (Fall-Nr.: [])
+Anrede du / Sie:           12 / 0
+Median Wörter H / E / L:   29 / 0 / 51

@@ -1,0 +1,73 @@
+fall_id,frage_original,generierte_frage,cosinus
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,Wie hoch ist das Drehmoment bei einer abgegebenen Leistung von 10 kW und einer Drehzahl von 1000 min⁻¹?,0.8732
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,Wie lässt sich das Drehmoment aus der Leistung und der Winkelgeschwindigkeit berechnen?,0.6516
+F001,Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen pro Minute. Wie groß ist sein Drehmoment?,Wie wird die Winkelgeschwindigkeit ω aus der Drehzahl n berechnet?,0.589
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,Welche Kristallgittertypen sind bei den meisten Metallen zu finden?,0.961
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,"Welche Strukturmerkmale deuten darauf hin, dass kubisch-flächenzentrierte und kubisch-raumzentrierte Gitter bei Metallen vorkommen?",0.5204
+F002,Welche Kristallgitter findet man bei den meisten Metallen?,"Welche Gittertypen werden explizit als diejenigen aufgelistet, die bei den meisten Metallen vorkommen?",0.7788
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Was ist der Zweck von Mangan in Automatenstählen?,0.8754
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Welche Rolle spielen Mangansulfide in Automatenstählen?,0.777
+F003,"Wieso gibt man Mangan in Automatenstähle, die Schwefel enthalten?",Warum sind Mangansulfide im Gegensatz zu Eisen sulfiden beim Schmieden vorteilhaft?,0.4708
+F004,Welche Messing-Legierung nimmt man für kaltgeformte Rohre oder Lagerbuchsen?,Welche Legierung wird für kaltgeformte Rohre verwendet?,0.7363
+F004,Welche Messing-Legierung nimmt man für kaltgeformte Rohre oder Lagerbuchsen?,Welche Anwendungen hat die Legierung CuZn38Mn1Al1?,0.238
+F004,Welche Messing-Legierung nimmt man für kaltgeformte Rohre oder Lagerbuchsen?,Wie hoch ist der Preiswert für diese Legierung?,0.371
+F005,Was ist der Unterschied zwischen Polymerisation und Polyaddition?,Was ist der Unterschied zwischen Polymerisation und Polyaddition?,1.0
+F005,Was ist der Unterschied zwischen Polymerisation und Polyaddition?,Warum entstehen bei der Polymerisation Nebenprodukte wie Wasser oder Alkohol?,0.7552
+F005,Was ist der Unterschied zwischen Polymerisation und Polyaddition?,Warum sind Polymere wichtig für die Verarbeitung zu Formmassen?,0.7507
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Wie kann man die Sprödigkeit von Keramik verbessern?,0.9251
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Welche Rolle spielen Fasern bei der Verbesserung der Keramik?,0.8748
+F006,Keramik ist ja spröde. Wie kann man das bei Verbundwerkstoffen verbessern?,Kann man die Zähigkeit von Keramik durch den Einbau von Fasern erhöhen?,0.8892
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Wie viel besser überträgt ruhendes Wasser Wärme als ruhende Luft?,0.9047
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Warum ist der Wärmeübergangskoeffizient für ruhendes Wasser so viel höher als für ruhende Luft?,0.8125
+F007,Wie viel besser überträgt ruhendes Wasser Wärme an eine Metallwand als ruhende Luft?,Welche Faktoren beeinflussen den Wärmeübergangskoeffizient von Wasser und Luft?,0.6541
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,Wie kann man einen großen Drehstrommotor sicher einschalten?,0.8269
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,Was sind Anlassschaltungen und wofür werden sie verwendet?,0.1966
+F008,Warum darf man einen großen Drehstrommotor nicht einfach direkt einschalten?,Wie kann man den Anlaufstrom eines großen Drehstrommotors reduzieren?,0.7667
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Wann ist das vereinfachte Modell für ein Pendel ausreichend?,0.9546
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Wie verhalten sich die Modelle bei kleinen Ausschlägen des Pendels?,0.6709
+F009,Wann reicht beim Pendel das vereinfachte Modell aus?,Wann treten bei einem Pendel starke Abweichungen zwischen den Modellen auf?,0.64
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Welche Anzahl von ISO-Toleranzgraden gibt es insgesamt?,0.9504
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Welcher ISO-Toleranzgrad ist der genaueste?,0.96
+F010,Wie viele ISO-Toleranzgrade gibt es und welcher ist der genaueste?,Was sind die Gründe für die Genauigkeit des IT 01?,0.3571
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,Wie berechnet sich die Flächenpressung $p$ bei einem Bolzen?,0.6312
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,Was ist die projizierte Bolzenfläche $A_{\text{proj}}$ bei einer Gabel?,0.4762
+F011,Wie berechne ich die Flächenpressung am Bolzen in einer Gabel?,Wie lautet die Formel für die Flächenpressung $p$ bei einem Bolzen in einer Gabel?,0.7083
+F012,Warum rechnet man Keilverbindungen in der Praxis meistens nicht nach?,Wie berechnet man Keilverbindungen in der Praxis?,0.7576
+F012,Warum rechnet man Keilverbindungen in der Praxis meistens nicht nach?,Was ist die Eintreibkraft bei Keilverbindungen?,0.6058
+F012,Warum rechnet man Keilverbindungen in der Praxis meistens nicht nach?,Wie hängt die Zuverlässigkeit des Reibungsschlusses bei Keilverbindungen von der Eintreibkraft ab?,0.5297
+F013,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,"Wie groß muss die Zahnbreite des Großrads sein, um Radversetzungen zu vermeiden?",0.383
+F013,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,"Welche Mindestzahnbreite sollte das Großrad haben, um Einbauungenauigkeiten auszugleichen?",0.3744
+F013,Wie breit wählt man das Großrad im Vergleich zum Ritzel und warum?,"Um wie viel Millimeter muss die Zahnbreite des Großrads größer sein als die des Ritzels, um Probleme zu vermeiden?",0.6276
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Wie kann man die erforderliche Verdichterarbeit bei mehrstufigen Kompressoren verringern?,0.7529
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Was bewirkt eine Zwischenkühlung bei mehrstufigen Kompressoren?,0.9182
+F014,Warum braucht man bei mehrstufigen Kompressoren eine Zwischenkühlung?,Wie kann man den Prozess einer isothermen Verdichtung bei mehrstufigen Kompressoren erreichen?,0.7623
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,"Welche Eigenschaften muss der Werkstoff des Zylinderkopfes haben, um keine zu großen thermischen Spannungen zu verursachen?",0.7572
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,"Warum ist es wichtig, dass der Zylinderkopf eine gute Wärmeleitfähigkeit hat?",0.7116
+F015,Welche Eigenschaften muss der Werkstoff eines Zylinderkopfs haben?,"Welche Geometrien hat der Zylinderkopf, die eine große Formsteifigkeit erfordern?",0.794
+F016,Was macht eigentlich das Motorsteuergerät?,Was steuert das Motorsteuergerät (ECU) im Auto?,0.8112
+F016,Was macht eigentlich das Motorsteuergerät?,Welche Systeme beeinflusst das Motorsteuergerät?,0.8322
+F016,Was macht eigentlich das Motorsteuergerät?,Wie erfasst das Motorsteuergerät den aktuellen Betriebszustand des Motors?,0.8579
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,"Wie kann ich ein Werkstück auf einer Planscheibe spannen, wenn es keine rotationssymmetrische Form hat?",0.5027
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Wofür eignet sich das Spannfutter und wann sollte ich stattdessen die Planscheibe verwenden?,0.5843
+F017,Wann spannt man ein Werkstück auf der Drehmaschine auf eine Planscheibe statt ins Spannfutter?,Kann ich mit der Planscheibe auch unregelmäßige oder eckige Formen sicher halten und beliebig positionieren?,0.4861
+F018,Wie ist ein CNC-Programm aufgebaut?,Was ist der Unterschied zwischen einem Programmsatz und einem Block in einem CNC-Programm?,0.7533
+F018,Wie ist ein CNC-Programm aufgebaut?,Wo befindet sich das Werkzeug vor Beginn der Bearbeitung in einem CNC-Programm?,0.8438
+F018,Wie ist ein CNC-Programm aufgebaut?,Welche Informationen enthält das Programmende eines CNC-Programms?,0.9125
+F019,In welchen Bereichen wird Hydraulik hauptsächlich eingesetzt?,Wo wird Hydraulik hauptsächlich eingesetzt?,0.9724
+F019,In welchen Bereichen wird Hydraulik hauptsächlich eingesetzt?,Was ist der Vorteil von Öl im Vergleich zu Luft in der Hydraulik?,0.6552
+F019,In welchen Bereichen wird Hydraulik hauptsächlich eingesetzt?,Welche Eigenschaften ermöglicht die Verwendung von Öl in der Hydraulik?,0.8055
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,"Wie lange dauert es, bis eine Zweihandverriegelung in der SPS aktiviert wird?",0.7865
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,"Welche Bedingung muss erfüllt sein, damit der Ausgang A1.0 angesteuert wird?",0.3078
+F020,Wie funktioniert eine Zweihandverriegelung in der SPS?,Welche Funktion haben die Eingänge E0.1 und E0.2 in der Zweihandverriegelung?,0.4748
+F021,Was bringt der D-Anteil in einem Regler?,Wie beeinflusst der D-Anteil das Reagieren eines Reglers?,0.8616
+F021,Was bringt der D-Anteil in einem Regler?,Was bewirkt der D-Anteil bei schnellen Änderungen des Fehlers?,0.6594
+F021,Was bringt der D-Anteil in einem Regler?,Wie wirkt der D-Anteil bei einem Regler?,0.9672
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Wie berechnet man den Deckungsbeitrag für ein Produkt?,0.912
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Was sind die variablen Selbstkosten und wie viel betragen sie im Beispiel?,0.4464
+F022,Wie kommt man auf den Deckungsbeitrag eines Produkts?,Wie viel trägt jedes verkaufte Produkt zur Deckung der fixen Kosten bei?,0.7782
+F023,Wie schnell darf sich eine Schleifscheibe maximal drehen?,Wie hängt die maximale Drehzahl einer Schleifscheibe von der zulässigen Umfangsgeschwindigkeit ab?,0.8609
+F023,Wie schnell darf sich eine Schleifscheibe maximal drehen?,"Gibt es Ausnahmen, bei denen die maximale Umfangsgeschwindigkeit überschritten werden kann?",0.711
+F023,Wie schnell darf sich eine Schleifscheibe maximal drehen?,Wie beeinflusst die Umfangsgeschwindigkeit die Härte einer Schleifscheibe?,0.7647
+F024,"Welche Rautiefe schafft man mit Hartdrehen allein, ohne Schleifen?",Wie kann ich Rautiefen von kleiner als 1 µm erreichen?,0.3131
+F024,"Welche Rautiefe schafft man mit Hartdrehen allein, ohne Schleifen?","Welche Bearbeitungsschritte sind notwendig, um extreme Glätte zu erzielen?",0.4785
+F024,"Welche Rautiefe schafft man mit Hartdrehen allein, ohne Schleifen?","Warum reicht Hartdrehen alleine nicht aus, um sehr geringe Rautiefen zu erreichen?",0.5783

@@ -68,6 +68,25 @@ def mit_wiederholung(frage, chunks, methode, versuche=3, wartezeit=20):
             time.sleep(wartezeit)
 
 
+HINWEIS_FELDER = ["nr", "typ", "frage", "hinweis_quelle", "hinweis_aufruf1", "hinweis",
+                  "hinweis_ueberlegung", "loesung", "hinweis_prompt_version"]
+
+
+def speichere_hinweis_details(sitzungs_id, q, ergebnis):
+    """V5: alter Hinweis (Aufruf 1, = V4-Hinweis) neben neuem Hinweis + Überlegung,
+    für die manuelle Leck-Bewertung. Enthält Modelltext, der Handbuchinhalte
+    wiedergeben kann -> per .gitignore ausgeschlossen."""
+    pfad = LOG_VERZEICHNIS / f"hinweis_details_{sitzungs_id}.csv"
+    neu = not pfad.exists()
+    with open(pfad, "a", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=HINWEIS_FELDER, extrasaction="ignore")
+        if neu:
+            w.writeheader()
+        w.writerow({"nr": q["nr"], "typ": q["typ"], "frage": q["frage"],
+                    "hinweis_prompt_version": rag_pipeline.HINWEIS_PROMPT_VERSION,
+                    **{k: ergebnis.get(k, "") for k in HINWEIS_FELDER[3:8]}})
+
+
 def schreibe_lauf_konfiguration(sitzungs_id, methode, kb_hash, n_chunks):
     """Speichert alle Einstellungen dieses Laufs in evaluationsdaten/lauf_<ID>.json,
     damit jedes Ergebnis seiner exakten Konfiguration zugeordnet werden kann
@@ -96,6 +115,8 @@ def schreibe_lauf_konfiguration(sitzungs_id, methode, kb_hash, n_chunks):
         "generator_modell": rag_pipeline.MODEL_NAME,
         "generierungs_optionen": rag_pipeline.GENERIERUNGS_OPTIONEN,
         "scaffolding_version": rag_pipeline.SCAFFOLDING_VERSION,
+        "hinweis_prompt_version": (rag_pipeline.HINWEIS_PROMPT_VERSION
+                                   if rag_pipeline.SCAFFOLDING_VERSION == "S2-v2" else None),
         "embedding_modell": rag_pipeline.EMBEDDING_MODELL_NAME,
         "ollama_version": ollama_version,
         "testfragen_datei": str(TESTFRAGEN),
@@ -124,7 +145,7 @@ def main():
     ap.add_argument("--rrf-k", type=int, default=None,
                     help=f"RRF-Konstante für hybrid (Standard: {rag_pipeline.RRF_K})")
     ap.add_argument("--scaffolding", choices=sorted(rag_pipeline.SCAFFOLDING_MARKER_VERSIONEN), default=None,
-                    help=f"Stufen-Prompt (Standard: {rag_pipeline.SCAFFOLDING_VERSION}; S3-v0 = V0–V3)")
+                    help=f"Stufen-Prompt (Standard: {rag_pipeline.SCAFFOLDING_VERSION}; S3-v0 = V0–V3, S2-v1 = V4, S2-v2 = V5)")
     args = ap.parse_args()
     sitzungs_id = args.sitzungs_id
     methode = args.retrieval or rag_pipeline.RETRIEVAL_METHODE
@@ -192,6 +213,8 @@ def main():
             zeile["treffer_exakt"] = erwartet in top_ids
             zeile["treffer_inkl_nachbar"] = erwartet in top_ids or bool(nachbar_ids(erwartet) & set(top_ids))
         bericht.append(zeile)
+        if "hinweis_quelle" in ergebnis:  # V5 (S2-v2): Hinweis-Diagnose separat speichern
+            speichere_hinweis_details(sitzungs_id, q, ergebnis)
 
         status = "VERWEIGERT" if not ergebnis["genuegend_relevanz"] else f"Rang {zeile.get('rang_erwartet', '-')}"
         print(f"[{q['nr']:>2}] {q['typ']:<12} score={zeile['bester_score']:.3f}  {status:<12} {dauer:5.1f}s")

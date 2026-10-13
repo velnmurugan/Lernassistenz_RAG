@@ -667,11 +667,23 @@ Antwort:"""
 #   - Neagu et al. (2026): Lernende umgehen Scaffolding oft -> protokolliert wird,
 #     wie weit Proband:innen die Stufen tatsächlich öffnen
 #     (protokolliere_interaktion, Feld "scaffolding_stufe_erreicht").
-SCAFFOLDING_VERSION = "S2-v1"
+#
+# V5 (S2-v2, 13 Oct 2026): Der Hinweis wird in einem ZWEITEN, lösungs-kundigen Aufruf
+# neu erzeugt (Hinweis-Prompt H-v3, siehe baue_hinweis_prompt). Aufruf 1 ist
+# byte-identisch zu S2-v1 -> die Lösung ist bei T=0/seed 42 dieselbe wie in V4, der
+# Vergleich V4 vs. V5 ändert also NUR den Hinweis (eine Änderung pro Version).
+# Grund: in V4 verriet der Hinweis trotz Regeln H1–H3 weiterhin oft die Antwort
+# (manuelle Vorbewertung, 22 Fragen: 6 Teil-Leck + 4 volles Leck). Ein Modell, das den
+# Hinweis gleichzeitig mit der Lösung schreibt, "weiß" nicht explizit, was es nicht
+# verraten darf. Muster übernommen aus ideen_feedback.py (IF-v1): sieht die Lösung,
+# verdecktes Überlegungsfeld vor der Ausgabe.
+SCAFFOLDING_VERSION = "S2-v2"
 SCAFFOLDING_MARKER_VERSIONEN = {
     "S3-v0": {"hinweis": "STUFE1_HINWEIS:", "erklaerung": "STUFE2_ERKLAERUNG:", "loesung": "STUFE3_LOESUNG:"},
     "S2-v1": {"hinweis": "STUFE1_HINWEIS:", "loesung": "STUFE2_LOESUNG:"},
+    "S2-v2": {"hinweis": "STUFE1_HINWEIS:", "loesung": "STUFE2_LOESUNG:"},  # Aufruf 1 = S2-v1
 }
+HINWEIS_PROMPT_VERSION = "H-v3"  # nur bei S2-v2 genutzt
 
 
 def scaffolding_marker():
@@ -745,7 +757,57 @@ Kontext:
 Frage: {frage}"""
 
 
-_PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1}
+_PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1, "S2-v2": _prompt_s2_v1}
+
+
+def baue_hinweis_prompt(frage, ausgewaehlte_chunks, loesung):
+    """V5 (S2-v2), Hinweis-Prompt H-v3: eigener Aufruf, der die Lösung kennt.
+    Regeln H1–H5 aus claude/Scaffolding_Spezifikation.md §3.1 (Jangra et al. 2025,
+    Abschnitt 4.1; Zourlidou et al. 2026; Wood et al. 1976)."""
+    return f"""Du schreibst einen Hinweis (Denkanstoß) für Auszubildende in technischen Berufen.
+Du kennst die Frage, die Lernmaterialien und die richtige Lösung. Die/der Auszubildende
+sieht NUR die Frage, nicht die Lernmaterialien und nicht die Lösung.
+
+Regeln für den Hinweis:
+H1 Verrate die Lösung nicht: kein Ergebnis, kein Zahlenwert aus der Lösung, keine Formel
+   mit eingesetzten Werten, nicht die gesuchte Kernaussage, Aufzählung oder Benennung.
+H2 Zeige die Richtung: nenne den Begriff, die Größe oder den nächsten Denkschritt, der
+   zur Lösung führt.
+H3 Nutze nur, was die/der Auszubildende kennt: die Frage und Grundwissen. Schreibe nie
+   „im Kontext", „im Text", „in der Tabelle", „in der Quelle" oder „in den Materialien".
+H4 Fördere Verständnis: lenke auf den Zusammenhang (wie hängt was zusammen, warum),
+   nicht nur auf ein einzelnes Stichwort, aber überfordere nicht.
+H5 Klar und kurz: 1-2 Sätze, sprich die/den Auszubildende:n mit „du" an, du darfst mit
+   einer Frage enden.
+
+Lernmaterialien:
+{_kontext_text(ausgewaehlte_chunks)}
+
+Frage: {frage}
+
+Lösung (GEHEIM, nicht verraten):
+{loesung}
+
+Antworte GENAU in diesem Format:
+UEBERLEGUNG: <nur für dich: (a) Welche Wörter und Zahlen aus der Lösung dürfen NICHT im Hinweis stehen? (b) Welcher Denkschritt führt dorthin?>
+HINWEIS: <der Hinweis>"""
+
+
+_HINWEIS_FELD = re.compile(r"(?:^|\n)\W*HINWEIS\W*:", re.IGNORECASE)
+_UEBERLEGUNG_FELD = re.compile(r"\b(?:UEBERLEGUNG|ÜBERLEGUNG)\s*:", re.IGNORECASE)
+
+
+def parse_hinweis(rohtext):
+    """Gibt (hinweis, ueberlegung) zurück; hinweis = "" wenn das Format fehlt
+    (dann bleibt der Hinweis aus Aufruf 1, siehe beantworte_frage)."""
+    treffer = list(_HINWEIS_FELD.finditer(rohtext))
+    if not treffer:
+        return "", rohtext.strip()
+    letzter = treffer[-1]
+    hinweis = rohtext[letzter.end():].strip().strip("*").strip()
+    m = _UEBERLEGUNG_FELD.search(rohtext[:letzter.start()])
+    ueberlegung = rohtext[m.end():letzter.start()].strip() if m else ""
+    return hinweis, ueberlegung
 
 
 def baue_scaffolding_prompt(frage, ausgewaehlte_chunks):
@@ -811,6 +873,32 @@ def sicherheitspruefung(text):
     return (len(treffer) > 0), treffer
 
 
+def _hinweis_separat(frage, top_chunks, stufen):
+    """V5: zweiter Aufruf für den Hinweis. Kein zweiter Aufruf, wenn Aufruf 1 nicht
+    geparst wurde oder die Lösung eine Verweigerung ist (dann gibt es nichts zu
+    verbergen; der Hinweis aus Aufruf 1 bleibt). Rückgabe ergänzt Diagnosefelder,
+    die NICHT in interaktionen.csv landen (Format unverändert), sondern nur im
+    Batchlauf separat gespeichert werden (fuehre_testfragen_aus.py)."""
+    zusatz = {"hinweis_aufruf1": stufen["hinweis"], "hinweis_ueberlegung": "",
+              "hinweis_quelle": "aufruf1"}
+    if not stufen["vollstaendig_geparst"]:
+        return zusatz
+    from ragas_auswertung import ist_modell_verweigerung  # lokal: vermeidet Zirkelimport
+    if ist_modell_verweigerung(stufen["loesung"]):
+        zusatz["hinweis_quelle"] = "aufruf1_verweigerung"
+        return zusatz
+    roh = frage_llm(baue_hinweis_prompt(frage, top_chunks, stufen["loesung"]),
+                    options=GENERIERUNGS_OPTIONEN)
+    hinweis, ueberlegung = parse_hinweis(roh)
+    zusatz["hinweis_ueberlegung"] = ueberlegung
+    if hinweis:
+        zusatz["hinweis"] = hinweis
+        zusatz["hinweis_quelle"] = "separat"
+    else:
+        zusatz["hinweis_quelle"] = "aufruf1_formatfehler"
+    return zusatz
+
+
 def beantworte_frage(frage, chunks, top_k=4, methode=None):
     """
     Vollständige Pipeline: Retrieval -> Schwellenwert-Prüfung -> gestufte
@@ -855,6 +943,9 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None):
     rohantwort = frage_llm(prompt, options=GENERIERUNGS_OPTIONEN)
     stufen = parse_scaffolding_antwort(rohantwort)
     ist_relevant, treffer = sicherheitspruefung(frage + " " + stufen["loesung"])
+
+    if SCAFFOLDING_VERSION == "S2-v2":
+        stufen.update(_hinweis_separat(frage, top_chunks, stufen))
 
     ergebnis.update(stufen)
     ergebnis["quellen"] = [{"id": c["id"], "thema": c["thema"]} for c in top_chunks]

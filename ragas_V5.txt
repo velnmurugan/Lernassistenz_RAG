@@ -1,0 +1,52 @@
+kb_hash=97da9ea85ed3  Filter=V5-S2H  Richter=mistral-nemo  Prompt=F-v2/AR-v3/CR-v1
+Log-Zeilen 30 -> Fälle 30
+Verweigerung Gate:   0/30
+Verweigerung Modell: 3/30
+    F026: Wie viele Urlaubstage stehen mir im ersten Ausbildungsjahr zu?
+    F029: Welche Zutaten brauche ich für einen Pizzateig?
+    F030: Wer hat die Fußball-WM 2014 gewonnen?
+Inhaltliche Antworten (Faithfulness/AR-bewertbar): 27
+
+Metriken ['f', 'ar', 'cr'] für 30 Fälle ...
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:  55%|█████▍    | 109/199 [00:00<00:00, 1083.07it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 1286.23it/s]
+F001  faith=0.25 (1/4)  ar=0.70  cr=0.29 (2/7)   55.8s  Ein Elektromotor bringt 10 kW bei 1000 Umdrehungen
+F002  faith=0.25 (1/4)  ar=0.75  cr=0.14 (1/7)   31.1s  Welche Kristallgitter findet man bei den meisten M
+F003  faith=1.00 (3/3)  ar=0.71  cr=0.20 (1/5)   22.2s  Wieso gibt man Mangan in Automatenstähle, die Schw
+F004  faith=0.25 (1/4)  ar=0.45  cr=0.14 (1/7)   23.8s  Welche Messing-Legierung nimmt man für kaltgeformt
+F005  faith=0.33 (1/3)  ar=0.84  cr=0.00 (0/5)   22.6s  Was ist der Unterschied zwischen Polymerisation un
+F006  faith=1.00 (5/5)  ar=0.90  cr=0.14 (1/7)   26.7s  Keramik ist ja spröde. Wie kann man das bei Verbun
+F007  faith=0.67 (2/3)  ar=0.79  cr=0.00 (0/8)   31.4s  Wie viel besser überträgt ruhendes Wasser Wärme an
+F008  faith=0.25 (1/4)  ar=0.60  cr=0.14 (2/14)   28.3s  Warum darf man einen großen Drehstrommotor nicht e
+F009  faith=1.00 (3/3)  ar=0.00 (ausweichend, roh 0.76)  cr=0.25 (2/8)   31.8s  Wann reicht beim Pendel das vereinfachte Modell au
+F010  faith=1.00 (2/2)  ar=0.76  cr=0.14 (1/7)   22.7s  Wie viele ISO-Toleranzgrade gibt es und welcher is
+F011  faith=0.75 (3/4)  ar=0.61  cr=0.29 (2/7)   36.3s  Wie berechne ich die Flächenpressung am Bolzen in 
+F012  faith=0.50 (1/2)  ar=0.63  cr=0.20 (1/5)   17.4s  Warum rechnet man Keilverbindungen in der Praxis m
+F013  faith=1.00 (2/2)  ar=0.46  cr=0.14 (1/7)   23.5s  Wie breit wählt man das Großrad im Vergleich zum R
+F014  faith=1.00 (6/6)  ar=0.81  cr=0.25 (2/8)   31.0s  Warum braucht man bei mehrstufigen Kompressoren ei
+F015  faith=1.00 (3/3)  ar=0.75  cr=0.12 (1/8)   18.2s  Welche Eigenschaften muss der Werkstoff eines Zyli
+F016  faith=1.00 (4/4)  ar=0.83  cr=0.29 (2/7)   26.7s  Was macht eigentlich das Motorsteuergerät?
+F017  faith=0.25 (1/4)  ar=0.52  cr=0.18 (2/11)   27.8s  Wann spannt man ein Werkstück auf der Drehmaschine
+F018  faith=1.00 (3/3)  ar=0.84  cr=0.20 (2/10)   20.2s  Wie ist ein CNC-Programm aufgebaut?
+F019  faith=0.86 (6/7)  ar=0.81  cr=0.12 (1/8)   31.9s  In welchen Bereichen wird Hydraulik hauptsächlich 
+F020  faith=1.00 (5/5)  ar=0.52  cr=0.29 (2/7)   39.4s  Wie funktioniert eine Zweihandverriegelung in der 
+F021  faith=1.00 (2/2)  ar=0.83  cr=0.17 (1/6)   16.2s  Was bringt der D-Anteil in einem Regler?
+F022  faith=1.00 (5/5)  ar=0.71  cr=0.17 (1/6)   31.5s  Wie kommt man auf den Deckungsbeitrag eines Produk
+F023  faith=0.25 (1/4)  ar=0.00 (ausweichend, roh 0.78)  cr=0.00 (0/10)   34.5s  Wie schnell darf sich eine Schleifscheibe maximal 
+F024  faith=0.00 (0/3)  ar=0.00 (ausweichend, roh 0.46)  cr=0.00 (0/7)   26.6s  Welche Rautiefe schafft man mit Hartdrehen allein,
+F025 FEHLER: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=120)
+F026 [Verweigerung]  cr=0.00 (0/7)   69.8s  Wie viele Urlaubstage stehen mir im ersten Ausbild
+F027 FEHLER: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=120)
+F028 FEHLER: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=120)
+F029 [Verweigerung]  cr=0.00 (0/7)   73.4s  Welche Zutaten brauche ich für einen Pizzateig?
+F030 [Verweigerung]  cr=0.00 (0/11)   90.8s  Wer hat die Fußball-WM 2014 gewonnen?
+
+Faithfulness Mittelwert:          0.692  (n=24)
+Answer Relevance Mittelwert:      0.618  (n=24)
+  davon ausweichend:              3/24
+  Rohwert nicht ausweichender:    0.706  (n=21)
+Context Relevance Mittelwert:     0.143  (n=27)
+  bei inhaltlichen Antworten:     0.161  (n=24)
+  bei Modell-Verweigerungen:      0.000  (n=3)
+  Fälle ohne benötigten Satz:     7/27
+Ergebnisse: evaluationsdaten/ragas_ergebnisse.csv

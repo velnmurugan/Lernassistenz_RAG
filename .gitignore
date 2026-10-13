@@ -6,3 +6,6 @@ evaluationsdaten/interaktionen.csv
 evaluationsdaten/fragebogen.csv
 evaluationsdaten/**/ragas_context_relevance_details.csv
 evaluationsdaten/ideen_feedback.csv
+evaluationsdaten/hinweis_details_*.csv
+evaluationsdaten/retrieval_erklaerung_*.html
+evaluationsdaten/frage_erklaerung_*.html
