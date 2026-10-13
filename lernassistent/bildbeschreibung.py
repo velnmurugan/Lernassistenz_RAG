@@ -9,13 +9,14 @@ Vorbild: Saucă & Rusnac (2026): lokales VLM (Qwen2-VL-2B, Qwen2.5-VL-3B etwas b
 beschreibt Tabellen/Abbildungen auf 8 GB VRAM. Standard hier: qwen2.5vl:3b über Ollama
 (kleines Modell aus Sicherheitsgründen: wenig VRAM, weniger Ausfälle über Nacht).
 
-Prompt B-v1: fest und dokumentunabhängig (gleiche Prinzipien wie der Prompt-Satz,
+Prompt B-v2 (B-v1 bis zum Pilot): fest und dokumentunabhängig (gleiche Prinzipien wie der Prompt-Satz,
 claude/Prompt_Set_Spezifikation.md): nur Sichtbares, Beschriftungen wörtlich, keine Deutung.
 Risiko: erfundene Details würden zu "Quellmaterial" -> Beschreibungen werden als
 automatisch erzeugt markiert und vor der Nutzung stichprobenartig von Hand geprüft
 (Prüfdatei bildbeschreibungen_pruefung.csv).
 """
 import base64
+import re
 import csv
 import hashlib
 import json
@@ -25,7 +26,7 @@ from pathlib import Path
 import requests
 
 VLM_MODELL = "qwen2.5vl:3b"
-BILD_PROMPT_VERSION = "B-v1"
+BILD_PROMPT_VERSION = "B-v2"
 VLM_OPTIONEN = {"temperature": 0, "seed": 42}
 MIN_KANTE_PX = 80  # kleinere Bilder (Symbole, Zierelemente) werden übersprungen
 
@@ -36,16 +37,19 @@ def _ollama_url():
 
 
 def bild_prompt(bildunterschrift):
-    hinweis = f"\nBildunterschrift (nur zur Orientierung): {bildunterschrift}" if bildunterschrift else ""
-    return f"""Beschreibe diese Abbildung aus einem Lehrbuch für eine Wissensdatenbank.
+    """B-v2 (13 Oct 2026). Änderung gegenüber B-v1 nach dem Pilot: qwen2.5vl:3b hat Bauteile und
+    Bedeutungen erfunden (Rotor, Stator, Transformator in einem einfachen Stromkreis) und
+    Abkürzungen gedeutet. B-v2 verlangt Art + wörtliche Beschriftungen + bei Diagrammen Achsen
+    und Verlauf, verbietet Deutungen und Abkürzungserklärungen und lässt Unsicheres weg."""
+    hinweis = f"\nBildunterschrift (nur zur Orientierung, nicht wiederholen): {bildunterschrift}" if bildunterschrift else ""
+    return f"""Beschreibe diese Abbildung aus einem Lehrbuch. Gib nur wieder, was eindeutig zu sehen ist.
 
-Regeln:
-1. Gib alle lesbaren Beschriftungen, Zahlen, Formelzeichen und Einheiten wörtlich wieder.
-2. Beschreibe, welche Teile zu sehen sind und wie sie verbunden sind oder zusammenhängen.
-   Bei Diagrammen: Achsen mit Größen und Einheiten, Kurven und ihr Verlauf.
-3. Beschreibe nur, was zu sehen ist. Keine Deutung, kein Wissen von außen.
-   Ist etwas nicht lesbar, schreibe „unleserlich".
-4. Höchstens 120 Wörter, sachlich, auf Deutsch.{hinweis}"""
+1. Art der Abbildung in einem Satz (zum Beispiel Schaltplan, Diagramm, Kennlinie, Zeigerdiagramm, Schnittbild, Foto, Tabelle).
+2. Alle lesbaren Beschriftungen, Formelzeichen, Zahlen und Einheiten wörtlich.
+3. Bei Diagrammen: welche Größe auf welcher Achse steht (mit Einheit) und wie die Kurven verlaufen (steigt, fällt, Maximum, Schnittpunkt).
+4. Erkläre keine Abkürzungen und keine Funktion. Nenne keine Bauteile, die nicht eindeutig erkennbar sind. Was unsicher ist, lässt du weg.
+
+Antworte als Fließtext ohne Aufzählungszeichen und ohne Markdown, höchstens 100 Wörter, auf Deutsch.{hinweis}"""
 
 
 def _bildgroesse(pfad):
@@ -64,7 +68,9 @@ def beschreibe(pfad, bildunterschrift="", modell=VLM_MODELL, timeout=300):
                "stream": False, "options": VLM_OPTIONEN}
     r = requests.post(_ollama_url(), json=payload, timeout=timeout)
     r.raise_for_status()
-    return r.json().get("response", "").strip()
+    text = r.json().get("response", "").strip()
+    text = re.sub(r"[*#`]+", "", text)                  # Markdown entfernen
+    return re.sub(r"\s*\n\s*[-•]\s*", "; ", text).strip()
 
 
 def beschreibe_alle(eintraege, bildordner, cache_datei, modell=VLM_MODELL, max_bilder=None):
@@ -78,7 +84,9 @@ def beschreibe_alle(eintraege, bildordner, cache_datei, modell=VLM_MODELL, max_b
     print(f"{len(bilder)} Abbildungen, {len(cache)} bereits beschrieben (Cache), Modell {modell}", flush=True)
     for n, e in enumerate(bilder, 1):
         rel = e["img_path"]
-        if rel in cache:
+        alt = cache.get(rel)
+        if alt and (alt.get("grund") == "zu_klein" or
+                    (alt.get("prompt_version") == BILD_PROMPT_VERSION and alt.get("modell") == modell)):
             continue
         pfad = Path(bildordner) / rel
         groesse = _bildgroesse(pfad)

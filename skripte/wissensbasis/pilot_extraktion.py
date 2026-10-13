@@ -82,10 +82,11 @@ def main():
                 continue
         ergebnisse[methode] = ps.lade_content_list(content)
 
-    # Chunks + VLM (auf Basis von MinerU auto)
+    # Chunks + VLM (auf Basis von MinerU ocr, sonst auto)
     chunk_html, vlm_html = "", ""
-    if "auto" in ergebnisse:
-        eintraege, bildordner = ergebnisse["auto"]
+    basis_methode = "ocr" if "ocr" in ergebnisse else ("auto" if "auto" in ergebnisse else None)
+    if basis_methode:
+        eintraege, bildordner = ergebnisse[basis_methode]
         try:
             beschreibungen = bb.beschreibe_alle(eintraege, bildordner, basis / "bildbeschreibungen_pilot.json",
                                                 args.vlm_modell, args.max_bilder)
@@ -118,7 +119,7 @@ pre{{white-space:pre-wrap;font-size:12px}}img{{max-width:380px}}.chunk,.vlm{{bor
 .vlm{{display:flex;gap:12px}}.vlm img{{max-width:320px}}</style></head><body>
 <h1>Pilot: Extraktion {html.escape(args.name)}</h1><p>Seiten {args.seiten}. Prüfen: Formeln (=, √, ·), Tabellen, Lesereihenfolge, Wortabstände.</p>
 <h2>1. Vergleich je Seite</h2><table>{''.join(zeilen)}</table>
-<h2>2. Struktur-Chunks (MinerU auto, mit Bildbeschreibungen)</h2>{chunk_html or '<p>nicht verfügbar</p>'}
+<h2>2. Struktur-Chunks (MinerU {basis_methode}, mit Bildbeschreibungen)</h2>{chunk_html or '<p>nicht verfügbar</p>'}
 <h2>3. Bildbeschreibungen ({html.escape(args.vlm_modell)})</h2>{vlm_html or '<p>nicht verfügbar</p>'}
 </body></html>"""
     Path("protokolle").mkdir(exist_ok=True)

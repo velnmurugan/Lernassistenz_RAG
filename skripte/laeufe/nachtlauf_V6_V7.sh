@@ -35,7 +35,7 @@ merke "Generierung V6-FISCHER" $?
 
 schritt "4 MinerU-Extraktion + Bildbeschreibungen (VLM) + Wissensbasen v7a/v7b"
 modelle_entladen
-python skripte/wissensbasis/baue_wissensbasis_struktur.py --pdf "$FISCHER_PDF" --name fischer
+python skripte/wissensbasis/baue_wissensbasis_struktur.py --pdf "$FISCHER_PDF" --name fischer --methode ocr
 merke "Extraktion + VLM + KB v7a/v7b" $?
 modelle_entladen
 python skripte/wissensbasis/ordne_chunks_zu.py "$FRAGEN_F" "$KB_F7A" daten/testfragen/testfragen_fischer_v1_v7a.csv
