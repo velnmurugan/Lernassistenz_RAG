@@ -46,6 +46,7 @@ IDEEN_LOG_FELDER = [
     "idee", "urteil", "rueckmeldung", "ueberlegung", "geparst", "leck_zahlen",
     "sekunden", "prompt_version", "modell", "kb_hash",
     "neue_zahlen", "verweis_material",  # ab IF-v4 (nur Diagnose)
+    "feedback_pruefung", "rueckmeldung_original",  # ab FP-v1 (V8d)
 ]
 
 # Wird angezeigt, wenn das Modell das Format nicht einhält. Der Rohtext wird NIE
@@ -194,6 +195,89 @@ def neue_zahlen(rueckmeldung, *sichtbar):
     return sorted(_zahlen(rueckmeldung) - bekannt)
 
 
+# Rückmeldungs-Prüfung FP-v1 (14 Oct 2026, V8d), gleiches Prinzip wie die Hinweis-Prüfung HP-v2:
+# Nach IF-v4 erfand die Rückmeldung weiter Größenordnungen ("im einstelligen Prozentbereich", vorher
+# "wenige Zehntel") und verriet Lösungswerte ("laut Lernmaterial nur etwa 10–13 %"). Regeln allein
+# reichten beim 9B-Modell nicht. Deshalb nach der Generierung prüfen:
+#   ok            keine Lösungszahl, keine neue Zahl, keine Größenordnungsangabe, kein Materialverweis
+#   nachgebessert sonst EIN zusätzlicher Aufruf, der nur die Rückmeldung neu schreibt; danach sauber
+#   ersetzt       auch die neue Rückmeldung fällt durch -> fester Text je Urteil
+# Ausnahme: Urteil RICHTIG wird nicht geprüft (die Idee enthält dann die Lösungswerte selbst).
+FEEDBACK_PRUEFUNG_VERSION = "FP-v1"  # None = aus (Reproduktion)
+FEEDBACK_ERSATZ = {
+    "keine_idee": "Schreib ruhig eine Vermutung auf, auch wenn du unsicher bist, oder öffne die Lösung.",
+    "_standard": ("Deine Idee stimmt noch nicht ganz. Überlege noch einmal genau, was gefragt ist, "
+                  "oder öffne die Lösung und vergleiche sie mit deiner Idee."),
+}
+
+
+def feedback_probleme(rueckmeldung, ergebnis, idee, sichtbar_extra=""):
+    """Liste der Gründe, warum eine Rückmeldung nicht gezeigt werden sollte (leer = in Ordnung)."""
+    from rag_pipeline import verweist_auf_material, WERTANGABE
+    sichtbar = (ergebnis["frage"], ergebnis.get("hinweis", ""), idee, sichtbar_extra)
+    gruende = [f"loesungszahl {z}" for z in leck_zahlen(rueckmeldung, ergebnis["loesung"], *sichtbar)]
+    gruende += [f"neue_zahl {z}" for z in neue_zahlen(rueckmeldung, *sichtbar)]
+    gruende += [f"wertangabe {m.group(0)}" for m in WERTANGABE.finditer(rueckmeldung or "")]
+    # "laut Lernmaterial" verlangt IF-v4 (F8) ausdrücklich; nur andere Materialverweise zählen
+    ohne_laut = re.sub(r"(?i)\blaut (?:dem )?lernmaterial\b", "", rueckmeldung or "")
+    gruende += [f"material {v}" for v in verweist_auf_material(ohne_laut)]
+    return gruende
+
+
+def _prompt_rueckmeldung_neu(frage, loesung, idee, urteil, alte_rueckmeldung):
+    return f"""Eine Rückmeldung an eine lernende Person ist unbrauchbar: Sie nennt Zahlen, Bereiche oder
+Größenordnungen, die die Person nicht selbst geschrieben hat, verrät Werte aus der Lösung oder verweist auf
+Material, das die Person nicht hat. Die Person sieht nur die Frage, den Hinweis und ihre eigene Idee.
+
+Schreibe eine neue Rückmeldung zum Urteil {urteil.upper()}:
+- Benenne, was an der Idee stimmt und wo die Abweichung liegt, ohne den richtigen Wert zu nennen.
+- Nenne keine Zahlen, Bereiche, Größenordnungen oder Vorzeichen, die nicht in der Idee stehen.
+- Gib einen konkreten nächsten Denkschritt.
+- Zwei bis drei kurze Sätze, freundlich, sprich die Person mit „du" an.
+
+### Frage
+{frage}
+
+### Lösung (geheim)
+{loesung}
+
+### Idee der lernenden Person
+{idee}
+
+### Bisherige Rückmeldung (nicht verwenden)
+{alte_rueckmeldung}
+
+Antworte genau in diesem Format:
+RÜCKMELDUNG: <neue Rückmeldung>"""
+
+
+def feedback_pruefen(fb, ergebnis, idee, sichtbar_extra=""):
+    """Prüft und repariert fb["rueckmeldung"] an Ort und Stelle (FP-v1)."""
+    fb.setdefault("feedback_pruefung", "")
+    fb.setdefault("rueckmeldung_original", "")
+    if not FEEDBACK_PRUEFUNG_VERSION or not fb.get("geparst") or fb.get("urteil") == "richtig":
+        return fb
+    if not feedback_probleme(fb["rueckmeldung"], ergebnis, idee, sichtbar_extra):
+        fb["feedback_pruefung"] = "ok"
+        return fb
+    fb["rueckmeldung_original"] = fb["rueckmeldung"]
+    neu = ""
+    try:
+        roh = frage_llm(_prompt_rueckmeldung_neu(ergebnis["frage"], ergebnis["loesung"], idee,
+                                                 fb.get("urteil", ""), fb["rueckmeldung"]),
+                        options=GENERIERUNGS_OPTIONEN)
+        m = re.search(r"(?is)R(?:Ü|UE)CKMELDUNG\s*:\s*(.+)", roh)
+        neu = (m.group(1) if m else roh).strip().strip('"„“').strip()
+    except Exception as e:  # Prüfung darf die Rückmeldung nie verhindern
+        print(f"WARNUNG Rückmeldungs-Prüfung: {e}")
+    if neu and not feedback_probleme(neu, ergebnis, idee, sichtbar_extra):
+        fb["rueckmeldung"], fb["feedback_pruefung"] = neu, "nachgebessert"
+    else:
+        fb["rueckmeldung"] = FEEDBACK_ERSATZ.get(fb.get("urteil"), FEEDBACK_ERSATZ["_standard"])
+        fb["feedback_pruefung"] = "ersetzt"
+    return fb
+
+
 def gib_feedback(ergebnis, idee, sichtbar_extra=""):
     """ergebnis: Rückgabe von beantworte_frage (mit top_chunks, hinweis, loesung).
     sichtbar_extra: weiterer bereits sichtbarer Text (für den Leck-Check; ab V4 meist leer)."""
@@ -202,11 +286,13 @@ def gib_feedback(ergebnis, idee, sichtbar_extra=""):
                                   ergebnis["hinweis"], ergebnis["loesung"], idee)
     fb = parse_feedback(frage_llm(prompt, options=GENERIERUNGS_OPTIONEN))
     fb["idee"] = idee
+    feedback_pruefen(fb, ergebnis, idee, sichtbar_extra)  # ab V8d (FP-v1)
     fb["sekunden"] = round(time.time() - t0, 1)
+    # Diagnose bezieht sich auf die GEZEIGTE Rückmeldung; die ursprüngliche steht in rueckmeldung_original
     fb["leck_zahlen"] = leck_zahlen(fb["rueckmeldung"], ergebnis["loesung"],
                                     ergebnis["frage"], ergebnis["hinweis"], idee, sichtbar_extra)
     from rag_pipeline import verweist_auf_material
-    fb["verweis_material"] = verweist_auf_material(fb["rueckmeldung"])  # nur Diagnose (stufen_check zählt aus dem Log)
+    fb["verweis_material"] = verweist_auf_material(fb["rueckmeldung"])
     fb["neue_zahlen"] = neue_zahlen(fb["rueckmeldung"], ergebnis["frage"], ergebnis["hinweis"], idee, sichtbar_extra)
     return fb
 
@@ -266,4 +352,6 @@ def protokolliere_idee(sitzungs_id, frage_nr, ergebnis, versuch_nr, stufe, fb, p
             "kb_hash": ergebnis.get("kb_hash", ""),
             "neue_zahlen": "; ".join(fb.get("neue_zahlen", [])),
             "verweis_material": "; ".join(fb.get("verweis_material", [])),
+            "feedback_pruefung": fb.get("feedback_pruefung", ""),
+            "rueckmeldung_original": fb.get("rueckmeldung_original", ""),
         })

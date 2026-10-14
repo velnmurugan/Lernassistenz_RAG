@@ -358,6 +358,19 @@ IF-v2 and IF-v3 prompts verified unchanged; HP-v1 behaviour available via `HINWE
 
 **Open, not solved by prompts:** (1) the textbook can be outdated (photovoltaics); the system follows the book by design (L1), so a fixed note such as "Werte laut Lehrbuch (Stand 2019)" is a design decision; (2) the unit error "Ω·m" in the solution: cause (extraction of the table header or the model) still to be checked.
 
+### FP-v1, check extensions and freeze for the pilot (14 Oct 2026, "V8d")
+
+**Reason.** Test with HP-v2/IF-v4 (session `TEST-V8C`): hints clean in 2 of 3 cases (photovoltaics, zinc); aluminium still "Überlege, wo du solche tabellarischen Werte … findest" (not caught: "tabellarisch", "wo du … findest"). Feedback: unit errors caught reliably ("0,99 A": current, not voltage; "105 m": Kelvin), "laut Lernmaterial" used, no "in der Praxis" any more; but it still invented a magnitude ("im einstelligen Prozentbereich", wrong: 10–13 %) and gave the solution away ("laut Lernmaterial nur etwa 10–13 %") although F9 forbids it.
+
+**Changes.**
+- Material check: `tabellar…`, "wo du/man … find…".
+- Value check (used for hints and feedback): einstellig, zweistellig, dreistellig, "untere/obere Grenze".
+- **FP-v1** (`ideen_feedback.feedback_pruefen`), same principle as HP-v2: if the feedback contains a number from the solution, a number that appears neither in question, hint nor idea, a magnitude word or a material reference ("laut Lernmaterial" is allowed, F8), one extra call rewrites only the feedback (keeping the verdict); if it fails again, a fixed text per verdict is shown. Verdict RICHTIG is not checked. Log columns `feedback_pruefung`, `rueckmeldung_original`. Known side effect: harmless numbers such as "über 100 %" also trigger a rewrite.
+
+**Freeze.** G-v2 / HP-v2 / IF-v4 / FP-v1 is the candidate version for the pilot. Further changes only after the systematic idea test (below) and a batch run on both books, not after single manual cases.
+
+**Systematic idea test.** `daten/testfragen/testideen_fischer_v1.csv`: 36 learner ideas for 11 questions (Fischer: 4 table lookups, 7 test-set questions), types: correct, unit or sign missing, concrete error (e.g. fraction inverted, √3 missing), vague, meta question ("ich habe keine Tabelle", "positiv oder negativ?"), newer than the book (photovoltaics today), dangerous (current transformer), with the expected verdict. `skripte/evaluation/teste_ideen.py` answers each question once and gives feedback to every idea; output `evaluationsdaten/ideen_test_<SESSION>.csv` with automatic checks (verdict as expected, check outcomes, solution numbers, new numbers) and empty columns for manual rating: correct (ja/nein), leaks (nein/teilweise/ja), helpful (1–3). The same file can be run for every future version.
+
 ## 9. New references (not in the reading list)
 
 - Sclar, M., Choi, Y., Tsvetkov, Y., & Suhr, A. (2024). Quantifying language models' sensitivity to spurious features in prompt design. *ICLR 2024*. [check]

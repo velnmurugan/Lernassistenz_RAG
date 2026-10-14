@@ -712,7 +712,9 @@ MATERIAL_VERWEIS = re.compile(
     r"\b(kontext\w*|textstelle\w*|im text|im lernmaterial|lernmaterial\w*|im material|im buch|lehrbuch\w*|"
     r"abschnitt\w*|quelle\w*|textausschnitt\w*|tabelle\w*|liste\b|übersicht\w*|aufstellung\w*|"
     r"abbildung\w*|abb\.|diagramm\w*|schaubild\w*|grafik\w*|nachschl\w*|nachzuschl\w*|nachsehen|"
-    r"schau dir [^.?!]{0,60}?\ban\b)", re.I)
+    r"schau dir [^.?!]{0,60}?\ban\b|tabellar\w*|wo (?:du|man) [^.?!]{0,60}?\bfinde\w*)", re.I)
+# 14 Oct 2026 (V8d): "tabellarisch" und "wo du … findest" ergänzt (Hinweis "Überlege, wo du solche
+# tabellarischen Werte findest" wurde vorher nicht erkannt).
 
 
 def verweist_auf_material(text):
@@ -745,7 +747,10 @@ def _zahlen(text):
 
 WERTANGABE = re.compile(
     r"\b(zehntel|hundertstel|tausendstel|millionstel|größenordnung\w*|grössenordnung\w*|"
-    r"im bereich (?:von|zwischen)|zwischen \d)\b", re.I)  # "Prozent" allein ist keine Wertangabe
+    r"im bereich (?:von|zwischen)|zwischen \d|einstellig\w*|zweistellig\w*|dreistellig\w*|"
+    r"näher an der (?:unteren|oberen) grenze|(?:unteren|oberen) grenze)\b", re.I)  # "Prozent" allein ist keine Wertangabe
+# V8d: einstellig/zweistellig/… und "untere/obere Grenze" ergänzt (Rückmeldungen: "im einstelligen
+# Prozentbereich", "näher an der unteren Grenze").
 
 
 def hinweis_hat_wertangabe(frage, hinweis):

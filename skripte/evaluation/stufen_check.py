@@ -95,6 +95,10 @@ def main(versionen):
             fb_verweis = [z for z in fb if H3.search(z.get("rueckmeldung", ""))]
             print(f"Rückmeldung verweist auf Material: {len(fb_verweis)}/{len(fb)}  "
                   f"(Prompt {', '.join(sorted({z.get('prompt_version', '?') for z in fb}))})")
+            fp = [z.get("feedback_pruefung", "") for z in fb if z.get("feedback_pruefung")]
+            if fp:
+                from collections import Counter
+                print(f"Rückmeldungs-Prüfung (FP): {dict(Counter(fp))}")
             mit_neuen = [z for z in fb if z.get("neue_zahlen")]
             if any("neue_zahlen" in z for z in fb):
                 print(f"Rückmeldung mit neuen Zahlen: {len(mit_neuen)}/{len(fb)}  (ab IF-v4 protokolliert)")
