@@ -1,0 +1,28 @@
+fall_id,sitzungs_id,frage,stufe_max,geparst,richter,prompt_version,modell_verweigerung,n_aussagen,n_gestuetzt,n_unlesbar,n_meta_verworfen,faithfulness,answer_relevance,ar_roh,ausweichend,n_kontext_saetze,n_benoetigt,context_relevance
+F001,V7B2-FISCHER,Bei uns in der Werkstatt liegen zwischen Außenleiter und Neutralleiter 230 V an. Welche Spannung messe ich dann zwischen zwei Außenleitern?,2,True,mistral-nemo,J-v1,False,3,3,0,1,1.0,0.7057,0.7057,False,43,3,0.0698
+F002,V7B2-FISCHER,"Warum bekomme ich bei einem Gerät mit Gehäuseschluss mit Schuhen meist nur ein Kribbeln, barfuß auf Betonboden ist es aber lebensgefährlich?",2,True,mistral-nemo,J-v1,False,2,2,0,1,1.0,0.3056,0.3056,False,41,2,0.0488
+F003,V7B2-FISCHER,Welche Schutzmaßnahmen gegen einen elektrischen Schlag sieht die VDE vor?,2,True,mistral-nemo,J-v1,False,4,4,0,0,1.0,0.0,0.7406,True,41,2,0.0488
+F004,V7B2-FISCHER,"Wie schnell muss die Sicherung bei 230 V abschalten, wenn ein Gerät Körperschluss hat?",2,True,mistral-nemo,J-v1,False,4,2,0,0,0.5,0.0,0.653,True,44,1,0.0227
+F005,V7B2-FISCHER,Mein Föhn hat keinen Schutzleiter. Wieso ist das trotzdem sicher?,2,False,mistral-nemo,J-v1,True,,,,,,,,,28,3,0.1071
+F006,V7B2-FISCHER,Was für einen FI-Schalter nimmt man in einer Wohnung und wie merkt der überhaupt einen Fehler?,2,True,mistral-nemo,J-v1,False,5,4,0,0,0.8,0.0,0.4587,True,31,2,0.0645
+F007,V7B2-FISCHER,Was ist der Unterschied zwischen einem Heißleiter und einem Kaltleiter?,2,True,mistral-nemo,J-v1,False,5,5,0,0,1.0,0.5744,0.5744,False,29,2,0.069
+F008,V7B2-FISCHER,"Wie kann ich mit einem Heißleiter erreichen, dass ein Relais erst nach ein paar Sekunden anzieht?",2,True,mistral-nemo,J-v1,False,5,3,0,1,0.6,0.0,0.7014,True,39,1,0.0256
+F009,V7B2-FISCHER,"Ein Transistor setzt 1,5 W in Wärme um. Der Wärmewiderstand zwischen Sperrschicht und Umgebung ist 150 K/W, die Umgebung hat 30 °C. Wie heiß wird die Sperrschicht ohne Kühlkörper?",2,True,mistral-nemo,J-v1,False,4,3,0,1,0.75,0.0,0.5467,True,29,4,0.1379
+F010,V7B2-FISCHER,"Warum soll ein Spannungsmesser einen großen und ein Strommesser einen kleinen Innenwiderstand haben, und wie groß ist er bei einem Digitalmultimeter?",2,True,mistral-nemo,J-v1,False,3,3,0,0,1.0,0.0,0.6537,True,48,4,0.0833
+F011,V7B2-FISCHER,Darf man bei einem Stromwandler die Leitung auf der Sekundärseite einfach abklemmen?,2,True,mistral-nemo,J-v1,False,5,3,0,0,0.6,0.886,0.886,False,35,0,0.0
+F012,V7B2-FISCHER,"Welchen Strom liefert ein Stromwandler normalerweise auf der Sekundärseite, und welche Spannung ein Spannungswandler?",2,True,mistral-nemo,J-v1,False,2,2,0,0,1.0,0.0,0.6875,True,44,0,0.0
+F013,V7B2-FISCHER,Ein Drehstrommotor hat eine synchrone Drehzahl von 1500 1/min und läuft mit 1425 1/min. Wie groß ist sein Schlupf?,2,True,mistral-nemo,J-v1,False,5,2,0,1,0.4,0.3134,0.3134,False,29,0,0.0
+F014,V7B2-FISCHER,Warum kann ein Asynchronmotor nie ganz die Drehzahl des Drehfelds erreichen?,2,True,mistral-nemo,J-v1,False,4,4,0,0,1.0,0.5405,0.5405,False,31,3,0.0968
+F015,V7B2-FISCHER,"Was bedeuten die Betriebsarten S1, S2 und S3 bei Elektromotoren?",2,True,mistral-nemo,J-v1,False,4,4,0,0,1.0,0.0,0.7546,True,38,2,0.0526
+F016,V7B2-FISCHER,"Auf dem Typenschild eines Drehstrommotors stehen 400 V, 8,7 A, cos φ = 0,81 und 4 kW. Wie hoch ist sein Wirkungsgrad bei Volllast?",2,True,mistral-nemo,J-v1,False,6,4,0,0,0.6667,0.0,0.3849,True,31,2,0.0645
+F017,V7B2-FISCHER,"Welche Schutzart braucht ein Motor, der draußen im Regen läuft?",2,True,mistral-nemo,J-v1,False,4,2,0,0,0.5,0.0,0.549,True,41,2,0.0488
+F018,V7B2-FISCHER,Ab welcher Stromstärke wird ein Strom durch den Körper tödlich?,2,True,mistral-nemo,J-v1,False,3,2,0,0,0.6667,0.0,0.6831,True,43,2,0.0465
+F019,V7B2-FISCHER,Wie groß muss der Kühlkörper für einen Leistungstransistor mit 20 W Verlustleistung sein?,2,True,mistral-nemo,J-v1,False,4,0,0,0,0.0,0.0,0.3069,True,40,0,0.0
+F020,V7B2-FISCHER,Wie lange dauert die Ausbildung zum Elektroniker für Betriebstechnik?,2,False,mistral-nemo,J-v1,True,,,,,,,,,27,8,0.2963
+F021,V7B2-FISCHER,Wie programmiere ich einen Arduino?,2,False,mistral-nemo,J-v1,True,,,,,,,,,30,0,0.0
+F022,V7B2-FISCHER,Wie viel kostet eine Wallbox für ein Elektroauto?,2,False,mistral-nemo,J-v1,True,,,,,,,,,16,0,0.0
+F025,V7B2-FISCHER,"Wie ändert sich der Widerstand eines Kaltleiters, wenn er wärmer wird: gleichmäßig oder sprunghaft, und ungefähr bei welcher Temperatur?",2,True,mistral-nemo,J-v1,False,4,2,0,0,0.5,0.0,0.7426,True,45,10,0.2222
+F026,V7B2-FISCHER,"Woran erkenne ich im Schaltplan, ob ein Kaltleiter oder ein Heißleiter eingezeichnet ist?",2,False,mistral-nemo,J-v1,True,,,,,,,,,39,0,0.0
+F027,V7B2-FISCHER,Auf dem Beispiel-Leistungsschild eines 4-kW-Drehstrommotors mit 1425 1/min: Für welche Netzfrequenz ist er gebaut und welchen Strom nimmt er in Dreieckschaltung auf?,2,True,mistral-nemo,J-v1,False,6,4,0,0,0.6667,0.0,0.7105,True,41,0,0.0
+F028,V7B2-FISCHER,Wie verläuft das Drehmoment eines Asynchronmotors vom Stillstand bis zum Leerlauf?,2,True,mistral-nemo,J-v1,False,3,2,0,0,0.6667,0.0,0.5998,True,29,3,0.1034
+F029,V7B2-FISCHER,Wie sieht das thermische Ersatzschaltbild für ein Halbleiterbauteil mit Kühlkörper aus?,2,True,mistral-nemo,J-v1,False,4,4,0,0,1.0,0.0,0.8739,True,22,4,0.1818

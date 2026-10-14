@@ -469,10 +469,12 @@ def generierung(frage, res, chunks, top4_final):
     out["prompt"] = rp.baue_scaffolding_prompt(frage, top)
     t0 = time.time()
     out["roh"] = rp.frage_llm(out["prompt"], options=rp.GENERIERUNGS_OPTIONEN)
-    stufen = (rp.parse_g_v1(out["roh"]) if rp.SCAFFOLDING_VERSION == "G-v1"
+    stufen = (rp.parse_g_v1(out["roh"]) if rp.ist_g_version()
               else rp.parse_scaffolding_antwort(out["roh"]))
     if rp.SCAFFOLDING_VERSION == "S2-v2" and hasattr(rp, "_hinweis_separat"):
         stufen.update(rp._hinweis_separat(frage, top, stufen))
+    if hasattr(rp, "hinweis_pruefen"):  # wie in der App (ab V8, HP-v1)
+        rp.hinweis_pruefen(frage, stufen)
     out["sekunden"] = time.time() - t0
     out["stufen"] = stufen
     if stufen.get("status"):
@@ -511,15 +513,15 @@ Relevanzschwelle {rp.RELEVANZ_SCHWELLE} → kein LLM-Aufruf, feste Verweigerung.
     st = gen["stufen"]
     import stufen_check as sc
     fall = {"frage": "", "hinweis": st["hinweis"], "loesung": st["loesung"]}
-    h3 = sc.H3.findall(st["hinweis"]) if st["hinweis"] else []
+    h3 = rp.verweist_auf_material(st["hinweis"])
     leck = sorted(sc.zahlen_leck({"frage": gen.get("frage", ""), "hinweis": st["hinweis"], "loesung": st["loesung"]})) if st["hinweis"] else []
     anrede = "du" if sc.DU.search(st["hinweis"] + " " + st["loesung"]) else ("Sie" if sc.SIE.search(st["hinweis"] + " " + st["loesung"]) else "–")
-    zwei_aufrufe = gen["version"] in ("S2-v2", "G-v1")
+    zwei_aufrufe = gen["version"] == "S2-v2" or rp.ist_g_version(gen["version"])
     hinweis_info = ""
     if zwei_aufrufe:
         quelle = st.get("hinweis_quelle", "")
-        hinweis_info = (f'<p class="klein">Version G-v1: Lösung zuerst, dann verdeckte Überlegung, dann Hinweis (ein Aufruf).</p>'
-                        if gen["version"] == "G-v1" else
+        hinweis_info = (f'<p class="klein">Version {esc(gen["version"])}: Lösung zuerst, dann verdeckte Überlegung, dann Hinweis (ein Aufruf).</p>'
+                        if rp.ist_g_version(gen["version"]) else
                         f'<p class="klein">Version S2-v2: Hinweis in einem zweiten Aufruf erzeugt, der die Lösung kennt '
                         f'(Quelle: <code>{esc(quelle)}</code>).</p>')
         if st.get("hinweis_ueberlegung"):
@@ -527,10 +529,13 @@ Relevanzschwelle {rp.RELEVANZ_SCHWELLE} → kein LLM-Aufruf, feste Verweigerung.
                              f'<pre>{esc(st["hinweis_ueberlegung"])}</pre></details>')
     pruef = (f'<table class="schmal"><tr><th>Prüfung (regelbasiert)</th><th>Ergebnis</th></tr>'
              f'<tr><td>Format: beide Marker gefunden</td><td>{"ja" if st["vollstaendig_geparst"] else "nein (ganze Antwort als Lösung)"}</td></tr>'
-             + (f'<tr><td>STATUS (G-v1)</td><td><b>{esc(st["status"])}</b></td></tr>' if st.get("status") else "")
+             + (f'<tr><td>STATUS</td><td><b>{esc(st["status"])}</b></td></tr>' if st.get("status") else "")
              + (f'<tr><td>Formatfehler</td><td>{esc(st["format_fehler"])}</td></tr>' if st.get("format_fehler") else "")
              + f'<tr><td>Modell-Verweigerung</td><td>{"ja" if gen["verweigerung"] else "nein"}</td></tr>'
-             f'<tr><td>Hinweis verweist auf Text, den Lernende nicht sehen</td><td>{esc(", ".join(h3)) if h3 else "nein"}</td></tr>'
+             + (f'<tr><td>Hinweis-Prüfung ({esc(rp.HINWEIS_PRUEFUNG_VERSION or "aus")})</td><td><b>{esc(st["hinweis_pruefung"])}</b>'
+                + (f'<br><span class="klein">ursprünglicher Hinweis: {esc(st["hinweis_original"])}</span>' if st.get("hinweis_original") else "")
+                + '</td></tr>' if st.get("hinweis_pruefung") else "")
+             + f'<tr><td>Hinweis verweist auf Text, den Lernende nicht sehen</td><td>{esc(", ".join(h3)) if h3 else "nein"}</td></tr>'
              f'<tr><td>Hinweis verrät Zahl aus der Lösung</td><td>{esc(", ".join(leck)) if leck else "nein"}</td></tr>'
              f'<tr><td>Anrede</td><td>{anrede}</td></tr></table>')
     return f"""<section><h2>7 · Generierung (qwen)</h2>

@@ -684,14 +684,140 @@ Antwort:"""
 # Überlegung davor senkt das Verraten (Zhao, Knežević & Käser 2026). STATUS ersetzt den
 # Verweigerungs-Detektor (Regex) und erlaubt Teilantworten (Gala et al. 2026; Oche et al. 2025).
 # Keine Beispiele, keine Fachwörter, keine dokumentspezifischen Hinweise (P1).
-SCAFFOLDING_VERSION = "G-v1"
+#
+# V8 (G-v2, 14 Oct 2026): nur die Hinweis-Regeln geändert (L-Regeln, Status und Format wie G-v1).
+# Anlass (manuelle Tests 14 Oct 2026, Fischer v7b): Hinweise forderten in 4 von 4 Nachschlage-
+# fragen auf, eine Tabelle/Abbildung/den Text anzusehen ("Schau dir die Tabelle an"), obwohl
+# Lernende nur die Frage sehen. H3 nennt das jetzt ausdrücklich; H6 gibt für reine Nachschlage-
+# fragen eine Alternative (Bedeutung statt Wert). Weiterhin keine Beispiele, nichts Dokumentspezifisches.
+SCAFFOLDING_VERSION = "G-v2"
 STATUS_WERTE = ("BEANTWORTET", "TEILWEISE", "NICHT_IM_MATERIAL")
 SCAFFOLDING_MARKER_VERSIONEN = {
     "S3-v0": {"hinweis": "STUFE1_HINWEIS:", "erklaerung": "STUFE2_ERKLAERUNG:", "loesung": "STUFE3_LOESUNG:"},
     "S2-v1": {"hinweis": "STUFE1_HINWEIS:", "loesung": "STUFE2_LOESUNG:"},
     "S2-v2": {"hinweis": "STUFE1_HINWEIS:", "loesung": "STUFE2_LOESUNG:"},  # Aufruf 1 = S2-v1
     "G-v1": {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"},  # Stufen für App/Batch: Hinweis, Lösung
+    "G-v2": {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"},
 }
+
+
+def ist_g_version(version=None):
+    """True für den festen Prompt-Satz ab V6 (G-v1, G-v2, …): STATUS-Feld, ein Aufruf, parse_g_v1."""
+    return (version or SCAFFOLDING_VERSION).startswith("G-")
+
+
+# Verweis auf Material, das Lernende nicht sehen (H3). Gemeinsam genutzt von stufen_check.py,
+# retrieval_erklaeren.py und ideen_feedback.py (nur Protokoll, kein Eingriff).
+MATERIAL_VERWEIS = re.compile(
+    r"\b(kontext\w*|textstelle\w*|im text|im lernmaterial|lernmaterial\w*|im material|im buch|lehrbuch\w*|"
+    r"abschnitt\w*|quelle\w*|textausschnitt\w*|tabelle\w*|liste\b|übersicht\w*|aufstellung\w*|"
+    r"abbildung\w*|abb\.|diagramm\w*|schaubild\w*|grafik\w*|nachschl\w*|nachzuschl\w*|nachsehen|"
+    r"schau dir [^.?!]{0,60}?\ban\b)", re.I)
+
+
+def verweist_auf_material(text):
+    """Liste der Fundstellen (leer = kein Verweis)."""
+    return [m.group(0) for m in MATERIAL_VERWEIS.finditer(text or "")]
+
+
+# Hinweis-Prüfung HP-v1 (14 Oct 2026, ab V8). Anlass: Auch mit G-v2 verwies der Hinweis bei
+# Nachschlagefragen auf eine Tabelle ("in der Übersicht über die Stoffkonstanten schauen"), weil
+# der Kontext stärker zieht als die Regel H3. Deshalb eine Prüfung NACH der Generierung:
+#   ok            Hinweis ohne Materialverweis, unverändert
+#   nachgebessert Verweis gefunden -> EIN zusätzlicher Aufruf schreibt nur den Hinweis neu
+#   ersetzt       auch der neue Hinweis verweist auf Material oder verrät eine Zahl -> fester Ersatztext
+# Nur bei STATUS BEANTWORTET/TEILWEISE (sonst gibt es keinen Hinweis). Der ursprüngliche Hinweis
+# wird protokolliert (Spalte hinweis_original), damit sich Wirkung und Häufigkeit messen lassen.
+HINWEIS_PRUEFUNG_VERSION = "HP-v2"   # None = Prüfung aus (Reproduktion von V6/V7)
+# HP-v2 (14 Oct 2026): Der neu geschriebene Hinweis von HP-v1 erfand aus "Grundwissen" eine falsche
+# Größenordnung ("wenige Zehntel Ohm pro Meter" statt 0,02857 Ω·mm²/m), und die Rückmeldungen bauten
+# darauf auf. Deshalb: (1) Neuschreib-Prompt ohne Grundwissen als Faktenquelle und ohne Zahlen,
+# Bereiche, Größenordnungen oder Einheiten; (2) zusätzliche Prüfung auf Wertangaben (Ziffern, die
+# nicht in der Frage stehen, und Größenordnungswörter), für den ursprünglichen UND den neuen Hinweis.
+HINWEIS_ERSATZ = ("Für diese Frage habe ich keinen Hinweis, der ohne das Lernmaterial auskommt. "
+                  "Überlege kurz, was du schon über das Thema weißt, und öffne dann die Lösung.")
+_ZAHL = re.compile(r"\d+(?:[.,]\d+)?")
+
+
+def _zahlen(text):
+    return {z.replace(",", ".") for z in _ZAHL.findall(text or "")}
+
+
+WERTANGABE = re.compile(
+    r"\b(zehntel|hundertstel|tausendstel|millionstel|größenordnung\w*|grössenordnung\w*|"
+    r"im bereich (?:von|zwischen)|zwischen \d)\b", re.I)  # "Prozent" allein ist keine Wertangabe
+
+
+def hinweis_hat_wertangabe(frage, hinweis):
+    """Fundstellen für Wertangaben im Hinweis: Größenordnungswörter oder Zahlen, die nicht in der Frage
+    stehen (Zahlen aus der Frage zu wiederholen ist erlaubt). Leer = keine Wertangabe."""
+    funde = [m.group(0) for m in WERTANGABE.finditer(hinweis or "")]
+    funde += sorted(_zahlen(hinweis) - _zahlen(frage))
+    return funde
+
+
+def hinweis_verraet_zahl(frage, hinweis, loesung):
+    """Zahlen im Hinweis, die in der Lösung, aber nicht in der Frage stehen (wie stufen_check.zahlen_leck)."""
+    return sorted((_zahlen(hinweis) & _zahlen(loesung)) - _zahlen(frage))
+
+
+def _prompt_hinweis_neu(frage, loesung, alter_hinweis):
+    """HP-v2: kein Grundwissen als Faktenquelle, keine Werte (siehe HINWEIS_PRUEFUNG_VERSION)."""
+    return f"""Ein Hinweis für eine lernende Person ist unbrauchbar: Er verweist auf Material, das sie nicht hat,
+oder er nennt Werte. Die Person sieht nur die Frage.
+
+Schreibe einen neuen Hinweis:
+- Lenke auf den Begriff, die Bedeutung der gesuchten Größe, wovon sie abhängt oder auf den nächsten
+  Denkschritt, den die Frage verlangt.
+- Nenne keine Zahlen, keine Bereiche, keine Größenordnungen und keine Einheiten.
+- Nenne keine Fakten, die nicht in der Frage oder in der Lösung stehen.
+- Verrate die Lösung nicht und fordere nicht auf, etwas anzusehen oder nachzuschlagen.
+- Ein bis zwei kurze Sätze, sprich die Person mit „du" an.
+
+### Frage
+{frage}
+
+### Lösung (geheim)
+{loesung}
+
+### Bisheriger Hinweis (nicht verwenden)
+{alter_hinweis}
+
+Antworte genau in diesem Format:
+HINWEIS: <neuer Hinweis>"""
+
+
+def hinweis_pruefen(frage, stufen):
+    """Prüft und repariert den Hinweis in stufen (dict von parse_g_v1) an Ort und Stelle.
+    Ergänzt stufen um hinweis_pruefung (ok | nachgebessert | ersetzt | "") und hinweis_original."""
+    stufen.setdefault("hinweis_pruefung", "")
+    stufen.setdefault("hinweis_original", "")
+    if not HINWEIS_PRUEFUNG_VERSION or not ist_g_version() or SCAFFOLDING_VERSION == "G-v1":
+        return stufen  # G-v1 (V6/V7) bleibt ohne Prüfung reproduzierbar
+    hinweis = (stufen.get("hinweis") or "").strip()
+    if stufen.get("status") not in ("BEANTWORTET", "TEILWEISE") or not hinweis:
+        return stufen
+    def sauber(h):
+        if verweist_auf_material(h) or hinweis_verraet_zahl(frage, h, stufen.get("loesung", "")):
+            return False
+        return HINWEIS_PRUEFUNG_VERSION == "HP-v1" or not hinweis_hat_wertangabe(frage, h)
+
+    if sauber(hinweis):
+        stufen["hinweis_pruefung"] = "ok"
+        return stufen
+    stufen["hinweis_original"] = hinweis
+    neu = ""
+    try:
+        roh = frage_llm(_prompt_hinweis_neu(frage, stufen.get("loesung", ""), hinweis), options=GENERIERUNGS_OPTIONEN)
+        m = re.search(r"(?is)HINWEIS\s*:\s*(.+)", roh)
+        neu = (m.group(1) if m else roh).strip().strip('"„“').strip()
+    except Exception as e:  # Hinweis-Prüfung darf die Antwort nie verhindern
+        print(f"WARNUNG Hinweis-Prüfung: {e}")
+    if neu and sauber(neu):
+        stufen["hinweis"], stufen["hinweis_pruefung"] = neu, "nachgebessert"
+    else:
+        stufen["hinweis"], stufen["hinweis_pruefung"] = HINWEIS_ERSATZ, "ersetzt"
+    return stufen
 HINWEIS_PROMPT_VERSION = "H-v3"  # nur bei S2-v2 genutzt
 
 
@@ -779,8 +905,30 @@ def _material_text(ausgewaehlte_chunks):
     return "\n\n".join(teile)
 
 
-def _prompt_g_v1(frage, ausgewaehlte_chunks):
-    """V6: fester Prompt-Satz G1 (Spezifikation §4.1). Regeln L1–L4, Status, H1–H5."""
+_HINWEIS_REGELN = {
+    "G-v1": """Regeln für den Hinweis (die lernende Person sieht nur die Frage, nicht das Lernmaterial und nicht
+die Lösung):
+H1 Verrate die Lösung nicht, auch nicht mit anderen Worten.
+H2 Lenke auf den Begriff, die Größe oder den nächsten Denkschritt, der zur Lösung führt.
+H3 Verweise nur auf die Frage und auf Grundwissen, nie auf das Lernmaterial.
+H4 Rege zum Nachdenken über einen Zusammenhang an, ohne zu überfordern.
+H5 Ein bis zwei kurze Sätze, sprich die lernende Person mit „du" an; du darfst mit einer Frage enden.""",
+    "G-v2": """Regeln für den Hinweis (die lernende Person sieht nur die Frage, nicht das Lernmaterial und nicht
+die Lösung):
+H1 Verrate die Lösung nicht, auch nicht mit anderen Worten.
+H2 Lenke auf den Begriff, die Größe oder den nächsten Denkschritt, der zur Lösung führt.
+H3 Die lernende Person sieht nur die Frage. Sie hat kein Lernmaterial, keine Tabelle, keine Abbildung
+   und keinen Text vor sich. Fordere sie nie auf, etwas anzusehen oder nachzuschlagen.
+H4 Rege zum Nachdenken über einen Zusammenhang an, ohne zu überfordern.
+H5 Ein bis zwei kurze Sätze, sprich die lernende Person mit „du" an; du darfst mit einer Frage enden.
+H6 Ist die Antwort ein einzelner Wert oder Begriff zum Nachschlagen, lenke auf das Verständnis dahinter:
+   was die Größe bedeutet oder wovon sie abhängt, ohne den Wert zu nennen.""",
+}
+_HINWEIS_REGELNUMMERN = {"G-v1": "H1 bis H5", "G-v2": "H1 bis H6"}
+
+
+def _prompt_g(version, frage, ausgewaehlte_chunks):
+    """Fester Prompt-Satz G1 (Spezifikation §4.1). Regeln L1–L4, Status, Hinweis-Regeln je Version."""
     return f"""Du bist ein Lernassistent für Auszubildende. Du beantwortest eine Frage ausschließlich mit dem
 Lernmaterial unten und bereitest dazu einen Denkanstoß vor.
 
@@ -796,13 +944,7 @@ Status:
 - TEILWEISE: Das Lernmaterial beantwortet nur einen Teil. Beantworte diesen Teil und nenne, was fehlt.
 - NICHT_IM_MATERIAL: Das Lernmaterial beantwortet die Frage nicht. Rate nicht.
 
-Regeln für den Hinweis (die lernende Person sieht nur die Frage, nicht das Lernmaterial und nicht
-die Lösung):
-H1 Verrate die Lösung nicht, auch nicht mit anderen Worten.
-H2 Lenke auf den Begriff, die Größe oder den nächsten Denkschritt, der zur Lösung führt.
-H3 Verweise nur auf die Frage und auf Grundwissen, nie auf das Lernmaterial.
-H4 Rege zum Nachdenken über einen Zusammenhang an, ohne zu überfordern.
-H5 Ein bis zwei kurze Sätze, sprich die lernende Person mit „du" an; du darfst mit einer Frage enden.
+{_HINWEIS_REGELN[version]}
 
 ### Lernmaterial
 {_material_text(ausgewaehlte_chunks)}
@@ -814,7 +956,17 @@ Antworte genau in diesem Format:
 STATUS: BEANTWORTET oder TEILWEISE oder NICHT_IM_MATERIAL
 LÖSUNG: <Lösung nach L1 bis L4; bei NICHT_IM_MATERIAL ein Satz, dass das Lernmaterial dazu nichts enthält>
 ÜBERLEGUNG: <nur für dich: welche Kernaussage der Lösung darf der Hinweis nicht verraten, und welcher Denkschritt führt dorthin?>
-HINWEIS: <Hinweis nach H1 bis H5; bei NICHT_IM_MATERIAL: –>"""
+HINWEIS: <Hinweis nach {_HINWEIS_REGELNUMMERN[version]}; bei NICHT_IM_MATERIAL: –>"""
+
+
+def _prompt_g_v1(frage, ausgewaehlte_chunks):
+    """V6: G-v1 (unverändert, für Reproduktion von V6/V7)."""
+    return _prompt_g("G-v1", frage, ausgewaehlte_chunks)
+
+
+def _prompt_g_v2(frage, ausgewaehlte_chunks):
+    """V8: G-v2 = G-v1 mit neuer H3 und H6 (siehe Kommentar bei SCAFFOLDING_VERSION)."""
+    return _prompt_g("G-v2", frage, ausgewaehlte_chunks)
 
 
 _G_FELD = re.compile(r"(?im)^[^\w\n]*(STATUS|L(?:Ö|OE)SUNG|(?:Ü|UE)BERLEGUNG|HINWEIS)[^\w\n]*:")
@@ -861,7 +1013,8 @@ def parse_g_v1(rohtext):
     }
 
 
-_PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1, "S2-v2": _prompt_s2_v1, "G-v1": _prompt_g_v1}
+_PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1, "S2-v2": _prompt_s2_v1, "G-v1": _prompt_g_v1,
+            "G-v2": _prompt_g_v2}
 
 
 def baue_hinweis_prompt(frage, ausgewaehlte_chunks, loesung):
@@ -1046,11 +1199,12 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None):
 
     prompt = baue_scaffolding_prompt(frage, top_chunks)
     rohantwort = frage_llm(prompt, options=GENERIERUNGS_OPTIONEN)
-    stufen = parse_g_v1(rohantwort) if SCAFFOLDING_VERSION == "G-v1" else parse_scaffolding_antwort(rohantwort)
+    stufen = parse_g_v1(rohantwort) if ist_g_version() else parse_scaffolding_antwort(rohantwort)
     ist_relevant, treffer = sicherheitspruefung(frage + " " + stufen["loesung"])
 
     if SCAFFOLDING_VERSION == "S2-v2":
         stufen.update(_hinweis_separat(frage, top_chunks, stufen))
+    hinweis_pruefen(frage, stufen)  # ab V8 (HP-v1); ohne Wirkung bei älteren Versionen
 
     ergebnis.update(stufen)
     ergebnis["quellen"] = [{"id": c["id"], "thema": c["thema"]} for c in top_chunks]
@@ -1072,12 +1226,14 @@ INTERAKTIONS_FELDER = [
     "genuegend_relevanz", "hinweis", "erklaerung", "loesung",
     "scaffolding_stufe_erreicht", "quellen", "sicherheitshinweis",
     "kb_hash", "status", "scaffolding_version",
+    "hinweis_pruefung", "hinweis_original",  # ab V8 (HP-v1)
 ]
 
 
 def _log_spalten_sicherstellen():
-    """Ab V6 hat interaktionen.csv die Spalten status und scaffolding_version. Ältere Logs
-    werden einmalig umgeschrieben (alte Zeilen: Spalten leer); vorher Sicherungskopie."""
+    """Ab V6 hat interaktionen.csv die Spalten status und scaffolding_version, ab V8 zusätzlich
+    hinweis_pruefung und hinweis_original. Ältere Logs werden einmalig umgeschrieben (alte Zeilen:
+    neue Spalten leer); vorher Sicherungskopie."""
     if not INTERAKTIONS_LOG.exists():
         return
     with open(INTERAKTIONS_LOG, encoding="utf-8", newline="") as f:
@@ -1086,9 +1242,11 @@ def _log_spalten_sicherstellen():
             return
         zeilen = list(r)
     sicherung = INTERAKTIONS_LOG.with_name("interaktionen_vor_V6_sicherung.csv")
-    if not sicherung.exists():
-        import shutil
-        shutil.copy2(INTERAKTIONS_LOG, sicherung)
+    if sicherung.exists():  # ab V8: jede weitere Spaltenänderung bekommt eine eigene Sicherung
+        sicherung = INTERAKTIONS_LOG.with_name(
+            f"interaktionen_vor_spalten_{datetime.datetime.now():%Y%m%d_%H%M%S}.csv")
+    import shutil
+    shutil.copy2(INTERAKTIONS_LOG, sicherung)
     with open(INTERAKTIONS_LOG, "w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=INTERAKTIONS_FELDER, restval="", extrasaction="ignore")
         w.writeheader()
@@ -1126,6 +1284,8 @@ def protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=
             "kb_hash": ergebnis.get("kb_hash", ""),
             "status": ergebnis.get("status", ""),
             "scaffolding_version": SCAFFOLDING_VERSION,
+            "hinweis_pruefung": ergebnis.get("hinweis_pruefung", ""),
+            "hinweis_original": ergebnis.get("hinweis_original", ""),
         })
 
 

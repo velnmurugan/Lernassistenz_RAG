@@ -4,8 +4,11 @@ stufen_check.py
 Automatische Prüfung der Stufen-Texte (Scaffolding-Spezifikation §6/§7) für eine
 oder mehrere Versionen, ohne LLM:
   - Format: Hinweis geparst?
-  - H3: verweist der Hinweis auf Text, den Lernende nicht sehen ("Kontext", "Text",
-    "Abschnitt", "Quelle", "Tabelle …")?
+  - H3: verweist der Hinweis auf Material, das Lernende nicht sehen ("Kontext", "im Text",
+    "Tabelle", "Abbildung", "Diagramm", "nachschlagen", "schau dir … an" …; rag_pipeline.MATERIAL_VERWEIS)?
+  - dasselbe für die Rückmeldungen auf "Deine Idee?" (ideen_feedback.csv derselben Sitzung)
+  - ab V8: Ergebnis der Hinweis-Prüfung je Antwort (ok / nachgebessert / ersetzt); die H3-Zählung
+    bezieht sich dann auf den GEZEIGTEN Hinweis, der ursprüngliche steht in hinweis_original
   - X3: Anrede du / Sie (Regex-Heuristik)
   - H1 (Teil): verrät der Hinweis eine Zahl aus der Lösung, die nicht in der Frage steht?
   - Länge (Wörter) von Hinweis / Erklärung / Lösung (Median)
@@ -25,7 +28,9 @@ import sys
 from pathlib import Path
 
 EVAL = Path("evaluationsdaten")
-H3 = re.compile(r"\b(kontext\w*|textstelle\w*|im text|abschnitt\w*|quelle\w*|textausschnitt\w*|tabelle\w*|liste\b|übersicht\w*|aufstellung\w*|im material)\b", re.I)
+import rag_pipeline as rp
+
+H3 = rp.MATERIAL_VERWEIS  # ab 14 Oct 2026 gemeinsam mit App/Erklärseite; erweitert um Abbildung, Diagramm, nachschlagen …
 DU = re.compile(r"\b(du|dir|dich|dein\w*)\b")
 ZAHL = re.compile(r"\d+(?:[.,]\d+)?")
 SIE = re.compile(r"(?<![.!?]\s)(?<!^)\b(Sie|Ihnen|Ihr\w*)\b")
@@ -37,6 +42,16 @@ def lade(version):
         pfad = EVAL / "interaktionen.csv"
     with open(pfad, encoding="utf-8") as f:
         return [z for z in csv.DictReader(f) if z["sitzungs_id"] == version]
+
+
+def lade_feedback(version):
+    pfad = EVAL / "archiv" / version / "ideen_feedback.csv"
+    if not pfad.exists():
+        pfad = EVAL / "ideen_feedback.csv"
+    if not pfad.exists():
+        return []
+    with open(pfad, encoding="utf-8") as f:
+        return [z for z in csv.DictReader(f) if z.get("sitzungs_id") == version]
 
 
 def zahlen(t):
@@ -71,6 +86,18 @@ def main(versionen):
         print(f"Hinweis verrät Zahl (H1):  {len(leck)}/{len(geparst)}  (Fall-Nr.: {leck})")
         print(f"Anrede du / Sie:           {du} / {sie}")
         print(f"Median Wörter H / E / L:   {med('hinweis')} / {med('erklaerung')} / {med('loesung')}")
+        hp = [z.get("hinweis_pruefung", "") for z in zeilen if z.get("hinweis_pruefung")]
+        if hp:
+            from collections import Counter
+            print(f"Hinweis-Prüfung (HP):      {dict(Counter(hp))}")
+        fb = lade_feedback(v)
+        if fb:
+            fb_verweis = [z for z in fb if H3.search(z.get("rueckmeldung", ""))]
+            print(f"Rückmeldung verweist auf Material: {len(fb_verweis)}/{len(fb)}  "
+                  f"(Prompt {', '.join(sorted({z.get('prompt_version', '?') for z in fb}))})")
+            mit_neuen = [z for z in fb if z.get("neue_zahlen")]
+            if any("neue_zahlen" in z for z in fb):
+                print(f"Rückmeldung mit neuen Zahlen: {len(mit_neuen)}/{len(fb)}  (ab IF-v4 protokolliert)")
 
 
 if __name__ == "__main__":

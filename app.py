@@ -32,7 +32,9 @@ if "verlauf" not in st.session_state:
 if "sitzungs_id" not in st.session_state:
     st.session_state["sitzungs_id"] = ""
 
-CHUNKS = lade_wissensbasis("daten/wissensbasen/knowledge_base_boege.json")
+import os as _os, rag_pipeline as _rp  # Test: Wissensbasis/Retrieval per Umgebungsvariable
+_rp.RETRIEVAL_METHODE = _os.environ.get("LERNASSISTENT_RETRIEVAL", _rp.RETRIEVAL_METHODE)
+CHUNKS = lade_wissensbasis(_os.environ.get("LERNASSISTENT_KB", "daten/wissensbasen/knowledge_base_boege.json"))
 
 
 # =============================================================================

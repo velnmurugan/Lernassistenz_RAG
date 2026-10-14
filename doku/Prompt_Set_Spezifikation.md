@@ -299,6 +299,65 @@ Test sets: Böge (`testfragen_v1.csv`, 30) and Fischer (`testfragen_fischer_v1.c
 
 If a criterion fails: document it as a finding; change a prompt only for a reason that is **not specific to one document**, as a new version (G-v2), and re-run both sets.
 
+## 9a. Version log
+
+### G-v2 and IF-v3 (14 Oct 2026; implemented, test run pending)
+
+**Reason (not specific to one document).** Manual tests in the study app (Fischer v7b, session `TEST-V7B`) with questions whose answer is a single value from a table or figure:
+- Hints told the learner to look at material they cannot see in 4 of 4 lookup questions: "Schau dir die elektrochemische Spannungsreihe genau an", "Schau dir die im Text genannte Tabelle an", "Schau dir in Abbildung 4.47 … an", "Schau dir das Diagramm an".
+- The feedback contradicted a learner who correctly wrote "ich habe keine Tabelle" ("Deine Aussage … ist nicht korrekt, da der Hinweis explizit auf eine … Tabelle verweist") and refused a request for help.
+- Earlier feedback cases: one stated the opposite of the solution in one sentence (input power "im Zähler"); one invented a cause for a bare guess ("90 %": "wahrscheinlich … verwechselt").
+
+**Changes to G1 (G-v1 → G-v2):** only the hint rules; solution rules L1–L4, status and output format unchanged.
+- H3 new: "Die lernende Person sieht nur die Frage. Sie hat kein Lernmaterial, keine Tabelle, keine Abbildung und keinen Text vor sich. Fordere sie nie auf, etwas anzusehen oder nachzuschlagen."
+- H6 new: "Ist die Antwort ein einzelner Wert oder Begriff zum Nachschlagen, lenke auf das Verständnis dahinter: was die Größe bedeutet oder wovon sie abhängt, ohne den Wert zu nennen."
+
+**Changes to G2 (IF-v2 → IF-v3):**
+- Introduction: "Sie hat kein Lernmaterial, keine Tabellen und keine Abbildungen. Verweist der Hinweis trotzdem darauf, gehe nicht darauf ein."
+- F6: "Sagt die Person, dass sie nicht weiterkommt oder etwas nicht sehen kann, ist das KEINE_IDEE: widersprich ihr nicht, sondern gib einen kleinen zusätzlichen Denkanstoß aus der Frage und dem Grundwissen."
+- F7: "Nenne nur Fehlerursachen, die in der Idee erkennbar sind, und prüfe, dass deine Rückmeldung der Lösung nicht widerspricht." [own observation, no literature source]
+
+**Unchanged principles:** no examples, no document-specific wording; G-v1 and IF-v2 stay selectable (`--scaffolding G-v1`, `baue_feedback_prompt(…, version="IF-v2")`) and reproduce V6/V7 exactly (prompt text verified identical).
+
+**Measurement.** The H3 word check is now shared code (`rag_pipeline.MATERIAL_VERWEIS`, used by `stufen_check.py`, `retrieval_erklaeren.py` and logged for feedback) and was extended by Abbildung, Abb., Diagramm, Schaubild, Grafik, nachschlagen, "schau dir … an", Lernmaterial, im Buch. Baseline with the extended check: V4-S2 9/29, V6-BOEGE 6/24, V6-FISCHER 5/22, V7A/V7B2-FISCHER 2/22. Known false positive: "Schau dir an, welche Fläche … den Druck aufnimmt" (V6-BOEGE Q11), i.e. "schau dir an" meaning "consider". The check counts; the final judgement stays manual. The existing test sets contain few lookup questions, so a batch run alone will underestimate the problem; the manual cases are re-tested as well.
+
+**Test plan:** (1) batch run G-v2/IF-v3 on Fischer v7b and Böge, criteria as in §8; (2) re-test the manual cases (zinc −0.76 V, thermal class F 105 K, CdS sensitivity, Abb. 4.47 efficiency, "ich habe keine Tabelle", the three motor-efficiency ideas); (3) adopt as the new fixed version only if no criterion gets worse.
+
+### HP-v1: hint check after generation (14 Oct 2026; implemented, test run pending)
+
+**Reason.** First manual test with G-v2 (session `11`, 11:16–11:19): for "spezifischer Widerstand von Aluminium" the hint still said "… musst du in der Übersicht über die Stoffkonstanten schauen. Welche Spalte enthält dort die Werte für ρ20?". The rule alone does not hold against a context that contains the answer in a table. IF-v3 partly worked (no contradiction of "ich habe keine Tabelle" any more), but the feedback was long and pointed to "Fachliteratur".
+
+**Mechanism (code, `rag_pipeline.hinweis_pruefen`), only for G-v2 and later, only for status BEANTWORTET/TEILWEISE:**
+1. The generated hint is checked with `verweist_auf_material` and for numbers from the solution that are not in the question.
+2. Clean → shown unchanged (`hinweis_pruefung = ok`).
+3. Otherwise one extra call rewrites only the hint (prompt `_prompt_hinweis_neu`: question, secret solution, old hint; same rules as H1–H6 in short form). If the new hint passes the same checks → shown (`nachgebessert`).
+4. If it fails again, or the call fails → fixed text: "Für diese Frage habe ich keinen Hinweis, der ohne das Lernmaterial auskommt. Überlege kurz, was du schon über das Thema weißt, und öffne dann die Lösung." (`ersetzt`).
+5. `interaktionen.csv` gets two columns, `hinweis_pruefung` and `hinweis_original` (old log rewritten once, with a dated backup). `stufen_check.py` reports the counts; the explainer page shows the result and the original hint.
+
+Cost: one extra model call (about 5–10 s) only when the hint is flagged. G-v1 runs stay unchanged (no check). The check is word-based; false positives (e.g. "schau dir an" meaning "consider") lead to an unnecessary rewrite, not to a wrong answer.
+
+### HP-v2 and IF-v4 (14 Oct 2026; implemented, test run pending)
+
+**Reason.** Test with HP-v1 (session `TEST-V8`):
+- Aluminium resistivity: the hint was rewritten into "… typischerweise im Bereich von wenigen Zehntel Ohm pro Meter" (true value 0,02857 Ω·mm²/m: hundredths, other unit). The HP-v1 rewrite prompt allowed "Grundwissen", which the model used as a source of (wrong) facts.
+- All three feedbacks then built on this hint ("da der Hinweis … Zehntel andeutet"), one gave the value away as a range ("zwischen 0,02 und 0,03, näher an der unteren Grenze", also wrong in direction), and one pushed the wrong unit of the solution ("Ohm pro Meter").
+- Photovoltaics: the feedback called 18–25 % wrong "in der Praxis", because the 2019 textbook gives 10–13 %.
+- Positive: the check replaced an unusable hint by the fixed text (thermal class); the concept hint for photovoltaics followed H6; the unit correction for "105 m" (Kelvin, not metres) was very good.
+
+**HP-v2 (code + rewrite prompt):**
+- Rewrite prompt: no "Grundwissen"; only concept, meaning of the quantity, what it depends on or the next step; no numbers, ranges, magnitudes or units; no facts that are not in the question or the solution.
+- New check `hinweis_hat_wertangabe`: magnitude words (Zehntel, Hundertstel, Tausendstel, Größenordnung, "im Bereich von/zwischen", "zwischen <Zahl>") and digits that are not in the question. Applied to the original and to the rewritten hint; "Prozent" alone does not count.
+
+**IF-v4 (feedback):**
+- F6 without "Grundwissen".
+- F8: "Maßgeblich ist nur die Lösung. Der Hinweis ist kein Beleg und kann ungenau sein. Formuliere Sachaussagen als Aussage des Lernmaterials („laut Lernmaterial"), nicht als allgemeine Tatsache oder „in der Praxis"."
+- F9: "Nenne keine Zahlen, Bereiche oder Größenordnungen, die nicht in der Idee stehen, und sage nicht, ob ein Wert näher an einer Grenze liegt."
+- New log columns in `ideen_feedback.csv`: `neue_zahlen` (numbers in the feedback that appear neither in question, hint nor idea) and `verweis_material`; counted by `stufen_check.py`. Old log is rewritten once with a dated backup.
+
+IF-v2 and IF-v3 prompts verified unchanged; HP-v1 behaviour available via `HINWEIS_PRUEFUNG_VERSION = "HP-v1"`.
+
+**Open, not solved by prompts:** (1) the textbook can be outdated (photovoltaics); the system follows the book by design (L1), so a fixed note such as "Werte laut Lehrbuch (Stand 2019)" is a design decision; (2) the unit error "Ω·m" in the solution: cause (extraction of the table header or the model) still to be checked.
+
 ## 9. New references (not in the reading list)
 
 - Sclar, M., Choi, Y., Tsvetkov, Y., & Suhr, A. (2024). Quantifying language models' sensitivity to spurious features in prompt design. *ICLR 2024*. [check]

@@ -1,0 +1,67 @@
+fall_id,frage_original,generierte_frage,cosinus
+F001,Bei uns in der Werkstatt liegen zwischen Außenleiter und Neutralleiter 230 V an. Welche Spannung messe ich dann zwischen zwei Außenleitern?,Welche Spannung misst du zwischen zwei Außenleitern?,0.664
+F001,Bei uns in der Werkstatt liegen zwischen Außenleiter und Neutralleiter 230 V an. Welche Spannung messe ich dann zwischen zwei Außenleitern?,Was sind Sternspannungen und Dreieckspannungen?,0.2813
+F001,Bei uns in der Werkstatt liegen zwischen Außenleiter und Neutralleiter 230 V an. Welche Spannung messe ich dann zwischen zwei Außenleitern?,Wie unterscheiden sich Sternspannungen und Dreieckspannungen?,0.3689
+F002,"Warum bekomme ich bei einem Gerät mit Gehäuseschluss mit Schuhen meist nur ein Kribbeln, barfuß auf Betonboden ist es aber lebensgefährlich?","Was ist der Grund dafür, dass man meistens nur ein Kribbeln bekommt, wenn man barfuß auf einem Boden mit Schuhwerk und Bodenbelag läuft?",0.8006
+F002,"Warum bekomme ich bei einem Gerät mit Gehäuseschluss mit Schuhen meist nur ein Kribbeln, barfuß auf Betonboden ist es aber lebensgefährlich?",Was ist der Unterschied zwischen dem Widerstand des Schuhwerks und des Bodenbelags (RE) und dem Körperwiderstand (RM)?,0.5244
+F002,"Warum bekomme ich bei einem Gerät mit Gehäuseschluss mit Schuhen meist nur ein Kribbeln, barfuß auf Betonboden ist es aber lebensgefährlich?","Warum ist es lebensgefährlich, barfuß auf einem Betonboden zu laufen?",0.7894
+F003,Welche Schutzmaßnahmen gegen einen elektrischen Schlag sieht die VDE vor?,"Was ist die Normenreihe, auf die sich das Lernmaterial bezieht?",0.2117
+F003,Welche Schutzmaßnahmen gegen einen elektrischen Schlag sieht die VDE vor?,Welcher Abschnitt der Normenreihe beschäftigt sich mit Schutzmaßnahmen gegen elektrischen Schlag?,0.838
+F003,Welche Schutzmaßnahmen gegen einen elektrischen Schlag sieht die VDE vor?,Welche Schutzmaßnahmen gegen elektrischen Schlag werden in diesem Abschnitt nicht konkret aufgeführt?,0.8551
+F004,"Wie schnell muss die Sicherung bei 230 V abschalten, wenn ein Gerät Körperschluss hat?","Wie lange dauert es, bis die Sicherung den Stromkreis abschaltet?",0.6928
+F004,"Wie schnell muss die Sicherung bei 230 V abschalten, wenn ein Gerät Körperschluss hat?",Gibt es eine genaue Zeitangabe für das Abschalten der Sicherung?,0.6424
+F004,"Wie schnell muss die Sicherung bei 230 V abschalten, wenn ein Gerät Körperschluss hat?",Wie schnell muss der Schalter oder die Sicherung den Stromkreis abschalten?,0.8152
+F006,Was für einen FI-Schalter nimmt man in einer Wohnung und wie merkt der überhaupt einen Fehler?,Was ist der Zweck eines FI-Schutzschalters vom Typ 30 mA in einer Wohnung?,0.6661
+F006,Was für einen FI-Schalter nimmt man in einer Wohnung und wie merkt der überhaupt einen Fehler?,Wie erkennt ein FI-Schutzschalter vom Typ 30 mA einen Fehler in einem Stromkreis?,0.4801
+F006,Was für einen FI-Schalter nimmt man in einer Wohnung und wie merkt der überhaupt einen Fehler?,Was löst das Abschalten durch einen Ringstromwandler aus?,0.3411
+F007,Was ist der Unterschied zwischen einem Heißleiter und einem Kaltleiter?,Was ist der Unterschied zwischen einem Heißleiter (PTC) und einem Kaltleiter in Bezug auf ihre Temperaturabhängigkeit des Widerstands?,0.7555
+F007,Was ist der Unterschied zwischen einem Heißleiter und einem Kaltleiter?,Wie verhält sich der Widerstand eines Heißleiters (PTC) bei steigender Temperatur?,0.5152
+F007,Was ist der Unterschied zwischen einem Heißleiter und einem Kaltleiter?,Welche Kennlinie haben Kaltleiter im Vergleich zu Heißleitern (PTC)?,0.7128
+F008,"Wie kann ich mit einem Heißleiter erreichen, dass ein Relais erst nach ein paar Sekunden anzieht?",Was ist der Anfangswiderstand des Heißleiters?,0.4252
+F008,"Wie kann ich mit einem Heißleiter erreichen, dass ein Relais erst nach ein paar Sekunden anzieht?",Wie verändert sich der Widerstand des Heißleiters durch den fließenden Strom?,0.4324
+F008,"Wie kann ich mit einem Heißleiter erreichen, dass ein Relais erst nach ein paar Sekunden anzieht?","Was geschieht erst, wenn genug Strom für die Anziehung des Relais frei wird?",0.4034
+F009,"Ein Transistor setzt 1,5 W in Wärme um. Der Wärmewiderstand zwischen Sperrschicht und Umgebung ist 150 K/W, die Umgebung hat 30 °C. Wie heiß wird die Sperrschicht ohne Kühlkörper?",Was ist die Sperrschichttemperatur?,0.6937
+F009,"Ein Transistor setzt 1,5 W in Wärme um. Der Wärmewiderstand zwischen Sperrschicht und Umgebung ist 150 K/W, die Umgebung hat 30 °C. Wie heiß wird die Sperrschicht ohne Kühlkörper?","Welche Werte wurden in die Formel ΘJ = ΘU + (Pv · RthJU) eingesetzt, um die Sperrschichttemperatur von 150 °C zu erhalten?",0.5884
+F009,"Ein Transistor setzt 1,5 W in Wärme um. Der Wärmewiderstand zwischen Sperrschicht und Umgebung ist 150 K/W, die Umgebung hat 30 °C. Wie heiß wird die Sperrschicht ohne Kühlkörper?","Wie hoch ist der Wärmewiderstand, der in der Formel ΘJ = ΘU + (Pv · RthJU) verwendet wurde?",0.5565
+F010,"Warum soll ein Spannungsmesser einen großen und ein Strommesser einen kleinen Innenwiderstand haben, und wie groß ist er bei einem Digitalmultimeter?",Was ist der Innenwiderstand eines Spannungsmessers?,0.5418
+F010,"Warum soll ein Spannungsmesser einen großen und ein Strommesser einen kleinen Innenwiderstand haben, und wie groß ist er bei einem Digitalmultimeter?",Wie unterscheidet sich der Innenwiderstand eines Spannungsmessers von dem eines Strommessers?,0.7598
+F010,"Warum soll ein Spannungsmesser einen großen und ein Strommesser einen kleinen Innenwiderstand haben, und wie groß ist er bei einem Digitalmultimeter?",Welche Werte hat der Innenwiderstand eines Digitalmultimeters im Spannungs- und Strombereich?,0.8142
+F011,Darf man bei einem Stromwandler die Leitung auf der Sekundärseite einfach abklemmen?,Kann der Sekundärkreis des Wandlers offen betrieben werden?,0.5576
+F011,Darf man bei einem Stromwandler die Leitung auf der Sekundärseite einfach abklemmen?,"Darf der Eisenkern des Wandlers durch hohe Eisenverluste so stark erwärmt werden, dass er verbrennt?",0.3127
+F011,Darf man bei einem Stromwandler die Leitung auf der Sekundärseite einfach abklemmen?,Darf der Sekundärkreis des Wandlers abgesichert werden?,0.54
+F012,"Welchen Strom liefert ein Stromwandler normalerweise auf der Sekundärseite, und welche Spannung ein Spannungswandler?","Was ist der typische Sekundärstrom, den ein Stromwandler liefert?",0.8553
+F012,"Welchen Strom liefert ein Stromwandler normalerweise auf der Sekundärseite, und welche Spannung ein Spannungswandler?",Gibt es eine Normung für den Sekundärstrom eines Stromwandlers?,0.771
+F012,"Welchen Strom liefert ein Stromwandler normalerweise auf der Sekundärseite, und welche Spannung ein Spannungswandler?","Enthält das Lernmaterial Informationen darüber, welche Spannung ein Spannungswandler liefert?",0.4736
+F013,Ein Drehstrommotor hat eine synchrone Drehzahl von 1500 1/min und läuft mit 1425 1/min. Wie groß ist sein Schlupf?,Was ist der Schlupf in Prozent?,0.2917
+F013,Ein Drehstrommotor hat eine synchrone Drehzahl von 1500 1/min und läuft mit 1425 1/min. Wie groß ist sein Schlupf?,"Welche Werte werden in die Formel eingesetzt, um den Schlupf zu berechnen?",0.3368
+F013,Ein Drehstrommotor hat eine synchrone Drehzahl von 1500 1/min und läuft mit 1425 1/min. Wie groß ist sein Schlupf?,Was ist das Ergebnis der Berechnung des Schlupfs in Prozent?,0.3299
+F014,Warum kann ein Asynchronmotor nie ganz die Drehzahl des Drehfelds erreichen?,"Was ist der Grund dafür, dass ein Asynchronmotor die synchrone Drehzahl nicht erreichen kann?",0.9293
+F014,Warum kann ein Asynchronmotor nie ganz die Drehzahl des Drehfelds erreichen?,Welche Art von Verlusten sind auch im Leerlauf eines Asynchronmotors vorhanden?,0.6835
+F014,Warum kann ein Asynchronmotor nie ganz die Drehzahl des Drehfelds erreichen?,Warum läuft ein Asynchronmotor immer asynchron mit einer Drehzahl n kleiner als ns?,0.8821
+F015,"Was bedeuten die Betriebsarten S1, S2 und S3 bei Elektromotoren?",Was sind die Betriebsarten S1 bis S10?,0.6639
+F015,"Was bedeuten die Betriebsarten S1, S2 und S3 bei Elektromotoren?",Was bedeutet S2 im Zusammenhang mit Schaltkreisen?,0.6677
+F015,"Was bedeuten die Betriebsarten S1, S2 und S3 bei Elektromotoren?",Was ist die Funktion von S3 in einem Schaltkreis?,0.663
+F016,"Auf dem Typenschild eines Drehstrommotors stehen 400 V, 8,7 A, cos φ = 0,81 und 4 kW. Wie hoch ist sein Wirkungsgrad bei Volllast?",Was ist der Wirkungsgrad des Drehstrommotors bei Volllast?,0.807
+F016,"Auf dem Typenschild eines Drehstrommotors stehen 400 V, 8,7 A, cos φ = 0,81 und 4 kW. Wie hoch ist sein Wirkungsgrad bei Volllast?",Gibt es eine Formel zur Berechnung des Wirkungsgrades aus den gegebenen Werten?,0.4126
+F016,"Auf dem Typenschild eines Drehstrommotors stehen 400 V, 8,7 A, cos φ = 0,81 und 4 kW. Wie hoch ist sein Wirkungsgrad bei Volllast?",Welche Daten enthält das Lernmaterial für einen Drehstrommotor?,0.4863
+F017,"Welche Schutzart braucht ein Motor, der draußen im Regen läuft?","Was ist die Schutzart für einen Motor, der im Regen läuft?",0.9687
+F017,"Welche Schutzart braucht ein Motor, der draußen im Regen läuft?","Welche Schutzart hat ein Motor, der staubdicht und spritzwassersicher sein muss?",0.8562
+F017,"Welche Schutzart braucht ein Motor, der draußen im Regen läuft?","Welche Schutzart wird für langsam laufende Maschinen und Apparate benötigt, die im Freien betrieben werden?",0.696
+F018,Ab welcher Stromstärke wird ein Strom durch den Körper tödlich?,Ab welcher Stromstärke können die Wirkungen tödlich werden?,0.9132
+F018,Ab welcher Stromstärke wird ein Strom durch den Körper tödlich?,Was sind die gefährlichen physiologischen Wirkungen ab einer bestimmten Stromstärke?,0.8282
+F018,Ab welcher Stromstärke wird ein Strom durch den Körper tödlich?,"Ohne welche Hilfe kann der Tod eintreten, wenn diese Wirkungen nicht behandelt werden?",0.507
+F019,Wie groß muss der Kühlkörper für einen Leistungstransistor mit 20 W Verlustleistung sein?,Wie hoch ist der Wärmewiderstand eines Kühlkörpers für eine Verlustleistung von 20 W?,0.8353
+F019,Wie groß muss der Kühlkörper für einen Leistungstransistor mit 20 W Verlustleistung sein?,Welche spezifische Größe oder exakter Widerstandswert wird für eine Verlustleistung von 20 W benötigt?,0.6831
+F019,Wie groß muss der Kühlkörper für einen Leistungstransistor mit 20 W Verlustleistung sein?,Wie lässt sich der direkte Zusammenhang zwischen der benötigten Leistung und der erforderlichen Kühlkörperform/Größe herstellen?,0.6576
+F025,"Wie ändert sich der Widerstand eines Kaltleiters, wenn er wärmer wird: gleichmäßig oder sprunghaft, und ungefähr bei welcher Temperatur?",Was für eine Art von Leiter wird im Lernmaterial nicht explizit beschrieben?,0.1035
+F025,"Wie ändert sich der Widerstand eines Kaltleiters, wenn er wärmer wird: gleichmäßig oder sprunghaft, und ungefähr bei welcher Temperatur?","Welche Art von Leiter hat einen Widerstand, der mit der Temperatur sprunghaft ansteigt?",0.7783
+F025,"Wie ändert sich der Widerstand eines Kaltleiters, wenn er wärmer wird: gleichmäßig oder sprunghaft, und ungefähr bei welcher Temperatur?","Welche Art von Leiter hat einen Widerstand, der linear zunimmt?",0.5536
+F027,Auf dem Beispiel-Leistungsschild eines 4-kW-Drehstrommotors mit 1425 1/min: Für welche Netzfrequenz ist er gebaut und welchen Strom nimmt er in Dreieckschaltung auf?,Was ist die Netzfrequenz des Motors?,0.713
+F027,Auf dem Beispiel-Leistungsschild eines 4-kW-Drehstrommotors mit 1425 1/min: Für welche Netzfrequenz ist er gebaut und welchen Strom nimmt er in Dreieckschaltung auf?,Wie ist der Zusammenhang zwischen dem Strangstrom (I_D) und dem Nennstrom (I_N) in einer Dreieckschaltung?,0.3409
+F027,Auf dem Beispiel-Leistungsschild eines 4-kW-Drehstrommotors mit 1425 1/min: Für welche Netzfrequenz ist er gebaut und welchen Strom nimmt er in Dreieckschaltung auf?,"Was ist der Stillstandsstrom für einen anderen Motor, der im Text erwähnt wird?",0.594
+F028,Wie verläuft das Drehmoment eines Asynchronmotors vom Stillstand bis zum Leerlauf?,Wann ist das Drehmoment am höchsten?,0.524
+F028,Wie verläuft das Drehmoment eines Asynchronmotors vom Stillstand bis zum Leerlauf?,Was geschieht mit dem Drehmoment zwischen Kipppunkt und Leerlauf?,0.5585
+F028,Wie verläuft das Drehmoment eines Asynchronmotors vom Stillstand bis zum Leerlauf?,"Weshalb bleibt der Strom auch noch hoch, wenn das Drehmoment zwischen Kipppunkt und Leerlauf wieder abnimmt?",0.4684
+F029,Wie sieht das thermische Ersatzschaltbild für ein Halbleiterbauteil mit Kühlkörper aus?,"Was sind die beiden Wärmewiderstände, die im thermischen Ersatzschaltbild in Reihe geschaltet sind?",0.8712
+F029,Wie sieht das thermische Ersatzschaltbild für ein Halbleiterbauteil mit Kühlkörper aus?,Was beschreibt der Wärmewiderstand RthJC?,0.6784
+F029,Wie sieht das thermische Ersatzschaltbild für ein Halbleiterbauteil mit Kühlkörper aus?,Wie wird der Gesamtwert RthJU berechnet?,0.2266
