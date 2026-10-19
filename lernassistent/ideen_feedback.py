@@ -203,7 +203,12 @@ def neue_zahlen(rueckmeldung, *sichtbar):
 #   nachgebessert sonst EIN zusätzlicher Aufruf, der nur die Rückmeldung neu schreibt; danach sauber
 #   ersetzt       auch die neue Rückmeldung fällt durch -> fester Text je Urteil
 # Ausnahme: Urteil RICHTIG wird nicht geprüft (die Idee enthält dann die Lösungswerte selbst).
-FEEDBACK_PRUEFUNG_VERSION = "FP-v1"  # None = aus (Reproduktion)
+FEEDBACK_PRUEFUNG_VERSION = "FP-v2"  # None = aus (Reproduktion)
+# FP-v2 (V9, 14 Oct 2026): (1) "100 %" / "100 Prozent" und Zahlen direkt nach √ (Faktor √3) zählen nicht
+# als neue oder verratene Zahl. Anlass: I32 (Ideentest V8D-IDEEN) — eine sehr gute Rückmeldung ("der
+# Faktor √3 fehlt ... Wirkungsgrad über 100 %") wurde durch den festen Ersatztext ersetzt.
+# (2) erweiterte Materialprüfung wie HP-v3 ("Unterlagen", "Tabellenbuch" usw.).
+_FP_V2_HARMLOS = re.compile(r"√\s*\d+|\b100\s*(?:%|prozent\b)", re.I)
 FEEDBACK_ERSATZ = {
     "keine_idee": "Schreib ruhig eine Vermutung auf, auch wenn du unsicher bist, oder öffne die Lösung.",
     "_standard": ("Deine Idee stimmt noch nicht ganz. Überlege noch einmal genau, was gefragt ist, "
@@ -215,12 +220,14 @@ def feedback_probleme(rueckmeldung, ergebnis, idee, sichtbar_extra=""):
     """Liste der Gründe, warum eine Rückmeldung nicht gezeigt werden sollte (leer = in Ordnung)."""
     from rag_pipeline import verweist_auf_material, WERTANGABE
     sichtbar = (ergebnis["frage"], ergebnis.get("hinweis", ""), idee, sichtbar_extra)
-    gruende = [f"loesungszahl {z}" for z in leck_zahlen(rueckmeldung, ergebnis["loesung"], *sichtbar)]
-    gruende += [f"neue_zahl {z}" for z in neue_zahlen(rueckmeldung, *sichtbar)]
+    v1 = FEEDBACK_PRUEFUNG_VERSION == "FP-v1"
+    zahltext = rueckmeldung if v1 else _FP_V2_HARMLOS.sub(" ", rueckmeldung or "")
+    gruende = [f"loesungszahl {z}" for z in leck_zahlen(zahltext, ergebnis["loesung"], *sichtbar)]
+    gruende += [f"neue_zahl {z}" for z in neue_zahlen(zahltext, *sichtbar)]
     gruende += [f"wertangabe {m.group(0)}" for m in WERTANGABE.finditer(rueckmeldung or "")]
     # "laut Lernmaterial" verlangt IF-v4 (F8) ausdrücklich; nur andere Materialverweise zählen
     ohne_laut = re.sub(r"(?i)\blaut (?:dem )?lernmaterial\b", "", rueckmeldung or "")
-    gruende += [f"material {v}" for v in verweist_auf_material(ohne_laut)]
+    gruende += [f"material {v}" for v in verweist_auf_material(ohne_laut, erweitert=not v1)]
     return gruende
 
 

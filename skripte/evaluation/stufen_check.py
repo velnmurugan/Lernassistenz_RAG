@@ -86,6 +86,10 @@ def main(versionen):
         print(f"Hinweis verrät Zahl (H1):  {len(leck)}/{len(geparst)}  (Fall-Nr.: {leck})")
         print(f"Anrede du / Sie:           {du} / {sie}")
         print(f"Median Wörter H / E / L:   {med('hinweis')} / {med('erklaerung')} / {med('loesung')}")
+        rpz = [z.get("rechen_pruefung", "") for z in zeilen if z.get("rechen_pruefung")]
+        if rpz:
+            from collections import Counter
+            print(f"Rechenprüfung (RP):        {dict(Counter(rpz))}")
         hp = [z.get("hinweis_pruefung", "") for z in zeilen if z.get("hinweis_pruefung")]
         if hp:
             from collections import Counter

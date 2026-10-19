@@ -690,7 +690,10 @@ Antwort:"""
 # fragen auf, eine Tabelle/Abbildung/den Text anzusehen ("Schau dir die Tabelle an"), obwohl
 # Lernende nur die Frage sehen. H3 nennt das jetzt ausdrücklich; H6 gibt für reine Nachschlage-
 # fragen eine Alternative (Bedeutung statt Wert). Weiterhin keine Beispiele, nichts Dokumentspezifisches.
-SCAFFOLDING_VERSION = "G-v2"
+# V9 (G-v3, 14 Oct 2026): G-v2 + Lösungsregel L5. Anlass: Q13 (Schlupf) rechnete mit RAG falsch
+# (75/1500 = 0,02), ohne RAG richtig; im Kontext stand das Buchbeispiel 1440 1/min -> 0,04. L5 trennt
+# Rechenweg (aus dem Material) und Zahlen (aus der Frage). Hinweis-Regeln wie G-v2.
+SCAFFOLDING_VERSION = "G-v3"
 STATUS_WERTE = ("BEANTWORTET", "TEILWEISE", "NICHT_IM_MATERIAL")
 SCAFFOLDING_MARKER_VERSIONEN = {
     "S3-v0": {"hinweis": "STUFE1_HINWEIS:", "erklaerung": "STUFE2_ERKLAERUNG:", "loesung": "STUFE3_LOESUNG:"},
@@ -698,6 +701,7 @@ SCAFFOLDING_MARKER_VERSIONEN = {
     "S2-v2": {"hinweis": "STUFE1_HINWEIS:", "loesung": "STUFE2_LOESUNG:"},  # Aufruf 1 = S2-v1
     "G-v1": {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"},  # Stufen für App/Batch: Hinweis, Lösung
     "G-v2": {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"},
+    "G-v3": {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"},
 }
 
 
@@ -717,9 +721,20 @@ MATERIAL_VERWEIS = re.compile(
 # tabellarischen Werte findest" wurde vorher nicht erkannt).
 
 
-def verweist_auf_material(text):
-    """Liste der Fundstellen (leer = kein Verweis)."""
-    return [m.group(0) for m in MATERIAL_VERWEIS.finditer(text or "")]
+# V9 (HP-v3 / FP-v2): eigene Unterlagen der lernenden Person ergänzt. Anlass: Rückmeldung "schau in
+# deine Unterlagen nach" (Ideentest V8D-IDEEN) wurde nicht erkannt. Ältere Prüfversionen (HP-v1/HP-v2,
+# FP-v1) nutzen weiter nur MATERIAL_VERWEIS, damit sie reproduzierbar bleiben.
+MATERIAL_VERWEIS_ERGAENZUNG = re.compile(
+    r"\b(unterlagen\w*|aufzeichnung\w*|mitschrift\w*|formelsammlung\w*|tabellenbuch\w*|"
+    r"tabellenwerk\w*|skript\w*|datenblatt\w*|datenbl(?:ä|ae)tter\w*|notizen)\b", re.I)
+
+
+def verweist_auf_material(text, erweitert=True):
+    """Liste der Fundstellen (leer = kein Verweis). erweitert=False: Stand V8d (für HP-v1/HP-v2, FP-v1)."""
+    funde = [m.group(0) for m in MATERIAL_VERWEIS.finditer(text or "")]
+    if erweitert:
+        funde += [m.group(0) for m in MATERIAL_VERWEIS_ERGAENZUNG.finditer(text or "")]
+    return funde
 
 
 # Hinweis-Prüfung HP-v1 (14 Oct 2026, ab V8). Anlass: Auch mit G-v2 verwies der Hinweis bei
@@ -730,7 +745,8 @@ def verweist_auf_material(text):
 #   ersetzt       auch der neue Hinweis verweist auf Material oder verrät eine Zahl -> fester Ersatztext
 # Nur bei STATUS BEANTWORTET/TEILWEISE (sonst gibt es keinen Hinweis). Der ursprüngliche Hinweis
 # wird protokolliert (Spalte hinweis_original), damit sich Wirkung und Häufigkeit messen lassen.
-HINWEIS_PRUEFUNG_VERSION = "HP-v2"   # None = Prüfung aus (Reproduktion von V6/V7)
+HINWEIS_PRUEFUNG_VERSION = "HP-v3"   # None = Prüfung aus (Reproduktion von V6/V7)
+# HP-v3 (V9): wie HP-v2, aber erweiterte Materialprüfung (MATERIAL_VERWEIS_ERGAENZUNG, "Unterlagen" usw.).
 # HP-v2 (14 Oct 2026): Der neu geschriebene Hinweis von HP-v1 erfand aus "Grundwissen" eine falsche
 # Größenordnung ("wenige Zehntel Ohm pro Meter" statt 0,02857 Ω·mm²/m), und die Rückmeldungen bauten
 # darauf auf. Deshalb: (1) Neuschreib-Prompt ohne Grundwissen als Faktenquelle und ohne Zahlen,
@@ -803,7 +819,8 @@ def hinweis_pruefen(frage, stufen):
     if stufen.get("status") not in ("BEANTWORTET", "TEILWEISE") or not hinweis:
         return stufen
     def sauber(h):
-        if verweist_auf_material(h) or hinweis_verraet_zahl(frage, h, stufen.get("loesung", "")):
+        erweitert = HINWEIS_PRUEFUNG_VERSION not in ("HP-v1", "HP-v2")
+        if verweist_auf_material(h, erweitert) or hinweis_verraet_zahl(frage, h, stufen.get("loesung", "")):
             return False
         return HINWEIS_PRUEFUNG_VERSION == "HP-v1" or not hinweis_hat_wertangabe(frage, h)
 
@@ -823,6 +840,56 @@ def hinweis_pruefen(frage, stufen):
     else:
         stufen["hinweis"], stufen["hinweis_pruefung"] = HINWEIS_ERSATZ, "ersetzt"
     return stufen
+# Rechenprüfung RP-v1 (V9d, 14 Oct 2026), siehe rechenpruefung.py. Anlass: Q13 rechnete mit RAG
+# "75 / 1500 = 0,02" (richtig 0,05). Python rechnet ausgeschriebene Rechenschritte der Lösung nach:
+#   ok            keine Abweichung gefunden (auch: keine Rechnung in der Lösung)
+#   nachgebessert Abweichung -> EIN zusätzlicher Aufruf mit dem Befund; neue Lösung rechnet richtig
+#   markiert      auch die neue Lösung weicht ab -> ursprüngliche Lösung + sichtbarer Prüfvermerk
+# Läuft VOR der Hinweis-Prüfung (der Hinweis gehört zur endgültigen Lösung). G-v1/G-v2 ohne Prüfung.
+RECHEN_PRUEFUNG_VERSION = "RP-v1"   # None = aus
+
+
+def _prompt_rechnung_neu(prompt, loesung, befunde):
+    befund = "; ".join(b["text"] for b in befunde)
+    return (f"{prompt}\n\n### Prüfung deiner ersten Antwort\nDeine erste Lösung war:\n{loesung}\n\n"
+            f"Die automatische Nachrechnung hat einen Fehler gefunden: {befund}.\n"
+            "Antworte noch einmal vollständig im selben Format. Rechne mit den Werten aus der Frage und passe "
+            "alle Angaben an, die vom korrigierten Ergebnis abhängen.")
+
+
+def rechnung_pruefen(prompt, stufen):
+    """Prüft die Rechenschritte in stufen["loesung"] und repariert an Ort und Stelle.
+    Ergänzt rechen_pruefung (ok | nachgebessert | markiert | ""), rechen_befund, loesung_original."""
+    for k in ("rechen_pruefung", "rechen_befund", "loesung_original"):
+        stufen.setdefault(k, "")
+    if not RECHEN_PRUEFUNG_VERSION or not ist_g_version() or SCAFFOLDING_VERSION in ("G-v1", "G-v2"):
+        return stufen
+    if stufen.get("status") not in ("BEANTWORTET", "TEILWEISE"):
+        return stufen
+    import rechenpruefung
+    befunde = rechenpruefung.pruefe_rechnungen(stufen.get("loesung", ""))
+    if not befunde:
+        stufen["rechen_pruefung"] = "ok"
+        return stufen
+    loesung = stufen["loesung"]
+    stufen["loesung_original"] = loesung
+    stufen["rechen_befund"] = "; ".join(b["text"] for b in befunde)
+    neu = None
+    try:
+        neu = parse_g_v1(frage_llm(_prompt_rechnung_neu(prompt, loesung, befunde), options=GENERIERUNGS_OPTIONEN))
+    except Exception as e:  # Prüfung darf die Antwort nie verhindern
+        print(f"WARNUNG Rechenprüfung: {e}")
+    if (neu and "loesung" not in neu["format_fehler"] and neu["status"] in ("BEANTWORTET", "TEILWEISE")
+            and not rechenpruefung.pruefe_rechnungen(neu["loesung"])):
+        for k in ("hinweis", "loesung", "status", "hinweis_ueberlegung", "vollstaendig_geparst", "format_fehler"):
+            stufen[k] = neu[k]
+        stufen["rechen_pruefung"] = "nachgebessert"
+    else:
+        stufen["loesung"] = f"{loesung}\n\n⚠ Automatische Nachrechnung: {stufen['rechen_befund']}."
+        stufen["rechen_pruefung"] = "markiert"
+    return stufen
+
+
 HINWEIS_PROMPT_VERSION = "H-v3"  # nur bei S2-v2 genutzt
 
 
@@ -929,7 +996,21 @@ H5 Ein bis zwei kurze Sätze, sprich die lernende Person mit „du" an; du darfs
 H6 Ist die Antwort ein einzelner Wert oder Begriff zum Nachschlagen, lenke auf das Verständnis dahinter:
    was die Größe bedeutet oder wovon sie abhängt, ohne den Wert zu nennen.""",
 }
-_HINWEIS_REGELNUMMERN = {"G-v1": "H1 bis H5", "G-v2": "H1 bis H6"}
+_HINWEIS_REGELN["G-v3"] = _HINWEIS_REGELN["G-v2"]
+_HINWEIS_REGELNUMMERN = {"G-v1": "H1 bis H5", "G-v2": "H1 bis H6", "G-v3": "H1 bis H6"}
+
+_LOESUNGS_REGELN = {
+    "G-v1": """L1 Nutze nur Aussagen, die im Lernmaterial stehen oder direkt daraus folgen. Ergänze kein eigenes
+   Wissen, auch keine zusätzlichen Begründungen.
+L2 Nenne zuerst die Antwort, dann kurz die Begründung aus dem Lernmaterial.
+L3 Bei einer Rechnung: Formel, eingesetzte Werte und Ergebnis mit Einheit.
+L4 Schreibe verständlich für Auszubildende.""",
+}
+_LOESUNGS_REGELN["G-v2"] = _LOESUNGS_REGELN["G-v1"]
+_LOESUNGS_REGELN["G-v3"] = _LOESUNGS_REGELN["G-v1"] + """
+L5 Steht im Lernmaterial ein Rechenbeispiel mit anderen Zahlen, übernimm nur den Rechenweg. Rechne mit
+   den Werten aus der Frage und rechne jeden Schritt nach."""
+_LOESUNGS_REGELNUMMERN = {"G-v1": "L1 bis L4", "G-v2": "L1 bis L4", "G-v3": "L1 bis L5"}
 
 
 def _prompt_g(version, frage, ausgewaehlte_chunks):
@@ -938,11 +1019,7 @@ def _prompt_g(version, frage, ausgewaehlte_chunks):
 Lernmaterial unten und bereitest dazu einen Denkanstoß vor.
 
 Regeln für die Lösung:
-L1 Nutze nur Aussagen, die im Lernmaterial stehen oder direkt daraus folgen. Ergänze kein eigenes
-   Wissen, auch keine zusätzlichen Begründungen.
-L2 Nenne zuerst die Antwort, dann kurz die Begründung aus dem Lernmaterial.
-L3 Bei einer Rechnung: Formel, eingesetzte Werte und Ergebnis mit Einheit.
-L4 Schreibe verständlich für Auszubildende.
+{_LOESUNGS_REGELN[version]}
 
 Status:
 - BEANTWORTET: Das Lernmaterial beantwortet die Frage.
@@ -959,7 +1036,7 @@ Status:
 
 Antworte genau in diesem Format:
 STATUS: BEANTWORTET oder TEILWEISE oder NICHT_IM_MATERIAL
-LÖSUNG: <Lösung nach L1 bis L4; bei NICHT_IM_MATERIAL ein Satz, dass das Lernmaterial dazu nichts enthält>
+LÖSUNG: <Lösung nach {_LOESUNGS_REGELNUMMERN[version]}; bei NICHT_IM_MATERIAL ein Satz, dass das Lernmaterial dazu nichts enthält>
 ÜBERLEGUNG: <nur für dich: welche Kernaussage der Lösung darf der Hinweis nicht verraten, und welcher Denkschritt führt dorthin?>
 HINWEIS: <Hinweis nach {_HINWEIS_REGELNUMMERN[version]}; bei NICHT_IM_MATERIAL: –>"""
 
@@ -972,6 +1049,11 @@ def _prompt_g_v1(frage, ausgewaehlte_chunks):
 def _prompt_g_v2(frage, ausgewaehlte_chunks):
     """V8: G-v2 = G-v1 mit neuer H3 und H6 (siehe Kommentar bei SCAFFOLDING_VERSION)."""
     return _prompt_g("G-v2", frage, ausgewaehlte_chunks)
+
+
+def _prompt_g_v3(frage, ausgewaehlte_chunks):
+    """V9: G-v3 = G-v2 mit Lösungsregel L5 (Rechenbeispiele im Material)."""
+    return _prompt_g("G-v3", frage, ausgewaehlte_chunks)
 
 
 _G_FELD = re.compile(r"(?im)^[^\w\n]*(STATUS|L(?:Ö|OE)SUNG|(?:Ü|UE)BERLEGUNG|HINWEIS)[^\w\n]*:")
@@ -1019,7 +1101,7 @@ def parse_g_v1(rohtext):
 
 
 _PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1, "S2-v2": _prompt_s2_v1, "G-v1": _prompt_g_v1,
-            "G-v2": _prompt_g_v2}
+            "G-v2": _prompt_g_v2, "G-v3": _prompt_g_v3}
 
 
 def baue_hinweis_prompt(frage, ausgewaehlte_chunks, loesung):
@@ -1205,6 +1287,8 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None):
     prompt = baue_scaffolding_prompt(frage, top_chunks)
     rohantwort = frage_llm(prompt, options=GENERIERUNGS_OPTIONEN)
     stufen = parse_g_v1(rohantwort) if ist_g_version() else parse_scaffolding_antwort(rohantwort)
+    if ist_g_version():
+        rechnung_pruefen(prompt, stufen)  # ab V9d (RP-v1); vor Sicherheits- und Hinweis-Prüfung
     ist_relevant, treffer = sicherheitspruefung(frage + " " + stufen["loesung"])
 
     if SCAFFOLDING_VERSION == "S2-v2":
@@ -1232,12 +1316,13 @@ INTERAKTIONS_FELDER = [
     "scaffolding_stufe_erreicht", "quellen", "sicherheitshinweis",
     "kb_hash", "status", "scaffolding_version",
     "hinweis_pruefung", "hinweis_original",  # ab V8 (HP-v1)
+    "rechen_pruefung", "rechen_befund", "loesung_original",  # ab V9d (RP-v1)
 ]
 
 
 def _log_spalten_sicherstellen():
     """Ab V6 hat interaktionen.csv die Spalten status und scaffolding_version, ab V8 zusätzlich
-    hinweis_pruefung und hinweis_original. Ältere Logs werden einmalig umgeschrieben (alte Zeilen:
+    hinweis_pruefung und hinweis_original, ab V9d rechen_pruefung, rechen_befund, loesung_original. Ältere Logs werden einmalig umgeschrieben (alte Zeilen:
     neue Spalten leer); vorher Sicherungskopie."""
     if not INTERAKTIONS_LOG.exists():
         return
@@ -1291,6 +1376,9 @@ def protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=
             "scaffolding_version": SCAFFOLDING_VERSION,
             "hinweis_pruefung": ergebnis.get("hinweis_pruefung", ""),
             "hinweis_original": ergebnis.get("hinweis_original", ""),
+            "rechen_pruefung": ergebnis.get("rechen_pruefung", ""),
+            "rechen_befund": ergebnis.get("rechen_befund", ""),
+            "loesung_original": ergebnis.get("loesung_original", ""),
         })
 
 

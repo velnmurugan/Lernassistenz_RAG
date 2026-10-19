@@ -150,7 +150,7 @@ def main():
     ap.add_argument("--kb", default=None, help="Wissensbasis (Standard: knowledge_base.json)")
     ap.add_argument("--fragen", default=None, help="Testfragen-CSV (Standard: testfragen_v1.csv)")
     ap.add_argument("--scaffolding", choices=sorted(rag_pipeline.SCAFFOLDING_MARKER_VERSIONEN), default=None,
-                    help=f"Stufen-Prompt (Standard: {rag_pipeline.SCAFFOLDING_VERSION}; S3-v0 = V0–V3, S2-v1 = V4, S2-v2 = V5, G-v1 = V6/V7, G-v2 = V8)")
+                    help=f"Stufen-Prompt (Standard: {rag_pipeline.SCAFFOLDING_VERSION}; S3-v0 = V0–V3, S2-v1 = V4, S2-v2 = V5, G-v1 = V6/V7, G-v2 = V8, G-v3 = V9)")
     args = ap.parse_args()
     global KB_PFAD, TESTFRAGEN
     if args.kb:

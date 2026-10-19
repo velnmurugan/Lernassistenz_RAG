@@ -119,7 +119,8 @@ _AUSPACKEN = {"mathrm", "mathit", "mathbf", "mathsf", "mathtt", "mathcal", "math
               "text", "textrm", "textit", "textbf", "mbox", "operatorname", "underline", "overline",
               "vec", "hat", "bar", "tilde", "dot", "widehat", "overrightarrow", "displaystyle"}
 _WOERTLICH = {"mathrm", "text", "textrm", "mbox", "operatorname", "mathit", "mathbf", "mathsf"}
-_WEGLASSEN = {"left", "right", "big", "Big", "bigg", "Bigg", "bigl", "bigr", "Bigl", "Bigr",
+_WEGLASSEN = {"bf", "rm", "it", "sf", "tt", "cal",  # alte Schalter "{\bf S}" (V9c: vorher "bf S")
+              "left", "right", "big", "Big", "bigg", "Bigg", "bigl", "bigr", "Bigl", "Bigr",
               "displaystyle", "textstyle", "scriptstyle", "limits", "nolimits", "mathstrut"}
 _HOCH = str.maketrans("0123456789-+", "⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺")
 _TIEF = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
@@ -162,6 +163,7 @@ def _einfach(t):
 
 def _latex(s):
     out, i = [], 0
+    ende_buchstabe = -1  # V9c: Quellposition nach der letzten Schriftgruppe mit EINEM Buchstaben
     while i < len(s):
         c = s[i]
         if c == "\\":
@@ -190,8 +192,19 @@ def _latex(s):
                 if spalten:
                     i += len(spalten.group(0))
             elif name in _AUSPACKEN:
+                start = i - len(m.group(0))
                 a, i = _argument(s, i)
                 a = _latex(a)
+                # V9c: OCR schreibt Einheiten Buchstabe für Buchstabe in eigene Schriftgruppen,
+                # "\mathrm { m } \mathbf { m } ^ { 2 }" -> vorher "m m²" (las sich als "Ω m"), jetzt "mm²".
+                # Zusammengefügt wird nur, wenn zwischen den Gruppen in der Quelle nur Leerzeichen stehen.
+                einzeln = len(a.strip()) == 1 and a.strip().isalpha() and name in _WOERTLICH
+                # Einheit mit negativem Exponenten steht allein: "m s⁻²" ist m·s⁻², nicht ms⁻² (V9c, Prüfung v7c)
+                neg_exponent = re.match(r"\s*\^\s*\{?\s*[-−]", s[i:]) is not None
+                if einzeln and not neg_exponent and ende_buchstabe >= 0 and s[ende_buchstabe:start].strip() == "":
+                    while out and out[-1] == " ":
+                        out.pop()
+                ende_buchstabe = i if einzeln else -1
                 if name in _WOERTLICH:  # MinerU: "m a l" -> "mal", "t h J U" -> "thJU"
                     w = a.replace("~", " ").split()
                     a = "".join(w) if len(w) > 1 and all(len(x) == 1 for x in w[:-1]) else " ".join(w)

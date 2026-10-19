@@ -371,6 +371,31 @@ IF-v2 and IF-v3 prompts verified unchanged; HP-v1 behaviour available via `HINWE
 
 **Systematic idea test.** `daten/testfragen/testideen_fischer_v1.csv`: 36 learner ideas for 11 questions (Fischer: 4 table lookups, 7 test-set questions), types: correct, unit or sign missing, concrete error (e.g. fraction inverted, √3 missing), vague, meta question ("ich habe keine Tabelle", "positiv oder negativ?"), newer than the book (photovoltaics today), dangerous (current transformer), with the expected verdict. `skripte/evaluation/teste_ideen.py` answers each question once and gives feedback to every idea; output `evaluationsdaten/ideen_test_<SESSION>.csv` with automatic checks (verdict as expected, check outcomes, solution numbers, new numbers) and empty columns for manual rating: correct (ja/nein), leaks (nein/teilweise/ja), helpful (1–3). The same file can be run for every future version.
 
+### G-v3, HP-v3, FP-v2 (14 Oct 2026, "V9")
+
+**Reason.** Idea test `V8D-IDEEN` (36 ideas) and the comparison with vs. without RAG (`RAGVGL-FISCHER`, 33 questions), both pre-rated by Claude:
+- Q13 (slip): with RAG the solution computed 75/1500 = 0,02 (correct 0,05); without RAG it was correct. The context contained the book example 1440 1/min → 0,04, so the model probably mixed the example into the calculation.
+- FP-v1 replaced a very good feedback (I32: "der Faktor √3 fehlt … Wirkungsgrad über 100 %") with the fixed text, because "100" and the "3" of √3 counted as new numbers.
+- "schau in deine Unterlagen nach" was not caught by the material check.
+
+**Changes (one rule each, older versions unchanged and selectable):**
+- **G-v3** = G-v2 + solution rule **L5**: "Steht im Lernmaterial ein Rechenbeispiel mit anderen Zahlen, übernimm nur den Rechenweg. Rechne mit den Werten aus der Frage und rechne jeden Schritt nach." Hint rules as in G-v2. The solution rules are now kept per version (`_LOESUNGS_REGELN`); G-v1/G-v2 prompts verified byte-identical.
+- **HP-v3** = HP-v2 with the extended material check (`MATERIAL_VERWEIS_ERGAENZUNG`: Unterlagen, Aufzeichnungen, Mitschrift, Formelsammlung, Tabellenbuch/Tabellenwerk, Skript, Datenblatt, Notizen). HP-v1/HP-v2 keep the V8d regex.
+- **FP-v2** = FP-v1, but "100 %" / "100 Prozent" and numbers directly after √ are ignored in the number checks; extended material check as HP-v3. FP-v1 unchanged.
+- Diagnostics (`stufen_check.py`, `retrieval_erklaeren.py`, log column `verweis_material`) always use the extended material check, so their counts for older runs can rise slightly.
+
+**Defaults now:** G-v3 / HP-v3 / IF-v4 / FP-v2. This replaces the V8d freeze as pilot candidate; the same idea test and the with/without-RAG comparison are rerun for V9. Not yet addressed: arithmetic check in code, unit check, figure values, wrong refusals, leaks of the missing step, verdict consistency (see `Entwicklung_und_Evaluation.md` §12, 2n).
+
+### RP-v1 calculation check (14 Oct 2026, "V9d")
+
+**Reason.** Q13 (slip) with RAG: "s = (1500 − 1425) / 1500 = 75 / 1500 = 0,02" (correct 0,05); the correct learner idea "5 %" was then judged wrong. L5 in G-v3 addresses the likely cause (copying numbers from a book example), but a rule cannot guarantee correct arithmetic; written-out calculation steps can be checked deterministically.
+
+**Check (`lernassistent/rechenpruefung.py`, called in `beantworte_frage` before the hint check).** For every equation chain in the solution ("A = B = C", also "≈"): remove units (only known unit symbols directly after a number, unit fractions such as K/W, 1/min, mm²/m), take the computable expression at the edge of each part, evaluate both sides in Python (numbers, + − · /, powers, √, π, %; safe AST evaluation, no `eval`), and compare. Tolerance: half a unit of the last significant digit of the stated number (400 → ±50, 4882 → ±0,5, 0,02 → ±0,005), at least 0.5 %. Deviations by a factor of 10³, 10⁶ … are ignored (silent prefix conversion such as µF → F; unit errors are not this check's job). Parts without numbers ("s", "η", "P₂ / P₁") are skipped.
+
+**Outcomes:** `ok` (no deviation, also when there is no calculation); `nachgebessert` (one extra call gets the first solution and the finding, e.g. "75 / 1500 ergibt 0,05, nicht 0,02", and answers again in the same format; the new solution passes the check; hint and status come from the new answer); `markiert` (the new answer still deviates or fails to parse → the original solution is kept with a visible note "⚠ Automatische Nachrechnung: …"). Logged in `interaktionen.csv` (`rechen_pruefung`, `rechen_befund`, `loesung_original`; old log migrated with a dated backup), in the idea test and in the with/without-RAG comparison (there also as diagnosis for the answer without RAG). Not applied to G-v1/G-v2 (V6–V8 reproducible).
+
+**Offline validation.** 20 constructed cases (correct and wrong steps, units, unit fractions, 1/min, powers of ten, percent, thousands separator "76.200") all as expected. On all 113 real model texts from `V8D-IDEEN` and `RAGVGL-FISCHER` (20 with equations): exactly the Q13 error found (in both runs), no false positives. Limits: only written-out steps; a wrong formula, a bare number without calculation, or LaTeX-formatted answers are not checked.
+
 ## 9. New references (not in the reading list)
 
 - Sclar, M., Choi, Y., Tsvetkov, Y., & Suhr, A. (2024). Quantifying language models' sensitivity to spurious features in prompt design. *ICLR 2024*. [check]

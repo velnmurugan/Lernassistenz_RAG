@@ -15,7 +15,7 @@ mit automatischen Prüfungen und leeren Spalten für die Handbewertung:
 
 Start (Ollama läuft, Umgebung pilot_rag):
   python skripte/evaluation/teste_ideen.py V8D-IDEEN \
-      --kb daten/wissensbasen/knowledge_base_fischer_v7b.json --retrieval hybrid_kg_rr
+      --kb daten/wissensbasen/knowledge_base_fischer_v7c.json --retrieval hybrid_kg_rr
 Dauer grob 15–30 min.
 """
 import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
@@ -30,7 +30,7 @@ import rag_pipeline as rp
 import ideen_feedback as fbm
 
 FELDER = ["id", "frage_id", "ideen_typ", "idee", "urteil_erwartet", "urteil", "urteil_passt",
-          "status", "hinweis", "hinweis_pruefung", "hinweis_original",
+          "status", "hinweis", "hinweis_pruefung", "hinweis_original", "rechen_pruefung", "rechen_befund",
           "rueckmeldung", "feedback_pruefung", "rueckmeldung_original",
           "leck_zahlen", "neue_zahlen", "verweis_material", "sekunden",
           "loesung", "frage", "versionen",
@@ -40,7 +40,7 @@ FELDER = ["id", "frage_id", "ideen_typ", "idee", "urteil_erwartet", "urteil", "u
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("sitzung")
-    ap.add_argument("--kb", default="daten/wissensbasen/knowledge_base_fischer_v7b.json")
+    ap.add_argument("--kb", default="daten/wissensbasen/knowledge_base_fischer_v7c.json")
     ap.add_argument("--ideen", default="daten/testfragen/testideen_fischer_v1.csv")
     ap.add_argument("--retrieval", default="hybrid_kg_rr")
     args = ap.parse_args()
@@ -49,7 +49,7 @@ def main():
     kb_hash = rp.berechne_kb_hash(args.kb)
     with open(args.ideen, encoding="utf-8") as f:
         ideen = list(csv.DictReader(f))
-    versionen = (f"{rp.SCAFFOLDING_VERSION}/{rp.HINWEIS_PRUEFUNG_VERSION}/"
+    versionen = (f"{rp.SCAFFOLDING_VERSION}/{rp.RECHEN_PRUEFUNG_VERSION}/{rp.HINWEIS_PRUEFUNG_VERSION}/"
                  f"{fbm.FEEDBACK_PROMPT_VERSION}/{fbm.FEEDBACK_PRUEFUNG_VERSION}")
     print(f"{len(ideen)} Ideen, KB {args.kb} ({kb_hash}), Retrieval {args.retrieval}, Versionen {versionen}")
 
@@ -77,6 +77,7 @@ def main():
             "urteil_erwartet": z["urteil_erwartet"], "urteil": fb["urteil"], "urteil_passt": passt,
             "status": erg.get("status", ""), "hinweis": erg.get("hinweis", ""),
             "hinweis_pruefung": erg.get("hinweis_pruefung", ""), "hinweis_original": erg.get("hinweis_original", ""),
+            "rechen_pruefung": erg.get("rechen_pruefung", ""), "rechen_befund": erg.get("rechen_befund", ""),
             "rueckmeldung": fb["rueckmeldung"], "feedback_pruefung": fb.get("feedback_pruefung", ""),
             "rueckmeldung_original": fb.get("rueckmeldung_original", ""),
             "leck_zahlen": "; ".join(fb.get("leck_zahlen", [])), "neue_zahlen": "; ".join(fb.get("neue_zahlen", [])),
