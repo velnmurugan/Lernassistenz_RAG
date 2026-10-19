@@ -23,13 +23,19 @@ RP-v2 (V10, 19 Oct 2026) = RP-v1 + zwei weitere deterministische Prüfungen (pru
   - Sichtbare Überlegung: Selbstkorrekturen und Abwägungen in der Lösung ("Rechenfehler", "korrigieren",
     "Warte", "Entscheidung:", "STATUS:"). Anlass Q13 und Q27 (Lauf V9D).
 Beide Befunde werden wie RP-v1 behandelt (ein Neuschreib-Aufruf, sonst sichtbarer Vermerk).
+
+RP-v3 (V10a, 19 Oct 2026) = RP-v2 + Variablennamen mit Index ("P1", "U2", "R20") werden nicht mehr als Zahl
+gelesen. Anlass Q27 (Lauf V10): "P1 = 4000 W / 0,815 = 4908 W" ergab den falschen Vermerk
+"4000 / 0,815 ergibt 4908, nicht 1" (die "1" aus "P1"). Folge davon: Ein Ausdruck, der über einen Operator an ein
+Symbol grenzt ("R20 · (1 + 0,004 · 30)"), wird nicht mehr nur zur Hälfte gelesen (sonst falscher Befund).
+RP-v1 und RP-v2 bleiben unverändert (Reproduzierbarkeit).
 """
 import ast
 import math
 import operator
 import re
 
-RECHEN_PRUEFUNG_VERSION = "RP-v2"  # Bezeichnung; Schalter ist rag_pipeline.RECHEN_PRUEFUNG_VERSION
+RECHEN_PRUEFUNG_VERSION = "RP-v3"  # Bezeichnung; Schalter ist rag_pipeline.RECHEN_PRUEFUNG_VERSION
 
 _HOCH = {"⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8",
          "⁹": "9", "⁻": "-"}
@@ -57,7 +63,16 @@ def zahl(text):
     return float(t)
 
 
+# RP-v3: Buchstabe + 1-2 Ziffern direkt daneben ("P1", "U2", "R20") ist ein Variablenname -> tiefgestellte Ziffern,
+# die der Tokenizer als Teil des Wortes liest. Nur aktiv in pruefe(..., version="RP-v3"); sonst wie RP-v1/v2.
+_INDEX_FIX = False
+_INDEXNAME = re.compile(r"(?<![\w.,])([A-Za-zηφΦϑα-ωΑ-Ω])(\d{1,2})\b(?![,.]\d)")
+_TIEF = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+
+
 def _tokens(teil):
+    if _INDEX_FIX:
+        teil = _INDEXNAME.sub(lambda m: m.group(1) + m.group(2).translate(_TIEF), teil)
     teil = _EINHEITENBRUCH.sub("", _EINHEIT_KEHRWERT.sub(" ", teil))
     out = []
     for m in _TOKEN.finditer(teil):
@@ -144,14 +159,19 @@ def _auswerten(text):
 
 def _rand(toks, ende):
     """Rechenbarer Ausdruck am Ende (ende=True) bzw. Anfang eines Teils: (Wert, Text, Nachkommastellen)."""
-    folge = []
+    folge, stopp = [], None
     reihe = reversed(toks) if ende else iter(toks)
     for art, wert in reihe:
         if art not in _ERLAUBT:
+            stopp = art
             break
         folge.append((art, wert))
     if ende:
         folge.reverse()
+    # RP-v3: grenzt der Ausdruck über einen Operator an ein Symbol ("R20 · (1 + 0,004 · 30)", "0,02 · R20"),
+    # ist nur ein Teil des Produkts zu sehen; dann nicht prüfen statt die Hälfte zu rechnen
+    if _INDEX_FIX and stopp == "wort" and folge and folge[0 if ende else -1][0] == "op":
+        return None
     # so lange von außen kürzen, bis der Ausdruck auswertbar ist (unausgeglichene Klammern, Operator am Rand)
     for _ in range(len(folge)):
         if not any(a == "zahl" for a, _ in folge):
@@ -342,9 +362,15 @@ def pruefe_ueberlegung(text):
                      f"sie soll nur das Ergebnis und die Begründung zeigen"}]
 
 
-def pruefe(text, frage="", version="RP-v2"):
-    """Alle Befunde der gewählten Version. RP-v1 = nur pruefe_rechnungen (unverändert)."""
-    befunde = pruefe_rechnungen(text)
-    if version != "RP-v1":
-        befunde += pruefe_konsistenz(text, frage) + pruefe_ueberlegung(text)
+def pruefe(text, frage="", version="RP-v3"):
+    """Alle Befunde der gewählten Version. RP-v1 = nur pruefe_rechnungen (unverändert); RP-v2 = + Konsistenz und
+    sichtbare Überlegung; RP-v3 = RP-v2 mit Indexnamen-Korrektur."""
+    global _INDEX_FIX
+    alt, _INDEX_FIX = _INDEX_FIX, version not in ("RP-v1", "RP-v2")
+    try:
+        befunde = pruefe_rechnungen(text)
+        if version != "RP-v1":
+            befunde += pruefe_konsistenz(text, frage) + pruefe_ueberlegung(text)
+    finally:
+        _INDEX_FIX = alt
     return befunde

@@ -869,7 +869,8 @@ def hinweis_pruefen(frage, stufen):
 # RP-v2 (V10, 19 Oct 2026): zusätzlich Konsistenz (Wert im ersten Satz vs. Endergebnis der Rechnung) und
 # sichtbare Überlegung/Selbstkorrektur in der Lösung (Q13, Q27 in Lauf V9D); Details in rechenpruefung.py.
 # Der Neuschreib-Aufruf von RP-v2 verlangt zusätzlich eine Lösung ohne Zwischenüberlegungen.
-RECHEN_PRUEFUNG_VERSION = "RP-v2"   # None = aus; "RP-v1" reproduziert V9d
+# RP-v3 (V10a, 19 Oct 2026): wie RP-v2, aber Variablennamen mit Index ("P1") werden nicht als Zahl gelesen (Q27, Lauf V10).
+RECHEN_PRUEFUNG_VERSION = "RP-v3"   # None = aus; "RP-v1" reproduziert V9d, "RP-v2" V10
 
 
 def _prompt_rechnung_neu(prompt, loesung, befunde):

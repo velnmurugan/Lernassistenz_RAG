@@ -1,7 +1,7 @@
 """
 teste_v10_offline.py
 --------------------
-Offline-Tests für V10 (RP-v2, HP-v4/FP-v3, G-v4, IF-v5) ohne Ollama:
+Offline-Tests für V10 (RP-v2/RP-v3, HP-v4/FP-v3, G-v4, IF-v5) ohne Ollama:
   1. konstruierte Fälle für RP-v2 (Konsistenz, sichtbare Überlegung) und die neuen Materialmuster;
   2. Ablauf von rechnung_pruefen mit simuliertem Modell (nachgebessert / markiert / nicht_behoben, RP-v1 unverändert);
   3. echte Modelltexte aus früheren Läufen: welche Lösungen RP-v2 meldet, welche Hinweise/Rückmeldungen
@@ -52,10 +52,29 @@ def konstruierte_faelle():
         ("Entscheidung: STATUS: TEILWEISE. Der Strom fehlt.", "", True),
     ]
     for text, frage, erwartet in faelle:
-        b = rc.pruefe(text, frage)
+        b = rc.pruefe(text, frage, "RP-v2")
         pruefe(bool(b) == erwartet, f"{'meldet' if erwartet else 'still '} | {text[:70]}")
+        pruefe(bool(rc.pruefe(text, frage, "RP-v3")) == erwartet, f"  RP-v3 ebenso | {text[:50]}")
     pruefe(rc.pruefe("Der Schlupf beträgt 0,02 oder 2 %. s = 75 / 1500 = 0,05.", "", "RP-v1") == [],
            "RP-v1 meldet Konsistenzfehler nicht (unverändert)")
+
+    print("1a2. RP-v3: Variablennamen mit Index (V10a)")
+    q27 = ("Der Strom beträgt 22,9 A. Die Rechnung lautet: P1 = 4000 W / 0,815 = 4908 W; "
+           "I = 4908 W / (√3 · 400 V · 0,85) ≈ 22,9 A.")
+    b2, b3 = [x["text"] for x in rc.pruefe(q27, "", "RP-v2")], [x["text"] for x in rc.pruefe(q27, "", "RP-v3")]
+    pruefe(any("nicht 1" in x for x in b2), "RP-v2 meldet das falsche 'nicht 1' (unverändert, V10 reproduzierbar)")
+    pruefe(len(b3) == 1 and "8,334" in b3[0], "RP-v3: nur der echte Fehler (8,334 statt 22,9), kein 'nicht 1'")
+    for text in ("Die Leistung beträgt 4,882 kW. P2 = 4000 W; P1 = P2 / η = 4000 W / 0,819 = 4884 W.",
+                 "Der Widerstand beträgt 0,02 Ω. R20 = 0,02 Ω; R = R20 · (1 + 0,004 · 30) = 0,02 · 1,12 = 0,0224 Ω.",
+                 "U2 = 230 V · 0,5 = 115 V. Die Spannung U2 beträgt 115 V."):
+        pruefe(rc.pruefe(text, "", "RP-v3") == [], f"RP-v3 still bei Indexnamen | {text[:60]}")
+    pruefe(bool(rc.pruefe("P1 = 4000 W / 0,815 = 6000 W.", "", "RP-v3")), "RP-v3 meldet weiter echte Fehler mit Indexnamen")
+    pruefe(rc.pruefe("R = R20 · (1 + 0,004 · 30) = 0,02 · 1,12 = 0,0224 Ω.", "", "RP-v3") == [],
+           "RP-v3: Symbol · (Zahlen) wird nicht halb gelesen (kein Fehlalarm)")
+    pruefe(bool(rc.pruefe("R = R20 · (1 + 0,004 · 30) = 0,02 · 1,12 = 0,03 Ω.", "", "RP-v3")),
+           "RP-v3: der rein numerische Schritt 0,02 · 1,12 = 0,03 wird weiter geprüft")
+    pruefe(bool(rc.pruefe("R = 0,02 · 1,12 = 0,03 Ω.", "", "RP-v3")), "RP-v3: reine Zahlenkette 0,02 · 1,12 = 0,03 weiter geprüft")
+    pruefe(bool(rc.pruefe(faelle[0][0], faelle[0][1], "RP-v3")) and bool(rc.pruefe("s = 75 / 1500 = 0,02.", "", "RP-v3")), "RP-v3: Schlupf-Rechenfehler weiter gemeldet")
 
     print("1b. Materialmuster V10 (konstruiert)")
     ja = ["Suche im bereitgestellten Material nach dem Eintrag für Aluminium.",
@@ -138,9 +157,9 @@ def echte_texte(vergleich, ideen):
                     hinweise[z[k].strip()] = (os.path.basename(pfad), z["frage_id"], k)
     print(f"  {len(loesungen)} Lösungen, {len(hinweise)} Hinweise/Rückmeldungen")
     for schluessel, (text, frage) in sorted(loesungen.items()):
-        b = rc.pruefe(text, frage)
+        b = rc.pruefe(text, frage, "RP-v3")
         if b:
-            print(f"  RP-v2 meldet {schluessel}: " + " | ".join(f"{x.get('art', 'rechnung')}: {x['text'][:90]}" for x in b))
+            print(f"  RP-v3 meldet {schluessel}: " + " | ".join(f"{x.get('art', 'rechnung')}: {x['text'][:90]}" for x in b))
     for text, herkunft in hinweise.items():
         if rp.MATERIAL_VERWEIS_V10.search(text):
             print(f"  V10-Muster meldet {herkunft}: {text[:110]}")
@@ -149,9 +168,11 @@ def echte_texte(vergleich, ideen):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--vergleich", nargs="*", default=["evaluationsdaten/vergleich_rag_RAGVGL-FISCHER.csv",
-                                                       "evaluationsdaten/vergleich_rag_RAGVGL-V9D.csv"])
+                                                       "evaluationsdaten/vergleich_rag_RAGVGL-V9D.csv",
+                                                       "evaluationsdaten/vergleich_rag_RAGVGL-V10.csv"])
     ap.add_argument("--ideen", nargs="*", default=["evaluationsdaten/ideen_test_V8D-IDEEN.csv",
-                                                   "evaluationsdaten/ideen_test_V9D-IDEEN.csv"])
+                                                   "evaluationsdaten/ideen_test_V9D-IDEEN.csv",
+                                                   "evaluationsdaten/ideen_test_V10-IDEEN.csv"])
     a = ap.parse_args()
     konstruierte_faelle()
     ablauf_mit_simuliertem_modell()

@@ -420,6 +420,13 @@ IF-v2 and IF-v3 prompts verified unchanged; HP-v1 behaviour available via `HINWE
 
 **Defaults now:** G-v4 / RP-v2 / HP-v4 / IF-v5 / FP-v3 (test version V10; V9D stays selectable).
 
+### RP-v3 (19 Oct 2026, "V10a"; implemented, run pending)
+RP-v2 plus one parser fix. Reason: in run V10, Q27 got the false note "4000 / 0,815 ergibt 4908, nicht 1" (the solution said "P1 = 4000 W / 0,815 = 4908 W"; the "1" of the variable name P1 was read as the result).
+- Variable names with 1–2 digits (`P1`, `U2`, `R20`) are read as names, not numbers.
+- Consequence: an expression that touches a symbol through an operator (`R20 · (1 + 0,004 · 30)`, `0,02 · R20`) is not checked at all (only part of the product would be visible), instead of checking half of it.
+- RP-v1 and RP-v2 are unchanged (switch `rag_pipeline.RECHEN_PRUEFUNG_VERSION`); default now RP-v3. G-v4 / HP-v4 / IF-v5 / FP-v3 unchanged.
+- Offline test: Q27 gives only the real finding (4908 / (√3 · 400 · 0,85) = 8,334, not 22,9); all earlier RP-v2 cases give the same result under RP-v3; on 111 real solutions RP-v3 flags the same questions as RP-v2.
+
 **Offline validation** (`skripte/evaluation/teste_v10_offline.py`): constructed cases (15 RP-v2, 8 material) and the pipeline flow with a simulated model all pass. Real outputs of V8D/V9D (74 solutions, 106 hints/feedbacks): RP-v2 flags only Q13 and Q27 (V9D) and the known Q13 arithmetic error (V8D); the new material patterns flag only the V9D hints for T1 and T2 and the I08 feedback (true positive). Old prompts verified byte-identical. Limits: RP-v2 sees only written calculations (Q19: a value from a book example without calculation is not caught); the deliberation list is word-based.
 
 ## 9. New references (not in the reading list)
