@@ -28,7 +28,7 @@ Goal: one small set of prompts that (a) works for any vocational text without ch
 | P2 | **One task per prompt**, chained by the pipeline. | Modular solve / check / feedback: Petukhova, Nguyen & Kochmar (2026) ✓; prompt chaining: Schulhoff et al. (2024) NEU |
 | P3 | **Pedagogical rules come from literature**, not from observed failures. | Jangra et al. (2025) ✓; Maurya et al. (2025) ✓; Knievel et al. (2025) ✓; Kochmar et al. (2025) ✓ |
 | P4 | **Tutoring outputs are answer-aware**: hint and feedback are written knowing the solution. | Bhaskar & Hamouda (2025) ✓; Petukhova et al. (2026) ✓ |
-| P5 | **Hidden reasoning field before the visible tutoring text.** | Zhao, Knežević & Käser (2026) ✓ (46 % → 2 % leakage) |
+| P5 | **Hidden reasoning field before the visible tutoring text.** | Zhao, Knežević & Käser (2026) ✓ (46 % → 2 % leakage for Qwen-32B; for Qwen-7B 75 % → 22 %) |
 | P6 | **Structured output with an explicit status** instead of inferring refusals from free text. | Abstention when evidence is insufficient: Gala et al. (2026) ✓; tug-of-war: Oche et al. (2025) ✓ |
 | P7 | **Judge prompts follow the original RAGAS method**, translated, without tuning to our cases. | Es et al. (2024) ✓ |
 | P8 | **Freeze and version.** Change only as a new version with a reason; test on both test sets; acceptance criteria fixed before the run. | Working agreement; held-out testing: Strich et al. (2026) ✓ |
@@ -111,11 +111,14 @@ HINWEIS: <Hinweis nach H1 bis H5; bei NICHT_IM_MATERIAL: –>
 | L4 level of apprentices | Cognitive load: Sweller (1988) NEU |
 | Status values | Gala et al. (2026, abstention) ✓; partial answers instead of refusal: own requirement from the test set definition |
 | H1 | Jangra et al. (2025, §4.1, Eq. 1, p. 512) ✓; Maurya et al. (2025, "Revealing Answer") ✓ |
-| H2 | Jangra et al. (2025, convergence, §3.2, p. 510) ✓; Wood et al. (1976, reduction in degrees of freedom, p. 98) ✓ |
-| H3 | Jangra et al. (2025, familiarity, p. 510) ✓ |
-| H4 | Jangra et al. (2025, conceptual depth, p. 506) ✓; Reiser (2004) ✓ |
-| H5 | Jangra et al. (2025, clarity, p. 507) ✓; guiding question: Neagu et al. (2026) ✓ |
+| H2 | Jangra et al. (2025, Scaffolding Support: incremental steps leading to the solution, §2.1, p. 506) ✓; Wood et al. (1976, reduction in degrees of freedom, p. 98) ✓ |
+| H3 | Jangra et al. (2025, Link to Prior Knowledge, §2.2, p. 507) ✓; G-v2 wording ("sees only the question") from own app tests (§9a) |
+| H4 | Jangra et al. (2025, Conceptual Depth, §2.2, p. 507) ✓; Reiser (2004) ✓ |
+| H5 | Jangra et al. (2025, Clarity and Simplicity, §2.3, p. 507) ✓ (the limit of 1–2 sentences is our own setting); guiding question: Neagu et al. (2026) ✓ |
+| H6 (G-v2) | own app tests (§9a); no literature source |
 | ÜBERLEGUNG | Zhao, Knežević & Käser (2026) ✓ |
+
+*Correction 16 Oct 2026 (Jangra page numbers checked against the printed PDF (TACL 13, pp. 505–528) on 16 Oct 2026): H2 was "convergence, p. 510" and H3 "familiarity, p. 510". Convergence and familiarity are evaluation metrics of Mozafari et al. (2024b), reported by Jangra on p. 511, and do not support these rules; H2 and H3 now cite the matching properties in §2.1/§2.2. H4 page 506 → 507.*
 
 **Parsing and fallback**
 
@@ -395,6 +398,29 @@ IF-v2 and IF-v3 prompts verified unchanged; HP-v1 behaviour available via `HINWE
 **Outcomes:** `ok` (no deviation, also when there is no calculation); `nachgebessert` (one extra call gets the first solution and the finding, e.g. "75 / 1500 ergibt 0,05, nicht 0,02", and answers again in the same format; the new solution passes the check; hint and status come from the new answer); `markiert` (the new answer still deviates or fails to parse → the original solution is kept with a visible note "⚠ Automatische Nachrechnung: …"). Logged in `interaktionen.csv` (`rechen_pruefung`, `rechen_befund`, `loesung_original`; old log migrated with a dated backup), in the idea test and in the with/without-RAG comparison (there also as diagnosis for the answer without RAG). Not applied to G-v1/G-v2 (V6–V8 reproducible).
 
 **Offline validation.** 20 constructed cases (correct and wrong steps, units, unit fractions, 1/min, powers of ten, percent, thousands separator "76.200") all as expected. On all 113 real model texts from `V8D-IDEEN` and `RAGVGL-FISCHER` (20 with equations): exactly the Q13 error found (in both runs), no false positives. Limits: only written-out steps; a wrong formula, a bare number without calculation, or LaTeX-formatted answers are not checked.
+
+### G-v4, RP-v2, HP-v4, FP-v3, IF-v5 (19 Oct 2026, "V10"; implemented, runs pending)
+
+**Reason** (runs V9D, 14 Oct 2026, pre-rated by Claude; `Entwicklung_und_Evaluation.md` §12, 2o):
+- Since G-v3 the model checked its calculation visibly inside the solution: Q13 started with "Der Schlupf beträgt 0,02 oder 2 %" and then corrected itself ("Momentan habe ich einen Rechenfehler … lass uns das korrigieren … 0,05 oder 5 %"); Q27 contained a long deliberation ("*Korrektur basierend auf L1*", "Wiederholtes Überprüfen des Materials"). Most likely cause: "rechne jeden Schritt nach" in L5. RP-v1 reported "ok" for Q13, because every written equation was correct and the wrong 0,02 stood in no equation.
+- Hints not caught by HP-v3: "Suche im bereitgestellten Material nach dem Eintrag für Aluminium …", "Wenn du in der elektrochemischen Spannungsreihe nach dem Metall Zink suchst, was siehst du dann …".
+- Feedback still named the missing step for TEILWEISE/FALSCH ideas (sign of the zinc potential, "30 °C addieren", "75 durch 1500 teilen", "Reihenschaltung"): 6 of 33 non-safety feedbacks with partial leak in V8D and in V9D.
+
+**Changes (one rule or check each; older versions unchanged and selectable):**
+- **G-v4** = G-v3 with L5: "Steht im Lernmaterial ein Rechenbeispiel mit anderen Zahlen, übernimm nur den Rechenweg und rechne mit den Werten aus der Frage." Hint rules as G-v2.
+- **RP-v2** = RP-v1 + two deterministic checks (`rechenpruefung.pruefe(text, frage, version)`):
+  - *Consistency:* the numbers of the first sentence (L2: answer first) must contain the result of the last real calculation step, i.e. an "=" or "≈" whose left side computes (operator between numbers) and whose right side is a plain number; also accepted as percent (×100, ÷100) and with RP-v1's tolerance and prefix rule (10³, 10⁶). Ignored: numbers from the question, references and standards ("Beispiel 4.15", "Abb. 5.2", "DIN VDE 0100-410"). First sentence = up to the first full stop + space or line break, abbreviations excluded ("ca.", "z. B.", "d. h.", "bzw." …). Skipped if the first sentence has no own number or no calculation follows.
+  - *Visible deliberation:* "Rechenfehler", "verrechnet", "momentan habe ich", "ich habe mich geirrt/vertan", first-person correction ("ich/wir korrigiere…", "korrigiere ich/das", "lass uns das korrigieren"), "wiederholtes (Über)prüfen", "prüfen wir", "noch einmal nachrechnen/überprüfen …", "Warte" followed by punctuation, "Korrektur" at the start of a line or after "*"/"(", field names "Entscheidung:", "STATUS:", "ÜBERLEGUNG:". Technical uses ("muss korrigiert werden", "Korrekturfaktor", "Drehmoment") do not count.
+  - Rewrite prompt `_prompt_rechnung_neu_v2`: as RP-v1, plus "Die Lösung nennt zuerst das richtige Ergebnis und dann die Begründung, ohne Zwischenüberlegungen und ohne Korrekturen." The new solution must pass all RP-v2 checks.
+  - Outcomes: `ok`, `nachgebessert`, `markiert` (note "⚠ Automatische Prüfung: …" only for calculation or consistency findings), **`nicht_behoben`** (only deliberation remains after the rewrite: the original solution is shown without a note, because such a note does not help learners; logged in `rechen_pruefung` / `rechen_befund`).
+- **HP-v4** = HP-v3 + `MATERIAL_VERWEIS_V10`: "such… in/im/nach", "nach … such…" (within one sentence; "wonach" does not match), "was siehst du", "bereitgestellt…/vorliegend…/beigefügt…/angehängt… (+ one word) Material/Text/Unterlagen/Informationen/Daten/Dokument".
+- **FP-v3** = FP-v2 with the same additional material patterns, so hint and feedback are checked alike.
+- **IF-v5** = IF-v4 + **F10**: "Bei TEILWEISE oder FALSCH: Nenne den fehlenden Teil nicht selbst, also keinen fehlenden Rechenschritt, kein fehlendes Vorzeichen und keinen fehlenden Begriff. Frage stattdessen gezielt nach der Stelle, an der er fehlt." [own observation, no literature source]
+- `verweist_auf_material(text, erweitert=True, v10=True)`: `v10=False` reproduces HP-v3/FP-v2. Diagnostics (`stufen_check.py`, explainer page, log column `verweis_material`) use the full check, so their counts for older runs can rise slightly.
+
+**Defaults now:** G-v4 / RP-v2 / HP-v4 / IF-v5 / FP-v3 (test version V10; V9D stays selectable).
+
+**Offline validation** (`skripte/evaluation/teste_v10_offline.py`): constructed cases (15 RP-v2, 8 material) and the pipeline flow with a simulated model all pass. Real outputs of V8D/V9D (74 solutions, 106 hints/feedbacks): RP-v2 flags only Q13 and Q27 (V9D) and the known Q13 arithmetic error (V8D); the new material patterns flag only the V9D hints for T1 and T2 and the I08 feedback (true positive). Old prompts verified byte-identical. Limits: RP-v2 sees only written calculations (Q19: a value from a book example without calculation is not caught); the deliberation list is word-based.
 
 ## 9. New references (not in the reading list)
 

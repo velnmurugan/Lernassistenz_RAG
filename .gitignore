@@ -25,3 +25,4 @@ ordne_projekt_protokoll.json
 *.bundle
 daten/testfragen/*fischer*
 evaluationsdaten/vergleich_rag_*
+evaluationsdaten/ideen_test_*.csv

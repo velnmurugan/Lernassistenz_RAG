@@ -37,7 +37,7 @@ import time
 
 from rag_pipeline import frage_llm, GENERIERUNGS_OPTIONEN, MODEL_NAME, LOG_VERZEICHNIS
 
-FEEDBACK_PROMPT_VERSION = "IF-v4"  # IF-v2 bleibt wählbar (Reproduktion); Änderungen siehe baue_feedback_prompt
+FEEDBACK_PROMPT_VERSION = "IF-v5"  # IF-v2 bis IF-v4 bleiben wählbar (Reproduktion); Änderungen siehe baue_feedback_prompt
 MAX_VERSUCHE = 3
 IDEEN_LOG = LOG_VERZEICHNIS / "ideen_feedback.csv"
 URTEILE = ("richtig", "teilweise", "falsch", "keine_idee")
@@ -80,10 +80,16 @@ def baue_feedback_prompt(frage, top_chunks, hinweis, loesung, idee, version=None
     (2019) 10–13 % nennt. F8: nur die Lösung zählt, Aussagen als "laut Lernmaterial". F9: keine neuen
     Zahlen/Bereiche. F6 ohne "Grundwissen" (Quelle erfundener Fakten). Eigene Beobachtungen.
     Neue Protokollspalten: neue_zahlen (Zahlen in der Rückmeldung, die weder in Idee, Frage noch Hinweis
-    stehen) und verweis_material."""
+    stehen) und verweis_material.
+
+    IF-v5 (19 Oct 2026, V10) = IF-v4 + F10. Anlass (Ideentests V8D/V9D, je 6 von 33 Rückmeldungen ohne
+    Sicherheitsbezug mit Teil-Leck): Bei TEILWEISE/FALSCH nannte die Rückmeldung den fehlenden Teil selbst
+    (Vorzeichen des Zinkpotentials, "30 °C addieren", "75 durch 1500 teilen", "Reihenschaltung"). F3 verbietet
+    das Verraten der Lösung, deckt aber den fehlenden Einzelschritt offenbar nicht ab. F10 verlangt, nach der
+    Stelle zu fragen, statt den Schritt zu nennen. Eigene Beobachtung, keine Literaturquelle."""
     version = version or FEEDBACK_PROMPT_VERSION
-    if version not in ("IF-v2", "IF-v3", "IF-v4"):
-        raise ValueError(f"Unbekannte Feedback-Prompt-Version {version} (verfügbar: IF-v2, IF-v3, IF-v4)")
+    if version not in ("IF-v2", "IF-v3", "IF-v4", "IF-v5"):
+        raise ValueError(f"Unbekannte Feedback-Prompt-Version {version} (verfügbar: IF-v2 bis IF-v5)")
     if version == "IF-v2":
         einleitung_extra, regeln_extra, nummern = "", "", "F2 bis F5"
     else:
@@ -95,7 +101,7 @@ F6 Sagt die Person, dass sie nicht weiterkommt oder etwas nicht sehen kann, ist 
 F7 Nenne nur Fehlerursachen, die in der Idee erkennbar sind, und prüfe, dass deine Rückmeldung der Lösung
    nicht widerspricht."""
         nummern = "F2 bis F7"
-        if version == "IF-v4":
+        if version in ("IF-v4", "IF-v5"):
             regeln_extra = """
 F6 Sagt die Person, dass sie nicht weiterkommt oder etwas nicht sehen kann, ist das KEINE_IDEE: widersprich
    ihr nicht, sondern gib einen kleinen zusätzlichen Denkanstoß aus der Frage.
@@ -106,6 +112,12 @@ F8 Maßgeblich ist nur die Lösung. Der Hinweis ist kein Beleg und kann ungenau 
 F9 Nenne keine Zahlen, Bereiche oder Größenordnungen, die nicht in der Idee stehen, und sage nicht, ob ein
    Wert näher an einer Grenze liegt."""
             nummern = "F2 bis F9"
+            if version == "IF-v5":
+                regeln_extra += """
+F10 Bei TEILWEISE oder FALSCH: Nenne den fehlenden Teil nicht selbst, also keinen fehlenden Rechenschritt,
+   kein fehlendes Vorzeichen und keinen fehlenden Begriff. Frage stattdessen gezielt nach der Stelle, an der
+   er fehlt."""
+                nummern = "F2 bis F10"
     return f"""Du gibst einer lernenden Person eine kurze Rückmeldung auf ihre eigene Idee zu einer Frage. Du kennst
 die richtige Lösung; die lernende Person kennt sie nicht und hat bisher nur die Frage und den Hinweis
 gesehen.{einleitung_extra}
@@ -203,7 +215,9 @@ def neue_zahlen(rueckmeldung, *sichtbar):
 #   nachgebessert sonst EIN zusätzlicher Aufruf, der nur die Rückmeldung neu schreibt; danach sauber
 #   ersetzt       auch die neue Rückmeldung fällt durch -> fester Text je Urteil
 # Ausnahme: Urteil RICHTIG wird nicht geprüft (die Idee enthält dann die Lösungswerte selbst).
-FEEDBACK_PRUEFUNG_VERSION = "FP-v2"  # None = aus (Reproduktion)
+FEEDBACK_PRUEFUNG_VERSION = "FP-v3"  # None = aus (Reproduktion)
+# FP-v3 (V10, 19 Oct 2026): wie FP-v2, zusätzlich die Materialmuster von HP-v4 (MATERIAL_VERWEIS_V10:
+# Suchaufforderungen, "bereitgestelltes Material"), damit Hinweis und Rückmeldung gleich geprüft werden.
 # FP-v2 (V9, 14 Oct 2026): (1) "100 %" / "100 Prozent" und Zahlen direkt nach √ (Faktor √3) zählen nicht
 # als neue oder verratene Zahl. Anlass: I32 (Ideentest V8D-IDEEN) — eine sehr gute Rückmeldung ("der
 # Faktor √3 fehlt ... Wirkungsgrad über 100 %") wurde durch den festen Ersatztext ersetzt.
@@ -227,7 +241,8 @@ def feedback_probleme(rueckmeldung, ergebnis, idee, sichtbar_extra=""):
     gruende += [f"wertangabe {m.group(0)}" for m in WERTANGABE.finditer(rueckmeldung or "")]
     # "laut Lernmaterial" verlangt IF-v4 (F8) ausdrücklich; nur andere Materialverweise zählen
     ohne_laut = re.sub(r"(?i)\blaut (?:dem )?lernmaterial\b", "", rueckmeldung or "")
-    gruende += [f"material {v}" for v in verweist_auf_material(ohne_laut, erweitert=not v1)]
+    v10 = FEEDBACK_PRUEFUNG_VERSION not in ("FP-v1", "FP-v2")
+    gruende += [f"material {v}" for v in verweist_auf_material(ohne_laut, erweitert=not v1, v10=v10)]
     return gruende
 
 

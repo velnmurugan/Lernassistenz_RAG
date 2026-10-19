@@ -15,13 +15,21 @@ Vorgehen je Gleichungskette:
   4. Abweichung > Toleranz -> Befund. Toleranz: 2 % relativ oder die Rundung der angegebenen Zahl.
 Teile ohne Zahlen ("s", "η", "P₂ / P₁") werden übersprungen. Erkennt nur Fehler in ausgeschriebenen
 Rechenschritten, keine falsch gewählte Formel und keine Zahl ohne Rechnung.
+
+RP-v2 (V10, 19 Oct 2026) = RP-v1 + zwei weitere deterministische Prüfungen (pruefe(text, frage, version)):
+  - Konsistenz: Der Wert im ersten Satz (Ergebnis-Satz nach L2) muss zum Endergebnis der letzten Rechnung
+    passen (auch als Prozent: 0,05 = 5 %). Anlass Q13 (Lauf V9D): "Der Schlupf beträgt 0,02 oder 2 %" im
+    ersten Satz, die Rechnung danach ergibt 0,05; RP-v1 meldete "ok", weil keine Gleichung falsch war.
+  - Sichtbare Überlegung: Selbstkorrekturen und Abwägungen in der Lösung ("Rechenfehler", "korrigieren",
+    "Warte", "Entscheidung:", "STATUS:"). Anlass Q13 und Q27 (Lauf V9D).
+Beide Befunde werden wie RP-v1 behandelt (ein Neuschreib-Aufruf, sonst sichtbarer Vermerk).
 """
 import ast
 import math
 import operator
 import re
 
-RECHEN_PRUEFUNG_VERSION = "RP-v1"
+RECHEN_PRUEFUNG_VERSION = "RP-v2"  # Bezeichnung; Schalter ist rag_pipeline.RECHEN_PRUEFUNG_VERSION
 
 _HOCH = {"⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8",
          "⁹": "9", "⁻": "-"}
@@ -216,4 +224,127 @@ def pruefe_rechnungen(text):
                 befunde.append({"ausdruck": ausdruck, "gerechnet": gerechnet, "angegeben": angegeben,
                                 "satz": zeile.strip()[:200],
                                 "text": f"{ausdruck} ergibt {_zahl_de(gerechnet)}, nicht {_zahl_de(angegeben)}"})
+    return befunde
+
+
+# ---------------------------------------------------------------------------------------------------------
+# RP-v2 (V10): Konsistenz Ergebnis-Satz vs. Endergebnis, sichtbare Überlegung
+# ---------------------------------------------------------------------------------------------------------
+# Wörter und Feldnamen, die in einer fertigen Lösung nicht vorkommen sollen. Bewusst eng gefasst:
+# "Korrektur" nur am Zeilenanfang oder nach "*"/"(" (nicht "Korrekturfaktor", nicht "eine Korrektur der
+# Temperatur"), "Warte" nur mit Satzzeichen danach, "Moment" nur als "momentan habe ich" (sonst Drehmoment).
+UEBERLEGUNG_SICHTBAR = re.compile(
+    r"\b(?:rechenfehler\w*|verrechnet|momentan habe ich|ich habe mich (?:geirrt|vertan)|"
+    r"(?:ich|wir) korrigiere\w*|korrigiere (?:ich|wir|mich|das)|lass(?:t)? uns (?:das |dies )?korrigieren|"
+    r"wiederholtes (?:überprüfen|prüfen)|(?:über)?prüfen wir|"
+    r"(?:noch ?mal|noch einmal)\s+(?:nachrechn|nachprüf|nachseh|überprüf|überleg|gerechnet|geprüft)\w*)\b"
+    r"|(?:^|[\n*(])\s*korrektur\b|\bwarte\b\s*[,.!:…]|\b(?:entscheidung|status|überlegung|ueberlegung)\s*:",
+    re.I)
+# 19 Oct 2026: "korrigiert werden muss" (Temperaturkorrektur, Antwort ohne RAG zu T1) ist Fachsprache und
+# zählt nicht; gezählt werden nur Selbstkorrekturen in der 1. Person und "Korrektur" am Zeilenanfang.
+
+# Verweise und Normbezeichnungen enthalten Zahlen, die kein Ergebnis sind ("Beispiel 4.15", "Abb. 5.2",
+# "DIN VDE 0100-410").
+_VERWEIS_ZAHL = re.compile(r"\b(?:Beispiel|Bsp\.|Abb\.|Abbildung|Bild|Tab\.|Tabelle|Kapitel|Kap\.|Abschnitt|"
+                           r"Gl\.|Gleichung|Seite|S\.)\s*\d+(?:[.,]\d+)*"
+                           r"|\b(?:DIN|VDE|EN|IEC|ISO)\b(?:\s*[A-Z]*\s*[\d][\d\-./]*)+", re.I)
+_ZAHL_TOKEN = re.compile(r"\d+(?:[.,]\d+)*")
+# Abkürzungen mit Punkt, die keinen Satz beenden ("ca. 23 A", "z. B.", "bzw.")
+_ABKUERZUNGEN = {"ca", "bzw", "bspw", "ggf", "evtl", "vgl", "inkl", "exkl", "max", "min", "mind", "nr", "abb",
+                 "tab", "gl", "bsp", "kap", "usw", "etc", "sog", "zzgl", "ugs", "allg", "insb", "jew", "rd", "ab"}
+
+
+def _erster_satz_ende(text):
+    """Position des ersten Satzendes (Punkt + Leerraum oder Zeilenumbruch), Abkürzungen ausgenommen."""
+    for m in re.finditer(r"\.(?=\s)|\n", text):
+        if m.group(0) == "\n":
+            return m
+        davor = re.search(r"(\S+)$", text[:m.start()])
+        wort = davor.group(1) if davor else ""
+        if re.search(r"\d$", wort):          # Zahl am Satzende ("… beträgt 0,05.")
+            return m
+        w = wort.lower().strip("(„\"")
+        if w in _ABKUERZUNGEN or re.fullmatch(r"(?:[a-zäöü]\.)+[a-zäöü]", w):
+            continue
+        # zweiteilige Abkürzungen "z. B.", "d. h.", "u. a.", "z. T.", "o. ä.", "u. U.", "i. d. R."
+        if w in ("z", "d", "u", "o", "i") and re.match(r"\s?[A-Za-zÄÖÜäöü]\.", text[m.end():]):
+            continue                              # erster Teil ("z.")
+        if len(w) == 1 and re.search(r"\b[zduoi]\.\s?$", text[:m.start() - len(wort)]):
+            continue                              # zweiter Teil ("B.")
+        return m                                  # sonst Satzende, auch nach Einheiten wie "A", "V", "°C"
+    return None
+
+
+def _endergebnis(text):
+    """Letzter echter Rechenschritt im Text: rechte Seite eines "=" / "≈", dessen linke Seite rechnet
+    (Operator zwischen Zahlen) und dessen rechte Seite eine einfache Zahl ist. Reine Angaben wie
+    "I = 2 A" zählen nicht. Rückgabe (Wert, Text, Nachkommastellen) oder None."""
+    letztes = None
+    for zeile in re.split(r"[\n;]|(?<=[a-zäöüß)])\.\s|(?<=\D)\.\s", text or ""):
+        teile = _GLEICH.split(zeile)
+        if len(teile) < 2:
+            continue
+        toks = [_tokens(t) for t in teile]
+        for i in range(len(teile) - 1):
+            links, rechts = _rand(toks[i], ende=True), _rand(toks[i + 1], ende=False)
+            if links and rechts and not links[3] and rechts[3]:
+                letztes = (rechts[0], rechts[1], rechts[2])
+    return letztes
+
+
+def _stellen(t):
+    return len(re.split(r"[,.]", t)[1]) if re.search(r"[,.]\d+$", t) and not re.fullmatch(
+        r"[1-9]\d{0,2}(?:\.\d{3})+", t) else 0
+
+
+def _zahlen_mit_stellen(text):
+    out = []
+    for t in _ZAHL_TOKEN.findall(_VERWEIS_ZAHL.sub(" ", text or "")):
+        try:
+            out.append((abs(zahl(t)), _stellen(t), t))
+        except ValueError:
+            pass
+    return out
+
+
+def pruefe_konsistenz(text, frage=""):
+    """Befund, wenn der erste Satz einen Wert nennt, der nicht zum Endergebnis der letzten Rechnung passt.
+    Übersprungen, wenn der erste Satz keine eigene Zahl enthält (Zahlen aus der Frage zählen nicht) oder
+    nach dem ersten Satz keine Rechnung mit Ergebnis folgt."""
+    text = text or ""
+    m = _erster_satz_ende(text)
+    if not m:
+        return []
+    kopf, rest = text[:m.start()], text[m.end():]
+    aus_frage = {w for w, _, _ in _zahlen_mit_stellen(frage)}
+    kopf_zahlen = [(w, st, t) for w, st, t in _zahlen_mit_stellen(kopf) if w not in aus_frage]
+    end = _endergebnis(rest)
+    if not kopf_zahlen or not end:
+        return []
+    ende, t_end = abs(end[0]), end[1]
+    for w, st, _ in kopf_zahlen:
+        if any(_passt(kandidat, w, st) for kandidat in (ende, ende * 100, ende / 100)):
+            return []
+    genannt = " / ".join(t for _, _, t in kopf_zahlen[:3])
+    return [{"art": "konsistenz", "ausdruck": "", "gerechnet": ende, "angegeben": kopf_zahlen[0][0],
+             "satz": kopf.strip()[:200],
+             "text": f"Der erste Satz nennt {genannt}, die Rechnung ergibt aber {t_end}"}]
+
+
+def pruefe_ueberlegung(text):
+    """Befund, wenn die Lösung sichtbare Zwischenüberlegungen oder Selbstkorrekturen enthält."""
+    funde = [m.group(0).strip() for m in UEBERLEGUNG_SICHTBAR.finditer(text or "")]
+    if not funde:
+        return []
+    beispiele = ", ".join(f"„{f}“" for f in list(dict.fromkeys(funde))[:3])
+    return [{"art": "ueberlegung", "ausdruck": "", "gerechnet": None, "angegeben": None, "satz": "",
+             "text": f"Die Lösung enthält sichtbare Zwischenüberlegungen oder Korrekturen ({beispiele}); "
+                     f"sie soll nur das Ergebnis und die Begründung zeigen"}]
+
+
+def pruefe(text, frage="", version="RP-v2"):
+    """Alle Befunde der gewählten Version. RP-v1 = nur pruefe_rechnungen (unverändert)."""
+    befunde = pruefe_rechnungen(text)
+    if version != "RP-v1":
+        befunde += pruefe_konsistenz(text, frage) + pruefe_ueberlegung(text)
     return befunde
