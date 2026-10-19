@@ -26,3 +26,6 @@ ordne_projekt_protokoll.json
 daten/testfragen/*fischer*
 evaluationsdaten/vergleich_rag_*
 evaluationsdaten/ideen_test_*.csv
+evaluationsdaten/ragas_faithfulness_details.csv
+evaluationsdaten/archiv/*/ragas_faithfulness_details.csv
+evaluationsdaten/ideen_feedback_vor_spalten_*.csv
