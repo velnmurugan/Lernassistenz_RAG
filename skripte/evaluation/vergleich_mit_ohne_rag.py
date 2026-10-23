@@ -120,6 +120,17 @@ def schreibe(pfad, zeilen):
             w.writerow({k: z.get(k, "") for k in FELDER})
 
 
+def _wiederhole(fn, ersatz, versuche=3, pause=20):
+    """Ruft fn bis zu `versuche`-mal auf (Ollama-Zeitüberschreitung u. ä.); danach `ersatz`, der Lauf geht weiter."""
+    for i in range(1, versuche + 1):
+        try:
+            return fn()
+        except Exception as e:
+            print(f"   WARNUNG Versuch {i}/{versuche}: {type(e).__name__}: {str(e)[:120]}", flush=True)
+            time.sleep(pause)
+    return ersatz
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("sitzung")
@@ -130,6 +141,7 @@ def main():
     ap.add_argument("--retrieval", default="hybrid_kg_rr")
     ap.add_argument("--judge", default="mistral-nemo", help="Richter-Modell oder 'none'")
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--logge", action="store_true", help="RAG-Antworten auch in interaktionen.csv protokollieren (für RAGAS)")
     args = ap.parse_args()
 
     chunks = rp.lade_wissensbasis(args.kb)
@@ -147,11 +159,16 @@ def main():
     for q in fragen:
         z = dict(q)
         t0 = time.time()
-        z["antwort_ohne"] = rp.frage_llm(prompt_ohne_rag(q["frage"]), options=rp.GENERIERUNGS_OPTIONEN)
+        z["antwort_ohne"] = _wiederhole(lambda: rp.frage_llm(prompt_ohne_rag(q["frage"]), options=rp.GENERIERUNGS_OPTIONEN),
+                                        "FEHLER (Zeitüberschreitung)")
         z["sek_ohne"] = round(time.time() - t0, 1)
         t0 = time.time()
-        erg = rp.beantworte_frage(q["frage"], chunks, methode=args.retrieval)
+        erg = _wiederhole(lambda: rp.beantworte_frage(q["frage"], chunks, methode=args.retrieval),
+                          {"status": "FEHLER", "loesung": "FEHLER (Zeitüberschreitung)", "quellen": []})
         z["sek_mit"] = round(time.time() - t0, 1)
+        if args.logge and erg.get("status") != "FEHLER":
+            erg["kb_hash"] = kb_hash
+            rp.protokolliere_interaktion(args.sitzung, erg, scaffolding_stufe_erreicht=len(rp.scaffolding_marker()))
         z["status_mit"] = erg.get("status", "")
         z["antwort_mit"] = erg.get("loesung", "")
         z["quellen_mit"] = "; ".join(c["id"] for c in erg.get("quellen", []))

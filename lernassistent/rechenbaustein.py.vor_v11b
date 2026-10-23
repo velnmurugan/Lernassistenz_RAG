@@ -1,0 +1,185 @@
+"""
+rechenbaustein.py
+-----------------
+Rechenbaustein RB-v1 (V11, 20 Oct 2026): unabhängige Nachrechnung per Python.
+
+Anlass: In N100 (V10a) sind 10 von 19 Rechenaufgaben richtig. Die Fehler stehen oft in Antworten ohne
+prüfbare Gleichung ("ω = 1047,2 s⁻¹ … J ≈ 0,25 kg·m²", "U = 8,5 V" statt 13,3 V); RP-v3 sieht nur
+ausgeschriebene Gleichungsketten und meldet dort "ok".
+
+Vorgehen (Program-aided: das Modell stellt die Rechnung auf, Python führt sie aus):
+  1. Zweiter, unabhängiger Aufruf (Prompt RB-v1): FORMEL, WERTE (Name = Zahl [Einheit]), RECHNUNG (ein
+     Python-Ausdruck), EINHEIT. Das Modell sieht Frage und Material, aber NICHT seine erste Antwort.
+  2. Python wertet RECHNUNG sicher aus (ast, nur + − * / ** und sqrt/sin/cos/tan/exp/ln/log10/pi/e/abs).
+  3. Herkunftsprüfung: Jede Zahl in WERTE muss in der Frage oder im Material stehen (oder eine
+     Umrechnungskonstante sein: 60, 100, 1000, 3600, 2, 3 …); sonst gilt die Nachrechnung als nicht verwertbar.
+  4. Vergleich: Der Wert im ersten Satz der Lösung (Zahlen aus der Frage zählen nicht) muss zum Ergebnis
+     passen (Toleranz wie RP, auch Prozent, Vorsatz-Faktoren 10³). Stimmt nichts überein: Befund.
+Der Befund geht in die vorhandene Reparatur von rag_pipeline.rechnung_pruefen (ein Neuschreib-Aufruf mit dem
+Python-Ergebnis, sonst sichtbarer Vermerk). Grenzen: falsch gewählte Formel und falsche Eingangswerte werden
+nicht erkannt, wenn beide Wege denselben Fehler machen; Aufgaben ohne Zahl im ersten Satz werden übersprungen.
+"""
+import ast
+import math
+import operator
+import re
+
+import rechenpruefung as rp
+
+RB_VERSION = "RB-v1"
+
+_FUNKTIONEN = {"sqrt": math.sqrt, "sin": math.sin, "cos": math.cos, "tan": math.tan, "exp": math.exp,
+               "ln": math.log, "log": math.log, "log10": math.log10, "abs": abs, "radians": math.radians,
+               "atan": math.atan, "asin": math.asin, "acos": math.acos}
+_KONSTANTEN = {"pi": math.pi}
+_OPS = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul, ast.Div: operator.truediv,
+        ast.Pow: operator.pow, ast.USub: operator.neg, ast.UAdd: operator.pos}
+# Umrechnungs- und Strukturzahlen, die nicht aus Frage oder Material stammen müssen
+ERLAUBTE_KONSTANTEN = {0, 1, 2, 3, 4, 5, 10, 60, 100, 1000, 3600, 1e6, 1e-3, 1e-6, 0.5, 0.001, 0.01, 0.1,
+                       360, 1e3, 1e9, 1e-9, 1e-12, 273.15, 9.81, 9.80665}
+
+
+def sicher_auswerten(ausdruck, namen=None):
+    """Wertet einen Python-Ausdruck aus (nur Zahlen, Namen aus `namen`, + − * / **, erlaubte Funktionen).
+    Rückgabe float oder None. Kein eval."""
+    namen = {**_KONSTANTEN, **(namen or {})}
+    ausdruck = (ausdruck or "").strip().replace("^", "**").replace("·", "*").replace("×", "*").replace("−", "-")
+    ausdruck = re.sub(r"(?<=\d),(?=\d)", ".", ausdruck)  # deutsche Dezimalkommas
+    ausdruck = ausdruck.replace("√", "sqrt").replace("π", "pi")
+
+    def w(k):
+        if isinstance(k, ast.Expression):
+            return w(k.body)
+        if isinstance(k, ast.Constant) and isinstance(k.value, (int, float)) and not isinstance(k.value, bool):
+            return float(k.value)
+        if isinstance(k, ast.Name) and k.id in namen:
+            return float(namen[k.id])
+        if isinstance(k, ast.BinOp) and type(k.op) in _OPS:
+            a, b = w(k.left), w(k.right)
+            if isinstance(k.op, ast.Pow) and abs(b) > 12:
+                raise ValueError("Exponent")
+            return _OPS[type(k.op)](a, b)
+        if isinstance(k, ast.UnaryOp) and type(k.op) in _OPS:
+            return _OPS[type(k.op)](w(k.operand))
+        if (isinstance(k, ast.Call) and isinstance(k.func, ast.Name) and k.func.id in _FUNKTIONEN
+                and len(k.args) == 1 and not k.keywords):
+            return float(_FUNKTIONEN[k.func.id](w(k.args[0])))
+        raise ValueError("nicht erlaubt")
+    try:
+        wert = w(ast.parse(ausdruck, mode="eval"))
+        return wert if math.isfinite(wert) else None
+    except Exception:
+        return None
+
+
+def baue_prompt(frage, kontext):
+    return f"""Du rechnest eine Aufgabe aus der Technik nach. Antworte NUR in diesem Format, ohne weiteren Text:
+
+FORMEL: <die Formel, die zur Frage passt, mit Quelle aus dem Material, sonst Grundwissen>
+WERTE:
+<name> = <Zahl oder Rechenausdruck> <Einheit>
+(eine Zeile je Größe; nur Zahlen aus der Frage oder dem Material; Umrechnungen in die Zahl schreiben,
+z. B. n = 1000/60 für 1000 1/min in 1/s; Namen nur Buchstaben und Ziffern, ohne Leerzeichen)
+RECHNUNG: <ein Python-Ausdruck mit den Namen aus WERTE; erlaubt: + - * / ** ( ) sqrt() sin() cos() tan() exp() ln() log10() pi>
+EINHEIT: <Einheit des Ergebnisses>
+
+Ist die Frage keine Rechenaufgabe oder fehlt ein Wert, schreibe nur: RECHNUNG: KEINE
+
+Material:
+{kontext}
+
+Frage: {frage}"""
+
+
+def parse(roh):
+    """Liest die Modellantwort. Rückgabe dict mit formel, werte (name -> text), rechnung, einheit; None bei Formatfehler."""
+    roh = roh or ""
+    m = re.search(r"RECHNUNG:\s*(.+)", roh)
+    if not m:
+        return None
+    rechnung = m.group(1).strip().strip("`")
+    if rechnung.upper().startswith("KEINE"):
+        return {"rechnung": "KEINE", "werte": {}, "formel": "", "einheit": ""}
+    werte = {}
+    wm = re.search(r"WERTE:\s*\n(.*?)(?=\nRECHNUNG:)", roh, re.S)
+    for zeile in (wm.group(1).splitlines() if wm else []):
+        z = re.match(r"\s*[-*]?\s*([A-Za-zα-ωΑ-ΩηφΦϑ_][A-Za-z0-9α-ωΑ-Ωηφ_Φϑ]*)\s*=\s*(.+)$", zeile)
+        if z:
+            werte[z.group(1)] = z.group(2).strip()
+    fm = re.search(r"FORMEL:\s*(.+)", roh)
+    em = re.search(r"EINHEIT:\s*(.+)", roh)
+    return {"rechnung": rechnung, "werte": werte, "formel": fm.group(1).strip() if fm else "",
+            "einheit": em.group(1).strip() if em else ""}
+
+
+def _wert_ausdruck(text):
+    """'1000/60 1/s' oder '0,5 m/s' -> (Ausdruck ohne Einheit, Wert): der längste Anfang (in Leerraum-Schritten),
+    den sicher_auswerten liest. Nie stillschweigend kürzen, wenn der Rest nach Rechnung aussieht."""
+    teile = text.strip().split()
+    for n in range(len(teile), 0, -1):
+        kandidat = " ".join(teile[:n])
+        wert = sicher_auswerten(kandidat)
+        if wert is not None:
+            rest = " ".join(teile[n:])
+            if re.match(r"[-+*/^·×(]|\d", rest) and not re.fullmatch(r"1\s*/\s*[A-Za-zµ°]+\S*", rest):
+                # Rest sieht nach Rechnung aus (Einheiten wie "1/s", "1/min" ausgenommen)
+                continue
+            return kandidat.replace(",", "."), wert
+    return None, None
+
+
+def _zahlen_in(text):
+    return {round(w, 9) for w, _, _ in rp._zahlen_mit_stellen(text)}
+
+
+def rechne(parsed, frage, kontext):
+    """Führt die Nachrechnung aus. Rückgabe dict(ergebnis, einheit, formel, werte, grund). ergebnis=None wenn
+    nicht verwertbar; grund sagt warum (keine_rechnung | formatfehler | wert_unlesbar | erfunden | auswertung)."""
+    if parsed is None:
+        return {"ergebnis": None, "grund": "formatfehler"}
+    if parsed["rechnung"] == "KEINE":
+        return {"ergebnis": None, "grund": "keine_rechnung"}
+    bekannt = _zahlen_in(frage) | _zahlen_in(kontext) | {round(float(c), 9) for c in ERLAUBTE_KONSTANTEN}
+    namen = {}
+    for name, text in parsed["werte"].items():
+        ausdruck, wert = _wert_ausdruck(text)
+        if wert is None:
+            return {"ergebnis": None, "grund": "wert_unlesbar", "detail": f"{name} = {text}"}
+        for lit in re.findall(r"\d+(?:\.\d+)?(?:[eE][-+]?\d+)?", ausdruck):
+            if round(float(lit), 9) not in bekannt:
+                return {"ergebnis": None, "grund": "erfunden", "detail": f"{name} = {text}"}
+        namen[name] = wert
+    ergebnis = sicher_auswerten(parsed["rechnung"], namen)
+    if ergebnis is None:
+        return {"ergebnis": None, "grund": "auswertung", "detail": parsed["rechnung"]}
+    return {"ergebnis": ergebnis, "einheit": parsed["einheit"], "formel": parsed["formel"],
+            "werte": parsed["werte"], "rechnung": parsed["rechnung"], "grund": ""}
+
+
+def kopfzahlen(loesung, frage):
+    """Zahlen im ersten Satz der Lösung, die nicht aus der Frage stammen. Leer = nichts zu vergleichen."""
+    text = loesung or ""
+    m = rp._erster_satz_ende(text)
+    kopf = text[:m.start()] if m else text
+    aus_frage = {w for w, _, _ in rp._zahlen_mit_stellen(frage)}
+    return [(w, st, t) for w, st, t in rp._zahlen_mit_stellen(kopf) if w not in aus_frage]
+
+
+def vergleiche(loesung, frage, res):
+    """Befundliste (leer = ok oder nicht vergleichbar). Passt mindestens eine Kopfzahl zum Ergebnis
+    (auch Prozent, Vorsatz-Faktor 10³), ist alles in Ordnung."""
+    if res.get("ergebnis") is None:
+        return []
+    kopf = kopfzahlen(loesung, frage)
+    if not kopf:
+        return []
+    erg = abs(res["ergebnis"])
+    for w, st, _ in kopf:
+        if any(rp._passt(k, w, st) for k in (erg, erg * 100, erg / 100)):
+            return []
+    genannt = " / ".join(t for _, _, t in kopf[:3])
+    return [{"art": "baustein", "ausdruck": res.get("rechnung", ""), "gerechnet": erg, "angegeben": kopf[0][0],
+             "satz": (loesung or "")[:200],
+             "text": (f"Die unabhängige Python-Nachrechnung ({res.get('formel', '').strip() or 'Formel'}; "
+                      f"{res.get('rechnung', '')}) ergibt {rp._zahl_de(res['ergebnis'])} {res.get('einheit', '')}".strip()
+                      + f", die Lösung nennt {genannt}")}]

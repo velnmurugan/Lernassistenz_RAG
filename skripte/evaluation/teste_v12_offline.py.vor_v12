@@ -1,0 +1,144 @@
+"""Offline-Test V12 (FS-v1 Formelsuche, BE-v1 Bildeingabe, Rechenbaustein-Korrekturen). Ohne Ollama.
+Start (aus ~/RAG): python skripte/evaluation/teste_v12_offline.py"""
+import sys as _sys, pathlib as _pl
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
+import os, tempfile, json
+import rag_pipeline as rpl
+import formelsuche as fs
+import bildeingabe as be
+import rechenbaustein as rb
+import rechenpruefung as rp
+
+ok = fail = 0
+def check(name, cond):
+    global ok, fail
+    ok += bool(cond); fail += (not cond)
+    print(("PASS " if cond else "FAIL ") + name)
+
+F132 = ("Ein Magnetkran hebt einen Stahlträger mit 2,5 m Länge, Querschnitt 0,02 m² und Dichte 7850 kg/m³. "
+        "Welche Flussdichte B muss der Elektromagnet mit A = 0,1 m² mindestens haben?")
+TRAG = {"id": "boege_pdf_2620", "thema": "Tragkraft", "score": 0.7,
+        "text": "Die Tragkraft eines Hubmagneten ist F = B² · A / (2 · μ0). Beispiel 5.3 ..."}
+ALT = {"id": "x1", "thema": "Aufgabe", "score": 0.9, "text": "Aufgabe 1.30: Ein Kran hebt eine Last von 3 t. Wie groß ist die Kraft?"}
+MASSE = {"id": "m1", "thema": "Dichte", "score": 0.5, "text": "Masse m = ρ · V, Gewichtskraft F = m · g"}
+
+# --- ist_rechenfrage
+check("rechenfrage: 1.32", fs.ist_rechenfrage(F132))
+check("rechenfrage: Verweis zählt nicht als Zahl", not fs.ist_rechenfrage("Erkläre Aufgabe 1.32 aus Abb. 2.69, was ist ein Trafo?"))
+check("rechenfrage: Wissensfrage", not fs.ist_rechenfrage("Was ist ein Transformator?"))
+check("rechenfrage: leer", not fs.ist_rechenfrage(""))
+
+# --- parse
+roh = "1. Kraft zwischen Magnet und Träger\n- \"Masse aus Dichte und Volumen\"\nSuchbegriffe\nF = m g\n* Gewichtskraft\nKraft zwischen Magnet und Träger\n"
+p = fs.parse(roh)
+check("parse: 3 Phrasen, ohne Duplikat/Formel/Überschrift", p == ["Kraft zwischen Magnet und Träger", "Masse aus Dichte und Volumen", "Gewichtskraft"])
+check("parse: max 4", len(fs.parse("\n".join(f"Begriff {chr(97+i)}xyz" for i in range(8)))) == 4)
+check("parse: Zahlen verworfen", fs.parse("Kraft 5 N\nLeistung im Netz") == ["Leistung im Netz"])
+check("parse: leer", fs.parse("") == [] and fs.parse(None) == [])
+
+# --- hat_formel
+check("formel: Tragkraft-Chunk", fs.hat_formel(TRAG["text"]))
+check("formel: Masse-Chunk", fs.hat_formel(MASSE["text"]))
+check("formel: Fließtext ohne Formel", not fs.hat_formel("Ein Hubmagnet trägt Lasten aus Eisen und Stahl."))
+check("formel: Aufgabe ohne Gleichung", not fs.hat_formel(ALT["text"]))
+check("formel: Wert-Angabe ohne Rechenzeichen", not fs.hat_formel("Der Wert ist x = 5"))
+
+# --- suche (Mock)
+def llm_ok(prompt, options=None):
+    return "Kraft eines Hubmagneten\nMasse aus Dichte und Volumen\nGewichtskraft"
+def retr(phrase, chunks, top_k=4, methode=None):
+    tab = {"Kraft eines Hubmagneten": [ALT, TRAG], "Masse aus Dichte und Volumen": [MASSE], "Gewichtskraft": [MASSE, TRAG]}
+    return tab.get(phrase, []), []
+z, info = fs.suche(F132, [], [ALT], retr, llm_ok)
+check("suche: Tragkraft-Chunk gefunden, ALT (ohne Formel) übersprungen", z and z[0]["id"] == "boege_pdf_2620")
+check("suche: max 2 Zusatz-Chunks", len(z) == 2 and [c["id"] for c in z] == ["boege_pdf_2620", "m1"])
+check("suche: fs_phrase gesetzt", z[0]["fs_phrase"] == "Kraft eines Hubmagneten")
+check("suche: Dedupe gegen vorhandene Chunks", fs.suche(F132, [], [TRAG, MASSE], retr, llm_ok)[0] == [])
+z1, _ = fs.suche(F132, [], [ALT], retr, llm_ok, max_zusatz=1)
+check("suche: max_zusatz=1", len(z1) == 1)
+def llm_boom(prompt, options=None): raise RuntimeError("ollama down")
+zb, ib = fs.suche(F132, [], [ALT], retr, llm_boom)
+check("suche: Fehler -> kein Zusatz, Fehlertext", zb == [] and "ollama down" in ib["fehler"])
+def retr_boom(*a, **k): raise RuntimeError("index kaputt")
+zr, ir = fs.suche(F132, [], [ALT], retr_boom, llm_ok)
+check("suche: Retrieval-Fehler abgefangen", zr == [] and ir["fehler"])
+check("suche: Kontext der Hauptsuche nicht verändert", fs.suche(F132, [], [ALT], retr, llm_ok) and True)
+check("notiz: Inhalt", "boege_pdf_2620" in fs.notiz(info) and "Hubmagneten" in fs.notiz(info))
+check("notiz: Fehler", fs.notiz(ib) == "FS-v1 Fehler")
+check("prompt: ohne Aufgabe-Zahlen-Beispiele, enthält Frage", F132 in fs.baue_prompt(F132))
+
+# --- Integration beantworte_frage
+alt_fn = (rpl.retrieval, rpl.frage_llm, rpl.rechnung_pruefen, rpl.hinweis_pruefen, rpl.sicherheitspruefung, fs.FORMELSUCHE_VERSION)
+aufr = {"prompts": []}
+def retr_haupt(frage, chunks, top_k=4, methode=None):
+    if frage == F132:
+        return [ALT], [ALT]
+    return retr(frage, chunks, top_k, methode)
+def llm_all(prompt, model=None, options=None):
+    aufr["prompts"].append(prompt)
+    if prompt.startswith("Eine Rechenaufgabe aus der Technik"):
+        return llm_ok(prompt)
+    return "STATUS: BEANTWORTET\nLÖSUNG: B = 1 T.\nHINWEIS: h"
+def integr(version):
+    aufr["prompts"].clear()
+    rpl.retrieval, rpl.frage_llm = retr_haupt, llm_all
+    rpl.rechnung_pruefen = lambda *a, **k: None
+    rpl.hinweis_pruefen = lambda *a, **k: None
+    rpl.sicherheitspruefung = lambda t: (False, [])
+    fs.FORMELSUCHE_VERSION = version
+    ereignisse = []
+    try:
+        return rpl.beantworte_frage(F132, [], fortschritt=lambda *a: ereignisse.append(a)), ereignisse
+    finally:
+        rpl.retrieval, rpl.frage_llm, rpl.rechnung_pruefen, rpl.hinweis_pruefen, rpl.sicherheitspruefung, fs.FORMELSUCHE_VERSION = alt_fn
+rpl.RELEVANZ_SCHWELLE = 0.0
+erg, ev = integr("FS-v1")
+hauptprompt = aufr["prompts"][-1]
+check("pipeline: Zusatzchunk im Hauptprompt", "Hubmagneten" in hauptprompt)
+check("pipeline: Reihenfolge Original vor Zusatz", hauptprompt.index("Aufgabe 1.30") < hauptprompt.index("Hubmagneten"))
+check("pipeline: top_chunks erweitert (1+2)", len(erg["top_chunks"]) == 3 and "boege_pdf_2620" in [q["id"] for q in erg["quellen"]])
+check("pipeline: rechen_befund mit FS-Notiz", "FS-v1 Suchbegriffe" in (erg.get("rechen_befund") or ""))
+check("pipeline: Zeit 'suche' >= Hauptsuche", "suche" in erg["zeiten"])
+check("pipeline: Quellen-Ereignis zweimal (Haupt + Zusatz)", sum(1 for e in ev if e[:2] == ("suche", "quellen")) == 2)
+erg0, _ = integr("aus")
+check("pipeline: FS aus = wie V11b", len(erg0["top_chunks"]) == 1 and "formelsuche" not in erg0 and "FS-v1" not in (erg0.get("rechen_befund") or ""))
+check("pipeline: FS aus, kein FS-Prompt", not any(p.startswith("Eine Rechenaufgabe") for p in aufr["prompts"]))
+
+# --- Rechenbaustein-Korrekturen
+check("norm: Schreibweisen gleich", rb._norm_formel("F = B²·A/(2·μ0)") == rb._norm_formel("F = B^2*A/(2*mu0)") or
+      rb._norm_formel("F = B²·A/(2·μ₀)") == rb._norm_formel("F=B²A/2μ0"))
+check("lesbar: ** -> ²", "²" in rb.lesbar("B**2*A") or "^" not in rb.lesbar("B**2*A"))
+check("zehnerpotenz: 10^18 kein Fehlalarm", not any("18" in str(b.get("text", "")) and "nicht" in str(b.get("text", ""))
+      for b in rp.pruefe("Die Ladung beträgt 1,6 · 10^18 C.", "Wie viele Elektronen sind 1 C? Es gilt e = 1,6·10^-19 C", "RP-v5")))
+
+# --- Bildeingabe
+check("zerlege: Format", be.zerlege("AUFGABENTEXT: 1.32 Berechne $B$.\nABBILDUNG: Schaltplan mit R1") == ("1.32 Berechne B.", "Schaltplan mit R1"))
+check("zerlege: keine Abbildung", be.zerlege("AUFGABENTEXT: Text\nABBILDUNG: keine Abbildung")[1] == "")
+check("zerlege: ohne Format = ganzer Text", be.zerlege("Nur Text 5 V")[0] == "Nur Text 5 V")
+check("bereinige: LaTeX", be.bereinige(r"\frac{U}{R} \cdot 2^{2} \Omega **fett**") == "(U)/(R) · 2² Ω fett")
+class R:
+    def __init__(s, t, code=200): s.t, s.code = t, code
+    def raise_for_status(s):
+        if s.code >= 400: raise RuntimeError(f"HTTP {s.code}")
+    def json(s): return {"response": s.t}
+gesehen = {}
+def post_ok(url, json=None, timeout=None):
+    gesehen.update(json); return R("AUFGABENTEXT: Wie groß ist I bei U = 5 V und R = 10 Ω?\nABBILDUNG: keine Abbildung")
+png = b"\x89PNG not really"
+e = be.lies_aufgabe(png, url="http://x/api/generate", modell="m1", post=post_ok)
+check("lies: Text erkannt", e["text"].startswith("Wie groß ist I") and not e["fehler"] and e["modell"] == "m1")
+check("lies: Nutzlast mit Bild, think aus, T=0", gesehen["images"] and gesehen["think"] is False and gesehen["options"]["temperature"] == 0)
+check("lies: leere Datei -> Fehler", be.lies_aufgabe(b"", post=post_ok)["fehler"])
+check("lies: zu groß -> Fehler", "8 MB" in be.lies_aufgabe(b"x" * (be.MAX_BYTES + 1), post=post_ok)["fehler"])
+check("lies: HTTP-Fehler abgefangen", be.lies_aufgabe(png, url="u", modell="m", post=lambda *a, **k: R("", 500))["fehler"])
+check("lies: leerer Text -> Fehler", "kein Text" in be.lies_aufgabe(png, url="u", modell="m", post=lambda *a, **k: R("AUFGABENTEXT: \nABBILDUNG: keine"))["fehler"])
+with tempfile.TemporaryDirectory() as d:
+    pf = _pl.Path(d) / "sub" / "bild.csv"
+    be.protokolliere_bild("s1", e, e["text"], pf)
+    be.protokolliere_bild("s1", e, e["text"] + " korrigiert", pf)
+    zeilen = pf.read_text(encoding="utf-8").splitlines()
+    check("protokoll: Kopf + 2 Zeilen, geaendert-Flag", len(zeilen) == 3 and "False" in zeilen[1] and "True" in zeilen[2])
+    check("protokoll: kein Bild gespeichert", "images" not in zeilen[0] and "PNG" not in "".join(zeilen))
+
+print(f"\n{ok} bestanden, {fail} fehlgeschlagen")
+_sys.exit(1 if fail else 0)

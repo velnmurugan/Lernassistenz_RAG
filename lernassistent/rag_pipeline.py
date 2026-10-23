@@ -460,7 +460,25 @@ def _embeddings_fuer_chunks(chunks):
     modell = _lade_embedding_modell()
     schluessel = tuple(c["text"] for c in chunks)
     if schluessel not in _chunk_embedding_cache:
-        embeddings = modell.encode(list(schluessel), convert_to_numpy=True, normalize_embeddings=True)
+        # Platten-Cache pro Inhalt + Modell: große Wissensbasen (~32.000 Chunks) müssen nach einem
+        # Neustart nicht erneut eingebettet werden. Die Werte sind identisch zur Neuberechnung.
+        fp = hashlib.sha256(("\x1e".join(schluessel) + "\x1f" + EMBEDDING_MODELL_NAME).encode("utf-8")).hexdigest()[:12]
+        datei = BM25_CACHE_VERZEICHNIS / f"embeddings_{fp}.npy"
+        embeddings = None
+        if datei.exists():
+            try:
+                embeddings = np.load(datei)
+                if embeddings.shape[0] != len(schluessel):
+                    embeddings = None
+            except Exception:
+                embeddings = None
+        if embeddings is None:
+            embeddings = modell.encode(list(schluessel), convert_to_numpy=True, normalize_embeddings=True)
+            try:
+                BM25_CACHE_VERZEICHNIS.mkdir(exist_ok=True)
+                np.save(datei, embeddings)
+            except Exception as e:  # Cache ist optional
+                print(f"WARNUNG Embedding-Cache: {e}")
         _chunk_embedding_cache[schluessel] = embeddings
     return _chunk_embedding_cache[schluessel]
 
@@ -870,7 +888,13 @@ def hinweis_pruefen(frage, stufen):
 # sichtbare Überlegung/Selbstkorrektur in der Lösung (Q13, Q27 in Lauf V9D); Details in rechenpruefung.py.
 # Der Neuschreib-Aufruf von RP-v2 verlangt zusätzlich eine Lösung ohne Zwischenüberlegungen.
 # RP-v3 (V10a, 19 Oct 2026): wie RP-v2, aber Variablennamen mit Index ("P1") werden nicht als Zahl gelesen (Q27, Lauf V10).
-RECHEN_PRUEFUNG_VERSION = "RP-v3"   # None = aus; "RP-v1" reproduziert V9d, "RP-v2" V10
+# RP-v4 (V11, 20 Oct 2026): RP-v3 + Rechenbaustein RB-v1 (rechenbaustein.py): zweiter, unabhängiger Aufruf stellt die
+# Rechnung als Python-Ausdruck auf, Python führt sie aus; der Wert im ersten Satz der Lösung muss zum Ergebnis passen.
+# Anlass: N100/V10a, 10 von 19 Rechenaufgaben richtig, viele Fehler ohne prüfbare Gleichung (Nr 29, 55, 62).
+# RP-v5 (V11b, 21 Oct 2026): RP-v3 + Rechenbaustein RB-v2 (mehrere Ergebnisse, Formelquelle, jede Zahl mit Einheit im
+# ersten Satz muss zu einem Ergebnis passen) + Namen mit Unterstrich ("I_1N") + bei misslungenem Neuschreiben ersetzt die
+# belegte Nachrechnung die Lösung (rechen_pruefung = ersetzt). Anlass: Live-Test 40 kVA, 5 kV / 400 V (Lösung "2,89 A / 72 A").
+RECHEN_PRUEFUNG_VERSION = os.environ.get("LERNASSISTENT_RP", "RP-v5")   # None = aus; "RP-v1" reproduziert V9d, "RP-v2" V10, "RP-v3" V10a, "RP-v4" V11
 
 
 def _prompt_rechnung_neu(prompt, loesung, befunde):
@@ -896,10 +920,55 @@ def _frage_aus_prompt(prompt):
     return m.group(1).strip() if m else ""
 
 
-def rechnung_pruefen(prompt, stufen, frage=None):
+def _rechenbaustein(frage, top_chunks, prompt, stufen):
+    """RB-v1: unabhängige Python-Nachrechnung (rechenbaustein.py). Nur wenn die Frage eine Zahl enthält und der erste
+    Satz der Lösung eine eigene Zahl nennt. Rückgabe: Ergebnis-dict oder None. Notiert den Ausgang in rechen_befund."""
+    import rechenbaustein
+    if not re.search(r"\d", frage or "") or not rechenbaustein.kopfzahlen(stufen.get("loesung", ""), frage):
+        return None
+    kontext = _kontext_text(top_chunks) if top_chunks else prompt
+    try:
+        roh = frage_llm(rechenbaustein.baue_prompt(frage, kontext), options=GENERIERUNGS_OPTIONEN)
+        res = rechenbaustein.rechne(rechenbaustein.parse(roh), frage, kontext)
+    except Exception as e:  # darf die Antwort nie verhindern
+        print(f"WARNUNG Rechenbaustein: {e}")
+        stufen["rechen_befund"] = "RB-v1 Fehler"
+        return None
+    if res.get("ergebnis") is None:
+        stufen["rechen_befund"] = f"RB-v1 nicht verwertbar: {res.get('grund')}"
+        return None
+    stufen["rechen_befund"] = f"RB-v1 Ergebnis {res['ergebnis']:.6g} {res.get('einheit', '')}".strip()
+    return res
+
+
+def _rechenbaustein_v2(frage, top_chunks, prompt, stufen):
+    """RB-v2 (V11b): wie RB-v1, aber mehrere Ergebnisse und Formelquelle (rechenbaustein.py). Notiert den Ausgang in
+    rechen_befund: "RB-v2 Ergebnis I1N = 4,619 A; I2N = 57,74 A | Formel im Material | nicht im Material | ohne Quelle"."""
+    import rechenbaustein
+    if not re.search(r"\d", frage or "") or not rechenbaustein.kopfzahlen(stufen.get("loesung", ""), frage):
+        return None
+    kontext = _kontext_text(top_chunks) if top_chunks else prompt
+    try:
+        roh = frage_llm(rechenbaustein.baue_prompt_v2(frage, kontext), options={**GENERIERUNGS_OPTIONEN, "num_predict": 700})  # V12.2: Obergrenze gegen Schleifen im Zitat
+        res = rechenbaustein.rechne_v2(rechenbaustein.parse_v2(roh), frage, kontext)
+    except Exception as e:  # darf die Antwort nie verhindern
+        print(f"WARNUNG Rechenbaustein: {e}")
+        stufen["rechen_befund"] = "RB-v2 Fehler"
+        return None
+    if not res.get("ergebnisse"):
+        stufen["rechen_befund"] = f"RB-v2 nicht verwertbar: {res.get('grund')}"
+        return None
+    quelle = {True: "Formel im Material", False: "Formel nicht im Material", None: "Formel ohne Quelle"}[
+        res.get("formel_im_material")]
+    stufen["rechen_befund"] = f"RB-v2 Ergebnis {rechenbaustein.ergebnis_text(res)} | {quelle}"
+    return res
+
+
+def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     """Prüft die Rechenschritte in stufen["loesung"] und repariert an Ort und Stelle.
-    Ergänzt rechen_pruefung (ok | nachgebessert | markiert | nicht_behoben | ""), rechen_befund,
+    Ergänzt rechen_pruefung (ok | nachgebessert | markiert | ersetzt | nicht_behoben | ""), rechen_befund,
     loesung_original. nicht_behoben (nur RP-v2): nur sichtbare Überlegung gefunden, Neuschreiben gescheitert.
+    ersetzt (nur RP-v5): Neuschreiben gescheitert, die Nachrechnung (Formel aus dem Material belegt) ersetzt die Lösung.
     frage: für die RP-v2-Konsistenzprüfung (Zahlen aus der Frage zählen nicht als Ergebnis); ohne Angabe
     wird sie aus dem Prompt gelesen."""
     for k in ("rechen_pruefung", "rechen_befund", "loesung_original"):
@@ -909,13 +978,24 @@ def rechnung_pruefen(prompt, stufen, frage=None):
     if stufen.get("status") not in ("BEANTWORTET", "TEILWEISE"):
         return stufen
     import rechenpruefung
+    import rechenbaustein
     v1 = RECHEN_PRUEFUNG_VERSION == "RP-v1"
+    v5 = RECHEN_PRUEFUNG_VERSION == "RP-v5"
     frage = frage if frage is not None else _frage_aus_prompt(prompt)
+
+    baustein = None
+    if RECHEN_PRUEFUNG_VERSION == "RP-v4":
+        baustein = _rechenbaustein(frage, top_chunks, prompt, stufen)
+    elif v5:
+        baustein = _rechenbaustein_v2(frage, top_chunks, prompt, stufen)
 
     def befunde_fuer(text):
         if v1:
             return rechenpruefung.pruefe_rechnungen(text)
-        return rechenpruefung.pruefe(text, frage, RECHEN_PRUEFUNG_VERSION)
+        b = rechenpruefung.pruefe(text, frage, RECHEN_PRUEFUNG_VERSION)
+        if baustein is not None:
+            b = b + (rechenbaustein.vergleiche_v2 if v5 else rechenbaustein.vergleiche)(text, frage, baustein)
+        return b
 
     befunde = befunde_fuer(stufen.get("loesung", ""))
     if not befunde:
@@ -923,9 +1003,13 @@ def rechnung_pruefen(prompt, stufen, frage=None):
         return stufen
     loesung = stufen["loesung"]
     stufen["loesung_original"] = loesung
-    stufen["rechen_befund"] = "; ".join(b["text"] for b in befunde)
+    rb_notiz = stufen.get("rechen_befund", "")  # RB: Ergebnis der Nachrechnung bleibt im Log erhalten
+    stufen["rechen_befund"] = "; ".join(b["text"] for b in befunde) + (f" | {rb_notiz}" if rb_notiz.startswith("RB-v") else "")
     neu = None
     neu_prompt = (_prompt_rechnung_neu if v1 else _prompt_rechnung_neu_v2)(prompt, loesung, befunde)
+    if any(b.get("art") == "baustein" for b in befunde):
+        neu_prompt += (" Prüfe Formel und Werte der Nachrechnung; passen sie zur Frage, übernimm ihr Ergebnis "
+                       "und nenne es im ersten Satz.")
     try:
         neu = parse_g_v1(frage_llm(neu_prompt, options=GENERIERUNGS_OPTIONEN))
     except Exception as e:  # Prüfung darf die Antwort nie verhindern
@@ -935,8 +1019,14 @@ def rechnung_pruefen(prompt, stufen, frage=None):
         for k in ("hinweis", "loesung", "status", "hinweis_ueberlegung", "vollstaendig_geparst", "format_fehler"):
             stufen[k] = neu[k]
         stufen["rechen_pruefung"] = "nachgebessert"
+    elif (v5 and baustein is not None and baustein.get("formel_im_material") is True
+          and any(b.get("art") == "baustein" for b in befunde)):
+        # RP-v5: die Nachrechnung ist belegt (Zahlen und Formel aus Frage/Material) und widerspricht der Antwort,
+        # das Neuschreiben hat das nicht behoben -> die Nachrechnung ersetzt die Lösung (Original im Log).
+        stufen["loesung"] = rechenbaustein.pruefloesung(baustein, loesung)
+        stufen["rechen_pruefung"] = "ersetzt"
     elif v1:
-        stufen["loesung"] = f"{loesung}\n\n⚠ Automatische Nachrechnung: {stufen['rechen_befund']}."
+        stufen["loesung"] = f"{loesung}\n\n⚠ Automatische Nachrechnung: {'; '.join(b['text'] for b in befunde)}."
         stufen["rechen_pruefung"] = "markiert"
     else:
         # RP-v2: sichtbarer Vermerk nur für Zahlenbefunde (Rechnung, Konsistenz). Bleibt nur die sichtbare
@@ -1263,7 +1353,11 @@ def parse_scaffolding_antwort(rohtext):
     return ergebnis
 
 
-def frage_llm(prompt, model=MODEL_NAME, options=None):
+RETRIEVAL_FRAGE = None  # V12.7: Suchanfrage statt Frage (Bildfragen)
+BILD_ANHANG = None  # V12.6: base64-Bild, das die App für die aktuelle Frage setzt (nur Hauptantwort)
+
+
+def frage_llm(prompt, model=MODEL_NAME, options=None, bild=None):
     """think=False: unterdrückt Qwen3.5s sichtbare Reasoning-Kette, damit
     Proband:innen eine direkte, nicht durch Zwischenschritte verlängerte
     Antwort erhalten (relevant für Antwortzeit als Usability-Faktor,
@@ -1276,7 +1370,9 @@ def frage_llm(prompt, model=MODEL_NAME, options=None):
     payload = {"model": model, "prompt": prompt, "stream": False, "think": False}
     if options:
         payload["options"] = options
-    response = requests.post(OLLAMA_URL, json=payload, timeout=120)
+    if bild:
+        payload["images"] = [bild]
+    response = requests.post(OLLAMA_URL, json=payload, timeout=180 if bild else 120)
     response.raise_for_status()
     return response.json()["response"].strip()
 
@@ -1313,7 +1409,62 @@ def _hinweis_separat(frage, top_chunks, stufen):
     return zusatz
 
 
-def beantworte_frage(frage, chunks, top_k=4, methode=None):
+def _formelsuche_anwenden(frage, chunks, top_chunks, methode, ergebnis, fortschritt=None):
+    """FS-v1 (V12, nur mit LERNASSISTENT_FS=FS-v1): bei Rechenfragen VOR der Antwort die nötigen Formeln gezielt suchen
+    (formelsuche.py) und hinter die Chunks der Hauptsuche stellen. Standard ab V12.1 ist FS-v2 (_formelsuche_nachher)."""
+    import formelsuche
+    if formelsuche.FORMELSUCHE_VERSION != "FS-v1" or not formelsuche.ist_rechenfrage(frage):
+        return top_chunks
+    if fortschritt:
+        fortschritt("suche", "start")
+    zusatz, info = formelsuche.suche(frage, chunks, top_chunks, retrieval, frage_llm, methode)
+    ergebnis["formelsuche"] = info
+    if zusatz:
+        top_chunks = list(top_chunks) + zusatz
+        ergebnis["top_chunks"] = top_chunks
+    zeiten = ergebnis.setdefault("zeiten", {})
+    zeiten["suche"] = zeiten.get("suche", 0.0) + info["sekunden"]
+    if fortschritt:
+        fortschritt("suche", "ende", zeiten["suche"])
+        if zusatz:
+            fortschritt("suche", "quellen", None, top_chunks)
+    return top_chunks
+
+
+def _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, ergebnis, fortschritt=None):
+    """FS-v2 (V12.1, Standard): nur nach Fehlschlag der ersten Antwort (keine Zahl, nicht beantwortet, fehlende Formel)
+    Formeln suchen und EINMAL neu erzeugen. Die neue Antwort gilt nur, wenn sie beantwortet ist und eine Zahl nennt;
+    sonst bleibt die erste Antwort. Gelöste Fragen bleiben unberührt (kein Zusatzkontext, keine Mehrzeit)."""
+    import formelsuche
+    if formelsuche.FORMELSUCHE_VERSION != "FS-v2" or not formelsuche.braucht_suche(frage, stufen):
+        return top_chunks, prompt, stufen
+    zusatz, info = formelsuche.suche(frage, chunks, top_chunks, retrieval, frage_llm, methode)
+    info.update({"ausgeloest": True, "neu": False, "angenommen": False})
+    ergebnis["formelsuche"] = info
+    zeiten = ergebnis.setdefault("zeiten", {})
+    zeiten["suche"] = zeiten.get("suche", 0.0) + info["sekunden"]
+    if not zusatz:
+        return top_chunks, prompt, stufen
+    neue_chunks = list(top_chunks) + zusatz
+    neuer_prompt = baue_scaffolding_prompt(frage, neue_chunks)
+    roh = frage_llm(neuer_prompt, options=GENERIERUNGS_OPTIONEN)
+    stufen2 = parse_g_v1(roh) if ist_g_version() else parse_scaffolding_antwort(roh)
+    info["neu"] = True
+    if formelsuche.antwort_hat_ergebnis(stufen2):
+        # V12.3: nur annehmen, wenn die Nachrechnung die Formel im Material belegt (A/B V-1.32: ohne Formel erfand das Modell 0,25 T)
+        res = _rechenbaustein_v2(frage, neue_chunks, neuer_prompt, stufen2)
+        info["formel_belegt"] = bool(res and res.get("formel_im_material") is True)
+        stufen2.pop("rechen_befund", None)
+        if info["formel_belegt"]:
+            info["angenommen"] = True
+            ergebnis["top_chunks"] = neue_chunks
+            if fortschritt:
+                fortschritt("suche", "quellen", None, neue_chunks)
+            return neue_chunks, neuer_prompt, stufen2
+    return top_chunks, prompt, stufen
+
+
+def beantworte_frage(frage, chunks, top_k=4, methode=None, fortschritt=None):
     """
     Vollständige Pipeline: Retrieval -> Schwellenwert-Prüfung -> gestufte
     Generierung (Scaffolding) -> Sicherheitsprüfung. Verweigerung statt
@@ -1327,8 +1478,29 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None):
     bester_score = höchste Kosinus-Ähnlichkeit über ALLE Chunks, unabhängig von
     der Methode — bei "dense" identisch zum bisherigen Verhalten, bei
     bm25/hybrid bleibt die Schwellenprüfung dadurch unverändert.
+
+    fortschritt: optionaler Rückruf fortschritt(phase, ereignis, dauer=None) für die Oberfläche
+    (phase: "suche" | "antwort" | "pruefung"; ereignis: "start" | "ende"). Ohne Angabe
+    ändert sich nichts. Die gemessenen Zeiten stehen zusätzlich in ergebnis["zeiten"] (Sekunden).
     """
-    top_chunks, alle_chunks = retrieval(frage, chunks, top_k=top_k, methode=methode)
+    import time as _time
+    zeiten = {}
+
+    def _start(phase):
+        if fortschritt:
+            fortschritt(phase, "start")
+        return _time.perf_counter()
+
+    def _ende(phase, t0):
+        zeiten[phase] = _time.perf_counter() - t0
+        if fortschritt:
+            fortschritt(phase, "ende", zeiten[phase])
+
+    t0 = _start("suche")
+    top_chunks, alle_chunks = retrieval(RETRIEVAL_FRAGE or frage, chunks, top_k=top_k, methode=methode)
+    _ende("suche", t0)
+    if fortschritt:
+        fortschritt("suche", "quellen", None, top_chunks)  # gefundene Quellen sofort anzeigen
     bester_score = max((c["score"] for c in alle_chunks), default=0.0)
     genuegend_relevanz = bester_score >= RELEVANZ_SCHWELLE
 
@@ -1337,6 +1509,7 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None):
         "bester_score": bester_score,
         "genuegend_relevanz": genuegend_relevanz,
         "top_chunks": top_chunks,
+        "zeiten": zeiten,
     }
 
     if not genuegend_relevanz:
@@ -1354,18 +1527,28 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None):
         ergebnis["sicherheitshinweis"] = None
         return ergebnis
 
+    top_chunks = _formelsuche_anwenden(frage, chunks, top_chunks, methode, ergebnis, fortschritt)  # ab V12 (FS-v1)
     prompt = baue_scaffolding_prompt(frage, top_chunks)
-    rohantwort = frage_llm(prompt, options=GENERIERUNGS_OPTIONEN)
+    t0 = _start("antwort")
+    rohantwort = frage_llm(prompt, options=GENERIERUNGS_OPTIONEN, **({'bild': BILD_ANHANG} if BILD_ANHANG else {}))
     stufen = parse_g_v1(rohantwort) if ist_g_version() else parse_scaffolding_antwort(rohantwort)
+    top_chunks, prompt, stufen = _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, ergebnis, fortschritt)  # ab V12.1 (FS-v2)
+    _ende("antwort", t0)
+    t0 = _start("pruefung")
     if ist_g_version():
-        rechnung_pruefen(prompt, stufen, frage)  # ab V9d (RP-v1), V10 RP-v2; vor Sicherheits- und Hinweis-Prüfung
+        rechnung_pruefen(prompt, stufen, frage, top_chunks)  # ab V9d (RP-v1), V10 RP-v2; vor Sicherheits- und Hinweis-Prüfung
     ist_relevant, treffer = sicherheitspruefung(frage + " " + stufen["loesung"])
 
     if SCAFFOLDING_VERSION == "S2-v2":
         stufen.update(_hinweis_separat(frage, top_chunks, stufen))
     hinweis_pruefen(frage, stufen)  # ab V8 (HP-v1); ohne Wirkung bei älteren Versionen
+    _ende("pruefung", t0)
 
     ergebnis.update(stufen)
+    if ergebnis.get("formelsuche"):  # FS-v1: Suchbegriffe und ergänzte Chunks im Protokoll (rechen_befund)
+        import formelsuche as _fs
+        _alt = ergebnis.get("rechen_befund") or ""
+        ergebnis["rechen_befund"] = (_alt + " | " if _alt else "") + _fs.notiz(ergebnis["formelsuche"])
     ergebnis["quellen"] = [{"id": c["id"], "thema": c["thema"]} for c in top_chunks]
     ergebnis["sicherheitshinweis"] = treffer if ist_relevant else None
     return ergebnis

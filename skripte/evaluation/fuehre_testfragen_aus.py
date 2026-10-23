@@ -49,8 +49,9 @@ FELDER = ["nr", "typ", "frage", "erwarteter_chunk", "top_ids", "bester_score",
 
 def nachbar_ids(chunk_id):
     """pdf_3734 -> {pdf_3733, pdf_3735} (1-Satz-Überlappung, siehe _gruppen_zu_chunks)."""
-    nr = int(chunk_id.split("_")[-1])
-    return {f"pdf_{nr - 1:04d}", f"pdf_{nr + 1:04d}"}
+    stamm, nr_text = chunk_id.rsplit("_", 1)  # "pdf" bzw. "fischer_pdf" (kombinierte Wissensbasis)
+    nr = int(nr_text)
+    return {f"{stamm}_{nr - 1:04d}", f"{stamm}_{nr + 1:04d}"}
 
 
 def ist_wahr(x):

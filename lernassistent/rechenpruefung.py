@@ -29,6 +29,10 @@ gelesen. Anlass Q27 (Lauf V10): "P1 = 4000 W / 0,815 = 4908 W" ergab den falsche
 "4000 / 0,815 ergibt 4908, nicht 1" (die "1" aus "P1"). Folge davon: Ein Ausdruck, der über einen Operator an ein
 Symbol grenzt ("R20 · (1 + 0,004 · 30)"), wird nicht mehr nur zur Hälfte gelesen (sonst falscher Befund).
 RP-v1 und RP-v2 bleiben unverändert (Reproduzierbarkeit).
+
+RP-v5 (V11b, 21 Oct 2026) = RP-v3 + Namen mit Unterstrich-Index ("I_1N", "U_2N", "u_k") werden als ein Variablenname
+gelesen. Anlass: Live-Test "Bemessungsstrom 40 kVA / 5 kV": die Vermerke "(40) / (√3 · 5) ergibt 4,619, nicht 1" und
+"… nicht 2" stammen aus der "1" in "I_1N" und der "2" in "I_2N". RP-v3 und RP-v4 bleiben unverändert.
 """
 import ast
 import math
@@ -66,11 +70,28 @@ def zahl(text):
 # RP-v3: Buchstabe + 1-2 Ziffern direkt daneben ("P1", "U2", "R20") ist ein Variablenname -> tiefgestellte Ziffern,
 # die der Tokenizer als Teil des Wortes liest. Nur aktiv in pruefe(..., version="RP-v3"); sonst wie RP-v1/v2.
 _INDEX_FIX = False
+_UNTERSTRICH_FIX = False  # RP-v5: "I_1N", "U_2N", "u_k" -> ein Name (siehe pruefe)
+_UNTERSTRICHNAME = re.compile(r"(?<![\w.,])([A-Za-zηφΦϑα-ωΑ-Ω]{1,3})_([A-Za-z0-9]{1,4})\b")
 _INDEXNAME = re.compile(r"(?<![\w.,])([A-Za-zηφΦϑα-ωΑ-Ω])(\d{1,2})\b(?![,.]\d)")
 _TIEF = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
 
 
+_ZEHNERPOTENZ = re.compile(r"(?<![\d,.])10\s*\^\s*\(?\s*([-−–]?)\s*(\d{1,2})\s*\)?")
+
+
+def _zehnerpotenz(m):
+    """"10^18" -> eine Zahl (1000000000000000000), "10^-3" -> 0,001. V12: vorher las die Prüfung "10" und "18" als zwei
+    Zahlen und meldete bei "3 · 6,25 · 10^18 = 18,75 · 10^18" fälschlich "18,75 · 10 ergibt 187,5, nicht 18" (N100 Nr 1)."""
+    n = int(m.group(2))
+    if m.group(1):
+        return "0," + "0" * (n - 1) + "1" if n >= 1 else "1"
+    return "1" + "0" * n
+
+
 def _tokens(teil):
+    teil = _ZEHNERPOTENZ.sub(_zehnerpotenz, teil)
+    if _UNTERSTRICH_FIX:
+        teil = _UNTERSTRICHNAME.sub(lambda m: m.group(1) + m.group(2).translate(_TIEF), teil)
     if _INDEX_FIX:
         teil = _INDEXNAME.sub(lambda m: m.group(1) + m.group(2).translate(_TIEF), teil)
     teil = _EINHEITENBRUCH.sub("", _EINHEIT_KEHRWERT.sub(" ", teil))
@@ -199,6 +220,8 @@ def _passt(gerechnet, angegeben, stellen):
         z = str(int(round(abs(angegeben))))
         letzte = len(z) - len(z.rstrip("0")) if z.rstrip("0") else exponent
     toleranz = max(0.5 * 10 ** letzte, 0.005 * abs(angegeben), 1e-12)
+    if not stellen:  # nur ganze Zahlen mit Endnullen
+        toleranz = min(toleranz, 0.10 * abs(angegeben))  # V12.2: "100" gilt nicht für 75 (A/B F55: ±50 war zu weit)
     if abs(gerechnet - angegeben) <= toleranz:
         return True
     # Faktor 10³, 10⁶ … : vermutlich stillschweigende Umrechnung von Vorsätzen (µF -> F, mm -> m),
@@ -213,9 +236,17 @@ def _passt(gerechnet, angegeben, stellen):
 def _zahl_de(x):
     if x == 0:
         return "0"
+    if abs(x) >= 1e9 or abs(x) < 1e-6:  # V12: Zehnerpotenz-Schreibweise statt 19-stelliger Zahl
+        m, e = f"{x:.4e}".split("e")
+        return f"{m.rstrip('0').rstrip('.').replace('.', ',')}·10^{int(e)}"
     stellen = max(0, 3 - int(math.floor(math.log10(abs(x)))))
     t = f"{x:.{min(stellen, 6)}f}".rstrip("0").rstrip(".")
     return t.replace(".", ",")
+
+
+def _anzeige_potenz(text):
+    """Lange Ziffernfolgen aus _zehnerpotenz() zurück in die Anzeige: 1000000000000000000 -> 10^18."""
+    return re.sub(r"(?<![\d,.])1(0{6,})(?![\d])", lambda m: f"10^{len(m.group(1))}", text or "")
 
 
 def pruefe_rechnungen(text):
@@ -241,6 +272,7 @@ def pruefe_rechnungen(text):
             else:
                 gerechnet, angegeben, stellen, ausdruck = wl, wr, 0, f"{al} = {ar}"
             if not _passt(gerechnet, angegeben, stellen):
+                ausdruck = _anzeige_potenz(ausdruck)
                 befunde.append({"ausdruck": ausdruck, "gerechnet": gerechnet, "angegeben": angegeben,
                                 "satz": zeile.strip()[:200],
                                 "text": f"{ausdruck} ergibt {_zahl_de(gerechnet)}, nicht {_zahl_de(angegeben)}"})
@@ -364,13 +396,14 @@ def pruefe_ueberlegung(text):
 
 def pruefe(text, frage="", version="RP-v3"):
     """Alle Befunde der gewählten Version. RP-v1 = nur pruefe_rechnungen (unverändert); RP-v2 = + Konsistenz und
-    sichtbare Überlegung; RP-v3 = RP-v2 mit Indexnamen-Korrektur."""
-    global _INDEX_FIX
+    sichtbare Überlegung; RP-v3 = RP-v2 mit Indexnamen-Korrektur; RP-v4 wie RP-v3; RP-v5 = RP-v3 + Unterstrich-Namen."""
+    global _INDEX_FIX, _UNTERSTRICH_FIX
     alt, _INDEX_FIX = _INDEX_FIX, version not in ("RP-v1", "RP-v2")
+    alt_u, _UNTERSTRICH_FIX = _UNTERSTRICH_FIX, version == "RP-v5"
     try:
         befunde = pruefe_rechnungen(text)
         if version != "RP-v1":
             befunde += pruefe_konsistenz(text, frage) + pruefe_ueberlegung(text)
     finally:
-        _INDEX_FIX = alt
+        _INDEX_FIX, _UNTERSTRICH_FIX = alt, alt_u
     return befunde

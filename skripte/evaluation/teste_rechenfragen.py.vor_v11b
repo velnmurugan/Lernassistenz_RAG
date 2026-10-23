@@ -1,0 +1,78 @@
+"""
+teste_rechenfragen.py
+---------------------
+Entwicklungstest der Rechenprüfung: dieselben Fragen mit RP-v3 (V10a) und RP-v4 (V11, Rechenbaustein RB-v1),
+beides mit RAG. Nur Fragen mit einer Zahl im Fragetext (Rechenaufgaben, Tabellen-/Tafelfragen mit Werten),
+aus den Entwicklungssätzen (testfragen_fischer_v1 + T1-T4), NICHT aus N100.
+
+Ausgabe: evaluationsdaten/rechenfragen_<SITZUNG>.csv (Antworten beider Versionen nebeneinander, Handbewertung
+folgt durch Vorbewertung), Konsole: je Frage Ausgang der Prüfung.
+
+Start (Ollama läuft, Umgebung pilot_rag):
+  python skripte/evaluation/teste_rechenfragen.py RB-V11 --kb daten/wissensbasen/knowledge_base_fischer_v7c.json
+  (--kb ...fischer_boege.json für die gemeinsame Wissensbasis; --limit 3 für einen Probelauf)
+"""
+import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
+import argparse
+import csv
+import re
+import time
+from pathlib import Path
+
+import rag_pipeline as rp
+from vergleich_mit_ohne_rag import lade_fragen
+
+FELDER = ["nr", "typ", "frage", "referenz", "kb_hash",
+          "status_v3", "antwort_v3", "pruefung_v3", "befund_v3", "sek_v3",
+          "status_v4", "antwort_v4", "pruefung_v4", "befund_v4", "sek_v4",
+          "gleich", "hand_v3", "hand_v4", "anmerkung"]
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("sitzung")
+    ap.add_argument("--kb", default="daten/wissensbasen/knowledge_base_fischer_v7c.json")
+    ap.add_argument("--fragen", default="daten/testfragen/testfragen_fischer_v1.csv")
+    ap.add_argument("--ideen", default="daten/testfragen/testideen_fischer_v1.csv")
+    ap.add_argument("--retrieval", default="hybrid_kg_rr")
+    ap.add_argument("--limit", type=int, default=None)
+    args = ap.parse_args()
+
+    fragen = [q for q in lade_fragen(args.fragen, args.ideen)
+              if q["typ"] != "ausserhalb" and re.search(r"\d", q["frage"])][: args.limit]
+    chunks = rp.lade_wissensbasis(args.kb)
+    kb_hash = rp.berechne_kb_hash(args.kb)
+    out = Path("evaluationsdaten") / f"rechenfragen_{args.sitzung}.csv"
+    print(f"{len(fragen)} Fragen mit Zahl | KB {args.kb} ({kb_hash}) | {rp.SCAFFOLDING_VERSION}, Retrieval {args.retrieval}\n")
+
+    zeilen = []
+    for q in fragen:
+        z = {**q, "kb_hash": kb_hash}
+        for tag, version in (("v3", "RP-v3"), ("v4", "RP-v4")):
+            rp.RECHEN_PRUEFUNG_VERSION = version
+            t0 = time.time()
+            erg = rp.beantworte_frage(q["frage"], chunks, methode=args.retrieval)
+            z[f"sek_{tag}"] = round(time.time() - t0, 1)
+            z[f"status_{tag}"] = erg.get("status", "")
+            z[f"antwort_{tag}"] = erg.get("loesung", "")
+            z[f"pruefung_{tag}"] = erg.get("rechen_pruefung", "")
+            z[f"befund_{tag}"] = erg.get("rechen_befund", "")
+        z["gleich"] = z["antwort_v3"].strip() == z["antwort_v4"].strip()
+        print(f"[{q['nr']:>3}] {q['typ']:<10} v3: {z['pruefung_v3'] or '-':<14} v4: {z['pruefung_v4'] or '-':<14} "
+              f"{'gleiche Antwort' if z['gleich'] else 'ANTWORT GEÄNDERT'}  | {z['befund_v4'][:90]}", flush=True)
+        zeilen.append(z)
+        with open(out, "w", encoding="utf-8", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=FELDER)
+            w.writeheader()
+            for r in zeilen:
+                w.writerow({k: r.get(k, "") for k in FELDER})
+    geaendert = [z for z in zeilen if not z["gleich"]]
+    print(f"\nAntwort durch RP-v4 geändert: {len(geaendert)}/{len(zeilen)} (Nr. {[z['nr'] for z in geaendert]})")
+    from collections import Counter
+    print("Ausgang RP-v4:", dict(Counter(z["pruefung_v4"] for z in zeilen)))
+    print(f"Gespeichert: {out}")
+
+
+if __name__ == "__main__":
+    main()
