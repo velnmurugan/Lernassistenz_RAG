@@ -52,13 +52,34 @@ ERLAUBTE_KONSTANTEN = {0, 1, 2, 3, 4, 5, 10, 60, 100, 1000, 3600, 1e6, 1e-3, 1e-
                        360, 1e3, 1e9, 1e-9, 1e-12, 273.15, 9.81, 9.80665}
 
 
+
+_HOCH_ZIFFER = {"⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9", "⁻": "-"}
+
+
+def normiere_ausdruck(ausdruck):
+    """RB-v3 (V13): Schreibweisen des Modells in einen Python-Ausdruck übersetzen. Neu gegenüber RB-v2:
+    "√2" / "√x" ohne Klammer (vorher "sqrt2" -> Auswertungsfehler, N100 F29), "2π" / "2 pi" / "2 sqrt(2)" / ")(" /
+    ") pi" mit unsichtbarem Malzeichen, Hochzahlen ")²" / "x²", "÷". Reine Einheiten nach einer Zahl ("0,5 m") bleiben
+    unberührt: Malzeichen werden nur vor pi, sqrt, Klammer auf und nach Klammer zu eingefügt."""
+    t = (ausdruck or "").strip()
+    t = t.replace("^", "**").replace("·", "*").replace("×", "*").replace("−", "-").replace("÷", "/")
+    t = re.sub(r"(?<=\d),(?=\d)", ".", t)  # deutsche Dezimalkommas
+    t = re.sub(r"[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+", lambda m: "**(" + "".join(_HOCH_ZIFFER[c] for c in m.group(0)) + ")", t)
+    t = re.sub(r"√\s*(\d+(?:\.\d+)?|[A-Za-z_][A-Za-z0-9_]*)(?!\s*\()", r"sqrt(\1)", t)  # √2, √x
+    t = t.replace("√", "sqrt").replace("π", "pi")
+    t = re.sub(r"\bsqrt\s*(\d+(?:\.\d+)?)", r"sqrt(\1)", t)                         # sqrt3
+    t = re.sub(r"(?<![\w.])(\d+(?:\.\d+)?)\s+(?=(?:pi|sqrt)\b)", r"\1*", t)       # 2 pi, 2 sqrt(2)
+    t = re.sub(r"(?<![\w.])(\d+(?:\.\d+)?)(?=(?:pi|sqrt)\b)", r"\1*", t)          # 2pi
+    t = re.sub(r"(?<![\w.])(\d+(?:\.\d+)?)\s*(?=\()", r"\1*", t)                     # 2 (..)
+    t = re.sub(r"\)\s*(?=[\d(]|pi\b|sqrt\b)", ")*", t)                              # ) (..) / ) 2 / ) pi
+    return t
+
+
 def sicher_auswerten(ausdruck, namen=None):
     """Wertet einen Python-Ausdruck aus (nur Zahlen, Namen aus `namen`, + − * / **, erlaubte Funktionen).
     Rückgabe float oder None. Kein eval."""
     namen = {**_KONSTANTEN, **(namen or {})}
-    ausdruck = (ausdruck or "").strip().replace("^", "**").replace("·", "*").replace("×", "*").replace("−", "-")
-    ausdruck = re.sub(r"(?<=\d),(?=\d)", ".", ausdruck)  # deutsche Dezimalkommas
-    ausdruck = ausdruck.replace("√", "sqrt").replace("π", "pi")
+    ausdruck = normiere_ausdruck(ausdruck)
 
     def w(k):
         if isinstance(k, ast.Expression):
@@ -490,3 +511,82 @@ def pruefloesung(res, urspruenglich=""):
     vermerk = ("⚠ Automatische Prüfung: Die erste Antwort des Modells wich von der Nachrechnung ab; "
                "gezeigt wird die Nachrechnung (Formel aus dem Lernmaterial).")
     return f"{kopf}\n\nBegründung: {begr}\n\n{vermerk}" if begr else f"{kopf}\n\n{vermerk}"
+
+
+# ---------------------------------------------------------------------------------------------------------
+# RB-v3 (V13, 25 Oct 2026; gehört zu RP-v6)
+# ---------------------------------------------------------------------------------------------------------
+# Anlass: N100 V11B (21 Oct) – bei F1, F29, F62 und B24 war die Nachrechnung "nicht verwertbar: wert_unlesbar",
+# also wurde nichts geprüft; F29 scheiterte an "2√2" ohne Klammer; F61 (V12.9, alte KB) blieb unbemerkt, weil die
+# Antwort nur eine Zahl aus der Frage nannte; F1 bekam eine falsche Warnung, obwohl die Formel der Nachrechnung
+# nicht im Buch stand. Änderungen:
+#   1. normiere_ausdruck (oben): √2, 2π, ")(", Hochzahlen.
+#   2. Retry: ist die erste Nachrechnung nicht auswertbar (RETRY_GRUENDE), ein zweiter Aufruf mit Fehlerbericht und
+#      Formatbeispiel (baue_prompt_v3).
+#   3. Kopfzahlen-Rückfall: nennt der erste Satz nur Zahlen aus der Frage (Antwort = gegebener Wert), werden sie
+#      trotzdem gegen das Ergebnis geprüft (vergleiche_v3).
+RB_VERSION_3 = "RB-v3"
+RETRY_GRUENDE = ("wert_unlesbar", "auswertung", "formatfehler", "literal")
+
+
+def baue_prompt_v3(frage, kontext, fehler=None):
+    """Wie baue_prompt_v2; mit `fehler` (grund, detail) als Wiederholung: der Fehlerbericht und das Formatbeispiel stehen
+    davor, damit das Modell dieselbe Aufgabe in auswertbarer Schreibweise noch einmal rechnet."""
+    basis = baue_prompt_v2(frage, kontext)
+    regeln = ("Schreibweise (wichtig, die Zeilen werden automatisch ausgewertet):\n"
+              "- WERTE: eine Zahl oder ein Rechenausdruck je Zeile, danach die Einheit. Keine Wörter wie „unendlich“ oder „gesucht“.\n"
+              "- RECHNUNG: nur Namen aus WERTE, Zahlen und + - * / ** ( ) sqrt() pi; Malzeichen immer ausschreiben (2*pi*n,"
+              " nicht 2πn); Wurzel als sqrt(x), nie √; Potenzen mit **; keine Einheiten in RECHNUNG.\n"
+              "- Beispiel: WERTE: U = 230 V / n = 1500/60 1/s   RECHNUNG: w = 2*pi*n / P = U**2/R\n\n")
+    if not fehler:
+        return basis.replace("Material:\n", regeln + "Material:\n", 1)
+    grund, detail = fehler
+    bericht = {"wert_unlesbar": "ein Wert in WERTE war nicht lesbar", "auswertung": "eine Zeile in RECHNUNG war nicht auswertbar",
+               "formatfehler": "das Format war nicht erkennbar", "literal": "das Ergebnis war nur eine hingeschriebene Zahl, nicht gerechnet"}.get(grund, grund)
+    kopf = (f"Deine erste Nachrechnung war nicht auswertbar: {bericht}"
+            + (f" ({detail})" if detail else "") + ". Rechne dieselbe Aufgabe noch einmal und halte dich genau an die Schreibweise.\n\n")
+    return kopf + basis.replace("Material:\n", regeln + "Material:\n", 1)
+
+
+_EINHEITEN_FOLGE = re.compile(r"(?:%s)+" % rp._EINHEIT.pattern)  # "kgm" in "kgm²" = kg + m
+
+
+def kopfzahlen_v3(loesung, frage):
+    """Zahlen mit Einheit im ersten Satz. Nur Zahlen aus der Frage? Dann (liste, True): die Antwort wiederholt vielleicht einen
+    gegebenen Wert (F61 im V12.9-Lauf: "0,02 kgm²"). Rückgabe (liste von (w, stellen, text, hat_einheit), rueckfall)."""
+    eigene = _kopf_mit_einheit(loesung, frage)
+    if eigene:
+        return eigene, False
+    text = loesung or ""
+    m = rp._erster_satz_ende(text)
+    kopf = rp._VERWEIS_ZAHL.sub(" ", text[:m.start()] if m else text)
+    alle = []
+    for z in re.finditer(r"(?<![A-Za-zÄÖÜäöüßα-ωΑ-Ω_₀-₉])\d+(?:[.,]\d+)*", kopf):
+        try:
+            w = abs(rp.zahl(z.group(0)))
+        except ValueError:
+            continue
+        nach = re.match(r"\s*(%|[A-Za-zΩµμ°]+)", kopf[z.end():])
+        hat = bool(nach) and (nach.group(1) == "%" or bool(_EINHEITEN_FOLGE.fullmatch(nach.group(1))))
+        if hat:
+            alle.append((w, rp._stellen(z.group(0)), z.group(0), True))
+    return (alle, True) if len(alle) == 1 else ([], False)  # genau eine Zahl mit Einheit: eindeutig die Antwort
+
+
+def vergleiche_v3(loesung, frage, res):
+    """Wie vergleiche_v2, mit Rückfall auf Zahlen aus der Frage (siehe kopfzahlen_v3)."""
+    if not res.get("ergebnisse"):
+        return []
+    kopf, rueckfall = kopfzahlen_v3(loesung, frage)
+    if not kopf:
+        return []
+    if not rueckfall:
+        return vergleiche_v2(loesung, frage, res)
+    werte = [abs(w) for _, w in res["ergebnisse"]]
+    w, st, t, _ = kopf[0]
+    if any(rp._passt(k, w, st) for e in werte for k in (e, e * 100, e / 100)):
+        return []
+    return [{"art": "baustein", "ausdruck": res.get("rechnung", ""), "gerechnet": werte[0], "angegeben": w,
+             "satz": (loesung or "")[:200],
+             "text": (f"Die unabhängige Python-Nachrechnung ({res.get('formel', '').strip() or 'Formel'}) ergibt "
+                      f"{ergebnis_text(res)}, die Lösung nennt nur den gegebenen Wert {t}")}]

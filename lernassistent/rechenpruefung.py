@@ -101,7 +101,16 @@ def _tokens(teil):
         out.append((art, m.group(art)))
     # Einheiten = Wörter direkt nach Zahl, Klammer zu, Hochzahl, Prozent oder anderer Einheit -> entfernen
     sauber, vorher = [], None
-    for art, wert in out:
+    i = 0
+    while i < len(out):
+        art, wert = out[i]
+        i += 1
+        # V13: Einheitenprodukt "kg·m²", "N·m": das Malzeichen zwischen zwei Einheiten gehört zur Einheit. Vorher blieb
+        # "0,25 ·" als halbes Produkt stehen und die Prüfung übersprang die Zeile (N100 F62: 0,25 statt 0,0114 unbemerkt).
+        if (art == "op" and wert in ("·", "*") and vorher == "einheit" and i < len(out)
+                and out[i][0] == "wort" and _EINHEIT.fullmatch(out[i][1])):
+            i += 1
+            continue
         if art == "wort" and vorher in ("zahl", "zu", "hoch", "prozent", "einheit") and _EINHEIT.fullmatch(wert):
             vorher = "einheit"
             continue
@@ -394,16 +403,65 @@ def pruefe_ueberlegung(text):
                      f"sie soll nur das Ergebnis und die Begründung zeigen"}]
 
 
+# ---------------------------------------------------------------------------------------------------------
+# RP-v6 (V13, 25 Oct 2026): Einheitenwächter und Bereinigung sichtbarer Überlegungen
+# ---------------------------------------------------------------------------------------------------------
+# Größenart der Frage -> passende und unpassende Einheit der Lösung (Code, kein Prompt: die Prompts bleiben frei von
+# Fachwörtern, P1). Anlass N100 F52: "Welche Scheinleistung …" beantwortet mit "200 kW"; die Prüfung verglich nur Zahlen.
+_PRAEFIX = r"[kMGm]?"
+_GROESSEN = [
+    ("Scheinleistung", re.compile(r"scheinleistung", re.I), re.compile(_PRAEFIX + r"VA\b"), re.compile(r"(?<![A-Za-z])" + _PRAEFIX + r"W(?![A-Za-z])")),
+    ("Wirkleistung", re.compile(r"wirkleistung", re.I), re.compile(r"(?<![A-Za-z])" + _PRAEFIX + r"W(?![A-Za-z])"), re.compile(_PRAEFIX + r"VA\b|" + _PRAEFIX + r"[Vv][Aa][Rr]\b")),
+    ("Blindleistung", re.compile(r"blindleistung", re.I), re.compile(_PRAEFIX + r"[Vv][Aa][Rr]\b"), re.compile(r"(?<![A-Za-z])" + _PRAEFIX + r"W(?![A-Za-z])|" + _PRAEFIX + r"VA\b")),
+    ("Drehzahl", re.compile(r"drehzahl", re.I), re.compile(r"min\s*⁻\s*¹|1\s*/\s*min|/\s*min\b|U\s*/\s*min|s\s*⁻\s*¹|1\s*/\s*s\b|U\s*/\s*s\b"), re.compile(r"\bHz\b")),
+]
+_ZAHL_EINHEIT = re.compile(r"\d[\d.,]*\s*([A-Za-zµμΩ°⁻¹/·]+(?:\s*/\s*\w+)?)")
+
+
+def pruefe_einheiten(text, frage=""):
+    """Befund, wenn die Frage genau eine Leistungs-/Drehzahlgröße nennt und der erste Satz der Lösung nur eine unpassende
+    Einheit hat ("Scheinleistung" mit kW). Keine Aussage über den Zahlenwert."""
+    benannt = [g for g in _GROESSEN if g[1].search(frage or "")]
+    if len(benannt) != 1:
+        return []
+    name, _, ok, falsch = benannt[0]
+    m = _erster_satz_ende(text or "")
+    kopf = (text or "")[:m.start()] if m else (text or "")
+    kopf = _VERWEIS_ZAHL.sub(" ", kopf)
+    if ok.search(kopf) or not falsch.search(kopf):
+        return []
+    genannt = falsch.search(kopf).group(0)
+    passend = {"Scheinleistung": "VA", "Wirkleistung": "W", "Blindleistung": "var", "Drehzahl": "1/min oder 1/s"}[name]
+    return [{"art": "einheit", "ausdruck": "", "gerechnet": None, "angegeben": None, "satz": kopf[:200],
+             "text": f"Gefragt ist die {name} (Einheit {passend}), die Lösung nennt {genannt}"}]
+
+
+_LECK_START = re.compile(r"(?:^|\n)[ \t]*[*_]*[ \t]*(?:Warte|Moment mal|Hmm+|Korrektur|Ich muss (?:strikt|noch einmal|das noch)|Lass mich)\b", re.I)
+
+
+def bereinige_ueberlegung(text):
+    """V13: sichtbarer Denktext am Ende der Lösung ("*Warte, ich muss strikt L1 und L5 beachten.* Korrektur …", N100 F29, F4)
+    wird abgeschnitten, wenn davor eine vollständige Lösung steht (mindestens 40 Zeichen). Rückgabe (text, entfernt)."""
+    t = text or ""
+    m = _LECK_START.search(t)
+    if not m or len(t[:m.start()].strip()) < 40:
+        return t, ""
+    return t[:m.start()].rstrip(), t[m.start():].strip()
+
+
 def pruefe(text, frage="", version="RP-v3"):
     """Alle Befunde der gewählten Version. RP-v1 = nur pruefe_rechnungen (unverändert); RP-v2 = + Konsistenz und
-    sichtbare Überlegung; RP-v3 = RP-v2 mit Indexnamen-Korrektur; RP-v4 wie RP-v3; RP-v5 = RP-v3 + Unterstrich-Namen."""
+    sichtbare Überlegung; RP-v3 = RP-v2 mit Indexnamen-Korrektur; RP-v4 wie RP-v3; RP-v5 = RP-v3 + Unterstrich-Namen;
+    RP-v6 = RP-v5 + Einheitenwächter (V13)."""
     global _INDEX_FIX, _UNTERSTRICH_FIX
     alt, _INDEX_FIX = _INDEX_FIX, version not in ("RP-v1", "RP-v2")
-    alt_u, _UNTERSTRICH_FIX = _UNTERSTRICH_FIX, version == "RP-v5"
+    alt_u, _UNTERSTRICH_FIX = _UNTERSTRICH_FIX, version in ("RP-v5", "RP-v6")
     try:
         befunde = pruefe_rechnungen(text)
         if version != "RP-v1":
             befunde += pruefe_konsistenz(text, frage) + pruefe_ueberlegung(text)
+        if version == "RP-v6":
+            befunde += pruefe_einheiten(text, frage)
     finally:
         _INDEX_FIX, _UNTERSTRICH_FIX = alt, alt_u
     return befunde

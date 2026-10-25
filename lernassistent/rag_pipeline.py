@@ -715,7 +715,7 @@ Antwort:"""
 # Seit G-v3 prüfte das Modell seine Rechnung sichtbar IN der Lösung: Q13 begann mit "0,02 oder 2 %" und
 # korrigierte sich danach ("Momentan habe ich einen Rechenfehler … lass uns das korrigieren … 0,05"),
 # Q27 enthielt eine lange sichtbare Abwägung. Das Nachrechnen übernimmt die Rechenprüfung (RP) in Python.
-SCAFFOLDING_VERSION = "G-v4"
+SCAFFOLDING_VERSION = os.environ.get("LERNASSISTENT_G", "G-v4")   # V13: "G-v5" = G-v4 + L6, L7 (nur mit Schalter)
 STATUS_WERTE = ("BEANTWORTET", "TEILWEISE", "NICHT_IM_MATERIAL")
 SCAFFOLDING_MARKER_VERSIONEN = {
     "S3-v0": {"hinweis": "STUFE1_HINWEIS:", "erklaerung": "STUFE2_ERKLAERUNG:", "loesung": "STUFE3_LOESUNG:"},
@@ -725,6 +725,7 @@ SCAFFOLDING_MARKER_VERSIONEN = {
     "G-v2": {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"},
     "G-v3": {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"},
     "G-v4": {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"},
+    "G-v5": {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"},
 }
 
 
@@ -964,11 +965,45 @@ def _rechenbaustein_v2(frage, top_chunks, prompt, stufen):
     return res
 
 
+def _rechenbaustein_v3(frage, top_chunks, prompt, stufen):
+    """RB-v3 (V13, mit RP-v6): wie RB-v2, dazu (1) Formatregeln im Prompt, (2) ein zweiter Aufruf mit Fehlerbericht, wenn die erste
+    Nachrechnung nicht auswertbar war (wert_unlesbar, auswertung, formatfehler, literal), (3) Rückfall auf Zahlen aus der Frage
+    (Antwort = gegebener Wert). Notiert den Ausgang in rechen_befund ("RB-v3 Ergebnis … | Formel … | Retry …")."""
+    import rechenbaustein
+    if not re.search(r"\d", frage or "") or not rechenbaustein.kopfzahlen_v3(stufen.get("loesung", ""), frage)[0]:
+        return None
+    kontext = _kontext_text(top_chunks) if top_chunks else prompt
+    optionen = {**GENERIERUNGS_OPTIONEN, "num_predict": 700}
+    retry = ""
+    try:
+        res = rechenbaustein.rechne_v2(rechenbaustein.parse_v2(
+            frage_llm(rechenbaustein.baue_prompt_v3(frage, kontext), options=optionen)), frage, kontext)
+        if not res.get("ergebnisse") and res.get("grund") in rechenbaustein.RETRY_GRUENDE:
+            erster = res.get("grund")
+            res = rechenbaustein.rechne_v2(rechenbaustein.parse_v2(
+                frage_llm(rechenbaustein.baue_prompt_v3(frage, kontext, (erster, res.get("detail", ""))), options=optionen)),
+                frage, kontext)
+            retry = f" | Retry nach {erster}: " + ("ok" if res.get("ergebnisse") else f"nicht verwertbar ({res.get('grund')})")
+    except Exception as e:  # darf die Antwort nie verhindern
+        print(f"WARNUNG Rechenbaustein: {e}")
+        stufen["rechen_befund"] = "RB-v3 Fehler"
+        return None
+    if not res.get("ergebnisse"):
+        stufen["rechen_befund"] = f"RB-v3 nicht verwertbar: {res.get('grund')}{retry}"
+        return None
+    quelle = {True: "Formel im Material", False: "Formel nicht im Material", None: "Formel ohne Quelle"}[
+        res.get("formel_im_material")]
+    stufen["rechen_befund"] = f"RB-v3 Ergebnis {rechenbaustein.ergebnis_text(res)} | {quelle}{retry}"
+    return res
+
+
 def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     """Prüft die Rechenschritte in stufen["loesung"] und repariert an Ort und Stelle.
     Ergänzt rechen_pruefung (ok | nachgebessert | markiert | ersetzt | nicht_behoben | ""), rechen_befund,
     loesung_original. nicht_behoben (nur RP-v2): nur sichtbare Überlegung gefunden, Neuschreiben gescheitert.
     ersetzt (nur RP-v5): Neuschreiben gescheitert, die Nachrechnung (Formel aus dem Material belegt) ersetzt die Lösung.
+    bereinigt (RP-v6): sichtbarer Denktext am Ende abgeschnitten; abweichung_ungestuetzt (RP-v6): Nachrechnung widerspricht, ihre
+    Formel steht aber nicht im Material (kein Vermerk im Text, nur Log und Chip).
     frage: für die RP-v2-Konsistenzprüfung (Zahlen aus der Frage zählen nicht als Ergebnis); ohne Angabe
     wird sie aus dem Prompt gelesen."""
     for k in ("rechen_pruefung", "rechen_befund", "loesung_original"):
@@ -980,12 +1015,22 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     import rechenpruefung
     import rechenbaustein
     v1 = RECHEN_PRUEFUNG_VERSION == "RP-v1"
-    v5 = RECHEN_PRUEFUNG_VERSION == "RP-v5"
+    v6 = RECHEN_PRUEFUNG_VERSION == "RP-v6"
+    v5 = RECHEN_PRUEFUNG_VERSION in ("RP-v5", "RP-v6")
     frage = frage if frage is not None else _frage_aus_prompt(prompt)
+    vor_bereinigung = ""
+    if v6:  # V13: sichtbaren Denktext am Ende abschneiden, bevor geprüft wird (Original im Log)
+        bereinigt_text, entfernt = rechenpruefung.bereinige_ueberlegung(stufen.get("loesung", ""))
+        if entfernt:
+            vor_bereinigung = stufen["loesung"]
+            stufen["loesung"] = bereinigt_text
+            stufen["loesung_original"] = vor_bereinigung
 
     baustein = None
     if RECHEN_PRUEFUNG_VERSION == "RP-v4":
         baustein = _rechenbaustein(frage, top_chunks, prompt, stufen)
+    elif v6:
+        baustein = _rechenbaustein_v3(frage, top_chunks, prompt, stufen)
     elif v5:
         baustein = _rechenbaustein_v2(frage, top_chunks, prompt, stufen)
 
@@ -994,15 +1039,23 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
             return rechenpruefung.pruefe_rechnungen(text)
         b = rechenpruefung.pruefe(text, frage, RECHEN_PRUEFUNG_VERSION)
         if baustein is not None:
-            b = b + (rechenbaustein.vergleiche_v2 if v5 else rechenbaustein.vergleiche)(text, frage, baustein)
+            b = b + (rechenbaustein.vergleiche_v3 if v6 else rechenbaustein.vergleiche_v2 if v5 else rechenbaustein.vergleiche)(text, frage, baustein)
         return b
 
     befunde = befunde_fuer(stufen.get("loesung", ""))
     if not befunde:
-        stufen["rechen_pruefung"] = "ok"
+        stufen["rechen_pruefung"] = "bereinigt" if vor_bereinigung else "ok"
+        return stufen
+    if (v6 and baustein is not None and baustein.get("formel_im_material") is not True
+            and all(b.get("art") == "baustein" for b in befunde)):
+        # V13: die Nachrechnung widerspricht, aber ihre Formel steht nicht im Material (N100 F1: Nachrechnung n = Q/e gegen die
+        # richtige Buchformel). Kein Neuschreiben Richtung Nachrechnung, kein Warnvermerk im Text; nur Log und Hinweis-Chip.
+        stufen["rechen_pruefung"] = "abweichung_ungestuetzt"
+        stufen["rechen_befund"] = "; ".join(b["text"] for b in befunde) + (
+            f" | {stufen.get('rechen_befund', '')}" if str(stufen.get("rechen_befund", "")).startswith("RB-v") else "")
         return stufen
     loesung = stufen["loesung"]
-    stufen["loesung_original"] = loesung
+    stufen["loesung_original"] = vor_bereinigung or loesung
     rb_notiz = stufen.get("rechen_befund", "")  # RB: Ergebnis der Nachrechnung bleibt im Log erhalten
     stufen["rechen_befund"] = "; ".join(b["text"] for b in befunde) + (f" | {rb_notiz}" if rb_notiz.startswith("RB-v") else "")
     neu = None
@@ -1149,7 +1202,8 @@ H6 Ist die Antwort ein einzelner Wert oder Begriff zum Nachschlagen, lenke auf d
 }
 _HINWEIS_REGELN["G-v3"] = _HINWEIS_REGELN["G-v2"]
 _HINWEIS_REGELN["G-v4"] = _HINWEIS_REGELN["G-v2"]
-_HINWEIS_REGELNUMMERN = {"G-v1": "H1 bis H5", "G-v2": "H1 bis H6", "G-v3": "H1 bis H6", "G-v4": "H1 bis H6"}
+_HINWEIS_REGELN["G-v5"] = _HINWEIS_REGELN["G-v2"]
+_HINWEIS_REGELNUMMERN = {"G-v1": "H1 bis H5", "G-v2": "H1 bis H6", "G-v3": "H1 bis H6", "G-v4": "H1 bis H6", "G-v5": "H1 bis H6"}
 
 _LOESUNGS_REGELN = {
     "G-v1": """L1 Nutze nur Aussagen, die im Lernmaterial stehen oder direkt daraus folgen. Ergänze kein eigenes
@@ -1165,7 +1219,12 @@ L5 Steht im Lernmaterial ein Rechenbeispiel mit anderen Zahlen, übernimm nur de
 _LOESUNGS_REGELN["G-v4"] = _LOESUNGS_REGELN["G-v1"] + """
 L5 Steht im Lernmaterial ein Rechenbeispiel mit anderen Zahlen, übernimm nur den Rechenweg und rechne mit
    den Werten aus der Frage."""
-_LOESUNGS_REGELNUMMERN = {"G-v1": "L1 bis L4", "G-v2": "L1 bis L4", "G-v3": "L1 bis L5", "G-v4": "L1 bis L5"}
+_LOESUNGS_REGELN["G-v5"] = _LOESUNGS_REGELN["G-v4"] + """
+L6 Gib Ergebnisse in der Einheit der gefragten Größe an und rechne Einheiten dafür ausdrücklich um.
+L7 Nenne Zahlen und Eigenschaften nur zusammen mit dem Gegenstand, zu dem sie in derselben Textstelle stehen.
+   Beschreibt eine Textstelle einen anderen Gegenstand oder eine andere Größe als gefragt, benenne das, statt es zu übertragen."""
+_LOESUNGS_REGELNUMMERN = {"G-v1": "L1 bis L4", "G-v2": "L1 bis L4", "G-v3": "L1 bis L5", "G-v4": "L1 bis L5",
+                         "G-v5": "L1 bis L7"}
 
 
 def _prompt_g(version, frage, ausgewaehlte_chunks):
@@ -1216,6 +1275,11 @@ def _prompt_g_v4(frage, ausgewaehlte_chunks):
     return _prompt_g("G-v4", frage, ausgewaehlte_chunks)
 
 
+def _prompt_g_v5(frage, ausgewaehlte_chunks):
+    """V13: G-v5 = G-v4 + L6 (Einheit der gefragten Größe) und L7 (Zahlen nur mit ihrem Gegenstand). Nur mit LERNASSISTENT_G=G-v5."""
+    return _prompt_g("G-v5", frage, ausgewaehlte_chunks)
+
+
 _G_FELD = re.compile(r"(?im)^[^\w\n]*(STATUS|L(?:Ö|OE)SUNG|(?:Ü|UE)BERLEGUNG|HINWEIS)[^\w\n]*:")
 _G_SCHLUESSEL = {"STATUS": "status", "LÖSUNG": "loesung", "LOESUNG": "loesung",
                  "ÜBERLEGUNG": "ueberlegung", "UEBERLEGUNG": "ueberlegung", "HINWEIS": "hinweis"}
@@ -1261,7 +1325,8 @@ def parse_g_v1(rohtext):
 
 
 _PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1, "S2-v2": _prompt_s2_v1, "G-v1": _prompt_g_v1,
-            "G-v2": _prompt_g_v2, "G-v3": _prompt_g_v3, "G-v4": _prompt_g_v4}
+            "G-v2": _prompt_g_v2, "G-v3": _prompt_g_v3, "G-v4": _prompt_g_v4,
+            "G-v5": _prompt_g_v5}
 
 
 def baue_hinweis_prompt(frage, ausgewaehlte_chunks, loesung):
