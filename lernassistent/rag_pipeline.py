@@ -389,6 +389,10 @@ RRF_K = 5  # Cormack et al. (2009) nutzen 60. V1 (hybrid): k=2 empirisch gewähl
 # (1) reproduzierbare Evaluation, (2) inhaltlich gewollt — ein quellengebundener
 # Lernassistent soll nicht kreativ variieren. Restvarianz durch GPU-Arithmetik möglich.
 GENERIERUNGS_OPTIONEN = {"temperature": 0, "seed": 42}
+# V13.3: Kontextfenster für ALLE Modellaufrufe (Ollama-Standard war 4096 Tokens). Befund 26 Oct 2026 (Käfigläufer, 6 Chunks):
+# Prompt 3001 + Antwort 1095 Tokens = genau 4096 -> die Antwort wurde abgeschnitten. Ohne Schalter unverändert (Reproduktion).
+KONTEXT_TOKENS = int(os.environ.get("LERNASSISTENT_CTX", "0") or 0) or None
+DENK_KONTEXT_TOKENS = 16384
 KG_GEWICHT = 1.0  # Gewicht der Graph-Liste in der RRF-Summe ("hybrid_kg"); 1.0 = gleichrangig
 BM25_CACHE_VERZEICHNIS = Path("cache")  # nicht committen (.gitignore)
 
@@ -900,6 +904,8 @@ def hinweis_pruefen(frage, stufen):
 # RP-v8 (V13.2, 26 Oct 2026): RP-v7 + (1) Befund "Ergebnis aus Buchbeispiel übernommen" (rechenpruefung.pruefe_uebernahme),
 # (2) Ersetzen nur nach Bestätigung durch eine zweite, anders formulierte Nachrechnung, (3) unbestätigte Nachrechnung: Vermerk
 # ohne Zahlenwert. Anlass: Entwicklungsfall Käfigläufer (1401 aus dem Buch übernommen, dann durch falsche 1471 ersetzt).
+# RP-v9 (V13.3, 26 Oct 2026): RP-v8 + (1) Denkmodus-Wiederholung für Rechenfragen, die nur "markiert" werden konnten
+# (_denk_wiederholung), (2) strenge Bestätigung des ersten Satzes durch die Nachrechnung (gerundet gleich statt 0,5 %).
 RECHEN_PRUEFUNG_VERSION = os.environ.get("LERNASSISTENT_RP", "RP-v5")   # None = aus; "RP-v1" reproduziert V9d, "RP-v2" V10, "RP-v3" V10a, "RP-v4" V11
 
 
@@ -1052,10 +1058,11 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     import rechenpruefung
     import rechenbaustein
     v1 = RECHEN_PRUEFUNG_VERSION == "RP-v1"
-    v8 = RECHEN_PRUEFUNG_VERSION == "RP-v8"
-    v7 = RECHEN_PRUEFUNG_VERSION in ("RP-v7", "RP-v8")  # RP-v8 = RP-v7 + V13.2-Änderungen (v8-Zweige)
-    v6 = RECHEN_PRUEFUNG_VERSION in ("RP-v6", "RP-v7", "RP-v8")  # RP-v7 = RP-v6 + V13.1-Änderungen (v7-Zweige)
-    v5 = RECHEN_PRUEFUNG_VERSION in ("RP-v5", "RP-v6", "RP-v7", "RP-v8")
+    v9 = RECHEN_PRUEFUNG_VERSION == "RP-v9"
+    v8 = RECHEN_PRUEFUNG_VERSION in ("RP-v8", "RP-v9")  # RP-v9 = RP-v8 + V13.3-Änderungen (v9-Zweige)
+    v7 = RECHEN_PRUEFUNG_VERSION in ("RP-v7", "RP-v8", "RP-v9")  # RP-v8 = RP-v7 + V13.2-Änderungen (v8-Zweige)
+    v6 = RECHEN_PRUEFUNG_VERSION in ("RP-v6", "RP-v7", "RP-v8", "RP-v9")  # RP-v7 = RP-v6 + V13.1-Änderungen (v7-Zweige)
+    v5 = RECHEN_PRUEFUNG_VERSION in ("RP-v5", "RP-v6", "RP-v7", "RP-v8", "RP-v9")
     frage = frage if frage is not None else _frage_aus_prompt(prompt)
     vor_bereinigung = ""
     if v6:  # V13: sichtbaren Denktext am Ende abschneiden, bevor geprüft wird (Original im Log)
@@ -1084,7 +1091,7 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
             b = b + (rechenbaustein.vergleiche_v3 if v6 else rechenbaustein.vergleiche_v2 if v5 else rechenbaustein.vergleiche)(text, frage, baustein)
         if v8:  # V13.2: Ergebnis aus einem Buchbeispiel übernommen, ohne mit den Werten der Frage zu rechnen
             ueb = rechenpruefung.pruefe_uebernahme(text, frage, _kontext_text(top_chunks) if top_chunks else prompt)
-            if ueb and not _baustein_bestaetigt_kopf(text, frage, baustein):
+            if ueb and not _baustein_bestaetigt_kopf(text, frage, baustein, streng=v9):
                 b = b + ueb
         return b
 
@@ -1149,15 +1156,59 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
             stufen["rechen_pruefung"] = "markiert"
         else:
             stufen["rechen_pruefung"] = "nicht_behoben"
+    if v9 and stufen.get("rechen_pruefung") == "markiert":
+        _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer)
     return stufen
 
 
-def _baustein_bestaetigt_kopf(text, frage, baustein):
-    """V13.2: True, wenn eine Nachrechnung vorliegt und eine Zahl mit Einheit im ersten Satz zu ihrem Ergebnis passt."""
+def _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer):
+    """V13.3 (RP-v9): Rechenfrage, deren Antwort nach allen Prüfungen nur "markiert" werden konnte -> EIN neuer Aufruf mit
+    Denkmodus (think=True, Kontext DENK_KONTEXT_TOKENS). Die neue Antwort gilt, wenn sie beantwortet ist, eine Zahl nennt und
+    die Python-Prüfung der eigenen Rechnung besteht (Gleichungsketten, erster Satz = Endergebnis, Einheit, kein übernommenes
+    Buchergebnis, keine sichtbare Überlegung). Die Nachrechnung (RB) zählt hier nicht: sie lief ohne Denkmodus und war in
+    genau diesen Fällen unzuverlässig. Anlass: Käfigläufer 26 Oct 2026: ohne Denkmodus 1401/1420/1471, mit Denkmodus 1431
+    (richtig), 256 s. Status denkmodus; Original im Log."""
+    import formelsuche
+    import rechenpruefung
+    if not formelsuche.ist_rechenfrage(frage):
+        return
+    try:
+        neu = parse_g_v1(frage_llm(prompt, options=GENERIERUNGS_OPTIONEN, denken=True))
+    except Exception as e:  # darf die Antwort nie verhindern
+        print(f"WARNUNG Denkmodus: {e}")
+        stufen["rechen_befund"] = (stufen.get("rechen_befund") or "") + " | Denkmodus: Fehler"
+        return
+    loesung = rechenpruefung.bereinige_ueberlegung_v8(neu.get("loesung", ""))[0]
+    probleme = [b["text"] for b in befunde_fuer(loesung) if b.get("art") != "baustein"]
+    hat_zahl = formelsuche.antwort_hat_ergebnis({**neu, "loesung": loesung})
+    if "loesung" not in neu["format_fehler"] and neu["status"] == "BEANTWORTET" and hat_zahl and not probleme:
+        for k in ("hinweis", "status", "hinweis_ueberlegung", "vollstaendig_geparst", "format_fehler"):
+            stufen[k] = neu[k]
+        stufen["loesung"] = loesung
+        stufen["rechen_pruefung"] = "denkmodus"
+        stufen["rechen_befund"] = (stufen.get("rechen_befund") or "") + " | Denkmodus: angenommen"
+    else:
+        grund = "; ".join(probleme) or ("kein Ergebnis" if not hat_zahl else f"Status {neu.get('status')}")
+        stufen["rechen_befund"] = (stufen.get("rechen_befund") or "") + f" | Denkmodus: verworfen ({grund[:200]})"
+
+
+def _baustein_bestaetigt_kopf(text, frage, baustein, streng=False):
+    """V13.2: True, wenn eine Nachrechnung vorliegt und eine Zahl mit Einheit im ersten Satz zu ihrem Ergebnis passt.
+    streng (V13.3, RP-v9): die Zahl muss gerundet GLEICH dem Ergebnis sein (halbe Einheit der letzten Stelle), nicht nur
+    innerhalb 0,5 %. Anlass: Käfigläufer-Lauf 18:02: Nachrechnung 1399 (falsche Formel) "bestätigte" das übernommene 1401."""
     if not baustein or not baustein.get("ergebnisse"):
         return False
     import rechenbaustein
-    return not rechenbaustein.vergleiche_v3(text, frage, baustein)
+    if not streng:
+        return not rechenbaustein.vergleiche_v3(text, frage, baustein)
+    import rechenpruefung
+    m = rechenpruefung._erster_satz_ende(text or "")
+    kopf = (text or "")[:m.start()] if m else (text or "")
+    for w, st, _ in rechenpruefung._zahlen_mit_stellen(kopf):
+        for _, r in baustein.get("ergebnisse", []):
+            if abs(r - w) <= 0.5 * 10 ** (-st) + 1e-12:
+                return True
+    return False
 
 
 def _nachrechnung_bestaetigt(frage, top_chunks, prompt, baustein, stufen):
@@ -1530,7 +1581,7 @@ RETRIEVAL_FRAGE = None  # V12.7: Suchanfrage statt Frage (Bildfragen)
 BILD_ANHANG = None  # V12.6: base64-Bild, das die App für die aktuelle Frage setzt (nur Hauptantwort)
 
 
-def frage_llm(prompt, model=MODEL_NAME, options=None, bild=None):
+def frage_llm(prompt, model=MODEL_NAME, options=None, bild=None, denken=False):
     """think=False: unterdrückt Qwen3.5s sichtbare Reasoning-Kette, damit
     Proband:innen eine direkte, nicht durch Zwischenschritte verlängerte
     Antwort erhalten (relevant für Antwortzeit als Usability-Faktor,
@@ -1540,12 +1591,14 @@ def frage_llm(prompt, model=MODEL_NAME, options=None, bild=None):
     Wird von der Studien-App NICHT gesetzt (unverändertes Verhalten), aber von
     ragas_auswertung.py genutzt, damit die LLM-als-Richter-Bewertung
     reproduzierbar ist."""
-    payload = {"model": model, "prompt": prompt, "stream": False, "think": False}
+    payload = {"model": model, "prompt": prompt, "stream": False, "think": bool(denken)}
+    if KONTEXT_TOKENS or denken:  # V13.3
+        options = {**(options or {}), "num_ctx": max(KONTEXT_TOKENS or 0, DENK_KONTEXT_TOKENS if denken else 0)}
     if options:
         payload["options"] = options
     if bild:
         payload["images"] = [bild]
-    response = requests.post(OLLAMA_URL, json=payload, timeout=180 if bild else 120)
+    response = requests.post(OLLAMA_URL, json=payload, timeout=900 if denken else (180 if bild else 120))
     response.raise_for_status()
     return response.json()["response"].strip()
 

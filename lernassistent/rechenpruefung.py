@@ -463,13 +463,13 @@ def pruefe(text, frage="", version="RP-v3"):
     RP-v6 = RP-v5 + Einheitenwächter (V13); RP-v7 = RP-v6 + Tokenizer-Korrekturen (V13.1)."""
     global _INDEX_FIX, _UNTERSTRICH_FIX, _V7_FIX
     alt, _INDEX_FIX = _INDEX_FIX, version not in ("RP-v1", "RP-v2")
-    alt_u, _UNTERSTRICH_FIX = _UNTERSTRICH_FIX, version in ("RP-v5", "RP-v6", "RP-v7", "RP-v8")
-    alt_7, _V7_FIX = _V7_FIX, version in ("RP-v7", "RP-v8")
+    alt_u, _UNTERSTRICH_FIX = _UNTERSTRICH_FIX, version in ("RP-v5", "RP-v6", "RP-v7", "RP-v8", "RP-v9")
+    alt_7, _V7_FIX = _V7_FIX, version in ("RP-v7", "RP-v8", "RP-v9")
     try:
         befunde = pruefe_rechnungen(text)
         if version != "RP-v1":
             befunde += pruefe_konsistenz(text, frage) + pruefe_ueberlegung(text)
-        if version in ("RP-v6", "RP-v7", "RP-v8"):
+        if version in ("RP-v6", "RP-v7", "RP-v8", "RP-v9"):
             befunde += pruefe_einheiten(text, frage)
     finally:
         _INDEX_FIX, _UNTERSTRICH_FIX, _V7_FIX = alt, alt_u, alt_7

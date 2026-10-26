@@ -439,6 +439,8 @@ def vertrauens_zeile(eintrag, bildfrage=False, thema_fehlt=False):
         chips.append("⚠ Antwort durch Nachrechnung ersetzt")
     elif rp == "abweichung_ungestuetzt":
         chips.append("◔ unabhängige Nachrechnung weicht ab (Formel nicht im Lernmaterial belegt) – bitte prüfen")
+    elif rp == "denkmodus":
+        chips.append("◔ im Denkmodus neu gerechnet (Rechenschritte nachgerechnet) – bitte mit dem Buch prüfen")
     elif rp == "kopf_korrigiert":
         chips.append("✓ Ergebnis im ersten Satz an die eigene Rechnung angeglichen")
     elif re.match(r"RB-v[1234] Ergebnis", str(eintrag.get("rechen_befund") or "")):
