@@ -49,6 +49,9 @@ _EINHEITENBRUCH = re.compile(r"(?<=[A-Za-zΩµμ°²³])\s*/\s*[A-Za-zΩµμ°]+
 _TOKEN = re.compile(r"\s*(?:(?P<zahl>\d+(?:[.,]\d+)*)|(?P<hoch>[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+)|(?P<op>[-+−–·*×/÷^])|"
                     r"(?P<auf>\()|(?P<zu>\))|(?P<wurzel>√)|(?P<pi>π)|(?P<prozent>%)|"
                     r"(?P<wort>[A-Za-zÄÖÜäöüßΩµμ°α-ωΑ-ΩϑφΦ_₀₁₂₃₄₅₆₇₈₉']+)|(?P<rest>\S))")
+_EINHEITENBRUCH_KLAMMER = re.compile(r"(?<=[A-Za-zΩµμ°²³])\s*/\s*\(\s*[A-Za-zΩµμ°²³·*\s]+\)")
+_KEHRWERT_NACH_ZAHL = re.compile(r"(?<=\d)\s+/\s*(?:s|min|h)\b(?!\s*[\d(])")
+_KGM = re.compile(r"(?<=\d)\s*kgm(?=²|2\b|\b)")
 _GLEICH = re.compile(r"\s*(?:=|≈)\s*")
 # Einheiten (mit SI-Vorsatz) und Einheitenwörter; nur solche Wörter nach einer Zahl werden entfernt, damit
 # "1425 hat s" nicht als "1425 [Einheit] [Einheit]" gelesen wird.
@@ -70,6 +73,7 @@ def zahl(text):
 # RP-v3: Buchstabe + 1-2 Ziffern direkt daneben ("P1", "U2", "R20") ist ein Variablenname -> tiefgestellte Ziffern,
 # die der Tokenizer als Teil des Wortes liest. Nur aktiv in pruefe(..., version="RP-v3"); sonst wie RP-v1/v2.
 _INDEX_FIX = False
+_V7_FIX = False  # RP-v7 (V13.1): Einheitenbrüche in Klammern, "/s" nach Zahl, Einheit kgm²
 _UNTERSTRICH_FIX = False  # RP-v5: "I_1N", "U_2N", "u_k" -> ein Name (siehe pruefe)
 _UNTERSTRICHNAME = re.compile(r"(?<![\w.,])([A-Za-zηφΦϑα-ωΑ-Ω]{1,3})_([A-Za-z0-9]{1,4})\b")
 _INDEXNAME = re.compile(r"(?<![\w.,])([A-Za-zηφΦϑα-ωΑ-Ω])(\d{1,2})\b(?![,.]\d)")
@@ -95,6 +99,10 @@ def _tokens(teil):
     if _INDEX_FIX:
         teil = _INDEXNAME.sub(lambda m: m.group(1) + m.group(2).translate(_TIEF), teil)
     teil = _EINHEITENBRUCH.sub("", _EINHEIT_KEHRWERT.sub(" ", teil))
+    if _V7_FIX:  # V13.1: "J/(°C·kg)" (N100 F7), "16,67 /s" (F62), "kgm²" (F61)
+        teil = _EINHEITENBRUCH_KLAMMER.sub("", teil)
+        teil = _KEHRWERT_NACH_ZAHL.sub(" ", teil)
+        teil = _KGM.sub(" kg", teil)
     out = []
     for m in _TOKEN.finditer(teil):
         art = m.lastgroup
@@ -452,16 +460,94 @@ def bereinige_ueberlegung(text):
 def pruefe(text, frage="", version="RP-v3"):
     """Alle Befunde der gewählten Version. RP-v1 = nur pruefe_rechnungen (unverändert); RP-v2 = + Konsistenz und
     sichtbare Überlegung; RP-v3 = RP-v2 mit Indexnamen-Korrektur; RP-v4 wie RP-v3; RP-v5 = RP-v3 + Unterstrich-Namen;
-    RP-v6 = RP-v5 + Einheitenwächter (V13)."""
-    global _INDEX_FIX, _UNTERSTRICH_FIX
+    RP-v6 = RP-v5 + Einheitenwächter (V13); RP-v7 = RP-v6 + Tokenizer-Korrekturen (V13.1)."""
+    global _INDEX_FIX, _UNTERSTRICH_FIX, _V7_FIX
     alt, _INDEX_FIX = _INDEX_FIX, version not in ("RP-v1", "RP-v2")
-    alt_u, _UNTERSTRICH_FIX = _UNTERSTRICH_FIX, version in ("RP-v5", "RP-v6")
+    alt_u, _UNTERSTRICH_FIX = _UNTERSTRICH_FIX, version in ("RP-v5", "RP-v6", "RP-v7", "RP-v8")
+    alt_7, _V7_FIX = _V7_FIX, version in ("RP-v7", "RP-v8")
     try:
         befunde = pruefe_rechnungen(text)
         if version != "RP-v1":
             befunde += pruefe_konsistenz(text, frage) + pruefe_ueberlegung(text)
-        if version == "RP-v6":
+        if version in ("RP-v6", "RP-v7", "RP-v8"):
             befunde += pruefe_einheiten(text, frage)
     finally:
-        _INDEX_FIX, _UNTERSTRICH_FIX = alt, alt_u
+        _INDEX_FIX, _UNTERSTRICH_FIX, _V7_FIX = alt, alt_u, alt_7
     return befunde
+
+
+# ---------------------------------------------------------------------------------------------------------
+# RP-v7 (V13.1, 26 Oct 2026): Bereinigung auch mitten im Satz, Kopfsatz an die eigene Rechnung angleichen
+# ---------------------------------------------------------------------------------------------------------
+# Anlass N100-Lauf V13A/V13B: F4 "… = 6,75 mWh? Nein, hier muss man aufpassen. …", "Warum habe ich oben 23,5 geschrieben?"
+_LECK_V7 = re.compile(r"(?:^|\n)[ \t]*[*_]*[ \t]*(?:Warte|Moment mal|Hmm+|Korrektur|Ich muss|Lass mich)\b|"
+                      r"\?\s*Nein\b[,.!]|\bNein, (?:hier|das|ich|Rechnung)\b|\bWarte,|\bWarum habe ich\b|"
+                      r"\bIch muss (?:die Rechnung|das|noch|strikt|neu)\b|\bMeine vorherige Überlegung\b|\bOkay, das ist\b", re.I)
+
+
+def bereinige_ueberlegung_v7(text):
+    """Wie bereinige_ueberlegung, erkennt Denktext auch mitten in der Zeile; schließt offene Klammern. Rückgabe (text, entfernt)."""
+    t = text or ""
+    m = _LECK_V7.search(t)
+    if not m or len(t[:m.start()].strip()) < 40:
+        return t, ""
+    kopf = t[:m.start()].rstrip(" ,;:")
+    offen = kopf.count("(") - kopf.count(")")
+    kopf = kopf + ")" * max(0, offen)
+    if not kopf.rstrip().endswith((".", "!", ")")):
+        kopf = kopf.rstrip() + "."
+    elif kopf.endswith(")"):
+        kopf += "."
+    return kopf, t[m.start():].strip()
+
+
+_ZAHL_UND_EINHEIT = r"({z})\s*([A-Za-zµμΩ°²³⁻¹/·]*)"
+
+
+def korrigiere_kopf(text, befund):
+    """Konsistenz-Befund (erster Satz nennt X, die eigene Rechnung endet mit Y): X im ersten Satz durch Y ersetzen, wenn die
+    Einheit hinter X und hinter Y gleich ist. Rückgabe neuer Text oder None (nicht sicher ersetzbar)."""
+    if befund.get("art") != "konsistenz":
+        return None
+    m = _erster_satz_ende(text or "")
+    if not m:
+        return None
+    kopf, rest = text[:m.start()], text[m.start():]
+    t_end = befund["text"].rsplit("ergibt aber ", 1)[-1].strip()
+    genannt = befund["text"].split("Der erste Satz nennt ", 1)[-1].split(", die Rechnung", 1)[0].split(" / ")[0].strip()
+    mk = re.search(_ZAHL_UND_EINHEIT.format(z=re.escape(genannt)), kopf)
+    me = [x for x in re.finditer(_ZAHL_UND_EINHEIT.format(z=re.escape(t_end)), rest)]
+    if not mk or not me:
+        return None
+    if mk.group(2).strip() != me[-1].group(2).strip():
+        return None
+    return kopf[:mk.start(1)] + t_end + kopf[mk.end(1):] + rest
+
+
+# ---------------------------------------------------------------------------------------------------------
+# RP-v8 (V13.2, 26 Oct 2026): Ergebnis aus einem Buchbeispiel übernommen statt mit den Werten der Frage gerechnet
+# ---------------------------------------------------------------------------------------------------------
+# Anlass (Entwicklungsfall, nicht N100): Frage mit nN = 1455 min⁻¹, sK = 0,25, 150 °C; Antwort "1401 min⁻¹" = Ergebnis der
+# Buchaufgabe mit nN = 1440 min⁻¹, sK = 0,2, 180 °C, ohne eigene Rechnung.
+
+
+def pruefe_uebernahme(text, frage, kontext):
+    """Befund, wenn (1) die Frage mindestens zwei Zahlen nennt, (2) der erste Satz eine eigene Zahl nennt (nicht aus der Frage),
+    (3) genau diese Zahl im Lernmaterial steht und (4) die Lösung keine Rechnung enthält, die zu einem Ergebnis führt.
+    Keine Aussage darüber, ob der Wert stimmt; nur: er ist nicht aus den Werten der Frage berechnet."""
+    if len(_zahlen_mit_stellen(frage)) < 2:
+        return []
+    text = text or ""
+    m = _erster_satz_ende(text)
+    kopf, rest = (text[:m.start()], text[m.end():]) if m else (text, "")
+    aus_frage = {round(w, 9) for w, _, _ in _zahlen_mit_stellen(frage)}
+    kopf_zahlen = [(w, t) for w, _, t in _zahlen_mit_stellen(kopf) if round(w, 9) not in aus_frage and w not in (0.0, 1.0)]
+    if not kopf_zahlen or _endergebnis(text):
+        return []
+    im_material = {round(w, 9) for w, _, _ in _zahlen_mit_stellen(kontext)}
+    treffer = [t for w, t in kopf_zahlen if round(w, 9) in im_material]
+    if not treffer:
+        return []
+    return [{"art": "uebernahme", "ausdruck": "", "gerechnet": None, "angegeben": None, "satz": kopf.strip()[:200],
+             "text": f"Der erste Satz nennt {treffer[0]}; dieser Wert steht so im Lernmaterial, eine Rechnung mit den Werten "
+                     f"der Frage fehlt"}]

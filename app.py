@@ -48,7 +48,8 @@ import os as _os, rag_pipeline as _rp  # Test: Wissensbasis/Retrieval per Umgebu
 # Andere Konfiguration weiter über Umgebungsvariablen, z. B. für Böge:
 #   LERNASSISTENT_KB=daten/wissensbasen/knowledge_base_boege.json streamlit run app.py ...
 KB_OPTIONEN = {  # Anzeigename -> Datei (nur vorhandene Dateien erscheinen in der Auswahl)
-    "Beide Bücher (experimentell)": "daten/wissensbasen/knowledge_base_fischer_boege.json",
+    "Beide Bücher": "daten/wissensbasen/knowledge_base_fischer_boege_v7r.json",  # V13.1: wie N100-Tests (8.805 Chunks)
+    "Beide Bücher, alt (Böge pypdf)": "daten/wissensbasen/knowledge_base_fischer_boege.json",
     "Fischer – Elektrotechnik": "daten/wissensbasen/knowledge_base_fischer_v7c.json",
     "Böge – Handbuch": "daten/wissensbasen/knowledge_base_boege.json",
 }
@@ -208,8 +209,12 @@ def zerlege_loesung(text):
 
 
 def zeige_loesung(loesung, markiert=False):
+    """markiert: True / "markiert" -> Warnkopf; "ersetzt" (V13.2) -> Kopf "aus der Nachrechnung", nie das grüne Häkchen."""
     antwort, begruendung, vermerk = zerlege_loesung(loesung)
-    st.markdown(f"⚠️ **Lösung (rechnerisch nicht bestätigt):** {antwort}" if markiert else f"✅ **Lösung:** {antwort}")
+    if markiert == "ersetzt":
+        st.markdown(f"🔁 **Lösung aus der Python-Nachrechnung (bitte mit dem Buch prüfen):** {antwort}")
+    else:
+        st.markdown(f"⚠️ **Lösung (rechnerisch nicht bestätigt):** {antwort}" if markiert else f"✅ **Lösung:** {antwort}")
     if begruendung:
         st.markdown(f"**Begründung:** {begruendung}")
     if vermerk:
@@ -432,7 +437,11 @@ def vertrauens_zeile(eintrag, bildfrage=False, thema_fehlt=False):
         chips.append("⚠ Rechnung bitte prüfen")
     elif rp == "ersetzt":
         chips.append("⚠ Antwort durch Nachrechnung ersetzt")
-    elif re.match(r"RB-v[12] Ergebnis", str(eintrag.get("rechen_befund") or "")):
+    elif rp == "abweichung_ungestuetzt":
+        chips.append("◔ unabhängige Nachrechnung weicht ab (Formel nicht im Lernmaterial belegt) – bitte prüfen")
+    elif rp == "kopf_korrigiert":
+        chips.append("✓ Ergebnis im ersten Satz an die eigene Rechnung angeglichen")
+    elif re.match(r"RB-v[1234] Ergebnis", str(eintrag.get("rechen_befund") or "")):
         chips.append("✓ Rechnung nachgerechnet")
     if re.search(r"Formel (nicht im Material|ohne Quelle)", str(eintrag.get("rechen_befund") or "")):
         chips.append("◔ Formel nicht im Lernmaterial gefunden – bitte prüfen")
@@ -545,7 +554,7 @@ def zeige_eintrag(idx, eintrag, ist_letzter):
         elif not eintrag["vollstaendig_geparst"]:
             # Fallback: Modell hat das Stufen-Format nicht eingehalten,
             # volle Antwort direkt zeigen statt mit leeren Stufen zu verwirren.
-            zeige_loesung(eintrag["loesung"], eintrag.get("rechen_pruefung") == "markiert")
+            zeige_loesung(eintrag["loesung"], {"markiert": True, "ersetzt": "ersetzt"}.get(eintrag.get("rechen_pruefung"), False))
         else:
             aktuelle_stufe = 2 if st.session_state.get("loesung_direkt") else st.session_state[stufe_key]
             schrittleiste(aktuelle_stufe, bool(versuche))
@@ -553,7 +562,7 @@ def zeige_eintrag(idx, eintrag, ist_letzter):
             zeige_ideen(versuche, 1)
 
             if aktuelle_stufe >= 2:
-                zeige_loesung(eintrag["loesung"], eintrag.get("rechen_pruefung") == "markiert")
+                zeige_loesung(eintrag["loesung"], {"markiert": True, "ersetzt": "ersetzt"}.get(eintrag.get("rechen_pruefung"), False))
 
             if (ist_letzter and aktuelle_stufe < 2 and len(versuche) < MAX_VERSUCHE
                     and idee_moeglich(eintrag)):

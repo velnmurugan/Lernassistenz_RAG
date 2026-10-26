@@ -895,6 +895,11 @@ def hinweis_pruefen(frage, stufen):
 # RP-v5 (V11b, 21 Oct 2026): RP-v3 + Rechenbaustein RB-v2 (mehrere Ergebnisse, Formelquelle, jede Zahl mit Einheit im
 # ersten Satz muss zu einem Ergebnis passen) + Namen mit Unterstrich ("I_1N") + bei misslungenem Neuschreiben ersetzt die
 # belegte Nachrechnung die Lösung (rechen_pruefung = ersetzt). Anlass: Live-Test 40 kVA, 5 kV / 400 V (Lösung "2,89 A / 72 A").
+# RP-v7 (V13.1, 26 Oct 2026): RP-v6 + RB-v4 (RB-v2-Prompt zuerst, RB-v3 nur als Retry) + Tokenizer-Korrekturen + Bereinigung
+# mitten im Satz + Kopfsatz-Angleichung (kopf_korrigiert) + kein ungestützter Nachrechnungswert im Warnvermerk.
+# RP-v8 (V13.2, 26 Oct 2026): RP-v7 + (1) Befund "Ergebnis aus Buchbeispiel übernommen" (rechenpruefung.pruefe_uebernahme),
+# (2) Ersetzen nur nach Bestätigung durch eine zweite, anders formulierte Nachrechnung, (3) unbestätigte Nachrechnung: Vermerk
+# ohne Zahlenwert. Anlass: Entwicklungsfall Käfigläufer (1401 aus dem Buch übernommen, dann durch falsche 1471 ersetzt).
 RECHEN_PRUEFUNG_VERSION = os.environ.get("LERNASSISTENT_RP", "RP-v5")   # None = aus; "RP-v1" reproduziert V9d, "RP-v2" V10, "RP-v3" V10a, "RP-v4" V11
 
 
@@ -997,6 +1002,38 @@ def _rechenbaustein_v3(frage, top_chunks, prompt, stufen):
     return res
 
 
+def _rechenbaustein_v4(frage, top_chunks, prompt, stufen):
+    """RB-v4 (V13.1, mit RP-v7): erster Aufruf mit dem bewährten RB-v2-Prompt; nur wenn er nicht auswertbar ist (RETRY_GRUENDE),
+    ein zweiter Aufruf mit dem RB-v3-Prompt (Formatregeln + Fehlerbericht). Anlass V13A/V13B: der RB-v3-Prompt als Erstaufruf
+    war 12-mal nicht verwertbar (F4, F7, F61 blieben falsch statt ersetzt). Log: "RB-v4 Ergebnis … | Formel … | Retry …"."""
+    import rechenbaustein
+    if not re.search(r"\d", frage or "") or not rechenbaustein.kopfzahlen_v3(stufen.get("loesung", ""), frage)[0]:
+        return None
+    kontext = _kontext_text(top_chunks) if top_chunks else prompt
+    optionen = {**GENERIERUNGS_OPTIONEN, "num_predict": 700}
+    retry = ""
+    try:
+        res = rechenbaustein.rechne_v2(rechenbaustein.parse_v2(
+            frage_llm(rechenbaustein.baue_prompt_v2(frage, kontext), options=optionen)), frage, kontext)
+        if not res.get("ergebnisse") and res.get("grund") in rechenbaustein.RETRY_GRUENDE:
+            erster = res.get("grund")
+            res = rechenbaustein.rechne_v2(rechenbaustein.parse_v2(
+                frage_llm(rechenbaustein.baue_prompt_v3(frage, kontext, (erster, res.get("detail", ""))), options=optionen)),
+                frage, kontext)
+            retry = f" | Retry (RB-v3) nach {erster}: " + ("ok" if res.get("ergebnisse") else f"nicht verwertbar ({res.get('grund')})")
+    except Exception as e:  # darf die Antwort nie verhindern
+        print(f"WARNUNG Rechenbaustein: {e}")
+        stufen["rechen_befund"] = "RB-v4 Fehler"
+        return None
+    if not res.get("ergebnisse"):
+        stufen["rechen_befund"] = f"RB-v4 nicht verwertbar: {res.get('grund')}{retry}"
+        return None
+    quelle = {True: "Formel im Material", False: "Formel nicht im Material", None: "Formel ohne Quelle"}[
+        res.get("formel_im_material")]
+    stufen["rechen_befund"] = f"RB-v4 Ergebnis {rechenbaustein.ergebnis_text(res)} | {quelle}{retry}"
+    return res
+
+
 def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     """Prüft die Rechenschritte in stufen["loesung"] und repariert an Ort und Stelle.
     Ergänzt rechen_pruefung (ok | nachgebessert | markiert | ersetzt | nicht_behoben | ""), rechen_befund,
@@ -1015,12 +1052,15 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     import rechenpruefung
     import rechenbaustein
     v1 = RECHEN_PRUEFUNG_VERSION == "RP-v1"
-    v6 = RECHEN_PRUEFUNG_VERSION == "RP-v6"
-    v5 = RECHEN_PRUEFUNG_VERSION in ("RP-v5", "RP-v6")
+    v8 = RECHEN_PRUEFUNG_VERSION == "RP-v8"
+    v7 = RECHEN_PRUEFUNG_VERSION in ("RP-v7", "RP-v8")  # RP-v8 = RP-v7 + V13.2-Änderungen (v8-Zweige)
+    v6 = RECHEN_PRUEFUNG_VERSION in ("RP-v6", "RP-v7", "RP-v8")  # RP-v7 = RP-v6 + V13.1-Änderungen (v7-Zweige)
+    v5 = RECHEN_PRUEFUNG_VERSION in ("RP-v5", "RP-v6", "RP-v7", "RP-v8")
     frage = frage if frage is not None else _frage_aus_prompt(prompt)
     vor_bereinigung = ""
     if v6:  # V13: sichtbaren Denktext am Ende abschneiden, bevor geprüft wird (Original im Log)
-        bereinigt_text, entfernt = rechenpruefung.bereinige_ueberlegung(stufen.get("loesung", ""))
+        bereinigt_text, entfernt = (rechenpruefung.bereinige_ueberlegung_v7 if v7 else rechenpruefung.bereinige_ueberlegung)(
+            stufen.get("loesung", ""))
         if entfernt:
             vor_bereinigung = stufen["loesung"]
             stufen["loesung"] = bereinigt_text
@@ -1029,6 +1069,8 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     baustein = None
     if RECHEN_PRUEFUNG_VERSION == "RP-v4":
         baustein = _rechenbaustein(frage, top_chunks, prompt, stufen)
+    elif v7:
+        baustein = _rechenbaustein_v4(frage, top_chunks, prompt, stufen)
     elif v6:
         baustein = _rechenbaustein_v3(frage, top_chunks, prompt, stufen)
     elif v5:
@@ -1040,6 +1082,10 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
         b = rechenpruefung.pruefe(text, frage, RECHEN_PRUEFUNG_VERSION)
         if baustein is not None:
             b = b + (rechenbaustein.vergleiche_v3 if v6 else rechenbaustein.vergleiche_v2 if v5 else rechenbaustein.vergleiche)(text, frage, baustein)
+        if v8:  # V13.2: Ergebnis aus einem Buchbeispiel übernommen, ohne mit den Werten der Frage zu rechnen
+            ueb = rechenpruefung.pruefe_uebernahme(text, frage, _kontext_text(top_chunks) if top_chunks else prompt)
+            if ueb and not _baustein_bestaetigt_kopf(text, frage, baustein):
+                b = b + ueb
         return b
 
     befunde = befunde_fuer(stufen.get("loesung", ""))
@@ -1072,8 +1118,14 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
         for k in ("hinweis", "loesung", "status", "hinweis_ueberlegung", "vollstaendig_geparst", "format_fehler"):
             stufen[k] = neu[k]
         stufen["rechen_pruefung"] = "nachgebessert"
+    elif v7 and (kopf := _kopf_angleichen(loesung, befunde, baustein, befunde_fuer)):
+        # V13.1: Neuschreiben gescheitert, einziger Zahlenbefund ist "erster Satz ≠ eigene Rechnung", die eigene Rechnung ist
+        # rechnerisch stimmig und widerspricht keiner belegten Nachrechnung -> Zahl im ersten Satz angleichen (N100 F4, F7, F61).
+        stufen["loesung"] = kopf
+        stufen["rechen_pruefung"] = "kopf_korrigiert"
     elif (v5 and baustein is not None and baustein.get("formel_im_material") is True
-          and any(b.get("art") == "baustein" for b in befunde)):
+          and any(b.get("art") == "baustein" for b in befunde)
+          and (not v8 or _nachrechnung_bestaetigt(frage, top_chunks, prompt, baustein, stufen))):
         # RP-v5: die Nachrechnung ist belegt (Zahlen und Formel aus Frage/Material) und widerspricht der Antwort,
         # das Neuschreiben hat das nicht behoben -> die Nachrechnung ersetzt die Lösung (Original im Log).
         stufen["loesung"] = rechenbaustein.pruefloesung(baustein, loesung)
@@ -1085,13 +1137,69 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
         # RP-v2: sichtbarer Vermerk nur für Zahlenbefunde (Rechnung, Konsistenz). Bleibt nur die sichtbare
         # Überlegung übrig, wird die ursprüngliche Lösung ohne Vermerk gezeigt (ein Vermerk hilft
         # Lernenden dort nicht) und nur protokolliert: rechen_pruefung = "nicht_behoben".
-        zahlen = [b["text"] for b in befunde if b.get("art", "rechnung") != "ueberlegung"]
+        zahlen = [b["text"] for b in befunde if b.get("art", "rechnung") != "ueberlegung"
+                  and not (v7 and b.get("art") == "baustein" and (baustein or {}).get("formel_im_material") is not True)
+                  and not (v8 and b.get("art") == "baustein" and "nicht bestätigt" in stufen.get("rechen_befund", ""))]
+        if v8 and not zahlen and any(b.get("art") == "baustein" for b in befunde):
+            # V13.2: die Nachrechnung widerspricht, ist aber selbst nicht bestätigt -> kein Zahlenwert im Vermerk, aber ein Vermerk
+            zahlen = ["Das Ergebnis konnte nicht unabhängig bestätigt werden; bitte mit dem Buch prüfen"]
+        # V13.1: Nachrechnung ohne belegte Formel erscheint nicht im Warnvermerk (F4: "W = U * Q / 3600 ergibt 0,001875 J"), nur im Log
         if zahlen:
             stufen["loesung"] = f"{loesung}\n\n⚠ Automatische Prüfung: {'; '.join(zahlen)}."
             stufen["rechen_pruefung"] = "markiert"
         else:
             stufen["rechen_pruefung"] = "nicht_behoben"
     return stufen
+
+
+def _baustein_bestaetigt_kopf(text, frage, baustein):
+    """V13.2: True, wenn eine Nachrechnung vorliegt und eine Zahl mit Einheit im ersten Satz zu ihrem Ergebnis passt."""
+    if not baustein or not baustein.get("ergebnisse"):
+        return False
+    import rechenbaustein
+    return not rechenbaustein.vergleiche_v3(text, frage, baustein)
+
+
+def _nachrechnung_bestaetigt(frage, top_chunks, prompt, baustein, stufen):
+    """V13.2 (RP-v8): bevor die Nachrechnung eine Lösung ERSETZT, rechnet ein zweiter, unabhängig formulierter Aufruf
+    (RB-v3-Prompt) dieselbe Aufgabe. Ersetzt wird nur, wenn ein Ergebnis beider Nachrechnungen übereinstimmt. Anlass
+    (Entwicklungsfall Käfigläufer, 26 Oct 2026): RB nannte eine Buchformel als Quelle, rechnete aber mit einem erfundenen
+    Schritt (s_Nw = s_N / Faktor) und ersetzte die Antwort durch 1471 min⁻¹ (richtig: 1431 min⁻¹). Vermerk in rechen_befund."""
+    import rechenbaustein
+    import rechenpruefung
+    kontext = _kontext_text(top_chunks) if top_chunks else prompt
+    try:
+        zweit = rechenbaustein.rechne_v2(rechenbaustein.parse_v2(frage_llm(
+            rechenbaustein.baue_prompt_v3(frage, kontext), options={**GENERIERUNGS_OPTIONEN, "num_predict": 700})), frage, kontext)
+    except Exception as e:  # darf die Antwort nie verhindern
+        print(f"WARNUNG Bestätigung: {e}")
+        zweit = {}
+    ok = any(rechenpruefung._passt(w2, w1, 0) for _, w1 in baustein.get("ergebnisse", [])
+             for _, w2 in (zweit.get("ergebnisse") or []))
+    notiz = (f"Bestätigung: ja ({rechenbaustein.ergebnis_text(zweit)})" if ok else
+             "Bestätigung: nicht bestätigt (" + (rechenbaustein.ergebnis_text(zweit) if zweit.get("ergebnisse")
+                                                 else f"zweite Nachrechnung nicht verwertbar: {zweit.get('grund', 'Fehler')}") + ")")
+    stufen["rechen_befund"] = (stufen.get("rechen_befund") or "") + " | " + notiz
+    return ok
+
+
+def _kopf_angleichen(loesung, befunde, baustein, befunde_fuer):
+    """V13.1 (RP-v7): neuer Text mit angeglichenem ersten Satz oder None. Bedingungen: genau ein Konsistenz-Befund, sonst nur
+    Überlegungs- oder Nachrechnungsbefunde; eine Nachrechnung mit belegter Formel muss zur eigenen Rechnung passen; der neue
+    Text hat keinen Rechen-, Konsistenz- oder Einheitenbefund mehr."""
+    import rechenpruefung
+    art = lambda b: b.get("art", "rechnung")
+    kons = [b for b in befunde if art(b) == "konsistenz"]
+    if len(kons) != 1 or any(art(b) not in ("konsistenz", "ueberlegung", "baustein") for b in befunde):
+        return None
+    if baustein is not None and baustein.get("formel_im_material") is True:
+        ziel = kons[0]["gerechnet"]
+        if not any(rechenpruefung._passt(w, ziel, 0) for _, w in baustein.get("ergebnisse", [])):
+            return None  # belegte Nachrechnung widerspricht auch der eigenen Rechnung -> RP-v5-Weg (ersetzt)
+    neu = rechenpruefung.korrigiere_kopf(loesung, kons[0])
+    if not neu or any(art(b) in ("konsistenz", "rechnung", "einheit") for b in befunde_fuer(neu)):
+        return None
+    return neu
 
 
 HINWEIS_PROMPT_VERSION = "H-v3"  # nur bei S2-v2 genutzt
