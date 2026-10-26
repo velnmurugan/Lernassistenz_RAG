@@ -11,8 +11,8 @@ for t in teste_v132_offline teste_v131_offline teste_v13_offline teste_v12_offli
   echo "$t: $(tail -1 protokolle/$t.txt) (rc=$rc)"
   [ $rc -eq 0 ] || { echo "ABBRUCH: $t fehlgeschlagen (rc=$rc), siehe protokolle/$t.txt"; exit 1; }
 done
-echo; echo "=== Lauf V132: RP-v8 + RB-v4, G-v5 $(date +%H:%M) ==="
-OHNE_RAGAS=1 LERNASSISTENT_RP=RP-v8 LERNASSISTENT_G=G-v5 bash skripte/laeufe/n100_rag_vs_ohne_lauf.sh V132
+echo; echo "=== Lauf V132: RP-v8 + RB-v4, G-v5, FS-v3 $(date +%H:%M) ==="
+OHNE_RAGAS=1 LERNASSISTENT_RP=RP-v8 LERNASSISTENT_G=G-v5 LERNASSISTENT_FS=FS-v3 bash skripte/laeufe/n100_rag_vs_ohne_lauf.sh V132
 echo; echo "=== Vergleich $(date +%H:%M) ==="
 python skripte/evaluation/vergleiche_n100_laeufe.py V11B V13B V132
 python -m zipfile -c V132_ergebnisse.zip evaluationsdaten/vergleich_rag_RAGVGL-N100*-V132-BEIDE7*.* evaluationsdaten/n100_vergleich_V11B_V13B_V132.csv \

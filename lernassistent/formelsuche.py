@@ -28,7 +28,8 @@ import os
 import re
 import time
 
-FORMELSUCHE_VERSION = os.environ.get("LERNASSISTENT_FS", "FS-v2")  # "FS-v2" = nur nach Fehlschlag (Standard), "FS-v1" = immer, "aus" = ohne
+FORMELSUCHE_VERSION = os.environ.get("LERNASSISTENT_FS", "FS-v2")  # "FS-v2" = nur nach Fehlschlag (Standard), "FS-v1" = immer, "aus" = ohne,
+# "FS-v3" (V13.2) = FS-v2 + Auslöser "Ergebnis aus einem Buchbeispiel übernommen" (siehe braucht_suche_v3)
 FS_MAX_PHRASEN = 4
 FS_KANDIDATEN = 6        # Treffer je Suchbegriff, die auf eine Formel geprüft werden
 FS_MAX_ZUSATZ = 2        # höchstens so viele Chunks werden ergänzt
@@ -62,6 +63,19 @@ def braucht_suche(frage, stufen):
     if (stufen or {}).get("status") in ("TEILWEISE", "NICHT_IM_MATERIAL"):
         return True
     return (not re.search(r"\d", kopf)) or bool(_KEINE_ZAHL_HINWEIS.search(kopf))
+
+
+def braucht_suche_v3(frage, stufen, kontext):
+    """FS-v3-Auslöser (V13.2): wie FS-v2, zusätzlich wenn die erste Antwort ein Ergebnis aus dem Lernmaterial übernimmt, ohne
+    mit den Werten der Frage zu rechnen (rechenpruefung.pruefe_uebernahme). Anlass: Entwicklungsfall Käfigläufer (26 Oct 2026):
+    Antwort 1401 min⁻¹ aus Buchaufgabe 4.9 mit anderen Werten; die Formelsuche fand die durchgerechnete Lösung (S. 452),
+    die Hauptsuche hatte sie nicht im Top 4."""
+    if braucht_suche(frage, stufen):
+        return True
+    if not ist_rechenfrage(frage) or (stufen or {}).get("status") != "BEANTWORTET":
+        return False
+    import rechenpruefung
+    return bool(rechenpruefung.pruefe_uebernahme((stufen or {}).get("loesung", ""), frage, kontext))
 
 
 def antwort_hat_ergebnis(stufen):
@@ -145,6 +159,8 @@ def notiz(info):
     ids = ", ".join(info.get("ids", [])) or "kein Zusatz"
     text = f"Suchbegriffe: {'; '.join(info.get('phrasen', []))} | ergänzt: {ids}"
     if info.get("ausgeloest"):
-        return (f"FS-v2 ausgelöst (erste Antwort ohne Ergebnis) {text} | neu erzeugt: {'ja' if info.get('neu') else 'nein'}"
+        grund = ("FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen)" if info.get("version", FORMELSUCHE_VERSION) == "FS-v3"
+                 else "FS-v2 ausgelöst (erste Antwort ohne Ergebnis)")
+        return (f"{grund} {text} | neu erzeugt: {'ja' if info.get('neu') else 'nein'}"
                 f" | angenommen: {'ja' if info.get('angenommen') else 'nein'}")
     return f"FS-v1 {text}"

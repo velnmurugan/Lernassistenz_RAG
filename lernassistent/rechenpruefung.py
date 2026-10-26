@@ -551,3 +551,27 @@ def pruefe_uebernahme(text, frage, kontext):
     return [{"art": "uebernahme", "ausdruck": "", "gerechnet": None, "angegeben": None, "satz": kopf.strip()[:200],
              "text": f"Der erste Satz nennt {treffer[0]}; dieser Wert steht so im Lernmaterial, eine Rechnung mit den Werten "
                      f"der Frage fehlt"}]
+
+
+# RP-v8: Meta-Bemerkungen über die eigenen Regeln oder an die Lernenden gerichtete "Logik"-Hinweise (App-Test 26.10.2026:
+# "*(Hinweis zur Logik für dich: … Die Regel L5 sagt: …)") gehören nie in eine Lösung. Abgeschnitten ab dem Klammer- oder
+# Satzanfang, in dem die erste solche Stelle steht.
+_META_V8 = re.compile(r"\bRegeln?\s+L\d|\bL\d\s+(?:sagt|beachten|befolgen|verlangt)|Hinweis zur Logik|\bfür dich:", re.I)
+
+
+def bereinige_ueberlegung_v8(text):
+    """Wie bereinige_ueberlegung_v7, zusätzlich Meta-Bemerkungen über Prompt-Regeln. Rückgabe (text, entfernt)."""
+    t = text or ""
+    m = _META_V8.search(t)
+    if m:
+        vorher = t[:m.start()]
+        klammer = vorher.rfind("(")
+        if klammer > 0 and vorher[klammer - 1] == "*":
+            klammer -= 1
+        satz = max(vorher.rfind(". "), vorher.rfind("\n"))
+        start = klammer if klammer > satz else satz + 1
+        if len(t[:start].strip()) >= 40:
+            kopf, rest = bereinige_ueberlegung_v7(t[:start])
+            kopf = kopf.rstrip(" *\n\t")
+            return kopf + ("" if kopf.endswith((".", "!", ")")) else "."), (rest + " " + t[start:]).strip()
+    return bereinige_ueberlegung_v7(t)

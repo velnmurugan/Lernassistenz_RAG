@@ -1059,7 +1059,7 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     frage = frage if frage is not None else _frage_aus_prompt(prompt)
     vor_bereinigung = ""
     if v6:  # V13: sichtbaren Denktext am Ende abschneiden, bevor geprüft wird (Original im Log)
-        bereinigt_text, entfernt = (rechenpruefung.bereinige_ueberlegung_v7 if v7 else rechenpruefung.bereinige_ueberlegung)(
+        bereinigt_text, entfernt = (rechenpruefung.bereinige_ueberlegung_v8 if v8 else rechenpruefung.bereinige_ueberlegung_v7 if v7 else rechenpruefung.bereinige_ueberlegung)(
             stufen.get("loesung", ""))
         if entfernt:
             vor_bereinigung = stufen["loesung"]
@@ -1609,10 +1609,14 @@ def _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, erg
     Formeln suchen und EINMAL neu erzeugen. Die neue Antwort gilt nur, wenn sie beantwortet ist und eine Zahl nennt;
     sonst bleibt die erste Antwort. Gelöste Fragen bleiben unberührt (kein Zusatzkontext, keine Mehrzeit)."""
     import formelsuche
-    if formelsuche.FORMELSUCHE_VERSION != "FS-v2" or not formelsuche.braucht_suche(frage, stufen):
+    v3 = formelsuche.FORMELSUCHE_VERSION == "FS-v3"
+    if formelsuche.FORMELSUCHE_VERSION not in ("FS-v2", "FS-v3"):
+        return top_chunks, prompt, stufen
+    kontext = _kontext_text(top_chunks)
+    if not (formelsuche.braucht_suche_v3(frage, stufen, kontext) if v3 else formelsuche.braucht_suche(frage, stufen)):
         return top_chunks, prompt, stufen
     zusatz, info = formelsuche.suche(frage, chunks, top_chunks, retrieval, frage_llm, methode)
-    info.update({"ausgeloest": True, "neu": False, "angenommen": False})
+    info.update({"ausgeloest": True, "neu": False, "angenommen": False, "version": formelsuche.FORMELSUCHE_VERSION})
     ergebnis["formelsuche"] = info
     zeiten = ergebnis.setdefault("zeiten", {})
     zeiten["suche"] = zeiten.get("suche", 0.0) + info["sekunden"]
@@ -1623,7 +1627,10 @@ def _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, erg
     roh = frage_llm(neuer_prompt, options=GENERIERUNGS_OPTIONEN)
     stufen2 = parse_g_v1(roh) if ist_g_version() else parse_scaffolding_antwort(roh)
     info["neu"] = True
-    if formelsuche.antwort_hat_ergebnis(stufen2):
+    if v3:  # V13.2: auch die neue Antwort darf kein übernommenes Buchergebnis sein
+        import rechenpruefung
+        info["uebernahme_neu"] = bool(rechenpruefung.pruefe_uebernahme(stufen2.get("loesung", ""), frage, _kontext_text(neue_chunks)))
+    if formelsuche.antwort_hat_ergebnis(stufen2) and not info.get("uebernahme_neu"):
         # V12.3: nur annehmen, wenn die Nachrechnung die Formel im Material belegt (A/B V-1.32: ohne Formel erfand das Modell 0,25 T)
         res = _rechenbaustein_v2(frage, neue_chunks, neuer_prompt, stufen2)
         info["formel_belegt"] = bool(res and res.get("formel_im_material") is True)

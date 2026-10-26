@@ -79,6 +79,62 @@ try:
 finally:
     rpl.frage_llm, rpl.SCAFFOLDING_VERSION, rpl.RECHEN_PRUEFUNG_VERSION = alt
 
+# --- 2b. Meta-Bemerkungen (App-Test 26.10.2026, zweiter Lauf)
+LECK = ANTWORT + " Da deine Fragestellung eine ähnliche Situation beschreibt, gilt der Effekt.\n*(Hinweis zur Logik für dich: Das Lernmaterial liefert in Aufgabe 4.9 direkt das Ergebnis. Die Regel L5 sagt: übernimm nur den Rechenweg. Aber streng genommen: Die Werte passen nicht genau (1455 vs 1440).)."
+t, weg = rp.bereinige_ueberlegung_v8(LECK)
+check("V13.2 Meta-Bemerkung ab '*(Hinweis zur Logik' entfernt", weg.startswith("*(Hinweis zur Logik") and "Regel L5" not in t and t.endswith("gilt der Effekt."))
+check("V13.2 normale Lösung bleibt", rp.bereinige_ueberlegung_v8("Der Strom beträgt 5 A. Begründung: Nach der Regel des Ohmschen Gesetzes gilt I = U/R = 230 V / 46 Ω = 5 A.")[1] == "")
+check("V13.2 v7-Muster weiter erkannt", rp.bereinige_ueberlegung_v8(ANTWORT + "\n*Warte, ich muss das prüfen.*")[1].startswith("*Warte"))
+
+# --- 2c. FS-v3: Übernahme löst die Formelsuche aus, die neue Antwort mit eigener Rechnung wird angenommen
+import formelsuche as fs
+LOESUNG_49 = ("4.9 Aus Gl. 4.34 Schlupf bei 20 °C s = 1 - 1440 min⁻¹ / 1500 min⁻¹ = 0,04. Bei jeweils gleichem Drehmoment MN müssen in "
+              "Gl. 4.41 die Nenner gleich sein, was die Beziehung sK/s + s/sK = sKw/sw + sw/sKw ergibt. Mit s = 0,04; sK = 0,2; "
+              "sKw = 0,33 entsteht die quadratische Gleichung sw² - 1,716 sw + 0,109 = 0 mit der Lösung sw = 0,066")
+CH_LOES = {"id": "fischer_pdf_1259", "thema": "Berechnung der Aufgaben", "score": 0.5, "text": LOESUNG_49}
+NEU = ("Die Drehzahl im betriebswarmen Zustand beträgt 1431 min⁻¹.\nBegründung: Der Läuferwiderstand steigt um den Faktor "
+       "(225 + 150)/(225 + 20) = 1,531, also sKw = 1,531 · 0,25 = 0,383. Mit s = 1 - 1455/1500 = 0,03 gilt sK/s + s/sK = 8,453; "
+       "aus sKw/sw + sw/sKw = 8,453 folgt sw = 0,0459 und n = 1500 · (1 - 0,0459) = 1431 min⁻¹.")
+RB_NEU = ("FORMEL: sK/s + s/sK = sKw/sw + sw/sKw\nWERTE:\nsK = 0.25\ns = 0.03\nf = (225 + 150)/(225 + 20)\nRECHNUNG:\nsKw = f*sK\n"
+          "c = sK/s + s/sK\nsw = (c*sKw - sqrt((c*sKw)**2 - 4*sKw**2))/2\nn = 1500*(1 - sw)\nERGEBNIS: n\nEINHEIT: 1/min\n"
+          "QUELLE: sK/s + s/sK = sKw/sw + sw/sKw")
+def lauf_fs(version, neu_antwort):
+    alt_v = fs.FORMELSUCHE_VERSION
+    fs.FORMELSUCHE_VERSION = version
+    aufrufe = []
+    def llm(p, **k):
+        aufrufe.append(p)
+        if p.startswith("Eine Rechenaufgabe aus der Technik soll gelöst werden"):
+            return "Kippschlupf bei Erwärmung\nKlosssche Gleichung"
+        if "Du rechnest eine Aufgabe aus der Technik nach" in p:
+            return RB_NEU
+        return "STATUS: BEANTWORTET\nLÖSUNG: " + neu_antwort + "\nÜBERLEGUNG: x\nHINWEIS: h"
+    alt_r = rpl.retrieval
+    rpl.frage_llm = llm
+    rpl.retrieval = lambda q, chunks, top_k=4, methode=None: ([CH_LOES, CHUNK], [CH_LOES, CHUNK])
+    try:
+        ergebnis = {"zeiten": {}}
+        st0 = {"status": "BEANTWORTET", "loesung": ANTWORT, "hinweis": "h", "format_fehler": [], "vollstaendig_geparst": True}
+        top, pr, st = rpl._formelsuche_nachher(FRAGE, [CHUNK, CH_LOES], [CHUNK], PROMPT, st0, "hybrid_kg_rr", ergebnis)
+    finally:
+        rpl.retrieval = alt_r
+        fs.FORMELSUCHE_VERSION = alt_v
+    return top, st, ergebnis.get("formelsuche", {}), aufrufe
+alt2 = rpl.frage_llm, rpl.SCAFFOLDING_VERSION
+try:
+    rpl.SCAFFOLDING_VERSION = "G-v5"
+    top, st, info, auf = lauf_fs("FS-v2", NEU)
+    check("V13.2 FS-v2 unverändert: Übernahme löst keine Suche aus", not info and st["loesung"] == ANTWORT)
+    top, st, info, auf = lauf_fs("FS-v3", NEU)
+    check("V13.2 FS-v3: Suche ausgelöst, Lösungs-Chunk ergänzt", info.get("ausgeloest") and "fischer_pdf_1259" in info.get("ids", []))
+    check("V13.2 FS-v3: neue Antwort mit eigener Rechnung angenommen (1431)", info.get("angenommen") and "1431" in st["loesung"] and any(c["id"] == "fischer_pdf_1259" for c in top))
+    check("V13.2 FS-v3: Protokolltext nennt FS-v3", fs.notiz(info).startswith("FS-v3 ausgelöst"))
+    top, st, info, auf = lauf_fs("FS-v3", ANTWORT.replace("1401", "0,066"))
+    check("V13.2 FS-v3: neue Antwort wieder übernommen -> erste Antwort bleibt", not info.get("angenommen") and st["loesung"] == ANTWORT)
+    check("V13.2 FS-v3: richtige erste Antwort löst nichts aus", not fs.braucht_suche_v3(FRAGE, {"status": "BEANTWORTET", "loesung": NEU}, MATERIAL))
+finally:
+    rpl.frage_llm, rpl.SCAFFOLDING_VERSION = alt2
+
 # --- 3. App: Kopfzeile ohne grünes Häkchen bei ersetzt
 app = open(next(p for p in (_pl.Path("app.py"), _pl.Path("lernassistent/app.py")) if p.exists()), encoding="utf-8").read()
 check("V13.2 App: eigener Kopf für ersetzt", "Lösung aus der Python-Nachrechnung" in app and '"ersetzt": "ersetzt"' in app)
