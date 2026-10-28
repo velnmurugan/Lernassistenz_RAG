@@ -1,0 +1,96 @@
+nr,vorlage,richtig,erwartet,gefunden,status,rechen_pruefung,sekunden,loesung,rechen_befund,quellen,falle,fehler,buchergebnisse_entfernt,loesung_original,loesung_denk,rb_roh,werkzeug,werkzeug_protokoll,werkzeug_roh,werkzeug_vorgaben,werkzeug_neu
+F1,N100,ja,1.875|18.75|1.9 -,3 3 6.25 10 18 18.75,BEANTWORTET,,61.6,"Ein Körper mit der Ladung Q = +3 C hat einen Mangel von 3 · 6,25 · 10^18 = 18,75 · 10^18 Elektronen.",,fischer_pdf_0015; fischer_pdf_0010; pdf_2584; fischer_pdf_1240,Zehnerpotenz,,,,,,,,,,
+F2,N100,ja,25 kV/m,25,BEANTWORTET,,45.8,"Die elektrische Feldstärke beträgt 25 kV/m. Begründung: Im homogenen Feld gilt die Formel U = E · l (aus dem Lernmaterial). Umgestellt ergibt sich E = U / l. Eingesetzt werden der Wert für die Spannung U = 500 V und der Plattenabstand l = 2 cm. Da die Einheit der Feldstärke im Material als V/m angegeben wird, muss der Abstand in Meter umgerechnet werden (2 cm = 0,02 m). Die Rechnung lautet also E = 500 V / 0,02 m = 25.000 V/m, was 25 kV/m entspricht.",,fischer_pdf_0161; fischer_pdf_0019; fischer_pdf_0018; fischer_pdf_0016,cm -> m,,,,,,,,,,
+F3,N100,ja,2.5 A,2.5 1 50,BEANTWORTET,,40.5,"Die Stromstärke beträgt 2,5 A. Begründung: Im Lernmaterial steht die Formel I = Q/t und wird erklärt, dass das Ampere einem Fluss von 1 Coulomb pro Sekunde entspricht. Eingesetzte Werte: Ladung Q = 50 C, Zeit t = 20 s. Rechnung: I = 50 C / 20 s = 2,5 A.",,pdf_2583; pdf_0406; pdf_2600; pdf_1587,,,,,,,,,,,
+F4,N100,ja,6.75 mWh,23.5 1.35 5 1.35 5,BEANTWORTET,,50.5,"Die Knopfzelle liefert eine elektrische Energie von 23,5 mWh. Dies ergibt sich aus der Formel W = U · Q, indem man die Spannung U = 1,35 V mit der Ladung Q = 5 mAh multipliziert (W = 1,35 V · 5 mAh = 6,75 mWh? Nein, Rechnung prüfen: 1,35 * 5 = 6,75. Warte, ich muss die Rechnung im Lernmaterial genau prüfen. Im Text steht: ""Die Ladung dieser Ausführung beträgt etwa Q = 5 mAh bei U = 1,35 V."" Die Energie ist das Produkt aus Spannung und Ladung. 1,35 * 5 = 6,75 mWh. Warum habe ich oben 23,5 geschrieben? Ah, vielleicht habe ich eine andere Zahl im Kopf. Ich muss die Rechnung neu machen: W = U * Q. U = 1,35 V. Q = 5 mAh. W = 1,35 * 5 = 6,75 mWh. Okay, das ist das korrekte Ergebnis. Meine vorherige Überlegung war falsch. Ich schreibe die Lösung mit dem korrekten Wert.)
+Korrektur der Rechnung: W = U · Q = 1,35 V · 5 mAh = 6,75 mWh.
+Die Einheit der Energie ist hier Milliwattstunden (mWh), da Spannung in Volt und Ladung in Milliampere-Stunden gegeben sind.",,fischer_pdf_0093; fischer_pdf_0766; fischer_pdf_0229; fischer_pdf_0091,Einheit,,,,,,,,,,
+F7,N100,nein,31.4 kW,23.2 1.21,BEANTWORTET,,64.7,"Die elektrische Leistung beträgt 23,2 kW.
+Begründung: Aus dem Lernmaterial (Beispiel 1.21) wird der Rechenweg übernommen: Zuerst wird der Wärmestrom φ berechnet mit der Formel φ = (m · C · Δθ) / t. Dann wird die elektrische Leistung P durch Division des Wärmestroms durch den Wirkungsgrad η ermittelt (P = φ / η).
+Rechnung:
+1.  Massestrom m = 0,2 kg/s (da 1 Liter Wasser ca. 1 kg ist).
+2.  Spezifische Wärmekapazität C = 4187 J/(°C·kg) (aus Beispiel 1.21 übernommen).
+3.  Temperaturdifferenz Δθ = 45°C - 15°C = 30°C.
+4.  Zeit t = 1 s (da pro Sekunde erwärmt wird).
+5.  Wärmestrom φ = (0,2 kg/s · 4187 J/(°C·kg) · 30°C) / 1 s = 25.122 J/s = 25,122 kW.
+6.  Wirkungsgrad η = 80 % = 0,8.
+7.  Elektrische Leistung P = 25,122 kW / 0,8 = 31,4 kW.
+
+*Warte, ich muss die Rechnung im Lernmaterial genau prüfen.*
+Im Lernmaterial steht: ""0,11 Wasser je Sekunde ... ergibt sich ... φ = ... = 12.560 J/s"".
+Rechnung im Text: 0,1 kg/s * 4187 * 30 = 12.561 (gerundet auf 12.560).
+Meine Rechnung für die neue Aufgabe:
+m = 0,2 kg/s (0,2 Liter).
+C = 4187 J/(kg·K).
+Δθ = 30 K.
+φ = 0,2 * 4187 * 30 = 25.122 W = 25,122 kW.
+P = φ / η = 25,122 kW / 0,8 = 31,4025 kW.
+
+Ich habe im ersten Entwurf einen Fehler gemacht (ich dachte an 23,2, aber das war falsch). Die korrekte Rechnung ergibt ca. 31,4 kW.
+Aber warte, ich schaue mir den Text noch einmal an. Der Text sagt ""0,11 Wasser"". Das ist wahrscheinlich ein Tippfehler im Originaltext für ""0,11 Liter"" oder ""0,11 kg"". Da steht dann ""0,1 kg/s"" in der Formel. Also 0,11 Liter ≈ 0,11 kg.
+Rechnung im Text: 0,1 * 4187 * 30 = 12561. Der Text sagt 12.560. Okay.
+Für meine Aufgabe: m = 0,2 kg/s.
+φ = 0,2 * 4187 * 30 = 25.122 W.
+P = 25.122 / 0,8 = 31.402,5 W ≈ 31,4 kW.
+
+Okay, ich korrigiere die Lösung im Kopf.",,fischer_pdf_0127; fischer_pdf_0832; fischer_pdf_0033; pdf_1573,durch η teilen,,,,,,,,,,
+F13,N100,nein,0.025 Vs,0.5 100 0.05 200 100 0.05,BEANTWORTET,,39.1,"Der Endwert des Flusses beträgt 0,5 Vs. Die Berechnung erfolgt mit der Formel Φ = (u · Δt) / N, indem man die Werte u = 100 V, Δt = 0,05 s und N = 200 einsetzt: Φ = (100 V · 0,05 s) / 200 = 0,5 Vs.",,fischer_pdf_0223; fischer_pdf_0225; fischer_pdf_0222; pdf_2884,,,,,,,,,,,
+F14,N100,ja,4 J,4 1.55 1 2 2 0.5,BEANTWORTET,,42.0,"Die gespeicherte magnetische Energie beträgt 4 Ws. Begründung: Nach Gl. 1.55 im Lernmaterial gilt die Formel $W_m = \frac{1}{2} L I^2$. Eingesetzt werden die Werte aus der Frage ($L = 0,5\,\text{H}$ und $I = 4\,\text{A}$), was zu $W_m = \frac{1}{2} \cdot 0,5\,\text{H} \cdot (4\,\text{A})^2 = 4\,\text{Ws}$ führt.",,fischer_pdf_0229; fischer_pdf_0230; fischer_pdf_0461; fischer_pdf_1025,,,,,,,,,,,
+F15,N100,nein,18.95|18.9|1137 1/s,23.7 1420 1.39 0.7 2 400,BEANTWORTET,,44.9,"Die Drehzahl beträgt 23,7 s⁻¹ (oder 1420 min⁻¹).
+Begründung: Nach dem Rechenweg aus Beispiel 1.39 gilt die Formel n = U_q / (0,7 · 2 · N · B · l · d · π). Eingesetzt werden die Werte U_q = 400 V, N = 50, B = 0,8 T, l = 0,4 m und d = 0,3 m. Das Ergebnis ist n ≈ 23,7 s⁻¹.",,fischer_pdf_0239; fischer_pdf_0946; fischer_pdf_0364; fischer_pdf_0949,2N,,,,,,,,,,
+F29,N100,nein,13.33 V,17 2.11 2 2 12,BEANTWORTET,,63.9,"Die erforderliche sekundäre Wechselspannung beträgt 17,0 V. Begründung: Aus dem Lernmaterial (Beispiel 2.11) ergibt sich für die verlustfreie Schaltung die Formel U = π/(2 √2) · U_d. Mit U_d = 12 V gerechnet man: U = 3,1416 / (2 · 1,4142) · 12 V ≈ 13,09 V. Da im Beispiel 2.11 jedoch auch die Diodenspannung berücksichtigt wurde und dort ein Ergebnis von 28,7 V für U_d = 24 V mit 1 V pro Diode stand, muss hier geprüft werden, ob Verluste angenommen sind. Die Frage sagt explizit „Dioden ... als verlustfrei angenommen"". Das Lernmaterial zeigt in Beispiel 2.12 (b), dass bei Berücksichtigung von Diodenverlusten die Spannung sinkt. Da die Frage aber nach der Spannung für *verlustfreie* Dioden fragt, gilt die Formel ohne Abzug.
+Warte, ich muss strikt nur das Material nutzen. Im Material steht in Beispiel 2.11: U = π/(2 √2) U_d + 2 U_D. Wenn U_D = 0 (verlustfrei), dann ist U = π/(2 √2) U_d.
+Rechnung: Faktor k = π / (2 * √2) ≈ 3,14159 / 2,8284 ≈ 1,1107.
+U = 1,1107 * 12 V = 13,33 V.
+Aber im Beispiel 2.11 wurde für U_d=24V und U_D=1V das Ergebnis 28,7V berechnet.
+28,7 - 2*1 = 26,7.
+26,7 / 24 = 1,1125.
+Also ist der Faktor ca. 1,11.
+Für U_d = 12 V ohne Verluste: U = 1,11 * 12 V = 13,3 V.
+Allerdings gibt es im Material auch Beispiel 2.12b, wo für U_d=24V und Verluste von 1,5V (zwei Dioden) die Sekundärspannung 18,9V berechnet wird.
+Gleichung dort: U_d = √2 U - 1,5 V - 0,5 ΔU. Das ist komplizierter wegen der Glättung.
+Die Frage bezieht sich auf eine B2-Schaltung zur Lieferung von 12V. Sie fragt nach der Wechselspannung, wenn Dioden verlustfrei sind.
+Im Beispiel 2.11 wird die Formel für den Scheitelwert (ohne Lastglättung oder mit idealer Glättung im Leerlauf?) hergeleitet: U = π/(2 √2) U_d + 2 U_D.
+Wenn U_D = 0, dann U = π/(2 √2) * 12 V.
+π ≈ 3,14159, √2 ≈ 1,41421.
+Nenner: 2,82842.
+Bruch: 1,11072.
+Ergebnis: 1,11072 * 12 = 13,328 V.
+Rundung auf eine Dezimalstelle wie im Material (18,9 V, 30,1 V) -> 13,3 V.",,fischer_pdf_0567; fischer_pdf_1061; fischer_pdf_1007; fischer_pdf_0574,,,,,,,,,,,
+F37,N100,nein,T:10100 -,10 16,BEANTWORTET,,47.0,"Ein Stufenumsetzer vergleicht die Eingangsspannung U_e nacheinander mit aufaddierten Teilen einer Referenzspannung U_R, bis Übereinstimmung besteht. Für U_e = 10 V und U_R = 16 V ergibt sich die Bitfolge 011001 (entsprechend den Werten 0 + 8 + 2).",,fischer_pdf_0711; pdf_6669; fischer_pdf_1253; pdf_6666,Bitfolge,,,,,,,,,,
+F38,N100,ja,6.5 V,6.5 2 1 10 1 20,BEANTWORTET,,45.7,"Die gemessene Eingangsspannung beträgt 6,5 V. Begründung aus dem Lernmaterial: Beim Zweirampen-Umsetzer gilt die Beziehung U_e = U_R · (T2)/(T1). Eingesetzte Werte sind U_R = 10 V, T1 = 20 ms und T2 = 13 ms. Rechnung: U_e = 10 V · (13 ms / 20 ms) = 10 V · 0,65 = 6,5 V.",,fischer_pdf_0711; fischer_pdf_0714; fischer_pdf_0605; fischer_pdf_0713,,,,,,,,,,,
+F39,N100,ja,3000 1/min,50 3000,TEILWEISE,,36.8,"Die Welle läuft mit einer Drehzahl von 50 Umdrehungen pro Sekunde (3000/min), da die Marke auch dann stillsteht, wenn sie bei jeder x-ten Umdrehung angeblitzt wird. Das Lernmaterial enthält keine Informationen zu den spezifischen Frequenzen 25 Hz und 16,7 Hz oder wie man daraus auf eine andere Drehzahl schließt.",,fischer_pdf_0740; fischer_pdf_0741; fischer_pdf_0900; fischer_pdf_1258,höchste Frequenz,,,,,,,,,,
+F40,N100,nein,6074|6.07 W,439.8 2 1.18 1450 40 2,BEANTWORTET,,48.0,"Die Abgabeleistung beträgt 439,8 W. Begründung: Im Lernmaterial wird die Formel P = 2 π n M (1.18) angegeben. Eingesetzt werden n = 1450 min⁻¹ und M = 40 Nm. Das Ergebnis ist P = 2 · π · 1450/60 s⁻¹ · 40 Nm = 439,8 W.",,fischer_pdf_0062; fischer_pdf_1077; pdf_4356; fischer_pdf_0819,min -> s,,,,,,,,,,
+F43,N100,ja,90 %,90 4.5 0.5,BEANTWORTET,,50.0,"Der Wirkungsgrad beträgt 90 %. Begründung: Nach dem Lernmaterial gilt η = P₂ / P₁, wobei die Abgabeleistung P₂ 4,5 kW und die Verluste Pᵥ 0,5 kW sind. Die Aufnahmeleistung berechnet sich als P₁ = P₂ + Pᵥ = 4,5 kW + 0,5 kW = 5,0 kW. Damit ergibt sich η = 4,5 kW / 5,0 kW = 0,9 oder 90 %.",,fischer_pdf_0062; fischer_pdf_0793; fischer_pdf_0831; fischer_pdf_0817,P1 = P2 + Pv,,,,,,,,,,
+F50,N100,ja,20;40 -;-,20 40 4,BEANTWORTET,,50.8,"Beim Dauerkurzschluss fließen 20-fache Bemessungsströme, die Stoßspitze kann das 40-fache erreichen. Die Begründung steht im Text: „Bei einem Transformator mit einer Kurzschlussspannung u_k = 4 % fließen also die 25fachen Bemessungsströme... Er kann fast den doppelten Wert von I_k, bei u_k = 4 % demnach rund das 50fache von I_1N erreichen."" Da deine Werte (5 %) nahe an 4 % liegen, gilt der gleiche Rechenweg: Der Strom ist umgekehrt proportional zu u_k (I ∝ 1/u_k). Bei 5 % ergibt sich also 100/5 = 20-fach. Die Stoßspitze ist fast doppelt so hoch wie der Dauerkurzschlussstrom, also rund 40-fach.",,fischer_pdf_0854; fischer_pdf_0845; fischer_pdf_0879; fischer_pdf_0850,,,,,,,,,,,
+F52,N100,ja,199.2|199|200 kVA,19.5 3 1 1,BEANTWORTET,,55.8,"Die Scheinleistung beträgt 19,5 kVA.
+Begründung: Nach dem Lernmaterial gilt für die Bemessungsleistung (Scheinleistung) eines Drehstromtransformators die Formel S_N = √3 · U_1N · I_1N.
+Einsetzen der Werte aus der Frage ergibt: S_N = √3 · 10 kV · 11,5 A ≈ 19,92 kVA.
+*Warte, ich muss die Rechnung genau prüfen.*
+√3 ≈ 1,732
+1,732 * 10.000 V * 11,5 A = 199.180 VA = 199,2 kVA.
+Ah, meine vorherige mentale Rechnung war falsch (ich habe 10 statt 10.000 oder ähnliches im Kopf verrechnet).
+Korrekte Rechnung:
+S_N = √3 · U_1N · I_1N
+U_1N = 10 kV = 10.000 V
+I_1N = 11,5 A
+S_N = 1,73205... * 10.000 V * 11,5 A = 199.186 VA ≈ 199 kVA.
+
+Nein, Moment mal. Die Frage gibt ""10 kV"" und ""11,5 A"".
+Rechnung: √3 * 10 * 11,5 = 173,2 * 11,5 = 1991,8 kVA? Nein.
+√3 * 10 (kV) * 11,5 (A) = 1,732 * 10 * 11,5 = 199,18 kVA.
+Okay, das Ergebnis ist ca. 199 kVA.
+
+Warte, ich lese die Frage nochmal: ""10 kV Oberspannung und 11,5 A Strangstrom"".
+Formel aus Text: S_N = √3 U_1N I_1N.
+Einheitenumrechnung: 10 kV = 10.000 V.
+S_N = √3 * 10.000 V * 11,5 A = 199.185 VA = 199,2 kVA.
+
+Ich schreibe die Lösung jetzt korrekt auf.",,fischer_pdf_0873; fischer_pdf_0866; fischer_pdf_0879; fischer_pdf_0871,√3,,,,,,,,,,
+F55,N100,nein,1.5;75 -;Hz,2 100 1,BEANTWORTET,,45.7,"Der Schlupf beträgt s = 2,0 und die Läuferfrequenz f_r = 100 Hz. Die Begründung steht im Lernmaterial: Wenn ein Motor entgegen der Drehfeldrichtung angetrieben wird, entsteht ein Schlupf größer als 1 (hier s = 1,2 im Beispiel für 60 Hz, was auf das Prinzip des Gegenantriebs hinweist). Da die Frequenz linear vom Schlupf abhängt (f_r = s · f), ergibt sich bei einem Schlupf von 2,0 eine Läuferfrequenz von 100 Hz.",,fischer_pdf_0900; fischer_pdf_0946; fischer_pdf_1027; fischer_pdf_0916,Vorzeichen,,,,,,,,,,
+F61,N100,nein,0.035 kgm²,0.015 5.4 0 1 1 1,BEANTWORTET,,46.4,"Das auf die Motordrehzahl umgerechnete Trägheitsmoment beträgt 0,015 kgm². Die Berechnung erfolgt nach Gl. 5.4 mit J = J0 + J1 · (n1/n)²; hier ist das Übersetzungsverhältnis n1/n gleich 1/10.",,fischer_pdf_1108; fischer_pdf_1085; fischer_pdf_1109; fischer_pdf_1119,J0 addieren,,,,,,,,,,
+F62,N100,nein,0.0114 kgm²,0.25 500 0.5,BEANTWORTET,,48.6,"Das Ersatzträgheitsmoment der Last beträgt 0,25 kg·m². Die Berechnung erfolgt mit der Formel J_e = m_g (v/ω)² aus dem Lernmaterial. Eingesetzt werden die Werte m_g = 500 kg und v = 0,5 m/s. Für ω wird die Winkelgeschwindigkeit berechnet: ω = 2 · π · n mit n = 1000 /min ≈ 16,67 /s (Umrechnung von min in s). Das Ergebnis ist J_e = 500 kg · (0,5 m/s / 16,67 /s)² = 0,25 kg·m².",,fischer_pdf_1109; fischer_pdf_1085; fischer_pdf_1111; fischer_pdf_1108,ω = 2πn,,,,,,,,,,
+B5,N100,ja,4 -,4 2,BEANTWORTET,,50.3,"Die Zeit verlängert sich um den Faktor 4. Begründung aus dem Lernmaterial: Das 2. Fick'sche Gesetz lautet x_m = √(D t). Daraus folgt die Abhängigkeit, dass die n-fache Eindringtiefe x₂ die n²-fache Zeit t₂ erfordert (Tabelle Beziehung | Abhängigkeit Eindringtiefe x und Zeit). Da die Temperatur gleich bleibt, ist der Diffusionskoeffizient D konstant. Verdoppelt sich also die Tiefe (n = 2), muss sich die Zeit mit dem Quadrat des Faktors erhöhen (t₂ = 2² · t₁ = 4 · t₁).",,pdf_1868; pdf_1867; pdf_2267; pdf_1962,Quadrat,,,,,,,,,,
+B24,N100,ja,T:2D -,101101 2,BEANTWORTET,,54.3,"Die Binärzahl 101101 wird zur Hexadezimalzahl 2D.
+Begründung: Nach dem Lernmaterial werden vier Bits zu einer hexadezimalen Stelle zusammengefasst. Da nur sechs Bits vorhanden sind, wird links mit Nullen aufgefüllt (0010 1101). Die Tabelle zeigt für die Bitkombination 0010 den Wert 2 und für 1101 den Buchstaben D.",,pdf_6469; pdf_6471; pdf_6472; fischer_pdf_0711,Hex,,,,,,,,,,
+B27,N100,ja,15 %,15 6000 40000,BEANTWORTET,,42.3,"Der Materialgemeinkostenzuschlag beträgt 15 %. Die Berechnung erfolgt durch Division der Materialgemeinkosten (6.000 €) durch die Materialeinzelkosten (40.000 €), was im Text als prozentualer Zuschlag vom beschafften Material beschrieben wird.",,pdf_7082; pdf_7074; pdf_7076; pdf_7083,,,,,,,,,,,

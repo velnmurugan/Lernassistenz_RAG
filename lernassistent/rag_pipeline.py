@@ -669,7 +669,7 @@ Antwort:"""
 # übernimmt die Zwischenstufe ("targeted feedback", Zourlidou et al. 2026).
 # Einordnung (van de Pol et al. 2010, via Chen et al. 2026): Hinweis = hinting,
 # Rückmeldung = feedback, Lösung = explaining + modeling.
-# Zusätzlich die Hinweis-Regeln H1–H3 aus claude/Scaffolding_Spezifikation.md:
+# Zusätzlich die Hinweis-Regeln H1–H3 aus der Projekt-Doku Scaffolding_Spezifikation.md:
 #   H1 Antwort nicht verraten (Jangra et al. 2025; MRBench "Revealing Answer"),
 #   H2 Begriff / Größe / nächsten Denkschritt nennen (Zourlidou-Stufe 1),
 #   H3 nicht auf den Kontext verweisen — die/der Lernende sieht ihn nicht
@@ -700,7 +700,7 @@ Antwort:"""
 # verraten darf. Muster übernommen aus ideen_feedback.py (IF-v1): sieht die Lösung,
 # verdecktes Überlegungsfeld vor der Ausgabe.
 #
-# V6 (G-v1, 13 Oct 2026): fester, domänenunabhängiger Prompt-Satz (claude/Prompt_Set_Spezifikation.md).
+# V6 (G-v1, 13 Oct 2026): fester, domänenunabhängiger Prompt-Satz (Projekt-Doku Prompt_Set_Spezifikation.md).
 # EIN Aufruf: STATUS -> LÖSUNG -> verdeckte ÜBERLEGUNG -> HINWEIS. Die Lösung wird zuerst geschrieben,
 # damit der Hinweis "answer-aware" ist (Bhaskar & Hamouda 2025; Petukhova et al. 2026); die
 # Überlegung davor senkt das Verraten (Zhao, Knežević & Käser 2026). STATUS ersetzt den
@@ -906,7 +906,27 @@ def hinweis_pruefen(frage, stufen):
 # ohne Zahlenwert. Anlass: Entwicklungsfall Käfigläufer (1401 aus dem Buch übernommen, dann durch falsche 1471 ersetzt).
 # RP-v9 (V13.3, 26 Oct 2026): RP-v8 + (1) Denkmodus-Wiederholung für Rechenfragen, die nur "markiert" werden konnten
 # (_denk_wiederholung), (2) strenge Bestätigung des ersten Satzes durch die Nachrechnung (gerundet gleich statt 0,5 %).
+# RP-v10 (V13.4, 26 Oct 2026): RP-v9 + RB-v5 (Kettenzeilen, NFKC-Namen, LaTeX, Prozent, Grad), Wurzel/Halbausdruck-Fix in
+# rechenpruefung, "Aufgabe 1.19" als Verweis, bestätigte Nachrechnung ohne Buchformel ersetzt Antworten ohne eigene oder mit
+# falscher eigener Rechnung, kein kopf_korrigiert bei Rechnung mit Buchwerten, Denkmodus liest LaTeX, Buchergebnisse
+# ("ERG::", "Ergebnis:") aus dem Material von Rechenfragen mit geänderten Zahlen. Anlass: RV-v1-Test 26 Oct (7 von 22 richtig).
+# RP-v11 (V13.5, 27 Oct 2026): RP-v10 + RB-v6 (Zuweisungen in einer Zeile, Rechnung unter WERTE, Einheiten in RECHNUNG,
+# Umformungsschritte, Reihenfolge, "-> Korrektur:", Formelsymbol als Wert; Bestätigungs-Rohtext im Protokoll), Übernahme-Befund nur
+# bei Fragen mit anderen Zahlen als das Buch, weitere Denktext-Anfänge, LaTeX-Hochzahlen ("min^{-1}"), Denkmodus-Antwort trotz
+# Konsistenzbefund angenommen, wenn die Nachrechnung genau die Zahl des ersten Satzes nennt. Anlass: RV-Lauf V134 und N100 V134.
 RECHEN_PRUEFUNG_VERSION = os.environ.get("LERNASSISTENT_RP", "RP-v5")   # None = aus; "RP-v1" reproduziert V9d, "RP-v2" V10, "RP-v3" V10a, "RP-v4" V11
+# RP-v12 (V16, 27 Oct 2026) = RP-v11 + drei Zusätze (Schalter RP_V12): zweite Nachrechnung mit Retry, wenn sie nicht lesbar ist;
+# nach Kopfsatz-Angleichung ersetzen, wenn ein weiteres Ergebnis der bestätigten Nachrechnung mit Buchformel widerspricht;
+# Rechenfrage ohne Ergebnis in der Antwort + bestätigte Nachrechnung -> Nachrechnung zeigen. Intern läuft alles Übrige als RP-v11.
+# RP-v13 (V17b, 28 Oct 2026) = RP-v12 + (1) Vergleich erste/zweite Nachrechnung in Grundeinheiten, 0,5 %, ohne die Faktor-10³-Toleranz
+# der Antwortprüfung (N100 F1: 4,8e17 gegen 4,8e-19 galt als bestätigt); (2) nach Kopfsatz-Angleichung wird bei bestätigtem weiterem
+# Widerspruch auch ohne Buchformel ersetzt, mit Vermerk (RV-v2 R17: Kopfsatz 942 N, beide Nachrechnungen 1346 N); (3) bei einer
+# Rechenfrage zählt ein Neuschreiben ohne Ergebnis nicht als nachgebessert. Kein erneutes Würfeln: zusammen mit RB-v8
+# (Dimensionsprüfung) wird eine Nachrechnung verworfen, wenn ihre Einheiten physikalisch nicht zusammenpassen.
+RP_V13 = RECHEN_PRUEFUNG_VERSION == "RP-v13"
+RP_V12 = RECHEN_PRUEFUNG_VERSION in ("RP-v12", "RP-v13")
+if RP_V12:
+    RECHEN_PRUEFUNG_VERSION = "RP-v11"
 
 
 def _prompt_rechnung_neu(prompt, loesung, befunde):
@@ -1015,22 +1035,30 @@ def _rechenbaustein_v4(frage, top_chunks, prompt, stufen):
     import rechenbaustein
     if not re.search(r"\d", frage or "") or not rechenbaustein.kopfzahlen_v3(stufen.get("loesung", ""), frage)[0]:
         return None
-    kontext = _kontext_text(top_chunks) if top_chunks else prompt
+    kontext = _kontext_text(ohne_buchergebnisse(frage, top_chunks)) if top_chunks else prompt
     optionen = {**GENERIERUNGS_OPTIONEN, "num_predict": 700}
     retry = ""
+    v10 = RECHEN_PRUEFUNG_VERSION in ("RP-v10", "RP-v11")  # V13.4: RB-v5-Lesung (gleiche Prompts), Rohtexte und Fehlerzeile
+    parse, rechne = _rb_leser()
+    rechenbaustein.letzte_rohtexte.clear()
     try:
-        res = rechenbaustein.rechne_v2(rechenbaustein.parse_v2(
+        res = rechne(parse(
             frage_llm(rechenbaustein.baue_prompt_v2(frage, kontext), options=optionen)), frage, kontext)
+        erst_detail = res.get("detail", "")
         if not res.get("ergebnisse") and res.get("grund") in rechenbaustein.RETRY_GRUENDE:
             erster = res.get("grund")
-            res = rechenbaustein.rechne_v2(rechenbaustein.parse_v2(
+            res = rechne(parse(
                 frage_llm(rechenbaustein.baue_prompt_v3(frage, kontext, (erster, res.get("detail", ""))), options=optionen)),
                 frage, kontext)
-            retry = f" | Retry (RB-v3) nach {erster}: " + ("ok" if res.get("ergebnisse") else f"nicht verwertbar ({res.get('grund')})")
+            retry = (f" | Retry (RB-v3) nach {erster}" + (f" [{erst_detail[:120]}]" if v10 and erst_detail else "") + ": "
+                     + ("ok" if res.get("ergebnisse") else f"nicht verwertbar ({res.get('grund')}"
+                        + (f" [{res.get('detail', '')[:120]}]" if v10 and res.get("detail") else "") + ")"))
     except Exception as e:  # darf die Antwort nie verhindern
         print(f"WARNUNG Rechenbaustein: {e}")
         stufen["rechen_befund"] = "RB-v4 Fehler"
         return None
+    if v10:
+        stufen["rb_roh"] = " ||| ".join(rechenbaustein.letzte_rohtexte)
     if not res.get("ergebnisse"):
         stufen["rechen_befund"] = f"RB-v4 nicht verwertbar: {res.get('grund')}{retry}"
         return None
@@ -1058,15 +1086,25 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     import rechenpruefung
     import rechenbaustein
     v1 = RECHEN_PRUEFUNG_VERSION == "RP-v1"
-    v9 = RECHEN_PRUEFUNG_VERSION == "RP-v9"
-    v8 = RECHEN_PRUEFUNG_VERSION in ("RP-v8", "RP-v9")  # RP-v9 = RP-v8 + V13.3-Änderungen (v9-Zweige)
-    v7 = RECHEN_PRUEFUNG_VERSION in ("RP-v7", "RP-v8", "RP-v9")  # RP-v8 = RP-v7 + V13.2-Änderungen (v8-Zweige)
-    v6 = RECHEN_PRUEFUNG_VERSION in ("RP-v6", "RP-v7", "RP-v8", "RP-v9")  # RP-v7 = RP-v6 + V13.1-Änderungen (v7-Zweige)
-    v5 = RECHEN_PRUEFUNG_VERSION in ("RP-v5", "RP-v6", "RP-v7", "RP-v8", "RP-v9")
+    v11 = RECHEN_PRUEFUNG_VERSION == "RP-v11"  # RP-v11 = RP-v10 + V13.5-Änderungen (v11-Zweige)
+    v10 = RECHEN_PRUEFUNG_VERSION in ("RP-v10", "RP-v11")  # RP-v10 = RP-v9 + V13.4-Änderungen (v10-Zweige)
+    v9 = RECHEN_PRUEFUNG_VERSION in ("RP-v9", "RP-v10", "RP-v11")
+    v8 = RECHEN_PRUEFUNG_VERSION in ("RP-v8", "RP-v9", "RP-v10", "RP-v11")  # RP-v9 = RP-v8 + V13.3-Änderungen (v9-Zweige)
+    v7 = RECHEN_PRUEFUNG_VERSION in ("RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11")  # RP-v8 = RP-v7 + V13.2-Änderungen
+    v6 = RECHEN_PRUEFUNG_VERSION in ("RP-v6", "RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11")  # RP-v7 = RP-v6 + V13.1-Änderungen
+    v5 = RECHEN_PRUEFUNG_VERSION in ("RP-v5", "RP-v6", "RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11")
+    kontext = _kontext_text(top_chunks) if top_chunks else prompt
+    end_ergebnis = (lambda t: _endergebnis_v10(t)) if v10 else rechenpruefung._endergebnis
+    _bestaetigung = []  # V13.4: zweite Nachrechnung höchstens einmal je Antwort
+
+    def bestaetigt():
+        if not _bestaetigung:
+            _bestaetigung.append(_nachrechnung_bestaetigt(frage, top_chunks, prompt, baustein, stufen))
+        return _bestaetigung[0]
     frage = frage if frage is not None else _frage_aus_prompt(prompt)
     vor_bereinigung = ""
     if v6:  # V13: sichtbaren Denktext am Ende abschneiden, bevor geprüft wird (Original im Log)
-        bereinigt_text, entfernt = (rechenpruefung.bereinige_ueberlegung_v8 if v8 else rechenpruefung.bereinige_ueberlegung_v7 if v7 else rechenpruefung.bereinige_ueberlegung)(
+        bereinigt_text, entfernt = (rechenpruefung.bereinige_ueberlegung_v11 if v11 else rechenpruefung.bereinige_ueberlegung_v8 if v8 else rechenpruefung.bereinige_ueberlegung_v7 if v7 else rechenpruefung.bereinige_ueberlegung)(
             stufen.get("loesung", ""))
         if entfernt:
             vor_bereinigung = stufen["loesung"]
@@ -1090,16 +1128,43 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
         if baustein is not None:
             b = b + (rechenbaustein.vergleiche_v3 if v6 else rechenbaustein.vergleiche_v2 if v5 else rechenbaustein.vergleiche)(text, frage, baustein)
         if v8:  # V13.2: Ergebnis aus einem Buchbeispiel übernommen, ohne mit den Werten der Frage zu rechnen
-            ueb = rechenpruefung.pruefe_uebernahme(text, frage, _kontext_text(top_chunks) if top_chunks else prompt)
+            ueb = rechenpruefung.pruefe_uebernahme(text, frage, kontext, RECHEN_PRUEFUNG_VERSION if v10 else "")
             if ueb and not _baustein_bestaetigt_kopf(text, frage, baustein, streng=v9):
                 b = b + ueb
         return b
 
     befunde = befunde_fuer(stufen.get("loesung", ""))
+    if not befunde and RP_V12 and baustein is not None and baustein.get("ergebnisse") \
+            and not end_ergebnis(stufen.get("loesung", "")) and _ist_rechenfrage(frage) and bestaetigt():
+        # V16: Rechenfrage, die Antwort nennt kein Ergebnis (RV R18 V135: TEILWEISE ohne Zahl, Nachrechnung 0,8 Ω richtig), aber
+        # zwei unabhängige Nachrechnungen stimmen überein -> Nachrechnung zeigen (mit Vermerk, wenn die Formel nicht belegt ist)
+        loesung = stufen["loesung"]
+        stufen["loesung_original"] = vor_bereinigung or loesung
+        belegt = baustein.get("formel_im_material") is True
+        stufen["loesung"] = (rechenbaustein.pruefloesung(baustein, loesung) if belegt
+                             else rechenbaustein.pruefloesung_v5(baustein, loesung))
+        stufen["rechen_pruefung"] = "ersetzt"
+        stufen["rechen_befund"] = (stufen.get("rechen_befund") or "") + " | RP-v12: Antwort ohne Ergebnis, Nachrechnung bestätigt"
+        return stufen
     if not befunde:
         stufen["rechen_pruefung"] = "bereinigt" if vor_bereinigung else "ok"
+        if v9 and baustein is None and not end_ergebnis(stufen.get("loesung", "")):
+            # V13.3.1: Rechenfrage, aber nichts wurde nachgeprüft (Nachrechnung nicht verwertbar, keine Rechnung im Text).
+            # Anlass: App-Test Pumpenmotor (sK 0,15, Rr +25 %): Antwort 1,25 statt 1,23, Status "ok" ohne jede Prüfung.
+            import formelsuche
+            if formelsuche.ist_rechenfrage(frage):
+                stufen["rechen_pruefung"] = "ungeprueft"
+                _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer, baustein if v10 else None)
         return stufen
-    if (v6 and baustein is not None and baustein.get("formel_im_material") is not True
+    ungestuetzt_bestaetigt = False
+    if (v10 and baustein is not None and baustein.get("formel_im_material") is not True
+            and all(b.get("art") == "baustein" for b in befunde) and not end_ergebnis(stufen.get("loesung", ""))
+            and bestaetigt()):
+        # V13.4: die Antwort hat keine eigene, prüfbare Rechnung, und zwei unabhängige Nachrechnungen stimmen überein (RV-v1
+        # R12: 2890 W statt 159,3 W, R17: 720 N statt 1848 N, beide ohne Vermerk). Dann Neuschreiben mit dem Ergebnis der
+        # Nachrechnung, sonst Ersetzen (Vermerk: Formel nicht im Lernmaterial belegt).
+        ungestuetzt_bestaetigt = True
+    elif (v6 and baustein is not None and baustein.get("formel_im_material") is not True
             and all(b.get("art") == "baustein" for b in befunde)):
         # V13: die Nachrechnung widerspricht, aber ihre Formel steht nicht im Material (N100 F1: Nachrechnung n = Q/e gegen die
         # richtige Buchformel). Kein Neuschreiben Richtung Nachrechnung, kein Warnvermerk im Text; nur Log und Hinweis-Chip.
@@ -1117,25 +1182,45 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
         neu_prompt += (" Prüfe Formel und Werte der Nachrechnung; passen sie zur Frage, übernimm ihr Ergebnis "
                        "und nenne es im ersten Satz.")
     try:
-        neu = parse_g_v1(frage_llm(neu_prompt, options=GENERIERUNGS_OPTIONEN))
+        neu = parse_g_v1(frage_llm_rechnend(neu_prompt, frage, stufen.setdefault("werkzeug_neu", {})) if _rw_aktiv(frage)
+                         else frage_llm(neu_prompt, options=GENERIERUNGS_OPTIONEN))
     except Exception as e:  # Prüfung darf die Antwort nie verhindern
         print(f"WARNUNG Rechenprüfung: {e}")
     if (neu and "loesung" not in neu["format_fehler"] and neu["status"] in ("BEANTWORTET", "TEILWEISE")
-            and not befunde_fuer(neu["loesung"])):
+            and not befunde_fuer(neu["loesung"])
+            and not (RP_V13 and baustein is not None and _ist_rechenfrage(frage) and not end_ergebnis(neu["loesung"]))):
+        # V17: bei einer Rechenfrage zählt ein Neuschreiben ohne Ergebnis nicht als nachgebessert (Test R09)
         for k in ("hinweis", "loesung", "status", "hinweis_ueberlegung", "vollstaendig_geparst", "format_fehler"):
             stufen[k] = neu[k]
         stufen["rechen_pruefung"] = "nachgebessert"
-    elif v7 and (kopf := _kopf_angleichen(loesung, befunde, baustein, befunde_fuer)):
+    elif v7 and (kopf := _kopf_angleichen(loesung, befunde, baustein, befunde_fuer,
+                                            (frage, kontext) if v10 else None)):
         # V13.1: Neuschreiben gescheitert, einziger Zahlenbefund ist "erster Satz ≠ eigene Rechnung", die eigene Rechnung ist
         # rechnerisch stimmig und widerspricht keiner belegten Nachrechnung -> Zahl im ersten Satz angleichen (N100 F4, F7, F61).
-        stufen["loesung"] = kopf
-        stufen["rechen_pruefung"] = "kopf_korrigiert"
-    elif (v5 and baustein is not None and baustein.get("formel_im_material") is True
-          and any(b.get("art") == "baustein" for b in befunde)
-          and (not v8 or _nachrechnung_bestaetigt(frage, top_chunks, prompt, baustein, stufen))):
+        rest = ([b for b in befunde_fuer(kopf) if b.get("art") == "baustein"] or _weitere_abweichung(kopf, frage, baustein)) \
+            if RP_V12 else []
+        if rest and baustein is not None and (baustein.get("formel_im_material") is True or RP_V13) and bestaetigt():
+            # V16: nach der Angleichung widerspricht ein weiteres Ergebnis im ersten Satz der bestätigten Nachrechnung mit
+            # Buchformel (RV R01 V15: ΔP angeglichen, Einsparung 960.000 € statt 31,58 Mio €) -> Nachrechnung ersetzt die Lösung
+            stufen["loesung"] = (rechenbaustein.pruefloesung(baustein, loesung) if baustein.get("formel_im_material") is True
+                                 else rechenbaustein.pruefloesung_v5(baustein, loesung))
+            stufen["rechen_pruefung"] = "ersetzt"
+            stufen["rechen_befund"] += " | RP-v12: nach Kopfsatz-Angleichung weiterer Widerspruch zur bestätigten Nachrechnung"
+        else:
+            stufen["loesung"] = kopf
+            stufen["rechen_pruefung"] = "kopf_korrigiert"
+    elif (v5 and baustein is not None and any(b.get("art") == "baustein" for b in befunde)
+          and (baustein.get("formel_im_material") is True
+               or (v10 and (ungestuetzt_bestaetigt or any(b.get("art", "rechnung") in ("rechnung", "konsistenz")
+                                                         for b in befunde))))
+          and (not v8 or bestaetigt())):
         # RP-v5: die Nachrechnung ist belegt (Zahlen und Formel aus Frage/Material) und widerspricht der Antwort,
         # das Neuschreiben hat das nicht behoben -> die Nachrechnung ersetzt die Lösung (Original im Log).
-        stufen["loesung"] = rechenbaustein.pruefloesung(baustein, loesung)
+        # V13.4 (RP-v10): auch ohne Buchformel, wenn zwei Nachrechnungen übereinstimmen UND die Antwort keine eigene oder
+        # eine nachweislich falsche eigene Rechnung hat (RV-v1 R13: 20,8 A statt 26 A, R14: 7,84 W statt 4,755 W).
+        belegt = baustein.get("formel_im_material") is True
+        stufen["loesung"] = (rechenbaustein.pruefloesung(baustein, loesung) if belegt or not v10
+                             else rechenbaustein.pruefloesung_v5(baustein, loesung))
         stufen["rechen_pruefung"] = "ersetzt"
     elif v1:
         stufen["loesung"] = f"{loesung}\n\n⚠ Automatische Nachrechnung: {'; '.join(b['text'] for b in befunde)}."
@@ -1156,13 +1241,43 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
             stufen["rechen_pruefung"] = "markiert"
         else:
             stufen["rechen_pruefung"] = "nicht_behoben"
-    if v9 and stufen.get("rechen_pruefung") == "markiert":
-        _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer)
+    if v9 and stufen.get("rechen_pruefung") in ("markiert", "ungeprueft"):
+        _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer, baustein if v10 else None)
     return stufen
 
 
-def _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer):
-    """V13.3 (RP-v9): Rechenfrage, deren Antwort nach allen Prüfungen nur "markiert" werden konnte -> EIN neuer Aufruf mit
+def _weitere_abweichung(text, frage, baustein):
+    """V16 (RP-v12): Nachrechnung mit mehreren Ergebnissen; im ersten Satz steht eine Zahl, die zu keinem Ergebnis passt, und ein
+    Ergebnis wird von keiner Zahl getroffen (RV R01: 78,95 MW passt, 960.000 € statt 31,58 Mio € nicht). vergleiche_v3 prüft
+    Zahlen ohne erkannte Einheit (€) nicht einzeln."""
+    import rechenbaustein
+    import rechenpruefung
+    if baustein is None or len(baustein.get("ergebnisse", [])) < 2:
+        return False
+    kopf = rechenbaustein._kopf_mit_einheit(text, frage)
+    werte = [abs(w) for _, w in baustein["ergebnisse"]]
+    def passt(e, k):
+        return any(rechenpruefung._passt(x, k[0], k[1]) for x in (e, e * 100, e / 100, e / 1e6, e * 1e6))
+    fremd = [k for k in kopf if not any(passt(e, k) for e in werte)]
+    offen = [e for e in werte if not any(passt(e, k) for k in kopf)]
+    return bool(fremd and offen)
+
+
+def _ist_rechenfrage(frage):
+    import formelsuche
+    return formelsuche.ist_rechenfrage(frage)
+
+
+def _endergebnis_v10(text):
+    """V13.4: _endergebnis mit den RP-v10-Tokenizer-Schaltern und LaTeX-Lesung (Denkmodus-Antworten in LaTeX)."""
+    import rechenpruefung
+    with rechenpruefung.modus("RP-v11" if RECHEN_PRUEFUNG_VERSION == "RP-v11" else "RP-v10"):
+        return rechenpruefung._endergebnis(rechenpruefung.entlatexe(text))
+
+
+def _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer, baustein=None):
+    """V13.3 (RP-v9): Rechenfrage, deren Antwort nach allen Prüfungen nur "markiert" werden konnte (V13.3.1: oder gar nicht
+    nachgeprüft werden konnte, Status "ungeprueft") -> EIN neuer Aufruf mit
     Denkmodus (think=True, Kontext DENK_KONTEXT_TOKENS). Die neue Antwort gilt, wenn sie beantwortet ist, eine Zahl nennt und
     die Python-Prüfung der eigenen Rechnung besteht (Gleichungsketten, erster Satz = Endergebnis, Einheit, kein übernommenes
     Buchergebnis, keine sichtbare Überlegung). Die Nachrechnung (RB) zählt hier nicht: sie lief ohne Denkmodus und war in
@@ -1178,9 +1293,23 @@ def _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer):
         print(f"WARNUNG Denkmodus: {e}")
         stufen["rechen_befund"] = (stufen.get("rechen_befund") or "") + " | Denkmodus: Fehler"
         return
-    loesung = rechenpruefung.bereinige_ueberlegung_v8(neu.get("loesung", ""))[0]
-    probleme = [b["text"] for b in befunde_fuer(loesung) if b.get("art") != "baustein"]
+    v11 = RECHEN_PRUEFUNG_VERSION == "RP-v11"
+    loesung = (rechenpruefung.bereinige_ueberlegung_v11 if v11 else rechenpruefung.bereinige_ueberlegung_v8)(neu.get("loesung", ""))[0]
+    v10 = RECHEN_PRUEFUNG_VERSION in ("RP-v10", "RP-v11")
+    if v10:
+        stufen["loesung_denk"] = loesung[:3000]  # V13.4: für das Protokoll (RV-v1: 7-mal verworfen, Text unbekannt)
+    befunde_d = [b for b in befunde_fuer(loesung) if b.get("art") != "baustein"]
+    if v11 and _baustein_bestaetigt_kopf(loesung, frage, baustein, streng=True):
+        # V13.5: die Nachrechnung nennt gerundet genau die Zahl des ersten Satzes -> ein Konsistenzbefund betrifft nur eine
+        # Zwischenzahl der Begründung (RV-v1 Lauf V134 R20: 1,23 richtig, letzte ausgeschriebene Rechnung war s_K2 = 0,1875)
+        befunde_d = [b for b in befunde_d if b.get("art") != "konsistenz"]
+    probleme = [b["text"] for b in befunde_d]
     hat_zahl = formelsuche.antwort_hat_ergebnis({**neu, "loesung": loesung})
+    if not (_endergebnis_v10(loesung) if v10 else rechenpruefung._endergebnis(loesung)):
+        # V13.3.1: ohne eigene, prüfbare Rechnung gibt es nichts zu bestätigen. V13.4: außer die Nachrechnung nennt gerundet
+        # genau die Zahl des ersten Satzes (zwei unabhängige Wege, ein Ergebnis).
+        if not (v10 and _baustein_bestaetigt_kopf(loesung, frage, baustein, streng=True)):
+            probleme.append("keine nachprüfbare Rechnung")
     if "loesung" not in neu["format_fehler"] and neu["status"] == "BEANTWORTET" and hat_zahl and not probleme:
         for k in ("hinweis", "status", "hinweis_ueberlegung", "vollstaendig_geparst", "format_fehler"):
             stufen[k] = neu[k]
@@ -1218,27 +1347,117 @@ def _nachrechnung_bestaetigt(frage, top_chunks, prompt, baustein, stufen):
     Schritt (s_Nw = s_N / Faktor) und ersetzte die Antwort durch 1471 min⁻¹ (richtig: 1431 min⁻¹). Vermerk in rechen_befund."""
     import rechenbaustein
     import rechenpruefung
-    kontext = _kontext_text(top_chunks) if top_chunks else prompt
+    kontext = _kontext_text(ohne_buchergebnisse(frage, top_chunks)) if top_chunks else prompt
+    parse, rechne = _rb_leser()
+    vorher = len(rechenbaustein.letzte_rohtexte)
     try:
-        zweit = rechenbaustein.rechne_v2(rechenbaustein.parse_v2(frage_llm(
+        zweit = rechne(parse(frage_llm(
             rechenbaustein.baue_prompt_v3(frage, kontext), options={**GENERIERUNGS_OPTIONEN, "num_predict": 700})), frage, kontext)
     except Exception as e:  # darf die Antwort nie verhindern
         print(f"WARNUNG Bestätigung: {e}")
         zweit = {}
-    ok = any(rechenpruefung._passt(w2, w1, 0) for _, w1 in baustein.get("ergebnisse", [])
-             for _, w2 in (zweit.get("ergebnisse") or []))
+    retry = ""
+    if RP_V12 and not zweit.get("ergebnisse") and zweit.get("grund") in rechenbaustein.RETRY_GRUENDE:
+        # V16: zweite Nachrechnung nicht lesbar (N100 F61: "n1 = n/10") -> ein Retry mit Fehlerbericht, wie bei der ersten
+        grund = zweit.get("grund")
+        try:
+            zweit = rechne(parse(frage_llm(rechenbaustein.baue_prompt_v3(frage, kontext, (grund, zweit.get("detail", ""))),
+                                           options={**GENERIERUNGS_OPTIONEN, "num_predict": 700})), frage, kontext)
+        except Exception as e:
+            print(f"WARNUNG Bestätigung (Retry): {e}")
+            zweit = {}
+        retry = f" [Retry nach {grund}]"
+    ok = (_gleiche_ergebnisse(baustein, zweit) if RP_V13 else
+          any(rechenpruefung._passt(w2, w1, 0) for _, w1 in baustein.get("ergebnisse", [])
+              for _, w2 in (zweit.get("ergebnisse") or [])))
     notiz = (f"Bestätigung: ja ({rechenbaustein.ergebnis_text(zweit)})" if ok else
              "Bestätigung: nicht bestätigt (" + (rechenbaustein.ergebnis_text(zweit) if zweit.get("ergebnisse")
                                                  else f"zweite Nachrechnung nicht verwertbar: {zweit.get('grund', 'Fehler')}") + ")")
-    stufen["rechen_befund"] = (stufen.get("rechen_befund") or "") + " | " + notiz
+    stufen["rechen_befund"] = (stufen.get("rechen_befund") or "") + " | " + notiz + retry
+    if RECHEN_PRUEFUNG_VERSION == "RP-v11" and len(rechenbaustein.letzte_rohtexte) > vorher:  # V13.5: auch dieser Rohtext ins Protokoll
+        neue = rechenbaustein.letzte_rohtexte[vorher:] if RP_V12 else rechenbaustein.letzte_rohtexte[-1:]
+        stufen["rb_roh"] = " ||| ".join(x for x in (stufen.get("rb_roh"), *neue) if x)
     return ok
 
 
-def _kopf_angleichen(loesung, befunde, baustein, befunde_fuer):
+def _gleiche_ergebnisse(a, b):
+    """V17 (RP-v13): True, wenn ein Ergebnis von a und eines von b übereinstimmen. Mit Einheit bei beiden: Vergleich in
+    Grundeinheiten, 0,5 % (keine Faktor-10³-Toleranz: N100 F1 galt 1,6e-19 C gegen 1,6e-16 als bestätigt). Sonst wie bisher."""
+    import rechenbaustein
+    import rechenpruefung
+    if not (a or {}).get("ergebnisse") or not (b or {}).get("ergebnisse"):
+        return False
+    for (_, w1), e1 in zip(a["ergebnisse"], rechenbaustein._einheiten_liste(a)):
+        for (_, w2), e2 in zip(b["ergebnisse"], rechenbaustein._einheiten_liste(b)):
+            f1 = rechenbaustein.einheit_faktor_v7(e1) if e1 else None
+            f2 = rechenbaustein.einheit_faktor_v7(e2) if e2 else None
+            if f1 and f2:
+                x1, x2 = w1 * f1, w2 * f2
+                if abs(x1 - x2) <= 0.005 * max(abs(x1), abs(x2)) + 1e-15:
+                    return True
+            elif rechenpruefung._passt(w2, w1, 0):
+                return True
+    return False
+
+
+def _rechne_mit_dimension(parsed, frage, kontext):
+    """RB-v8 (V17b): rechne_v7, danach Dimensionsprüfung des Rohtexts (dimensionspruefung.pruefe). Passen die Einheiten physikalisch
+    nicht zusammen, ist die Nachrechnung nicht verwertbar (grund "dimension", Retry mit diesem Befund). Anlass RV-v2 R09: Gewichtskraft
+    durch g geteilt (Ergebnis kg, angegeben N), Fläche um den Faktor 100 falsch."""
+    import rechenbaustein
+    import dimensionspruefung
+    res = rechenbaustein.rechne_v7(parsed, frage, kontext)
+    if res.get("ergebnisse") and parsed and parsed.get("_roh"):
+        d = dimensionspruefung.pruefe(parsed["_roh"])
+        if d["widerspruch"]:
+            return {"ergebnis": None, "ergebnisse": [], "grund": "dimension", "detail": d["detail"]}
+    return res
+
+
+def _rb_leser():
+    """Parser und Auswertung der Nachrechnung je RP-Version: RP-v11 -> RB-v6, RP-v10 -> RB-v5, sonst RB-v2."""
+    import rechenbaustein
+    if RECHEN_PRUEFUNG_VERSION == "RP-v11":
+        if NACHRECHNUNG_VERSION in ("RB-v7", "RB-v8"):  # V15: Einheiten in Grundeinheiten umrechnen statt streichen
+            rechenbaustein.RB_V8 = NACHRECHNUNG_VERSION == "RB-v8"  # V17: zwei Lesekorrekturen + Dimensionsprüfung
+            if rechenbaustein.RB_V8:
+                return rechenbaustein.parse_v7, _rechne_mit_dimension
+            return rechenbaustein.parse_v7, rechenbaustein.rechne_v7
+        return rechenbaustein.parse_v6, rechenbaustein.rechne_v6
+    if RECHEN_PRUEFUNG_VERSION == "RP-v10":
+        return rechenbaustein.parse_v5, rechenbaustein.rechne_v5
+    return rechenbaustein.parse_v2, rechenbaustein.rechne_v2
+
+
+_KONSTANTEN_BUCH = {235.0, 234.5, 273.0, 273.15, 1.257, 8.854, 9.81, 1.602, 0.00393, 0.0039, 0.004, 1.732, 1.414, 3.14, 3.142}
+
+
+def _fremde_buchwerte(loesung, frage, kontext):
+    """V13.4: Zahlen mit mindestens 3 gültigen Ziffern in der Rechnung (nach dem ersten Satz), die im Lernmaterial stehen,
+    aber weder in der Frage noch im ersten Satz (RV-v1 R21: c_M aus nN = 1440 min⁻¹ der Buchaufgabe; kopf_korrigiert machte
+    aus der richtigen 2833,3 die falsche 1777,8). Bekannte Konstanten (235 für Kupfer, μ₀ …) zählen nicht."""
+    import rechenpruefung as rp
+    m = rp._erster_satz_ende(loesung or "")
+    kopf, rest = ((loesung or "")[:m.start()], (loesung or "")[m.end():]) if m else (loesung or "", "")
+    with rp.modus("RP-v10"):
+        bekannt = {round(w, 9) for w, _, _ in rp._zahlen_mit_stellen(frage + " " + kopf)}
+        material = {round(w, 9) for w, _, _ in rp._zahlen_mit_stellen(kontext)}
+        out = []
+        for w, _, t in rp._zahlen_mit_stellen(rest):
+            ziffern = re.sub(r"\D", "", t).lstrip("0").rstrip("0")
+            if (len(ziffern) >= 3 and round(w, 9) in material and round(w, 9) not in bekannt
+                    and not any(abs(w - k) <= 1e-3 * k for k in _KONSTANTEN_BUCH)):
+                out.append(t)
+    return out
+
+
+def _kopf_angleichen(loesung, befunde, baustein, befunde_fuer, frage_kontext=None):
     """V13.1 (RP-v7): neuer Text mit angeglichenem ersten Satz oder None. Bedingungen: genau ein Konsistenz-Befund, sonst nur
     Überlegungs- oder Nachrechnungsbefunde; eine Nachrechnung mit belegter Formel muss zur eigenen Rechnung passen; der neue
     Text hat keinen Rechen-, Konsistenz- oder Einheitenbefund mehr."""
     import rechenpruefung
+    if frage_kontext and _fremde_buchwerte(loesung, *frage_kontext):
+        return None  # V13.4: die eigene Rechnung nutzt Werte einer Buchaufgabe -> nicht an sie angleichen
     art = lambda b: b.get("art", "rechnung")
     kons = [b for b in befunde if art(b) == "konsistenz"]
     if len(kons) != 1 or any(art(b) not in ("konsistenz", "ueberlegung", "baustein") for b in befunde):
@@ -1490,7 +1709,7 @@ _PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1, "S2-v2": _prompt_s2_
 
 def baue_hinweis_prompt(frage, ausgewaehlte_chunks, loesung):
     """V5 (S2-v2), Hinweis-Prompt H-v3: eigener Aufruf, der die Lösung kennt.
-    Regeln H1–H5 aus claude/Scaffolding_Spezifikation.md §3.1 (Jangra et al. 2025,
+    Regeln H1–H5 aus der Projekt-Doku Scaffolding_Spezifikation.md §3.1 (Jangra et al. 2025,
     Abschnitt 4.1; Zourlidou et al. 2026; Wood et al. 1976)."""
     return f"""Du schreibst einen Hinweis (Denkanstoß) für Auszubildende in technischen Berufen.
 Du kennst die Frage, die Lernmaterialien und die richtige Lösung. Die/der Auszubildende
@@ -1598,9 +1817,300 @@ def frage_llm(prompt, model=MODEL_NAME, options=None, bild=None, denken=False):
         payload["options"] = options
     if bild:
         payload["images"] = [bild]
-    response = requests.post(OLLAMA_URL, json=payload, timeout=900 if denken else (180 if bild else 120))
-    response.raise_for_status()
-    return response.json()["response"].strip()
+    # V13.3.1: längere Zeitgrenzen und EIN Wiederholungsversuch bei Zeitüberschreitung/Verbindungsfehler. Anlass: App-Test
+    # 26 Oct 2026: nach einem Denkmodus-Aufruf (num_ctx 16384) lud Ollama das Modell für den nächsten Aufruf neu (anderes
+    # num_ctx) -> ReadTimeout nach 120 s, die App brach ab. Am Antworttext ändert das nichts.
+    zeitgrenze = 900 if denken else 300
+    for versuch in (1, 2):
+        try:
+            response = requests.post(OLLAMA_URL, json=payload, timeout=zeitgrenze)
+            response.raise_for_status()
+            return response.json()["response"].strip()
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+            if versuch == 2:
+                raise
+            print(f"WARNUNG frage_llm: {type(e).__name__}, zweiter Versuch")
+
+
+# =============================================================================
+# V14 (27 Oct 2026): Rechenwerkzeug RW-v1 – die Antwort rechnet selbst über ein Werkzeug (Ollama tool calling)
+# =============================================================================
+# Anlass: RV-Läufe V1331/V134 – die meisten Rechenfehler entstehen beim Ausrechnen im Text; die nachträgliche Python-Prüfung
+# (RB) scheiterte oft schon am Format. Nach ToRA (Gou et al., ICLR 2024) und PAL (Gao et al., ICML 2023) ruft das Modell
+# während der Antwort ein Rechenwerkzeug auf: Python rechnet jeden Zahlenschritt, das Modell übernimmt das Ergebnis in den
+# Text. Nur mit LERNASSISTENT_RW=RW-v1 und nur bei Rechenfragen (formelsuche.ist_rechenfrage); sonst unverändert.
+# Kein beliebiger Code: das Werkzeug wertet nur Rechenausdrücke aus (rechenbaustein.sicher_auswerten, kein eval).
+# Fällt das Werkzeug aus (Modell ohne tools-Unterstützung, Fehler, keine Endantwort), gilt der normale Aufruf (frage_llm).
+NACHRECHNUNG_VERSION = os.environ.get("LERNASSISTENT_RB", "")  # V15: "" = RB-v6 (mit RP-v11); "RB-v7" = Einheiten umrechnen
+RECHENWERKZEUG_VERSION = os.environ.get("LERNASSISTENT_RW", "")  # "" = aus; "RW-v1", "RW-v2", "RW-v3", "RW-v4", "RW-v5"
+# RW-v2 (V14b): wie RW-v1, Werkzeugregel als Systemnachricht und zwei Schritte (erst rechnen, dann antworten). Anlass: Probe
+# 27 Oct 2026 – mit RW-v1 rief qwen3.5:9b das Werkzeug nie auf (0 Aufrufe), Ollama nahm die Werkzeugliste aber an.
+# RW-v3 (V14b): ohne tool calling – das Modell schreibt Rechenschritte als Platzhalter [[Name = Ausdruck]], Python rechnet
+# und setzt die Zahlen ein (PAL-Prinzip, Gao et al. 2023, in einem einzigen Aufruf). Funktioniert mit jedem Modell.
+RW_MAX_AUFRUFE = 12
+OLLAMA_CHAT_URL = OLLAMA_URL.replace("/api/generate", "/api/chat")
+RW_WERKZEUG = {"type": "function", "function": {
+    "name": "rechne",
+    "description": ("Rechnet einen Zahlenausdruck exakt aus und gibt das Ergebnis zurück. Nutze es für jeden Rechenschritt, "
+                    "statt im Kopf zu rechnen. Erlaubt: Zahlen, + - * / ** ( ), sqrt, sin, cos, tan (Grad oder Bogenmaß), "
+                    "asin, acos, atan, exp, ln, log10, pi und die Namen aus 'werte'. Keine Einheiten im Ausdruck."),
+    "parameters": {"type": "object", "properties": {
+        "ausdruck": {"type": "string", "description": "der Rechenausdruck"},
+        "werte": {"type": "object", "description": "optionale Namen mit Zahlenwerten, die im Ausdruck vorkommen"}},
+        "required": ["ausdruck"]}}}
+RW_HINWEIS = ("\n\nDir steht das Werkzeug „rechne“ zur Verfügung. Rechne jeden Zahlenschritt damit und übernimm die "
+              "Ergebnisse unverändert in deine Lösung. Antworte danach genau im verlangten Format.")
+
+
+def _rw_rechne(argumente):
+    """Werkzeugaufruf ausführen. Rückgabe (Text für das Modell, Wert oder None)."""
+    import rechenbaustein
+    import unicodedata
+    if isinstance(argumente, str):
+        try:
+            argumente = json.loads(argumente)
+        except ValueError:
+            argumente = {"ausdruck": argumente}
+    ausdruck = str((argumente or {}).get("ausdruck", "")).strip()
+    werte = {}
+    for n, v in ((argumente or {}).get("werte") or {}).items():
+        try:
+            werte[unicodedata.normalize("NFKC", str(n))] = float(str(v).replace(",", "."))
+        except ValueError:
+            return f"Fehler: Wert von {n} ist keine Zahl", None
+    ausdruck_n = rechenbaustein._ohne_einheiten_v6(rechenbaustein.normiere_v5(ausdruck), set(werte))
+    alt, rechenbaustein._FUNKTIONEN = rechenbaustein._FUNKTIONEN, rechenbaustein._FUNKTIONEN_V5
+    try:
+        wert = rechenbaustein.sicher_auswerten(ausdruck_n, werte)
+    finally:
+        rechenbaustein._FUNKTIONEN = alt
+    if wert is None:
+        return f"Fehler: Ausdruck nicht auswertbar ({ausdruck[:120]}). Nur Zahlen, Rechenzeichen, Funktionen und Namen aus 'werte'.", None
+    return f"{wert:.6g}", wert
+
+
+def antwort_mit_werkzeug(prompt, protokoll):
+    """RW-v1: Antwort über /api/chat mit dem Werkzeug „rechne“. Rückgabe Rohantwort (wie frage_llm) oder None (dann normaler
+    Aufruf). protokoll (Liste) erhält je Aufruf (ausdruck, werte, ergebnis)."""
+    nachrichten = [{"role": "user", "content": prompt + RW_HINWEIS}]
+    optionen = {**GENERIERUNGS_OPTIONEN}
+    if KONTEXT_TOKENS:
+        optionen["num_ctx"] = KONTEXT_TOKENS
+    for _ in range(RW_MAX_AUFRUFE + 1):
+        payload = {"model": MODEL_NAME, "messages": nachrichten, "tools": [RW_WERKZEUG], "stream": False, "think": False,
+                   "options": optionen}
+        try:
+            antwort = requests.post(OLLAMA_CHAT_URL, json=payload, timeout=300)
+            antwort.raise_for_status()
+            nachricht = antwort.json().get("message") or {}
+        except Exception as e:  # Modell ohne Werkzeug-Unterstützung, Netzfehler -> normaler Aufruf
+            protokoll.append(("FEHLER", f"{type(e).__name__}: {str(e)[:200]}", None))
+            return None
+        aufrufe = nachricht.get("tool_calls") or []
+        if not aufrufe:
+            text = (nachricht.get("content") or "").strip()
+            return text or None
+        nachrichten.append({"role": "assistant", "content": nachricht.get("content") or "", "tool_calls": aufrufe})
+        for a in aufrufe:
+            f = a.get("function") or {}
+            if f.get("name") != "rechne":
+                ergebnis_text, wert = f"Fehler: unbekanntes Werkzeug {f.get('name')}", None
+            else:
+                ergebnis_text, wert = _rw_rechne(f.get("arguments"))
+            argumente = f.get("arguments") if isinstance(f.get("arguments"), dict) else {"ausdruck": str(f.get("arguments"))}
+            protokoll.append((str(argumente.get("ausdruck", ""))[:200], argumente.get("werte") or {}, ergebnis_text))
+            nachrichten.append({"role": "tool", "content": ergebnis_text, "tool_name": "rechne"})
+    protokoll.append(("FEHLER", f"mehr als {RW_MAX_AUFRUFE} Werkzeugaufrufe", None))
+    return None
+
+
+RW2_SYSTEM = ("Du hast ein Werkzeug „rechne“. Rechne Zahlen nie selbst aus: Jeder Zahlenschritt wird mit „rechne“ berechnet, "
+              "und du übernimmst nur dessen Ergebnisse.")
+RW2_SCHRITT1 = ("\n\nSchritt 1: Stelle die Rechnung auf und berechne jeden Zahlenschritt mit dem Werkzeug „rechne“. "
+                "Schreibe noch keine Lösung.")
+RW2_SCHRITT2 = ("Schritt 2: Schreibe jetzt die Antwort genau im verlangten Format. Übernimm die Ergebnisse des Werkzeugs unverändert "
+                "(gerundet auf sinnvolle Stellen).")
+
+
+def antwort_mit_werkzeug_v2(prompt, protokoll):
+    """RW-v2: Systemnachricht + Schritt 1 (rechnen mit Werkzeug) + Schritt 2 (Antwort im Format). Rückgabe Rohantwort oder None."""
+    nachrichten = [{"role": "system", "content": RW2_SYSTEM}, {"role": "user", "content": prompt + RW2_SCHRITT1}]
+    optionen = {**GENERIERUNGS_OPTIONEN, **({"num_ctx": KONTEXT_TOKENS} if KONTEXT_TOKENS else {})}
+
+    def senden(mit_werkzeug=True):
+        payload = {"model": MODEL_NAME, "messages": nachrichten, "stream": False, "think": False, "options": optionen}
+        if mit_werkzeug:
+            payload["tools"] = [RW_WERKZEUG]
+        r = requests.post(OLLAMA_CHAT_URL, json=payload, timeout=300)
+        r.raise_for_status()
+        return r.json().get("message") or {}
+    try:
+        for _ in range(RW_MAX_AUFRUFE + 1):
+            nachricht = senden()
+            aufrufe = nachricht.get("tool_calls") or []
+            if not aufrufe:
+                nachrichten.append({"role": "assistant", "content": nachricht.get("content") or ""})
+                break
+            nachrichten.append({"role": "assistant", "content": nachricht.get("content") or "", "tool_calls": aufrufe})
+            for a in aufrufe:
+                f = a.get("function") or {}
+                ergebnis_text, _ = (_rw_rechne(f.get("arguments")) if f.get("name") == "rechne"
+                                    else (f"Fehler: unbekanntes Werkzeug {f.get('name')}", None))
+                argumente = f.get("arguments") if isinstance(f.get("arguments"), dict) else {"ausdruck": str(f.get("arguments"))}
+                protokoll.append((str(argumente.get("ausdruck", ""))[:200], argumente.get("werte") or {}, ergebnis_text))
+                nachrichten.append({"role": "tool", "content": ergebnis_text, "tool_name": "rechne"})
+        else:
+            protokoll.append(("FEHLER", f"mehr als {RW_MAX_AUFRUFE} Werkzeugaufrufe", None))
+            return None
+        nachrichten.append({"role": "user", "content": RW2_SCHRITT2})
+        text = (senden(mit_werkzeug=False).get("content") or "").strip()
+        return text or None
+    except Exception as e:
+        protokoll.append(("FEHLER", f"{type(e).__name__}: {str(e)[:200]}", None))
+        return None
+
+
+RW3_REGEL = ("\n\nRechne keine Zahl selbst aus. Schreibe jeden Rechenschritt als [[Name = Ausdruck]]: Name aus Buchstaben, Ziffern "
+             "und _, Ausdruck nur mit Zahlen, + - * / ** ( ), sqrt, sin, cos, tan, exp, ln, pi und Namen früherer Schritte, ohne "
+             "Einheiten. Das System rechnet und setzt an dieser Stelle die Zahl ein. Für eine schon berechnete Größe schreibe [[Name]], "
+             "auch im ersten Satz.")
+_RW3_PLATZHALTER = re.compile(r"\[\[\s*([A-Za-zα-ωΑ-ΩηφϑΔ_][\wα-ωΑ-ΩηφϑΔ]*)\s*(?:=\s*([^\[\]]+?))?\s*\]\]")
+
+
+def rw3_einsetzen(roh, protokoll, vorgaben=None):
+    """Platzhalter auswerten und ersetzen. Rückgabe (text, ok). ok=False wenn ein Platzhalter nicht auswertbar war oder ein
+    Name fehlt; ohne Platzhalter (text, None)."""
+    import rechenbaustein
+    import rechenpruefung
+    import unicodedata
+    treffer = list(_RW3_PLATZHALTER.finditer(roh or ""))
+    if not treffer:
+        return roh, None
+    werte, ok = dict(vorgaben or {}), True
+    alt, rechenbaustein._FUNKTIONEN = rechenbaustein._FUNKTIONEN, rechenbaustein._FUNKTIONEN_V5
+    try:
+        for m in treffer:  # erst alle Definitionen in Textreihenfolge
+            if m.group(2) is None:
+                continue
+            name = unicodedata.normalize("NFKC", m.group(1))
+            ausdruck = rechenbaustein._ohne_einheiten_v6(rechenbaustein.normiere_v5(m.group(2)), set(werte))
+            w = rechenbaustein.sicher_auswerten(ausdruck, werte)
+            protokoll.append((f"{name} = {m.group(2).strip()}"[:200], {}, f"{w:.6g}" if w is not None else "Fehler"))
+            if w is None:
+                ok = False
+            else:
+                werte[name] = w
+    finally:
+        rechenbaustein._FUNKTIONEN = alt
+
+    def ersetzen(m):
+        name = unicodedata.normalize("NFKC", m.group(1))
+        return rechenpruefung._zahl_de(werte[name]) if name in werte else "?"
+    text = _RW3_PLATZHALTER.sub(ersetzen, roh)
+    if any(unicodedata.normalize("NFKC", m.group(1)) not in werte for m in treffer):
+        ok = False
+    return text, ok
+
+
+RW4_REGEL = ("\n\nRechne keine Zahl selbst aus. Schreibe zuerst jede gegebene Größe, die du verwendest, als [[Name = Zahl]] "
+             "(Zahl ohne Einheit, in der Einheit, mit der du rechnest). Schreibe danach jeden Rechenschritt als [[Name = Ausdruck]]: "
+             "Name aus Buchstaben, Ziffern und _, Ausdruck nur mit Zahlen, + - * / ** ( ), sqrt, sin, cos, tan, exp, ln, pi und Namen, "
+             "die vorher mit [[Name = …]] festgelegt wurden, ohne Einheiten. Das System rechnet und setzt an dieser Stelle die Zahl ein. "
+             "Für eine schon berechnete Größe schreibe [[Name]], auch im ersten Satz.")
+_RW4_VORGABE = re.compile(r"(?<![\w])([A-Za-zα-ωΑ-ΩηφϑΔ][\w₀-₉α-ωΑ-Ω]*)\s*=\s*(-?\d+(?:[.,]\d+)?(?:\s*[·*]\s*10\^?\s*[-−]?\d+)?)(?!\d|[.,]\d)")
+
+
+def rw4_vorgaben(frage):
+    """Größen der Frage in der Form „Name = Zahl“ (Zahl ohne Einheit) als Startwerte für die Platzhalter."""
+    import unicodedata
+    werte = {}
+    for m in _RW4_VORGABE.finditer(frage or ""):
+        z = m.group(2).replace(",", ".").replace("−", "-").replace(" ", "")
+        try:
+            if "10" in z and ("·" in z or "*" in z):
+                basis, exp = re.split(r"[·*]10\^?", z)
+                wert = float(basis) * 10 ** int(exp)
+            else:
+                wert = float(z)
+        except ValueError:
+            continue
+        werte.setdefault(unicodedata.normalize("NFKC", m.group(1)), wert)
+    return werte
+
+
+RW5_REGEL = ("\n\nRechne keine Zahl selbst aus. Schreibe zuerst jede gegebene Größe, die du verwendest, als [[Name = Wert]]: Wert als "
+             "Zahl oder Ausdruck, umgerechnet in die Grundeinheit ohne Vorsilbe, Prozentangaben als Dezimalzahl, ohne Einheit. Schreibe "
+             "danach jeden Rechenschritt als [[Name = Ausdruck]]: Name aus Buchstaben, Ziffern und _, Ausdruck nur mit Zahlen, + - * / ** ( ), "
+             "sqrt, sin, cos, tan, exp, ln, pi und Namen, die vorher mit [[Name = …]] festgelegt wurden, ohne Einheiten. Das System rechnet "
+             "und setzt an dieser Stelle die Zahl ein. Für eine schon berechnete Größe schreibe [[Name]], auch im ersten Satz, gefolgt von "
+             "der Grundeinheit.")
+_RW5_BASIS = {"", "V", "A", "W", "Ω", "N", "m", "s", "kg", "Hz", "H", "F", "J", "C", "T", "Wb", "Pa", "K", "Nm", "N·m", "Ws", "VA", "var"}
+_RW5_VORGABE = re.compile(r"(?<![\w])([A-Za-zα-ωΑ-ΩηφϑΔ][\w₀-₉α-ωΑ-Ω]*)\s*=\s*(-?\d+(?:[.,]\d+)?(?:\s*[·*]\s*10\^?\s*[-−]?\d+)?)"
+                          r"(?!\d|[.,]\d)[ \t]*([^\s,;:?!()]*)")
+_RW5_ZEILE = re.compile(r"\[\[\s*([A-Za-zα-ωΑ-ΩηφϑΔ_][\wα-ωΑ-ΩηφϑΔ]*)\s*\]\]\s*=\s*([^\n\[]*(?:\[\[[^\]\n]*\]\][^\n\[]*)*)")
+_RW5_KLAMMER = re.compile(r"\[\[([^\[\]]+?)\]\]")
+_RW5_NAME = re.compile(r"\s*[A-Za-zα-ωΑ-ΩηφϑΔ_][\wα-ωΑ-ΩηφϑΔ]*\s*")
+
+
+def rw5_vorgaben(frage):
+    """Wie rw4_vorgaben, aber nur Größen ohne Einheit oder mit Grundeinheit ohne Vorsilbe; keine Prozentwerte."""
+    werte = {}
+    for m in _RW5_VORGABE.finditer(frage or ""):
+        einheit = m.group(3).rstrip(".")
+        if einheit not in _RW5_BASIS:
+            continue
+        werte.update({k: v for k, v in rw4_vorgaben(f"{m.group(1)} = {m.group(2)}").items() if k not in werte})
+    return werte
+
+
+def rw5_vorbereiten(roh):
+    """Weitere Schreibweisen in [[Name = Ausdruck]] umwandeln: „[[Name]] = Ausdruck“ bis Zeilenende und „[[Ausdruck]]“ ohne Namen."""
+    def zeile(m):
+        rest = _RW5_KLAMMER.sub(lambda k: k.group(1).strip(), m.group(2)).strip()
+        return f"{m.group(1)} = {rest} = [[{m.group(1)} = {rest}]]" if rest else m.group(0)
+    text = _RW5_ZEILE.sub(zeile, roh or "")
+    zaehler = iter(range(1, 1000))
+
+    def ohne_name(m):
+        inhalt = m.group(1)
+        if "=" in inhalt or _RW5_NAME.fullmatch(inhalt) or not re.search(r"[\d)]", inhalt):
+            return m.group(0)
+        return f"[[_a{next(zaehler)} = {inhalt.strip()}]]"
+    return _RW5_KLAMMER.sub(ohne_name, text)
+
+
+def _rw_aktiv(frage):
+    if RECHENWERKZEUG_VERSION not in ("RW-v1", "RW-v2", "RW-v3", "RW-v4", "RW-v5") or not ist_g_version():
+        return False
+    import formelsuche
+    return formelsuche.ist_rechenfrage(frage)
+
+
+def frage_llm_rechnend(prompt, frage, ergebnis):
+    """Antwortaufruf für Rechenfragen: mit Werkzeug (RW-v1), sonst/bei Ausfall frage_llm. Protokoll in ergebnis["werkzeug"]."""
+    if _rw_aktiv(frage):
+        protokoll = ergebnis.setdefault("werkzeug_protokoll", [])
+        v = RECHENWERKZEUG_VERSION
+        if v in ("RW-v3", "RW-v4", "RW-v5"):
+            regel, vorgaben = {"RW-v3": (RW3_REGEL, None), "RW-v4": (RW4_REGEL, rw4_vorgaben(frage)),
+                               "RW-v5": (RW5_REGEL, rw5_vorgaben(frage))}[v]
+            roh_llm = frage_llm(prompt + regel, options=GENERIERUNGS_OPTIONEN)
+            roh, ok = rw3_einsetzen(rw5_vorbereiten(roh_llm) if v == "RW-v5" else roh_llm, protokoll, vorgaben)
+            if v == "RW-v5" and ok is not None and ("[[" in roh or "]]" in roh):
+                ok = False  # nicht auswertbare Klammern nie anzeigen
+            n = sum(1 for p in protokoll if p[0] != "FEHLER")
+            if v in ("RW-v4", "RW-v5"):
+                ergebnis["werkzeug_roh"] = roh_llm if ok is not True else ""
+                ergebnis["werkzeug_vorgaben"] = vorgaben
+            ergebnis["werkzeug"] = f"{v} {'keine Platzhalter' if ok is None else 'genutzt' if ok else 'Rückfall (Platzhalter fehlerhaft)'}, {n} Aufrufe"
+            if ok is not False:
+                return roh
+        else:
+            roh = (antwort_mit_werkzeug_v2 if v == "RW-v2" else antwort_mit_werkzeug)(prompt, protokoll)
+            ergebnis["werkzeug"] = f"{v} " + ("genutzt" if roh is not None else "Rückfall") + f", {sum(1 for p in protokoll if p[0] != 'FEHLER')} Aufrufe"
+            if roh is not None:
+                return roh
+    return frage_llm(prompt, options=GENERIERUNGS_OPTIONEN)
 
 
 def sicherheitspruefung(text):
@@ -1635,6 +2145,71 @@ def _hinweis_separat(frage, top_chunks, stufen):
     return zusatz
 
 
+# V13.4 (RP-v10): Ergebniszeilen von Buchaufgaben ("ERG:: R = 2 Ω", "Ergebnis: 14,5 K") stehen im Material direkt hinter der
+# Aufgabe. Bei einer Rechenfrage mit anderen Zahlen als die Buchaufgabe übernahm das Modell sie (RV-v1 R21, R22, R14). Sie werden
+# dann aus dem Material für Antwort und Nachrechnung entfernt (nicht für die Übernahme-Prüfung, die sie erkennen soll).
+# Ausgeführte Lösungswege ("Lösung: …" in Beispielen) bleiben stehen; nur kurze Ergebniszeilen fallen weg.
+_BUCHERGEBNIS = re.compile(r"(?:\|\|\s*)?[*_]{0,2}\b(?:ERG\s*:{1,2}|Ergebnis(?:se)?\b\s*:?)[*_]{0,2}", re.I)
+# Wörter, die nach einem Ergebnis einen neuen Satz beginnen (der Rest gehört nicht zum Ergebnis)
+_SATZANFANG = {"in", "im", "die", "der", "das", "den", "dem", "bei", "mit", "für", "es", "ein", "eine", "nach", "aus", "wie",
+               "was", "zur", "zum", "um", "da", "so", "an", "auf", "als", "ist", "sind", "wird", "dies", "hier", "man"}
+
+
+def buchergebnisse(text):
+    """V13.4: Ergebnisangaben von Buchaufgaben als (start, ende)-Bereiche. In der KB v7r stehen sie mitten im Fließtext
+    ("… Ergebnis: z = 6,25 · 10⁹ Elektrisches Feld …", "Ergebnis R₄ = R₅ = 33,33 Ω Spannungsteiler"), in der alten Extraktion
+    als "|| ERG:: …". Der Bereich endet nach der letzten Zahl (mit Einheit) vor dem ersten Wort des folgenden Textes; höchstens
+    140 Zeichen; ohne Zahl kein Treffer."""
+    out = []
+    for m in _BUCHERGEBNIS.finditer(text or ""):
+        ende, pos, letzt_zahl = None, m.end(), False
+        for t in re.finditer(r"\S+", text[m.end():m.end() + 140]):
+            tok = t.group(0)
+            buchst = re.sub(r"[^A-Za-zÄÖÜäöüß]", "", tok)
+            if re.search(r"\d", tok):
+                ende, letzt_zahl = m.end() + t.end(), True
+                continue
+            if tok.lower().strip(".,;:") in _SATZANFANG or len(buchst) >= 5:
+                break
+            if letzt_zahl and len(buchst) <= 4 and not re.fullmatch(r"[=≈·*/+\-–,;]+", tok):
+                ende = m.end() + t.end()  # Einheit direkt nach der Zahl ("A", "Ω", "MW,", "Mio.")
+            letzt_zahl = letzt_zahl and not re.fullmatch(r"[=≈·*/+\-–,;]+", tok) and len(buchst) <= 4
+        if ende:
+            stueck = text[m.end():ende]
+            rechts = re.split(r"[=≈]", stueck)[-1].strip()
+            if re.search(r"\(\d+\.\d+[a-z]?\)", stueck) or not re.match(r"[-+−]?\d", rechts):
+                continue  # hergeleitete Formel ("Ergebnis U_x = (U · x)/(…) (1.24a)"), kein Zahlenergebnis -> bleibt stehen
+            out.append((m.start(), ende))
+    return out
+
+
+def _ohne_bereiche(text, bereiche):
+    for a, b in reversed(bereiche):
+        text = text[:a].rstrip() + " " + text[b:].lstrip()
+    return text
+
+
+def ohne_buchergebnisse(frage, top_chunks):
+    """Chunks (Kopien) ohne Ergebniszeilen, wenn RP-v10 aktiv ist, die Frage eine Rechenfrage ist und ihre Zahlen nicht alle im
+    Chunk stehen (= Buchaufgabe mit geänderten Werten). Sonst unverändert. Zählt entfernte Zeilen in c["buchergebnisse_entfernt"]."""
+    if RECHEN_PRUEFUNG_VERSION not in ("RP-v10", "RP-v11") or not top_chunks:
+        return top_chunks
+    import formelsuche
+    import rechenpruefung
+    if not formelsuche.ist_rechenfrage(frage):
+        return top_chunks
+    with rechenpruefung.modus("RP-v10"):
+        fz = {round(w, 9) for w, _, _ in rechenpruefung._zahlen_mit_stellen(frage)}
+        out = []
+        for c in top_chunks:
+            t = c.get("text", "")
+            treffer = buchergebnisse(t)
+            if treffer and not fz <= {round(w, 9) for w, _, _ in rechenpruefung._zahlen_mit_stellen(t)}:
+                c = {**c, "text": _ohne_bereiche(t, treffer), "buchergebnisse_entfernt": len(treffer)}
+            out.append(c)
+    return out
+
+
 def _formelsuche_anwenden(frage, chunks, top_chunks, methode, ergebnis, fortschritt=None):
     """FS-v1 (V12, nur mit LERNASSISTENT_FS=FS-v1): bei Rechenfragen VOR der Antwort die nötigen Formeln gezielt suchen
     (formelsuche.py) und hinter die Chunks der Hauptsuche stellen. Standard ab V12.1 ist FS-v2 (_formelsuche_nachher)."""
@@ -1650,6 +2225,29 @@ def _formelsuche_anwenden(frage, chunks, top_chunks, methode, ergebnis, fortschr
         ergebnis["top_chunks"] = top_chunks
     zeiten = ergebnis.setdefault("zeiten", {})
     zeiten["suche"] = zeiten.get("suche", 0.0) + info["sekunden"]
+    if fortschritt:
+        fortschritt("suche", "ende", zeiten["suche"])
+        if zusatz:
+            fortschritt("suche", "quellen", None, top_chunks)
+    return top_chunks
+
+
+def _formelsuche_vorher_v19(frage, chunks, top_chunks, ergebnis, fortschritt=None):
+    """V19a (nur mit LERNASSISTENT_V19=A, nur bei Rechenfragen): VOR der Antwort 2 Formel-Chunks ergänzen (formelsuche.suche_v19).
+    Anders als FS-v2/v3 läuft das auch, wenn die erste Antwort eine Zahl nennt (falsche Physik wäre sonst nie aufgefallen).
+    Die Chunks der Hauptsuche bleiben unverändert vorn; Zusatz-Chunks stehen dahinter. Ohne Fund oder bei Fehler ändert sich nichts."""
+    import formelsuche
+    if not formelsuche.V19_A or not formelsuche.ist_rechenfrage(frage):
+        return top_chunks
+    if fortschritt:
+        fortschritt("suche", "start")
+    zusatz, info = formelsuche.suche_v19(frage, chunks, top_chunks, retrieval, frage_llm)
+    ergebnis["formelsuche_v19"] = info
+    zeiten = ergebnis.setdefault("zeiten", {})
+    zeiten["suche"] = zeiten.get("suche", 0.0) + info["sekunden"]
+    if zusatz:
+        top_chunks = list(top_chunks) + zusatz
+        ergebnis["top_chunks"] = top_chunks
     if fortschritt:
         fortschritt("suche", "ende", zeiten["suche"])
         if zusatz:
@@ -1676,7 +2274,7 @@ def _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, erg
     if not zusatz:
         return top_chunks, prompt, stufen
     neue_chunks = list(top_chunks) + zusatz
-    neuer_prompt = baue_scaffolding_prompt(frage, neue_chunks)
+    neuer_prompt = baue_scaffolding_prompt(frage, ohne_buchergebnisse(frage, neue_chunks))
     roh = frage_llm(neuer_prompt, options=GENERIERUNGS_OPTIONEN)
     stufen2 = parse_g_v1(roh) if ist_g_version() else parse_scaffolding_antwort(roh)
     info["neu"] = True
@@ -1761,9 +2359,16 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None, fortschritt=None):
         return ergebnis
 
     top_chunks = _formelsuche_anwenden(frage, chunks, top_chunks, methode, ergebnis, fortschritt)  # ab V12 (FS-v1)
-    prompt = baue_scaffolding_prompt(frage, top_chunks)
+    top_chunks = _formelsuche_vorher_v19(frage, chunks, top_chunks, ergebnis, fortschritt)  # V19a (Schalter LERNASSISTENT_V19=A)
+    prompt_chunks = ohne_buchergebnisse(frage, top_chunks)  # V13.4 (RP-v10), sonst unverändert
+    prompt = baue_scaffolding_prompt(frage, prompt_chunks)
+    if prompt_chunks is not top_chunks:
+        ergebnis["buchergebnisse_entfernt"] = sum(c.get("buchergebnisse_entfernt", 0) for c in prompt_chunks)
     t0 = _start("antwort")
-    rohantwort = frage_llm(prompt, options=GENERIERUNGS_OPTIONEN, **({'bild': BILD_ANHANG} if BILD_ANHANG else {}))
+    if BILD_ANHANG or not _rw_aktiv(frage):
+        rohantwort = frage_llm(prompt, options=GENERIERUNGS_OPTIONEN, **({'bild': BILD_ANHANG} if BILD_ANHANG else {}))
+    else:  # V14: Rechenwerkzeug RW-v1
+        rohantwort = frage_llm_rechnend(prompt, frage, ergebnis)
     stufen = parse_g_v1(rohantwort) if ist_g_version() else parse_scaffolding_antwort(rohantwort)
     top_chunks, prompt, stufen = _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, ergebnis, fortschritt)  # ab V12.1 (FS-v2)
     _ende("antwort", t0)
@@ -1782,6 +2387,10 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None, fortschritt=None):
         import formelsuche as _fs
         _alt = ergebnis.get("rechen_befund") or ""
         ergebnis["rechen_befund"] = (_alt + " | " if _alt else "") + _fs.notiz(ergebnis["formelsuche"])
+    if ergebnis.get("formelsuche_v19"):  # V19a: Suchbegriffe und ergänzte Chunks im Protokoll
+        import formelsuche as _fs19
+        _alt = ergebnis.get("rechen_befund") or ""
+        ergebnis["rechen_befund"] = (_alt + " | " if _alt else "") + _fs19.notiz_v19(ergebnis["formelsuche_v19"])
     ergebnis["quellen"] = [{"id": c["id"], "thema": c["thema"]} for c in top_chunks]
     ergebnis["sicherheitshinweis"] = treffer if ist_relevant else None
     return ergebnis

@@ -1,0 +1,169 @@
+"""Offline-Test V13.4 (RP-v10, RB-v5, Buchergebnisse aus dem Material). Ohne Ollama. Fälle aus dem Rechenvarianten-Test RV-v1
+(Lauf V1331, 26 Oct 2026; Entwicklungsset, nicht N100). Start (aus ~/RAG): python skripte/evaluation/teste_v134_offline.py"""
+import sys as _sys, pathlib as _pl
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
+import rag_pipeline as rpl
+import rechenpruefung as rp
+import rechenbaustein as rb
+
+ok = fail = 0
+def check(name, cond):
+    global ok, fail
+    ok += bool(cond); fail += (not cond)
+    print(("PASS " if cond else "FAIL ") + name)
+
+# --- 1. RB-v5: Schreibweisen, an denen die Nachrechnung scheiterte oder still falsch rechnete
+K = "FORMEL: x\nWERTE:\n{w}\nRECHNUNG:\n{r}\nERGEBNIS: {e}\nEINHEIT: -\nQUELLE: GRUNDWISSEN"
+F = "U 400 V I 30 A 0,85 0,9 15 1,2 50 0,1 250 2 3 450 90 36,87 1500 0,05 0,8"
+FAELLE = [("Kettenzeile P2 = P1 * η = 16000", "U = 400 V\nI = 30 A\ncosφ = 0,85\nη = 0,9", "P1 = sqrt(3) * U * I * cosφ\nP2 = P1 * η = 16000", "P2", 15900.2),
+          ("Name mit ϑ (NFKC)", "ϑ_k = 15 °C\nR_k = 1,2 Ω", "x = R_k * (235 + ϑ_k)", "x", 300.0),
+          ("Name mit µ (Mikrozeichen)", "µ = 2", "x = µ*3", "x", 6.0),
+          ("math.sqrt", "a = 2", "x = math.sqrt(a)", "x", 2 ** .5),
+          ("LaTeX \\sqrt{}", "a = 2", "x = \\sqrt{a}", "x", 2 ** .5),
+          ("LaTeX \\frac{}{}", "a = 2\nb = 3", "x = \\frac{a}{b}", "x", 2 / 3),
+          ("Prozentwert η = 90 %", "η = 90 %\nU = 450 V", "x = U*(1-η)", "x", 45.0),
+          ("≈ in Rechnung", "a = 2", "x = a ≈ 2", "x", 2.0),
+          ("Winkel mit °", "phi = 36,87 °", "x = cos(phi)", "x", 0.8),
+          ("Winkel ohne ° (Grad)", "phi = 36,87", "x = cos(phi)", "x", 0.8),
+          ("arccos, sin im Bogenmaß", "x0 = 0,8", "phi = arccos(x0)\ny = sin(phi)", "y", 0.6),
+          ("ϕ = 36,87°", "ϕ = 36,87°", "x = cos(ϕ)", "x", 0.8)]
+for name, w, r, e, soll in FAELLE:
+    res = rb.rechne_v5(rb.parse_v5(K.format(w=w, r=r, e=e)), F, "235")
+    ist = res.get("ergebnisse")
+    check(f"V13.4 RB-v5 {name}", bool(ist) and abs(ist[0][1] - soll) <= 1e-3 * abs(soll))
+alt_res = rb.rechne_v2(rb.parse_v2(K.format(w=FAELLE[0][1], r=FAELLE[0][2], e="P2")), F, "235")
+check("V13.4 RB-v2 unverändert (Kettenzeile weiter nicht auswertbar)", alt_res.get("grund") == "auswertung")
+check("V13.4 RB-v5 15 °C bleibt Temperatur (kein Bogenmaß)", rb._wert_v5("15 °C").strip() in ("15 °C", "15°C"))
+
+# --- 2. RP-v10: Wurzel über Klammer, halbe Ausdrücke neben Namen (Lösungstexte aus V1331)
+def rechen(t, v):
+    return [b["text"] for b in rp.pruefe(t, "", v) if b.get("art", "rechnung") == "rechnung"]
+R10 = "Mit den Werten ergibt sich I = √(2 · 25 Ws / 0,5 H) = 10 A."
+check("V13.4 R10: √(2·25/0,5) = 10 – v9 falscher Befund, v10 keiner", rechen(R10, "RP-v9") and not rechen(R10, "RP-v10"))
+R22 = "P2 = 200 kW · √(0,96 kW / 6 kW) = 80 kW."
+check("V13.4 R22: 200·√(0,96/6) = 80 – v10 kein Befund", rechen(R22, "RP-v9") and not rechen(R22, "RP-v10"))
+R13 = "Die Scheinleistung ergibt sich zu S = √(4972² + 3064²) = 5888 VA."
+check("V13.4 R13: √(4972²+3064²) = 5840 ≠ 5888 – echter Befund mit richtiger Zahl",
+      rechen(R13, "RP-v10") == ["√ ( 4972 ² + 3064 ² ) ergibt 5840, nicht 5888"])
+R02 = "Querschnitt A = d² · π / 4 = (1,5 mm)² · π / 4 ≈ 1,767 mm²"
+check("V13.4 R02: d² · π / 4 nicht als π/4 gelesen", rechen(R02, "RP-v9") and not rechen(R02, "RP-v10"))
+check("V13.4 R02: echter Befund 0,5·11,034/1,767 bleibt", rechen("R = 0,5 Ω·mm²/m · 11,034 m / 1,767 mm² = 2,5 Ω", "RP-v10")
+      == ["0,5 · 11,034 / 1,767 ergibt 3,122, nicht 2,5"])
+R14 = "p_Fe2 = p_Fe * (f2 / f1)^1,6 = 1,5 W/kg * (5000 Hz / 50 Hz)^1,6 ≈ 3920 W/kg."
+check("V13.4 R14: kein '… nicht 1,6', echter Befund 2377 ≠ 3920 bleibt (Anzeige 3920, nicht 392)",
+      rechen(R14, "RP-v10") == ["1,5 * ( 5000 / 50 ) ^ 1,6 ergibt 2377, nicht 3920"])
+check("V13.4 Q13-Grundfall bleibt erkannt", rechen("n = (1500 − 1425) / 1500 = 75 / 1500 = 0,02", "RP-v10") == ["75 / 1500 ergibt 0,05, nicht 0,02"])
+check("V13.4 Anzeige ganzer Zahlen: 5840 statt 584", rp._zahl_de(5840.3) == "5840" and rp._zahl_de(0.0502) == "0,0502")
+
+# --- 3. Aufgabennummer ist kein übernommener Wert (R05), LaTeX-Lesung
+FR05 = "Eine Gleichstromquelle mit η = 85 % liefert U = 400 V und I = 150 A. Welcher Innenwiderstand Ri ist zuzuordnen?"
+MAT = "Aufgabe 1.19 Ein Gleichstromquelle mit dem Wirkungsgrad 90 % hat U = 450 V, I = 200 A. ERG:: Ri = 0,25 Ω"
+check("V13.4 R05: 'Aufgabe 1.19' nicht als Wert", not rp.pruefe_uebernahme("Nach Aufgabe 1.19 ergibt sich der Innenwiderstand.", FR05, MAT, "RP-v10")
+      and rp.pruefe_uebernahme("Nach Aufgabe 1.19 ergibt sich der Innenwiderstand.", FR05, MAT))
+check("V13.4 übernommenes 0,25 Ω weiter erkannt", rp.pruefe_uebernahme("Der Innenwiderstand beträgt 0,25 Ω.", FR05, MAT, "RP-v10"))
+LATEX = "Der Strom beträgt 2,17 A.\nBegründung: $I = \\frac{500\\,\\text{W}}{230\\,\\text{V}} \\approx 2{,}17\\,\\text{A}$"
+check("V13.4 LaTeX-Antwort hat prüfbare Rechnung (v10), v9 nicht", rpl._endergebnis_v10(LATEX) and not rp._endergebnis(LATEX))
+check("V13.4 LaTeX-Rechenfehler wird gefunden", rechen(LATEX.replace("2{,}17", "3{,}17"), "RP-v10"))
+
+# --- 4. Buchergebnisse aus dem Material (Rechenfragen mit geänderten Zahlen)
+alt_v = rpl.RECHEN_PRUEFUNG_VERSION
+try:
+    rpl.RECHEN_PRUEFUNG_VERSION = "RP-v10"
+    C1 = {"id": "a", "thema": "t", "text": MAT}
+    C2 = {"id": "b", "thema": "t", "text": "Aufgabe 4.3 Bei n = 1440 min⁻¹ … **Ergebnis:** n = 2880 min⁻¹\nAufgabe 4.4 Ein Motor …"}
+    neu = rpl.ohne_buchergebnisse(FR05, [C1, C2])
+    check("V13.4 'ERG:: Ri = 0,25 Ω' entfernt", "0,25" not in neu[0]["text"] and "Aufgabe 1.19" in neu[0]["text"])
+    check("V13.4 '**Ergebnis:** n = 2880' entfernt, Folgeaufgabe bleibt", "2880" not in neu[1]["text"] and "Aufgabe 4.4" in neu[1]["text"])
+    check("V13.4 Original-Chunks unverändert (Kopien)", "0,25" in C1["text"])
+    # Form der KB v7r (Diagnose 26.10.2026): Ergebnis mitten im Fließtext, teils ohne Doppelpunkt
+    V7R = [("Wie viele z Elektronen …? Ergebnis: z = 6,25 · 10⁹ Elektrisches Feld Elektrische", "Ergebnis: z = 6,25 · 10⁹"),
+           ("damit I₃ = 0 gilt? Ergebnis: I₄ = 6 A Maschenregel In Abb. 1.9", "Ergebnis: I₄ = 6 A"),
+           ("bestimmen. Ergebnis:η = 90 % Zusammenfassung Die", "Ergebnis:η = 90 %"),
+           ("betragen? Ergebnis R₄ = R₅ = 33,33 Ω Spannungsteiler Vor", "Ergebnis R₄ = R₅ = 33,33 Ω"),
+           ("Ergebnis: Δ P = 29 MW, K = 13,05 Mio. notin Aufgabe 1.6", "Ergebnis: Δ P = 29 MW, K = 13,05 Mio."),
+           ("Ergebnis: I = 0,1 A In Abb. 1.3 sieht man 5 Linien", "Ergebnis: I = 0,1 A")]
+    check("V13.4 KB-v7r-Form: Ergebnisangabe genau erkannt, Folgetext bleibt",
+          all([t[a:b] for a, b in rpl.buchergebnisse(t)] == [soll] for t, soll in V7R))
+    check("V13.4 Fließtext 'Das Ergebnis ist eine höhere Spannung.' kein Treffer", not rpl.buchergebnisse("Das Ergebnis ist eine höhere Spannung."))
+    check("V13.4 hergeleitete Formel bleibt (fischer_pdf_0083)", not rpl.buchergebnisse(
+        "Ergebnis U_x = (U · x)/(1 + (R_s)/(R_v) x (1 - x)) (1.24a) Bei sehr hochohmiger Belastung"))
+    check("V13.4 'I = 31,76 A < 34 A' erkannt", [t[a:b] for t in ["Ergebnis: I = 31,76 A < 34 A Rundfunk Bei"]
+                                                    for a, b in rpl.buchergebnisse(t)] == ["Ergebnis: I = 31,76 A < 34 A"])
+    gleich = "Ein Gleichstromquelle mit dem Wirkungsgrad 90 % hat U = 450 V, I = 200 A. Welcher Innenwiderstand?"
+    check("V13.4 Frage = Buchaufgabe (gleiche Zahlen): Ergebnis bleibt", rpl.ohne_buchergebnisse(gleich, [C1])[0] is C1)
+    check("V13.4 keine Rechenfrage: unverändert", rpl.ohne_buchergebnisse("Was ist ein Innenwiderstand?", [C1])[0] is C1)
+    rpl.RECHEN_PRUEFUNG_VERSION = "RP-v9"
+    check("V13.4 RP-v9: unverändert", rpl.ohne_buchergebnisse(FR05, [C1])[0] is C1)
+finally:
+    rpl.RECHEN_PRUEFUNG_VERSION = alt_v
+
+# --- 5. Ablauf mit simuliertem Modell
+def antwort(l): return "STATUS: BEANTWORTET\nLÖSUNG: " + l + "\nÜBERLEGUNG: x\nHINWEIS: h"
+def rb_text(werte, rechnung, erg, quelle="GRUNDWISSEN"):
+    return f"FORMEL: f\nWERTE:\n{werte}\nRECHNUNG:\n{rechnung}\nERGEBNIS: {erg}\nEINHEIT: W\nQUELLE: {quelle}"
+def lauf(version, frage, loesung, rb1, rb2, neu=None, denk=None, chunk_text="Leistung P = I² · R."):
+    aufrufe = []
+    def llm(p, **k):
+        aufrufe.append((p, k))
+        if k.get("denken"):
+            return antwort(denk or loesung)
+        if "Du rechnest eine Aufgabe aus der Technik nach" in p:
+            return rb2 if "Schreibweise (wichtig" in p else rb1
+        return antwort(neu or loesung)
+    rpl.frage_llm = llm
+    rpl.RECHEN_PRUEFUNG_VERSION = version
+    pr = "…\n### Frage\n" + frage + "\n\nAntworte genau …"
+    st = rpl.rechnung_pruefen(pr, {"status": "BEANTWORTET", "loesung": loesung, "hinweis": "h"}, frage,
+                              [{"id": "c", "thema": "t", "score": 0.6, "text": chunk_text}])
+    return st, aufrufe
+F12 = "Ein Motor mit R = 3 Ω und L = 0,1 H liegt an U = 230 V, 50 Hz. Wie groß sind die Stromwärmeverluste P?"
+A12 = ("Die Stromwärmeverluste betragen 2890 W. Dies ergibt sich aus P = I²·R, wobei I über Z = √(R² + (ωL)²) bestimmt wird.")
+RB12 = rb_text("R = 3\nL = 0,1\nU = 230\nf = 50", "w = 2*pi*f\nZ = sqrt(R**2 + (w*L)**2)\nI = U/Z\nP = I**2*R", "P")
+RB12b = rb_text("R = 3\nL = 0,1\nU = 230\nf = 50", "Z = sqrt(R**2 + (2*pi*f*L)**2)\nP = (U/Z)**2*R", "P")
+RB12x = rb_text("R = 3\nU = 230", "P = U**2/R", "P")
+alt = rpl.frage_llm, rpl.SCAFFOLDING_VERSION, rpl.RECHEN_PRUEFUNG_VERSION
+try:
+    rpl.SCAFFOLDING_VERSION = "G-v5"
+    st, _ = lauf("RP-v9", F12, A12, RB12, RB12b)
+    check("V13.4 R12 RP-v9 reproduziert: abweichung_ungestuetzt, 2890 bleibt", st["rechen_pruefung"] == "abweichung_ungestuetzt" and "2890" in st["loesung"])
+    st, _ = lauf("RP-v10", F12, A12, RB12, RB12b)
+    check("V13.4 R12 RP-v10: zwei Nachrechnungen 159,3 W -> ersetzt mit Vermerk 'nicht wörtlich im Lernmaterial'",
+          st["rechen_pruefung"] == "ersetzt" and "159,3" in st["loesung"] and "nicht wörtlich im Lernmaterial" in st["loesung"])
+    st, _ = lauf("RP-v10", F12, A12, RB12, RB12b, neu="Die Stromwärmeverluste betragen 159,3 W. Begründung: P = I² · R.")
+    check("V13.4 R12 RP-v10: Neuschreiben mit 159,3 W angenommen", st["rechen_pruefung"] == "nachgebessert" and "159,3" in st["loesung"])
+    st, _ = lauf("RP-v10", F12, A12, RB12, RB12x)
+    check("V13.4 R12 RP-v10: zweite Nachrechnung anders -> abweichung_ungestuetzt (wie bisher)",
+          st["rechen_pruefung"] == "abweichung_ungestuetzt" and "2890" in st["loesung"] and "nicht bestätigt" in st["rechen_befund"])
+    A12r = ("Die Stromwärmeverluste betragen 2890 W. Begründung: Z = √(3² + 31,4²) = 31,54 Ω, I = 230 V / 31,54 Ω = 7,29 A, "
+            "P = 7,29² · 3 Ω = 159,4 W.")
+    st, _ = lauf("RP-v10", F12, A12r.replace("159,4 W", "159,4 W").replace("= 7,29 A", "= 9,81 A"), RB12, RB12b)
+    check("V13.4 R13-Muster: eigene Rechnung falsch, Nachrechnung bestätigt (ohne Buchformel) -> ersetzt",
+          st["rechen_pruefung"] == "ersetzt" and "159,3" in st["loesung"])
+    st, _ = lauf("RP-v9", F12, A12r.replace("= 7,29 A", "= 9,81 A"), RB12, RB12b)
+    check("V13.4 R13-Muster RP-v9 reproduziert: nicht ersetzt", st["rechen_pruefung"] != "ersetzt")
+    # R21: Kopfsatz richtig, eigene Rechnung mit Buchwert 1440 -> kein kopf_korrigiert
+    F21 = "Ein Gleichstrommotor hat n0N = 2000 min⁻¹ und nN = 1700 min⁻¹. Welche Drehzahl ergibt sich bei φ/φN = 0,6 und IAN?"
+    M21 = "Aufgabe 4.3 n0N = 2000 min⁻¹, nN = 1440 min⁻¹, φ/φN = 0,5. ERG:: n = 2880 min⁻¹"
+    A21 = ("Die Drehzahl beträgt 2833,3 min⁻¹.\nBegründung: Aus dem Buch gilt 1440/2000 = 0,72, also c_M = 1 - 0,72 = 0,28. "
+           "n/2000 = 1/0,6 - 0,28/0,36 = 0,8889, n = 0,8889 · 2000 min⁻¹ = 1777,8 min⁻¹.")
+    check("V13.4 R21: Buchwert 1440 als fremder Wert erkannt", rpl._fremde_buchwerte(A21, F21, M21) == ["1440"])
+    st, _ = lauf("RP-v9", F21, A21, "kaputt", "kaputt", chunk_text=M21)
+    check("V13.4 R21 RP-v9 reproduziert: kopf_korrigiert auf 1777,8", st["rechen_pruefung"] == "kopf_korrigiert" and "1777,8" in st["loesung"].split("\n")[0])
+    st, _ = lauf("RP-v10", F21, A21, "kaputt", "kaputt", chunk_text=M21)
+    check("V13.4 R21 RP-v10: kein kopf_korrigiert, 1777,8 nicht im ersten Satz", st["rechen_pruefung"] != "kopf_korrigiert"
+          and "1777,8" not in st["loesung"].split("\n")[0])
+    # Denkmodus: LaTeX-Antwort angenommen; Antwort ohne Rechnung angenommen, wenn die Nachrechnung genau die Zahl nennt
+    D_LATEX = ("Die Stromwärmeverluste betragen 159,3 W.\nBegründung: $Z = \\sqrt{3^2 + 31{,}42^2} = 31{,}56\\,\\Omega$, "
+               "$I = \\frac{230}{31{,}56} = 7{,}288\\,\\text{A}$, $P = 7{,}288^2 \\cdot 3 = 159{,}3\\,\\text{W}$")
+    st, _ = lauf("RP-v10", F12, A12r.replace("= 7,29 A", "= 9,81 A"), "kaputt", "kaputt", neu=A12r.replace("= 7,29 A", "= 9,81 A"), denk=D_LATEX)
+    check("V13.4 Denkmodus in LaTeX angenommen", st["rechen_pruefung"] == "denkmodus" and "159,3" in st["loesung"] and st.get("loesung_denk"))
+    st, _ = lauf("RP-v9", F12, A12r.replace("= 7,29 A", "= 9,81 A"), "kaputt", "kaputt", neu=A12r.replace("= 7,29 A", "= 9,81 A"), denk=D_LATEX)
+    check("V13.4 RP-v9 reproduziert: LaTeX-Denkantwort verworfen", st["rechen_pruefung"] == "markiert" and "keine nachprüfbare Rechnung" in st["rechen_befund"])
+    check("V13.4 Rohtexte der Nachrechnung im Protokoll (rb_roh)", "RECHNUNG" in (lauf("RP-v10", F12, A12, RB12, RB12b)[0].get("rb_roh") or ""))
+    st, _ = lauf("RP-v10", F12, A12, "FORMEL: f\nWERTE:\nU = 230\nRECHNUNG:\nP = U*zz\nERGEBNIS: P\nEINHEIT: W\nQUELLE: GRUNDWISSEN", "kaputt")
+    check("V13.4 Fehlerzeile der Nachrechnung im Befund", "[P = U*zz]" in st["rechen_befund"])
+finally:
+    rpl.frage_llm, rpl.SCAFFOLDING_VERSION, rpl.RECHEN_PRUEFUNG_VERSION = alt
+
+print(f"\n{ok} bestanden, {fail} fehlgeschlagen")
+_sys.exit(1 if fail else 0)

@@ -1,0 +1,82 @@
+{
+ "R04|Ein Akkuwerkzeug wird mit U = 24 V und I = 10 A versorgt. Der Antriebsstrang hat den Wirkungsgrad η = 70 %, an der Welle wird n = 900 min⁻¹ gemessen. Wie groß ist das Drehmoment an der Welle?": {
+  "v0": "Elektrische Leistung aus Spannung und Strom\nMechanische Leistung aus Drehzahl und Drehmoment\nWirkungsgrad als Verhältnis von mechanischer zu elektrischer Leistung",
+  "v1": "Zuerst wird die mechanische Leistung aus elektrischer Spannung und Stromstärke berechnet. Anschließend wird diese elektrische Leistung um den Wirkungsgrad reduziert, um die nutzbare mechanische Leistung zu erhalten. Schließlich ergibt sich das Drehmoment durch Division der mechanischen Leistung mit dem Winkelgeschwindigkeit des Antriebsstrangs.\n\n### Suchbegriffe\nElektrische Leistung\nMechanische Leistung\nWirkungsgrad\nDrehmoment",
+  "v2": "P_el = U · I\nP_mech = P_el · η\nP_mech = M · ω\nω = 2 · π · n / 60"
+ },
+ "R05|Eine Gleichstromquelle mit dem Wirkungsgrad η = 85 % liefert U = 230 V und I = 100 A. Welcher Innenwiderstand Ri ist der Quelle zuzuordnen?": {
+  "v0": "Wirkungsgrad Gleichstromquelle\nLeistung Quellspannung Stromstärke\nLeistung Verlustleistung Innenwiderstand",
+  "v1": "Zuerst wird die Verlustleistung berechnet, indem man den Wirkungsgrad mit der abgegebenen Nutzleistung vergleicht. Anschließend bestimmt man die gesamte von der Quelle erzeugte Leistung aus Spannung und Stromstärke. Schließlich ergibt sich der Innenwiderstand durch das Verhältnis der Verlustleistung zum Quadrat des Stroms.\n\n### Suchbegriffe\nWirkungsgrad\nNutzleistung\nGesamtleistung\nVerlustleistung\nJoule'sches Gesetz",
+  "v2": "P_ab = U · I\nP_zu = P_ab / η\nP_zu = U_q · I\nU_q = U + R_i · I"
+ },
+ "R07|Ein Kondensator wird über R = 2,2 kΩ aufgeladen. Nach t = 0,05 s beträgt der Ladestrom nur noch 25 % des Anfangswertes. Wie groß ist die Kapazität C?": {
+  "v0": "Ladungsgesetz für Kondensator\nZeitkonstante RC-Glied\nExponentieller Abfall des Stroms",
+  "v1": "Zuerst wird aus dem verbleibenden Stromanteil und der Zeitkonstante die Zeitkonstante τ bestimmt. Anschließend wird die Kapazität durch Division der berechneten Zeitkonstante mit dem gegebenen Widerstand ermittelt.\n\n### Suchbegriffe\nLadestromabfall\nZeitkonstante\nRC-Glied",
+  "v2": "i(t) = i₀ · e^(-t/(R·C))\ni(t)/i₀ = 0,25\n0,25 = e^(-t/(R·C))\nln(0,25) = -t/(R·C)"
+ },
+ "R08|Ein rundes Kupferkabel einer Elektrolyseanlage führt I = 80 kA. Wie groß ist die magnetische Flussdichte B im Abstand r = 2 m (Luft)?": {
+  "v0": "Magnetfeld um einen geraden Leiter\nBiot-Savart-Gesetz für stromdurchflossenen Draht\nFlussdichte proportional zu Strom und invers zum Abstand",
+  "v1": "Zuerst wird das Kabel als unendlich langer gerader Leiter betrachtet, um den passenden physikalischen Zusammenhang herzustellen. Anschließend wird die magnetische Flussdichte direkt aus dem Strom und dem Abstand berechnet.\n\n### Suchbegriffe\nAmpèresches Gesetz\nMagnetfeld eines Leiters",
+  "v2": "B = μ₀ · I / (2 · π · r)\nμ₀ = 4π · 10⁻⁷ V s/(A m)"
+ },
+ "R09|Ein Kranmagnet erreicht beim Aufliegen B = 1,0 T und soll 6 m lange Stahlträger (ρ = 7,8 t/m³) mit dem Querschnitt Q = 150 cm² heben. Welche luftseitige Polfläche A muss der Magnet mindestens haben?": {
+  "v0": "Magnetische Flussdichte im Luftspalt\nKraft zwischen Magnet und Stahl\nDichte aus Masse und Volumen\nQuerschnittsfläche des Trägers",
+  "v1": "Zuerst wird die Masse des Trägers aus Länge und Dichte bestimmt, daraus folgt das Gewicht als benötigte Anziehungskraft. Anschließend berechnet man den magnetischen Fluss durch Multiplikation von Feldstärke und Polfläche. Schließlich wird die erforderliche Luftspaltfläche aus dem berechneten Fluss und der gegebenen Feldstärke ermittelt.\n\n### Suchbegriffe\nMasseberechnung\nGewichtskraft\nMagnetischer Fluss\nFlächenbeziehung",
+  "v2": "F = B · A\nm = ρ · V\nV = Q · l\nF = m · g"
+ },
+ "R10|Eine Wicklung mit L = 0,5 H speichert die magnetische Energie Wm = 25 Ws. Beim Öffnen eines Schalters klingt der Strom in Δt = 5 ms linear auf null ab. Welche Überspannung tritt am Schalter auf?": {
+  "v0": "Magnetische Energie im Induktivitätsfeld\nEnergiegleichung für Spulen\nSpannungsabfall bei linearem Stromabklingen",
+  "v1": "Zuerst wird aus der gespeicherten magnetischen Energie und der Induktivität der maximale Strom berechnet. Anschließend bestimmt man die Änderungsrate des Stroms durch Division durch die Zeitdauer des Abklingens. Schließlich ergibt sich die Überspannung aus dem Produkt aus Induktivität und dieser Stromänderungsrate.\n\n### Suchbegriffe\nEnergie-Induktivitäts-Beziehung\nStromstärke-Berechnung\nInduktionsgesetz",
+  "v2": "W_m = L · I² / 2\nI = √(2 · W_m / L)\nΔU = L · (ΔI / Δt)\nΔU = L · (I / Δt)"
+ },
+ "R11|Eine Spule hat den Wirkwiderstand R = 2 Ω und die Induktivität L = 4 mH. Bei welcher Frequenz ist der induktive Blindwiderstand XL gleich R?": {
+  "v0": "Induktiver Blindwiderstand\nWirkwiderstand Spule\nResonanzfrequenz Berechnung",
+  "v1": "Zuerst wird das Verhältnis von Wirkwiderstand zu Blindwiderstand betrachtet, um den erforderlichen Wert für die Induktivität festzulegen. Anschließend wird aus diesem Widerstandsverhältnis und der gegebenen Induktivität die Frequenz berechnet, bei der beide Werte gleich sind.\n\n### Suchbegriffe\nInduktiver Blindwiderstand\nFrequenzabhängigkeit\nSpule",
+  "v2": "XL = ω · L\nω = 2 · π · f\nXL = R\nf = R / (2 · π · L)"
+ },
+ "R12|Die Wicklung eines Wechselstrommotors hat R = 3 Ω und L = 0,1 H. Wie groß sind die Stromwärmeverluste in der Wicklung bei U = 230 V, 50 Hz?": {
+  "v0": "Induktivität des Motors\nWiderstand der Wicklung\nStromstärke im Motor\nLeistungswärmeabgabe",
+  "v1": "Zuerst wird die Induktivität des Motors in den Blindwiderstand umgerechnet. Anschließend werden der ohmsche Widerstand und der Blindwiderstand vektoriell zur Impedanz zusammengefasst. Schließlich wird der Stromstärke aus Spannung und Impedanz berechnet, um daraus die Verlustleistung zu ermitteln.\n\n### Suchbegriffe\nInduktivität\nBlindwiderstand\nImpedanz\nStromstärke\nLeistung",
+  "v2": "Z = √(R² + (ω · L)²)\nω = 2 · π · f\nP_V = R · I²\nI = U / Z"
+ },
+ "R13|An einer 230-V-Leitung hängen ein Heizlüfter mit I1 = 6 A (cos φ = 1), ein Verbraucher mit I2 = 12 A (cos φ = 0,8, induktiv) und ein Verbraucher mit I3 = 10 A (cos φ = 0,5, induktiv). Wie groß ist der Zuleitungsstrom?": {
+  "v0": "Gesetz von Ohm für Wechselstrom\nVektoraddition der Teilströme\nLeistungsfaktor und Blindleistung",
+  "v1": "Zuerst wird der Blindstrom des induktiven Verbrauchers berechnet, danach werden alle Wirkströme vektoriell zur Gesamtstromstärke aufaddiert. Abschließend wird die resultierende Stromgröße als Vektorsumme aller Teilströme bestimmt.\n\n### Suchbegriffe\nBlindstrom\nWirkstrom\nVektorielle Addition\nGesamtstrom",
+  "v2": "I_1' = I_1 · cos(φ_1)\nI_2' = I_2 · cos(φ_2)\nI_3' = I_3 · cos(φ_3)\nI_Z = sqrt((I_1' + I_2' + I_3')^2 + (I_2'' + I_3'')^2)"
+ },
+ "R14|Eine Induktivität braucht bei f1 = 50 Hz einen Kern aus Elektroblech mit m = 0,2 kg und den spezifischen Verlusten pFe = 1,5 W/kg. Bei gleicher Flussdichte soll sie für f2 = 5 kHz ausgelegt werden; die Eisenmasse sinkt mit f1/f2, die spezifischen Verluste steigen mit (f2/f1)^1,6. Wie groß sind die Eisenverluste bei 50 Hz und bei 5 kHz?": {
+  "v0": "Eisenverluste aus Masse und spezifischem Verlust\nMasse umgekehrt proportional zur Frequenz\nSpezifische Verluste proportional zur Frequenz hoch 1,6",
+  "v1": "Zuerst werden die Eisenverluste bei der Frequenz von 50 Hz berechnet, indem man Masse mit spezifischen Verlusten multipliziert. Anschließend wird die neue Masse für 5 kHz bestimmt, da sie umgekehrt proportional zur Frequenz ist. Schließlich rechnet man diese neue Masse mit den neuen spezifischen Verlusten aus, die mit einer Potenzfunktion der Frequenz steigen.\n\n### Suchbegriffe\nEisenverlustleistung\nMassenverhältnis\nFrequenzabhängigkeit\nSpezifische Eisenverluste",
+  "v2": "P_Fe_1 = m · pFe_1\npFe_2 = pFe_1 · (f_2/f_1)^1,6\nm_2 = m · (f_1/f_2)\nP_Fe_2 = m_2 · pFe_2"
+ },
+ "R15|Ein Leistungstransistor hat RthJC = 20 K/W, der Kühlkörper RthCU = 30 K/W. Die Umgebungstemperatur beträgt 35 °C, die Sperrschicht darf höchstens 125 °C erreichen. Wie groß darf die Verlustleistung Pv werden?": {
+  "v0": "Thermischer Widerstand Bauteil Kühlkörper\nTemperaturdifferenz Leistung Verlustleistung\nMaximale Sperrschichttemperatur Umgebungstemperatur",
+  "v1": "Zuerst wird der gesamte Wärmewiderstand vom Transistor bis zur Umgebung berechnet, indem man den Widerstand des Bauteils und den des Kühlkörpers addiert. Anschließend wird mit diesem Gesamtwiderstand und der erlaubten Temperaturdifferenz die maximale Verlustleistung ermittelt.\n\n### Suchbegriffe\nThermischer Widerstand\nWärmewiderstandssumme\nTemperaturdifferenz\nVerlustleistung",
+  "v2": "Pv = (Tj_max - T_U) / (RthJC + RthCU)\nTj_max = 125 °C\nT_U = 35 °C\nRthJC = 20 K/W\nRthCU = 30 K/W"
+ },
+ "R17|Ein Linearmotor mit U = 400 V, I = 16 A, cos φ = 0,8 und η = 0,75 bewegt eine Schubstange. Bei der synchronen Geschwindigkeit vs = 6 m/s wird der Schlupf s = 0,4 eingestellt. Mit welcher Schubkraft kann man etwa rechnen?": {
+  "v0": "Leistung am Motoranschluss\nElektrische Wirkleistung\nMechanische Nennleistung\nSchubkraft aus Leistung und Geschwindigkeit",
+  "v1": "Zuerst wird die elektrische Wirkleistung berechnet, daraus folgt die mechanische Nennleistung unter Berücksichtigung des Wirkungsgrads und schließlich die Schubkraft durch Umrechnung der Leistung bei der synchronen Geschwindigkeit auf die tatsächliche Fahrgeschwindigkeit.\n\n### Suchbegriffe\nLinearmotor\nWirkleistung\nMechanische Leistung\nSchubkraft",
+  "v2": "P_el = U · I · cos φ\nP_mech = P_el · η\nF = (P_mech · s) / v_s"
+ },
+ "R18|Ein Generator mit dem Innenwiderstand Ri = 0,15 Ω versorgt über Leitungen mit zusammen RL = 0,05 Ω einen Verbraucher. Wie groß muss dessen Widerstand RV sein, damit er 80 % der Generatorleistung erhält?": {
+  "v0": "Leistung am Verbraucher\nGeneratorInnenwiderstand\nLeitungsverlustwiderstand",
+  "v1": "Zuerst wird der Gesamtwiderstand des Systems gebildet, indem Innenwiderstand und Leitungswiderstand addiert werden. Anschließend berechnet man den erforderlichen Verbraucherwiderstand so, dass der Spannungsabfall an diesem Widerstand genau dem Verhältnis von 80 % zur Gesamtspannung entspricht.\n\n### Suchbegriffe\nGesetz von Ohm\nReihenschaltung\nSpannungsteiler",
+  "v2": "P_G = U · I\nU = R_i · I + R_L · I + R_V · I\nP_V = P_G · 0,8\nR_V = (P_V / I) - (R_i + R_L)"
+ },
+ "R20|Ein Pumpenmotor mit Käfigläufer hat den Kippschlupf sK = 0,15. Um das Stillstandsmoment zu erhöhen, wird der Läuferwiderstand Rr durch Abdrehen der Kurzschlussringe um 25 % vergrößert. Um welchen Faktor MstR/Mst steigt das Stillstandsmoment?": {
+  "v0": "Kippschlupf am Käfigläufer\nStillstandsmotorwiderstand\nStillstandsmoment des Motors",
+  "v1": "Zuerst wird aus dem Kippschlupf und dem ursprünglichen Läuferwiderstand der neue Schlupf am Stillstand berechnet, danach folgt die Bestimmung des neuen Läuferwiderstands durch den gegebenen Faktor. Abschließend wird das Verhältnis der beiden Stillstandsmomente gebildet, um den gesuchten Steigerungsfaktor zu erhalten.\n\n### Suchbegriffe\nKippschlupf\nLäuferwiderstand\nStillstandsmoment\nSchlupfverhältnis",
+  "v2": "sK = (Rr / sqrt(Rr^2 + (Xr)^2))\nRr_neu = Rr * (1 + 0,25)\nMstR = Mst_nominal * (Rr_neu / sqrt(Rr_neu^2 + (Xr)^2))"
+ },
+ "R21|Ein Gleichstrom-Kleinmotor hat die Leerlaufdrehzahl n0N = 2000 min⁻¹ und bei Bemessungsankerstrom IAN die Drehzahl nN = 1700 min⁻¹. Welche Drehzahl stellt sich bei Feldschwächung auf Φ/ΦN = 0,6 und weiterhin IAN ein?": {
+  "v0": "Drehzahl proportional zu Spannung über Polfluss\nDrehzahl umgekehrt proportional zum magnetischen Fluss\nFlussänderung durch Feldschwächung des Ankers",
+  "v1": "Zuerst wird das Verhältnis der Drehzahlen zur Änderung des magnetischen Flusses bestimmt, da die Drehzahl eines Gleichstrommotors umgekehrt proportional zum Fluss ist. Anschließend wird dieses Verhältnis mit dem gegebenen neuen Flussverhältnis multipliziert, um die gesuchte neue Drehzahl zu berechnen.\n\n### Suchbegriffe\nGleichstrommotor\nDrehzahl-Fluss-Gesetz\nFeldschwächung",
+  "v2": "n_N / n_0N = (Φ_0N / Φ_N) · (I_AN / I_0N)\nn_F / n_N = (Φ_N / Φ_F) · (I_AN / I_AN)\nn_F = n_N · (Φ_N / Φ_F)"
+ },
+ "R22|Ein Transformator hat bei rein ohmscher Bemessungslast die Abgabeleistung P2N = 250 kW, die Kupferverluste PCuN = 4,5 kW und die Eisenverluste PFe = 0,8 kW. Wie groß sind der Wirkungsgrad bei Bemessungslast ηN und der maximale Wirkungsgrad ηmax, und bei welcher Abgabeleistung tritt ηmax auf?": {
+  "v0": "Wirkungsgrad aus Verlusten und Leistung\nKupferverluste bei Bemessungslast\nEisenverluste als konstante Größe\nMaximaler Wirkungsgrad bei gleichem Verlust",
+  "v1": "Zuerst wird der Wirkungsgrad bei Bemessungslast berechnet, indem die Summe aus Kupfer- und Eisenverlusten von der abgegebenen Leistung abgezogen und durch diese geteilt wird. Anschließend werden die Verluste so umgeformt, dass das Verhältnis zwischen den verlustfreien Leistungen gleich dem Produkt aus dem quadratischen Lastfaktor und dem Verhältnis der Verluste ist. Schließlich wird dieser Ausdruck nach dem Lastfaktor aufgelöst, um die zugehörige Abgabeleistung für den maximalen Wirkungsgrad zu bestimmen.\n\n### Suchbegriffe\nWirkungsformel\nVerlustsumme\nLastfaktor\nKupferverluste\nEisenverluste\nMaximalwert",
+  "v2": "P2N = U2 · I2 · cos φ2\nPCuN = R'2 · I2²\nPFe = const.\nηN = P2N / (P2N + PCuN + PFe)\nηmax = P2N,max / (P2N,max + √(PCuN · PFe))\nP2N,max = √(PCuN · PFe)"
+ }
+}

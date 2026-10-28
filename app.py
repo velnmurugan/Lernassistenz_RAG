@@ -213,6 +213,10 @@ def zeige_loesung(loesung, markiert=False):
     antwort, begruendung, vermerk = zerlege_loesung(loesung)
     if markiert == "ersetzt":
         st.markdown(f"🔁 **Lösung aus der Python-Nachrechnung (bitte mit dem Buch prüfen):** {antwort}")
+    elif markiert == "denkmodus":
+        st.markdown(f"◔ **Lösung (im Denkmodus neu gerechnet, bitte mit dem Buch prüfen):** {antwort}")
+    elif markiert == "ungeprueft":
+        st.markdown(f"◔ **Lösung (Rechnung konnte nicht nachgeprüft werden):** {antwort}")
     else:
         st.markdown(f"⚠️ **Lösung (rechnerisch nicht bestätigt):** {antwort}" if markiert else f"✅ **Lösung:** {antwort}")
     if begruendung:
@@ -439,6 +443,8 @@ def vertrauens_zeile(eintrag, bildfrage=False, thema_fehlt=False):
         chips.append("⚠ Antwort durch Nachrechnung ersetzt")
     elif rp == "abweichung_ungestuetzt":
         chips.append("◔ unabhängige Nachrechnung weicht ab (Formel nicht im Lernmaterial belegt) – bitte prüfen")
+    elif rp == "ungeprueft":
+        chips.append("◔ Rechnung konnte nicht nachgeprüft werden – bitte selbst nachrechnen")
     elif rp == "denkmodus":
         chips.append("◔ im Denkmodus neu gerechnet (Rechenschritte nachgerechnet) – bitte mit dem Buch prüfen")
     elif rp == "kopf_korrigiert":
@@ -556,7 +562,7 @@ def zeige_eintrag(idx, eintrag, ist_letzter):
         elif not eintrag["vollstaendig_geparst"]:
             # Fallback: Modell hat das Stufen-Format nicht eingehalten,
             # volle Antwort direkt zeigen statt mit leeren Stufen zu verwirren.
-            zeige_loesung(eintrag["loesung"], {"markiert": True, "ersetzt": "ersetzt"}.get(eintrag.get("rechen_pruefung"), False))
+            zeige_loesung(eintrag["loesung"], {"markiert": True, "ersetzt": "ersetzt", "denkmodus": "denkmodus", "ungeprueft": "ungeprueft"}.get(eintrag.get("rechen_pruefung"), False))
         else:
             aktuelle_stufe = 2 if st.session_state.get("loesung_direkt") else st.session_state[stufe_key]
             schrittleiste(aktuelle_stufe, bool(versuche))
@@ -564,7 +570,7 @@ def zeige_eintrag(idx, eintrag, ist_letzter):
             zeige_ideen(versuche, 1)
 
             if aktuelle_stufe >= 2:
-                zeige_loesung(eintrag["loesung"], {"markiert": True, "ersetzt": "ersetzt"}.get(eintrag.get("rechen_pruefung"), False))
+                zeige_loesung(eintrag["loesung"], {"markiert": True, "ersetzt": "ersetzt", "denkmodus": "denkmodus", "ungeprueft": "ungeprueft"}.get(eintrag.get("rechen_pruefung"), False))
 
             if (ist_letzter and aktuelle_stufe < 2 and len(versuche) < MAX_VERSUCHE
                     and idee_moeglich(eintrag)):
@@ -753,6 +759,12 @@ def seite_chat():
                 _rp.RETRIEVAL_FRAGE = suche_frage if bild else None
                 try:
                     ergebnis = beantworte_frage(frage, CHUNKS, fortschritt=fortschritt_anzeige(status))
+                except Exception as fehler:  # V13.3.1: kein Abbruch mit Traceback (z. B. Zeitüberschreitung des Sprachmodells)
+                    print(f"FEHLER beantworte_frage: {type(fehler).__name__}: {fehler}")
+                    status.update(label="Keine Antwort erzeugt", state="error", expanded=False)
+                    st.error("Die Antwort konnte gerade nicht erzeugt werden (das Sprachmodell hat nicht rechtzeitig "
+                             "geantwortet). Bitte stelle die Frage noch einmal.")
+                    st.stop()
                 finally:
                     _rp.BILD_ANHANG = None
                     _rp.RETRIEVAL_FRAGE = None

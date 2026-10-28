@@ -1,0 +1,165 @@
+"""Offline-Test V14 (Rechenwerkzeug RW-v1, Ollama tool calling). Ohne Ollama: requests.post wird ersetzt.
+Start (aus ~/RAG): python skripte/evaluation/teste_v14_offline.py"""
+import sys as _sys, pathlib as _pl, json
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
+import rag_pipeline as rpl
+
+ok = fail = 0
+def check(name, cond):
+    global ok, fail
+    ok += bool(cond); fail += (not cond)
+    print(("PASS " if cond else "FAIL ") + name)
+
+# --- 1. Werkzeug selbst
+t, w = rpl._rw_rechne({"ausdruck": "500 * (0.5 / (2*pi*1000/60))**2"})
+check("V14 Werkzeug: F62-Rechnung 0,0114", w is not None and abs(w - 0.011399) < 1e-5 and t == "0.0113986")
+t, w = rpl._rw_rechne({"ausdruck": "J0 + J1 * (1/10)^2", "werte": {"J0": 0.02, "J1": "1,5"}})
+check("V14 Werkzeug: Namen aus 'werte', ^ und Dezimalkomma -> 0,035", w is not None and abs(w - 0.035) < 1e-12)
+t, w = rpl._rw_rechne('{"ausdruck": "sqrt(3) * 400 * 16 * cos(36.87)"}')
+check("V14 Werkzeug: Argumente als JSON-Text, Winkel in Grad", w is not None and abs(w - 8868.1) < 1)
+t, w = rpl._rw_rechne({"ausdruck": "1,5 mm + 2 * 0,25 mm"})
+check("V14 Werkzeug: Einheiten werden ignoriert", w is not None and abs(w - 2.0) < 1e-12)
+t, w = rpl._rw_rechne({"ausdruck": "__import__('os').system('ls')"})
+check("V14 Werkzeug: kein Code, nur Rechenausdrücke", w is None and t.startswith("Fehler"))
+t, w = rpl._rw_rechne({"ausdruck": "x * 2"})
+check("V14 Werkzeug: unbekannter Name -> Fehlermeldung an das Modell", w is None and "nicht auswertbar" in t)
+
+# --- 2. Ablauf mit simuliertem /api/chat
+class R:
+    def __init__(self, daten): self.daten = daten
+    def raise_for_status(self): pass
+    def json(self): return self.daten
+ENDE = ("STATUS: BEANTWORTET\nLÖSUNG: Das Ersatzträgheitsmoment beträgt 0,0114 kg·m². Begründung: ω = 2 · π · 1000/60 s⁻¹ = 104,7 s⁻¹; "
+        "J_e = 500 kg · (0,5 / 104,7)² = 0,0114 kg·m².\nÜBERLEGUNG: x\nHINWEIS: Wie hängen Winkelgeschwindigkeit und Drehzahl zusammen?")
+gesendet = []
+def post_chat(url, json=None, timeout=None):
+    gesendet.append((url, json))
+    if url.endswith("/api/chat"):
+        n_tool = sum(1 for m in json["messages"] if m["role"] == "tool")
+        if n_tool == 0:
+            return R({"message": {"role": "assistant", "content": "", "tool_calls": [
+                {"function": {"name": "rechne", "arguments": {"ausdruck": "2*pi*1000/60"}}}]}})
+        if n_tool == 1:
+            return R({"message": {"role": "assistant", "content": "", "tool_calls": [
+                {"function": {"name": "rechne", "arguments": {"ausdruck": "500*(0.5/104.72)**2"}}}]}})
+        return R({"message": {"role": "assistant", "content": ENDE}})
+    return R({"response": "STATUS: BEANTWORTET\nLÖSUNG: normal\nÜBERLEGUNG: x\nHINWEIS: h"})
+alt = rpl.requests.post, rpl.RECHENWERKZEUG_VERSION, rpl.SCAFFOLDING_VERSION
+FRAGE = "Eine Last von 500 kg bewegt sich mit 0,5 m/s geradlinig; der Motor dreht mit 1000 1/min. Welches Ersatzträgheitsmoment hat die Last an der Motorwelle?"
+try:
+    rpl.requests.post = post_chat
+    rpl.SCAFFOLDING_VERSION = "G-v5"
+    rpl.RECHENWERKZEUG_VERSION = "RW-v1"
+    erg = {}
+    roh = rpl.frage_llm_rechnend("PROMPT", FRAGE, erg)
+    check("V14 Ablauf: Endantwort nach zwei Werkzeugaufrufen", roh == ENDE and erg["werkzeug"] == "RW-v1 genutzt, 2 Aufrufe")
+    letzte = gesendet[-1][1]
+    check("V14 Ablauf: Werkzeugergebnisse gehen an das Modell zurück (104.72, 0.0113986)",
+          [m["content"] for m in letzte["messages"] if m["role"] == "tool"] == ["104.72", "0.0113986"])
+    check("V14 Ablauf: Hinweis auf das Werkzeug im Prompt, think aus, T=0/seed", "Werkzeug „rechne“" in letzte["messages"][0]["content"]
+          and letzte["think"] is False and letzte["options"]["temperature"] == 0 and letzte["options"]["seed"] == 42)
+    check("V14 Ablauf: Protokoll der Aufrufe", [p[0] for p in erg["werkzeug_protokoll"]] == ["2*pi*1000/60", "500*(0.5/104.72)**2"])
+    erg = {}
+    rpl.frage_llm_rechnend("PROMPT", "Was ist Remanenz?", erg)
+    check("V14 keine Rechenfrage: normaler Aufruf, kein Werkzeug", gesendet[-1][0].endswith("/api/generate") and "werkzeug" not in erg)
+    rpl.RECHENWERKZEUG_VERSION = ""
+    erg = {}
+    rpl.frage_llm_rechnend("PROMPT", FRAGE, erg)
+    check("V14 RW aus: normaler Aufruf", gesendet[-1][0].endswith("/api/generate") and "werkzeug" not in erg)
+    rpl.RECHENWERKZEUG_VERSION = "RW-v1"
+    def post_400(url, json=None, timeout=None):
+        if url.endswith("/api/chat"):
+            raise rpl.requests.exceptions.HTTPError("400 Client Error: model does not support tools")
+        return R({"response": "NORMAL"})
+    rpl.requests.post = post_400
+    erg = {}
+    check("V14 Modell ohne tools -> Rückfall auf normalen Aufruf", rpl.frage_llm_rechnend("PROMPT", FRAGE, erg) == "NORMAL"
+          and erg["werkzeug"].startswith("RW-v1 Rückfall") and erg["werkzeug_protokoll"][0][0] == "FEHLER")
+    def post_endlos(url, json=None, timeout=None):
+        return R({"message": {"role": "assistant", "content": "", "tool_calls": [{"function": {"name": "rechne", "arguments": {"ausdruck": "1+1"}}}]}}) \
+            if url.endswith("/api/chat") else R({"response": "NORMAL"})
+    rpl.requests.post = post_endlos
+    erg = {}
+    check("V14 Endlosschleife begrenzt -> Rückfall", rpl.frage_llm_rechnend("PROMPT", FRAGE, erg) == "NORMAL"
+          and "mehr als" in erg["werkzeug_protokoll"][-1][1])
+finally:
+    rpl.requests.post, rpl.RECHENWERKZEUG_VERSION, rpl.SCAFFOLDING_VERSION = alt
+
+# --- 3. RW-v2 (Systemnachricht, zwei Schritte) und RW-v3 (Platzhalter, kein tool calling)
+gesendet.clear()
+def post_v2(url, json=None, timeout=None):
+    gesendet.append((url, json))
+    if url.endswith("/api/chat"):
+        if "tools" not in json:  # Schritt 2
+            return R({"message": {"role": "assistant", "content": ENDE}})
+        if not any(m["role"] == "tool" for m in json["messages"]):
+            return R({"message": {"role": "assistant", "content": "", "tool_calls": [
+                {"function": {"name": "rechne", "arguments": {"ausdruck": "2*pi*1000/60"}}}]}})
+        return R({"message": {"role": "assistant", "content": "Rechnung fertig."}})
+    return R({"response": "NORMAL"})
+ROH3 = ("STATUS: BEANTWORTET\nLÖSUNG: Das Ersatzträgheitsmoment beträgt [[J]] kg·m². Begründung: ω = 2 · π · n = [[w = 2*pi*1000/60]] s⁻¹; "
+        "J_e = 500 kg · (0,5 m/s / [[w]] s⁻¹)² = [[J = 500 kg*(0,5/w)**2]] kg·m².\nÜBERLEGUNG: x\nHINWEIS: h")
+def post_v3(url, json=None, timeout=None):
+    gesendet.append((url, json))
+    return R({"response": ROH3})
+try:
+    rpl.SCAFFOLDING_VERSION = "G-v5"
+    rpl.RECHENWERKZEUG_VERSION = "RW-v2"
+    rpl.requests.post = post_v2
+    erg = {}
+    roh = rpl.frage_llm_rechnend("PROMPT", FRAGE, erg)
+    check("V14b RW-v2: Systemnachricht, Schritt 1 mit Werkzeug, Schritt 2 ohne -> Endantwort", roh == ENDE
+          and gesendet[0][1]["messages"][0]["role"] == "system" and "tools" in gesendet[0][1] and "tools" not in gesendet[-1][1]
+          and erg["werkzeug"] == "RW-v2 genutzt, 1 Aufrufe")
+    rpl.RECHENWERKZEUG_VERSION = "RW-v3"
+    rpl.requests.post = post_v3
+    erg = {}
+    roh = rpl.frage_llm_rechnend("PROMPT", FRAGE, erg)
+    check("V14b RW-v3: Platzhalter ersetzt (104,7 und 0,0114 auch im ersten Satz)", "beträgt 0,0114 kg·m²" in roh and "104,7 s⁻¹" in roh
+          and "[[" not in roh and erg["werkzeug"] == "RW-v3 genutzt, 2 Aufrufe" and "[[Name = Ausdruck]]" in gesendet[-1][1]["prompt"])
+    ROH3 = ROH3.replace("[[J = 500 kg*(0,5/w)**2]]", "[[J = 500*(0,5/q)**2]]")
+    erg = {}
+    roh = rpl.frage_llm_rechnend("PROMPT", FRAGE, erg)
+    check("V14b RW-v3: fehlerhafter Platzhalter -> Rückfall auf normalen Aufruf", "Rückfall" in erg["werkzeug"] and len(gesendet) >= 2)
+    ROH3 = "STATUS: BEANTWORTET\nLÖSUNG: Es sind 4 Ws.\nÜBERLEGUNG: x\nHINWEIS: h"
+    erg = {}
+    check("V14b RW-v3: ohne Platzhalter bleibt die Antwort", rpl.frage_llm_rechnend("PROMPT", FRAGE, erg) == ROH3 and "keine Platzhalter" in erg["werkzeug"])
+finally:
+    rpl.requests.post, rpl.RECHENWERKZEUG_VERSION, rpl.SCAFFOLDING_VERSION = alt
+
+# --- 3b. RW-v4: gegebene Größen als [[Name = Zahl]], Startwerte aus der Frage
+v = rpl.rw4_vorgaben("Die Wicklung hat R = 3 Ω und L = 0,1 H. Verluste bei U = 230 V, 50 Hz? Q = 6,25·10^18 Teilchen, x=2.")
+check("V14c RW-v4: Startwerte aus der Frage (Komma, Zehnerpotenz, ohne Einheit)",
+      v == {"R": 3.0, "L": 0.1, "U": 230.0, "Q": 6.25e18, "x": 2.0})
+FRAGE4 = "Ein Gerät liegt an U = 230 V und nimmt I = 0,69 A auf. Wie groß ist die Leistung?"
+ROH4 = "STATUS: BEANTWORTET\nLÖSUNG: Die Leistung beträgt [[P]] W. Begründung: P = U · I = [[P = U * I]] W.\nÜBERLEGUNG: x\nHINWEIS: h"
+def post_v4(url, json=None, timeout=None):
+    gesendet.append((url, json))
+    return R({"response": ROH4})
+try:
+    rpl.SCAFFOLDING_VERSION = "G-v5"
+    rpl.RECHENWERKZEUG_VERSION = "RW-v4"
+    rpl.requests.post = post_v4
+    gesendet.clear()
+    erg = {}
+    roh = rpl.frage_llm_rechnend("PROMPT", FRAGE4, erg)
+    check("V14c RW-v4: Namen aus der Frage werden eingesetzt (158,7 W)", "beträgt 158,7 W" in roh and "[[" not in roh
+          and erg["werkzeug"] == "RW-v4 genutzt, 1 Aufrufe" and "gegebene Größe" in gesendet[0][1]["prompt"] and erg["werkzeug_roh"] == "")
+    ROH4 = "STATUS: BEANTWORTET\nLÖSUNG: [[U = 230]] [[I = 0,69]] P = [[P = U*I]] W, W = [[W = P*3]] Wh.\nÜBERLEGUNG: x\nHINWEIS: h"
+    erg = {}
+    roh = rpl.frage_llm_rechnend("PROMPT", "Leistung und Energie in 3 h bei 230 V und 0,69 A?", erg)
+    check("V14c RW-v4: gegebene Größen als Platzhalter (476,1 Wh)", "476,1 Wh" in roh and erg["werkzeug"] == "RW-v4 genutzt, 4 Aufrufe")
+    ROH4 = "STATUS: BEANTWORTET\nLÖSUNG: P = [[P = U * Z]] W.\nÜBERLEGUNG: x\nHINWEIS: h"
+    erg = {}
+    gesendet.clear()
+    rpl.frage_llm_rechnend("PROMPT", FRAGE4, erg)
+    check("V14c RW-v4: unbekannter Name -> Rückfall, Rohtext protokolliert", "Rückfall" in erg["werkzeug"]
+          and "[[P = U * Z]]" in erg["werkzeug_roh"] and len(gesendet) == 2)
+finally:
+    rpl.requests.post, rpl.RECHENWERKZEUG_VERSION, rpl.SCAFFOLDING_VERSION = alt
+
+# --- 4. Ohne LERNASSISTENT_RW ändert sich nichts
+check("V14 Standard: RW aus", rpl.RECHENWERKZEUG_VERSION in ("", None) or rpl.RECHENWERKZEUG_VERSION == __import__("os").environ.get("LERNASSISTENT_RW"))
+
+print(f"\n{ok} bestanden, {fail} fehlgeschlagen")
+_sys.exit(1 if fail else 0)

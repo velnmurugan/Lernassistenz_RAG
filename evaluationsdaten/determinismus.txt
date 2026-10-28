@@ -1,0 +1,15 @@
+
+=== Frage 61
+direkt hintereinander (3x): ['e7b48536', '64bea4dd', '64bea4dd'] -> UNTERSCHIEDLICH
+mit anderer Frage dazwischen (3x): ['64bea4dd', '64bea4dd', '64bea4dd'] -> identisch
+direkt = mit Zwischenfrage: False
+
+=== Frage 55
+direkt hintereinander (3x): ['a7be8244', 'ab05910b', 'ab05910b'] -> UNTERSCHIEDLICH
+mit anderer Frage dazwischen (3x): ['ab05910b', 'ab05910b', 'ab05910b'] -> identisch
+direkt = mit Zwischenfrage: False
+
+=== Frage 1
+direkt hintereinander (3x): ['6ce563be', '131b55c7', '131b55c7'] -> UNTERSCHIEDLICH
+mit anderer Frage dazwischen (3x): ['131b55c7', '131b55c7', '131b55c7'] -> identisch
+direkt = mit Zwischenfrage: False

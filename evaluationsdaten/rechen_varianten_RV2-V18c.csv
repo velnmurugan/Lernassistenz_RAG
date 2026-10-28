@@ -1,0 +1,92 @@
+nr,vorlage,richtig,erwartet,gefunden,status,rechen_pruefung,sekunden,loesung,rechen_befund,quellen,falle,fehler,buchergebnisse_entfernt,loesung_original,loesung_denk,rb_roh,werkzeug,werkzeug_protokoll,werkzeug_roh,werkzeug_vorgaben,werkzeug_neu
+R04,Aufgabe 1.12,ja,1.71887 N·m,1.718 36 8 0.75 216,BEANTWORTET,kopf_korrigiert,121.7,"Das Drehmoment beträgt 1,718 N·m. Begründung: Zuerst wird die Abgabeleistung P₂ mit der Formel P₂ = U · I · η berechnet (P₂ = 36 V · 8 A · 0,75 = 216 W). Anschließend wird das Drehmoment M aus dem Zusammenhang P = 2 π n M ermittelt. Die Drehzahl n muss in die Einheit s⁻¹ umgerechnet werden: n = 1200 min⁻¹ / 60 = 20 s⁻¹. Durch Umstellen der Formel ergibt sich M = P₂ / (2 π n) = 216 W / (2 · π · 20 s⁻¹) ≈ 1,718 N·m.","Der erste Satz nennt 20,4, die Rechnung ergibt aber 1,718; Die unabhängige Python-Nachrechnung (P_2 = U * I; P_2 = eta * P_1; P_1 = U * I; M = (60 * P_2) / (2 * pi * n); P_2 = eta * P_1) ergibt M = 103,1 Nm, die Lösung nennt 20,4 | RB-v4 Ergebnis M = 103,1 Nm | Formel nicht im Material | Retry (RB-v3) nach wert_unlesbar [n = 1200/min]: ok | Bestätigung: nicht bestätigt (M = 1,719 Nmm)",fischer_pdf_0064; fischer_pdf_0420; fischer_pdf_0062; pdf_3491,Drehzahl in 1/s umrechnen; η auf Aufnahmeleistung anwenden,,2,"Das Drehmoment beträgt 20,4 N·m. Begründung: Zuerst wird die Abgabeleistung P₂ mit der Formel P₂ = U · I · η berechnet (P₂ = 36 V · 8 A · 0,75 = 216 W). Anschließend wird das Drehmoment M aus dem Zusammenhang P = 2 π n M ermittelt. Die Drehzahl n muss in die Einheit s⁻¹ umgerechnet werden: n = 1200 min⁻¹ / 60 = 20 s⁻¹. Durch Umstellen der Formel ergibt sich M = P₂ / (2 π n) = 216 W / (2 · π · 20 s⁻¹) ≈ 1,718 N·m.",,"FORMEL: P_2 = U * I; P_2 = eta * P_1; P_1 = U * I; M = (60 * P_2) / (2 * pi * n); P_2 = eta * P_1
+WERTE:
+U = 36 V
+I = 8 A
+eta = 0,75
+n = 1200/min
+RECHNUNG:
+P_1 = U * I
+P_2 = eta * P_1
+M = (60 * P_2) / (2 * pi * n)
+ERGEBNIS: M
+EINHEIT: Nmm
+QUELLE: P = 2 * pi * n ||| FORMEL: P_2 = U * I; P_2 = eta * P_1; P_1 = U * I; M = (60 * P_2) / (2 * pi * n); P_2 = eta * P_1
+WERTE:
+U = 36 V
+I = 8 A
+eta = 0,75
+n = 1200/60 1/s
+P_1 = U * I W
+P_2 = eta * P_1 W
+M = (60 * P_2) / (2 * pi * n) Nm
+RECHNUNG: P_1 = 36 * 8
+P_2 = 0,75 * P_1
+M = (60 * P_2) / (2 * pi * (1200/60))
+ERGEBNIS: M
+EINHEIT: Nm
+QUELLE: P = 2 * pi * n ||| FORMEL: P_2 = eta * U * I; P_2 = 2 * pi * n * M / 60
+WERTE:
+U = 36 V
+I = 8 A
+eta = 0,75
+n = 1200/60 1/s
+RECHNUNG: P_2 = 0,75 * 36 * 8
+P_2 = 2 * pi * (1200/60) * M / 60
+M = P_2 / (2 * pi * (1200/60))
+ERGEBNIS: M
+EINHEIT: Nmm
+QUELLE: P = 2 π n M",,,,,
+R10,Aufgabe 1.36,ja,2000 V,2000 2 2 10 0.8,BEANTWORTET,nachgebessert,82.5,"Die Überspannung beträgt 2000 V. Begründung: Zuerst wird der Strom $I$ aus der magnetischen Energie berechnet ($I = \sqrt{\frac{2 \cdot W_m}{L}} = \sqrt{\frac{2 \cdot 10\,\text{Ws}}{0,8\,\text{H}}} = 5\,\text{A}$). Anschließend wird die Überspannung ermittelt ($U_{Ü} = \frac{L \cdot I}{\Delta t} = \frac{0,8\,\text{H} \cdot 5\,\text{A}}{2\,\text{ms}} = \frac{4\,\text{Vs}}{0,002\,\text{s}} = 2000\,\text{V}$).","Der erste Satz nennt 40, die Rechnung ergibt aber 2000; Die unabhängige Python-Nachrechnung (U = L * (ΔI / Δt) mit ΔI = I_max und I_max = sqrt(2 * W_m / L)) ergibt U = 2000 V, die Lösung nennt 40 | RB-v4 Ergebnis U = 2000 V | Formel nicht im Material",fischer_pdf_0233; fischer_pdf_0616; fischer_pdf_0461; pdf_2716,"erst I aus W=½LI², dann U=L·ΔI/Δt",,3,"Die Überspannung beträgt 40 V.
+Begründung: Aus dem Lernmaterial (Aufgabe 1.36 und Beispiel 2.4) ergibt sich der Rechenweg zur Bestimmung der magnetischen Energie $W_m = \frac{1}{2} L \cdot I^2$ und die Formel für die Überspannung bei linearem Stromabfall $U_{Ü} = \frac{L \cdot I}{\Delta t}$.
+Zuerst wird der Strom $I$ aus der gespeicherten Energie berechnet: $I = \sqrt{\frac{2 \cdot W_m}{L}} = \sqrt{\frac{2 \cdot 10\,\text{Ws}}{0,8\,\text{H}}} = 5\,\text{A}$.
+Anschließend wird die Überspannung ermittelt: $U_{Ü} = \frac{0,8\,\text{H} \cdot 5\,\text{A}}{2\,\text{ms}} = \frac{4\,\text{Vs}}{0,002\,\text{s}} = 2000\,\text{V}$?
+*Warte, ich muss die Rechnung im Lernmaterial genau prüfen.*
+
+**Korrektur der Rechenlogik basierend auf dem Lernmaterial:**
+Im Lernmaterial (Aufgabe 1.36) steht: $L=0,2\,\text{H}$, $W_m=90\,\text{Ws}$, $\Delta t=10\,\text{ms}$.
+Stromberechnung im Material (implizit oder explizit?): Im Beispiel 2.4 wird $I$ berechnet.
+Rechnung für Aufgabe 1.36 im Material:
+$I = \sqrt{\frac{2 \cdot 90}{0,2}} = \sqrt{900} = 30\,\text{A}$.
+Überspannung $U_{Ü} = \frac{L \cdot I}{\Delta t} = \frac{0,2 \cdot 30}{10\,\text{ms}} = \frac{6}{0,01} = 600\,\text{V}$.
+Das Ergebnis im Material ist nicht explizit als Zahl genannt, aber der Weg ist klar.
+
+Jetzt meine Aufgabe:
+$L = 0,8\,\text{H}$, $W_m = 10\,\text{Ws}$, $\Delta t = 2\,\text{ms}$.
+1. Strom berechnen: $I = \sqrt{\frac{2 \cdot W_m}{L}} = \sqrt{\frac{2 \cdot 10}{0,8}} = \sqrt{25} = 5\,\text{A}$.
+2. Überspannung berechnen: $U_{Ü} = \frac{L \cdot I}{\Delta t} = \frac{0,8\,\text{H} \cdot 5\,\text{A}}{2\,\text{ms}}$.
+Umrechnung Zeit: $2\,\text{ms} = 0,002\,\text{s}$.
+$U_{Ü} = \frac{4\,\text{Vs}}{0,002\,\text{s}} = 2000\,\text{V}$.
+
+Warte, ist das Ergebnis plausibel? Ja.
+Aber schauen wir uns den Text im Lernmaterial nochmal an.
+""Aufgabe 1.36: ... Welche Überspannung tritt am Schalter auf?"" -> Die Antwort steht dort nicht als Zahl, aber der Weg ist gegeben (Beispiel 2.4).
+Also ist die Frage beantwortbar.
+
+Rechnung Schritt für Schritt zur Sicherheit:
+$W_m = 0,5 \cdot L \cdot I^2 \Rightarrow I = \sqrt{2 \cdot W_m / L}$
+$I = \sqrt{2 \cdot 10 / 0,8} = \sqrt{25} = 5\,\text{A}$.
+$U_{Ü} = U_{ind} = L \cdot (dI/dt)$. Bei linearem Abfall ist $dI/dt = I / \Delta t$.
+$U_{Ü} = L \cdot I / \Delta t = 0,8 \cdot 5 / 0,002 = 4 / 0,002 = 2000\,\text{V}$.
+
+Okay, das Ergebnis ist 2000 V.
+
+**Überprüfung der Regeln:**
+L1: Nur Material nutzen. Formeln aus Beispiel 2.4 und Aufgabenstellung 1.36.
+L2: Antwort zuerst, dann Begründung.
+L3: Formel, Werte, Ergebnis mit Einheit.
+L4: Verständlich für Auszubildende.
+L5: Rechenweg aus Material übernehmen (Beispiel 2.4), eigene Werte einsetzen.
+L6: Einheit umrechnen (ms zu s).
+L7: Zahlen nur mit Gegenstand.",,"FORMEL: U = L * (ΔI / Δt) mit ΔI = I_max und I_max = sqrt(2 * W_m / L)
+WERTE:
+L = 0,8 H
+W_m = 10 Ws
+Δt = 0,002 s
+I_max = sqrt(2 * 10 / 0,8) A
+RECHNUNG:
+I_max = sqrt(2 * 10 / 0,8)
+U = 0,8 * (sqrt(2 * 10 / 0,8) / 0,002)
+ERGEBNIS: U
+EINHEIT: V
+QUELLE: W_m = 1/2 L I^2 und U = L * (ΔI / Δt)",,,,,

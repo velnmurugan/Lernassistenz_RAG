@@ -1,0 +1,134 @@
+nr,vorlage,richtig,erwartet,gefunden,status,rechen_pruefung,sekunden,loesung,rechen_befund,quellen,falle,fehler,buchergebnisse_entfernt,loesung_original,loesung_denk,rb_roh,werkzeug,werkzeug_protokoll,werkzeug_roh,werkzeug_vorgaben,werkzeug_neu
+F4,N100,ja,6.75 mWh,6.75 1.35 5 1.35 5,BEANTWORTET,kopf_korrigiert,92.8,"Die Knopfzelle liefert eine elektrische Energie von 6,75 mWh. Dies ergibt sich aus der Formel W = U · Q, indem man die Spannung U = 1,35 V mit der Ladung Q = 5 mAh multipliziert (W = 1,35 V · 5 mAh = 6,75 mWh).","Der erste Satz nennt 23,5, die Rechnung ergibt aber 6,75; Die unabhängige Python-Nachrechnung (W = U · Q) ergibt W = 0,00675 Wh, die Lösung nennt 23,5 | RB-v4 Ergebnis W = 0,00675 Wh | Formel im Material",fischer_pdf_0093; fischer_pdf_0766; fischer_pdf_0229; fischer_pdf_0091,Einheit,,0,"Die Knopfzelle liefert eine elektrische Energie von 23,5 mWh. Dies ergibt sich aus der Formel W = U · Q, indem man die Spannung U = 1,35 V mit der Ladung Q = 5 mAh multipliziert (W = 1,35 V · 5 mAh = 6,75 mWh? Nein, Rechnung prüfen: 1,35 * 5 = 6,75. Warte, ich muss die Rechnung im Lernmaterial genau prüfen. Im Text steht: ""Die Ladung dieser Ausführung beträgt etwa Q = 5 mAh bei U = 1,35 V."" Die Energie ist das Produkt aus Spannung und Ladung. 1,35 * 5 = 6,75 mWh. Warum habe ich oben 23,5 geschrieben? Ah, vielleicht habe ich eine andere Zahl im Kopf. Ich muss die Rechnung neu machen: W = U * Q. U = 1,35 V. Q = 5 mAh. W = 1,35 * 5 = 6,75 mWh. Okay, das ist das korrekte Ergebnis. Meine vorherige Überlegung war falsch. Ich schreibe die Lösung mit dem korrekten Wert.)
+Korrektur der Rechnung: W = U · Q = 1,35 V · 5 mAh = 6,75 mWh.
+Die Einheit der Energie ist hier Milliwattstunden (mWh), da Spannung in Volt und Ladung in Milliampere-Stunden gegeben sind.",,"FORMEL: W = U · Q
+WERTE:
+U = 1.35 V
+Q = 5/1000 Ah
+RECHNUNG:
+W = 1.35 * (5/1000)
+ERGEBNIS: W
+EINHEIT: Wh
+QUELLE: Die Ladung dieser Ausführung beträgt etwa Q = 5 mAh bei U = 1,35 V.",,,,,
+F7,N100,ja,31.4 kW,31.4 1.21,BEANTWORTET,nachgebessert,71.7,"Die elektrische Leistung beträgt 31,4 kW. Begründung: Aus dem Lernmaterial (Beispiel 1.21) wird der Rechenweg übernommen: Zuerst wird der Wärmestrom φ berechnet mit der Formel φ = (m · C · Δθ)/t. Dann wird die elektrische Leistung P durch Division des Wärmestroms durch den Wirkungsgrad η ermittelt (P = φ / η). Rechnung: 1. Massestrom m = 0,2 kg/s (da 1 Liter Wasser ca. 1 kg ist). 2. Spezifische Wärmekapazität C = 4187 J/(°C·kg) (aus Beispiel 1.21 übernommen). 3. Temperaturdifferenz Δθ = 45°C - 15°C = 30°C. 4. Zeit t = 1 s (da pro Sekunde erwärmt wird). 5. Wärmestrom φ = (0,2 kg/s · 4187 J/(°C·kg) · 30°C) / 1 s = 25.122 J/s = 25,12 kW. 6. Wirkungsgrad η = 80 % = 0,8. 7. Elektrische Leistung P = 25,12 kW / 0,8 = 31,4 kW.","Der erste Satz nennt 23,2, die Rechnung ergibt aber 31,4; Die unabhängige Python-Nachrechnung (P = (m * C * Δθ) / (t * η)) ergibt P = 31,4 W, die Lösung nennt 23,2 | RB-v4 Ergebnis P = 31,4 W | Formel nicht im Material",fischer_pdf_0127; fischer_pdf_0832; fischer_pdf_0033; pdf_1573,durch η teilen,,0,"Die elektrische Leistung beträgt 23,2 kW.
+Begründung: Aus dem Lernmaterial (Beispiel 1.21) wird der Rechenweg übernommen: Zuerst wird der Wärmestrom φ berechnet mit der Formel φ = (m · C · Δθ) / t. Dann wird die elektrische Leistung P durch Division des Wärmestroms durch den Wirkungsgrad η ermittelt (P = φ / η).
+Rechnung:
+1.  Massestrom m = 0,2 kg/s (da 1 Liter Wasser ca. 1 kg ist).
+2.  Spezifische Wärmekapazität C = 4187 J/(°C·kg) (aus Beispiel 1.21 übernommen).
+3.  Temperaturdifferenz Δθ = 45°C - 15°C = 30°C.
+4.  Zeit t = 1 s (da pro Sekunde erwärmt wird).
+5.  Wärmestrom φ = (0,2 kg/s · 4187 J/(°C·kg) · 30°C) / 1 s = 25.122 J/s = 25,122 kW.
+6.  Wirkungsgrad η = 80 % = 0,8.
+7.  Elektrische Leistung P = 25,122 kW / 0,8 = 31,4 kW.
+
+*Warte, ich muss die Rechnung im Lernmaterial genau prüfen.*
+Im Lernmaterial steht: ""0,11 Wasser je Sekunde ... ergibt sich ... φ = ... = 12.560 J/s"".
+Rechnung im Text: 0,1 kg/s * 4187 * 30 = 12.561 (gerundet auf 12.560).
+Meine Rechnung für die neue Aufgabe:
+m = 0,2 kg/s (0,2 Liter).
+C = 4187 J/(kg·K).
+Δθ = 30 K.
+φ = 0,2 * 4187 * 30 = 25.122 W = 25,122 kW.
+P = φ / η = 25,122 kW / 0,8 = 31,4025 kW.
+
+Ich habe im ersten Entwurf einen Fehler gemacht (ich dachte an 23,2, aber das war falsch). Die korrekte Rechnung ergibt ca. 31,4 kW.
+Aber warte, ich schaue mir den Text noch einmal an. Der Text sagt ""0,11 Wasser"". Das ist wahrscheinlich ein Tippfehler im Originaltext für ""0,11 Liter"" oder ""0,11 kg"". Da steht dann ""0,1 kg/s"" in der Formel. Also 0,11 Liter ≈ 0,11 kg.
+Rechnung im Text: 0,1 * 4187 * 30 = 12561. Der Text sagt 12.560. Okay.
+Für meine Aufgabe: m = 0,2 kg/s.
+φ = 0,2 * 4187 * 30 = 25.122 W.
+P = 25.122 / 0,8 = 31.402,5 W ≈ 31,4 kW.
+
+Okay, ich korrigiere die Lösung im Kopf.",,"FORMEL: P = (m * C * Δϑ) / (t * η)
+WERTE:
+m_dot = 0,2/1000 kg/s
+C = 4187 J/(°C*kg)
+delta_theta = 30 °C
+eta = 0,8
+RECHNUNG:
+P = (m_dot * C * delta_theta) / eta
+ERGEBNIS: P
+EINHEIT: W
+QUELLE: φ = (m C Δ ϑ)/t; η = (P_ab / P_zu)",,,,,
+F15,N100,ja,18.95|18.9|1137 1/s,18.95 1 0.7 2 400 50,BEANTWORTET,ersetzt,57.9,"Nachgerechnet ergibt sich: n = 18,95 s^-1.
+
+Begründung: Formel: n = U_q / (0,7 · 2 · N · B · l · d · π). Werte: U_q = 400; N = 50; B = 0,8; l = 0,4; d = 0,3. Rechnung: n = 400 / (0,7 · 2 · 50 · 0,8 · 0,4 · 0,3 · π)
+
+⚠ Automatische Prüfung: Die erste Antwort des Modells wich von der Nachrechnung ab; gezeigt wird die Nachrechnung (Formel aus dem Lernmaterial).","Die unabhängige Python-Nachrechnung (n = U_q / (0,7 * 2 * N * B * l * d * pi)) ergibt n = 18,95 s^-1, die Lösung nennt 23,7 / 1420 | RB-v4 Ergebnis n = 18,95 s^-1 | Formel im Material | Bestätigung: ja (n = 18,95 1/s)",fischer_pdf_0239; fischer_pdf_0946; fischer_pdf_0364; fischer_pdf_0949,2N,,0,"Die Drehzahl beträgt 23,7 s⁻¹ (oder 1420 min⁻¹).
+Begründung: Nach dem Rechenweg aus Beispiel 1.39 gilt die Formel n = U_q / (0,7 · 2 · N · B · l · d · π). Eingesetzt werden die Werte U_q = 400 V, N = 50, B = 0,8 T, l = 0,4 m und d = 0,3 m. Das Ergebnis ist n ≈ 23,7 s⁻¹.",,"FORMEL: n = U_q / (0,7 * 2 * N * B * l * d * pi)
+WERTE:
+U_q = 400 V
+N = 50
+B = 0.8 T
+l = 0.4 m
+d = 0.3 m
+RECHNUNG:
+n = 400 / (0.7 * 2 * 50 * 0.8 * 0.4 * 0.3 * pi)
+n = 19.298 s^-1
+ERGEBNIS: n
+EINHEIT: s^-1
+QUELLE: n = U_q/(0,7 · 2 N · B · l · d · π) ||| FORMEL: n = U_q / (0,7 * 2 * N * B * l * d * pi)
+WERTE:
+U_q = 400 V
+N = 50
+B = 0,8 T
+l = 0,4 m
+d = 0,3 m
+RECHNUNG: n = 400 / (0,7 * 2 * 50 * 0,8 * 0,4 * 0,3 * pi)
+ERGEBNIS: n
+EINHEIT: 1/s
+QUELLE: n = U_q/(0,7 · 2 N · B · l · d · π)",,,,,
+F61,N100,ja,0.035 kgm²,0.035 2 0 1 1 2,BEANTWORTET,ersetzt,61.6,"Nachgerechnet ergibt sich: J = 0,035 kgm2.
+
+Begründung: Formel: J = J0 + J1 ((n1)/n)2. Werte: J0 = 0,02 kgm2; J1 = 1,5 kgm2. Rechnung: J = 0,02 + 1,5 · (1/10)²
+
+⚠ Automatische Prüfung: Die erste Antwort des Modells wich von der Nachrechnung ab; gezeigt wird die Nachrechnung. Ihre Formel steht nicht wörtlich im Lernmaterial; zwei unabhängige Nachrechnungen ergaben dasselbe Ergebnis. Bitte mit dem Buch oder der Lehrkraft prüfen.","Die unabhängige Python-Nachrechnung (J = J0 + J1 ((n1)/n)2) ergibt J = 0,035 kgm2, die Lösung nennt 0,015 | RB-v4 Ergebnis J = 0,035 kgm2 | Formel nicht im Material | Bestätigung: ja (J = 0,035 kgm2) [Retry nach wert_unlesbar]",fischer_pdf_1108; fischer_pdf_1085; fischer_pdf_1109; fischer_pdf_1119,J0 addieren,,0,"Das auf die Motordrehzahl umgerechnete Trägheitsmoment beträgt 0,015 kgm². Die Berechnung erfolgt nach Gl. 5.4 mit J = J0 + J1 · (n1/n)²; hier ist das Übersetzungsverhältnis n1/n gleich 1/10.",,"FORMEL: J = J₀ + J₁ ((n₁)/n)²
+WERTE:
+J₀ = 0,02 kgm²
+J₁ = 1,5 kgm²
+n₁/n = 1/10
+RECHNUNG:
+J = 0,02 + 1,5 * (1/10)**2
+J = 0,035
+ERGEBNIS: J
+EINHEIT: kgm²
+QUELLE: J = J₀ + J₁ ((n₁)/n)² + J₂ ((n₂)/n)² + J₃ ((n₃)/n)² + … ||| FORMEL: J = J₀ + J₁ ((n₁)/n)²
+WERTE:
+J0 = 0,02 kgm²
+J1 = 1,5 kgm²
+n1 = n/10
+RECHNUNG: J = J0 + J1 * (n1/n)**2
+ERGEBNIS: J
+EINHEIT: kgm²
+QUELLE: J = J₀ + J₁ ((n₁)/n)² + J₂ ((n₂)/n)² + J₃ ((n₃)/n)² + … ||| FORMEL: J = J₀ + J₁ ((n₁)/n)²
+WERTE:
+J0 = 0,02 kgm²
+J1 = 1,5 kgm²
+n1 = n/10
+RECHNUNG: J = 0,02 + 1,5 * (1/10)**2
+ERGEBNIS: J
+EINHEIT: kgm²
+QUELLE: J = J₀ + J₁ ((n₁)/n)² + J₂ ((n₂)/n)² + J₃ ((n₃)/n)² + …",,,,,
+F62,N100,ja,0.0114 kgm²,0.0114 2 2 500 0.5 1000,BEANTWORTET,ersetzt,59.2,"Nachgerechnet ergibt sich: J_e = 0,0114 kg*m^2.
+
+Begründung: Formel: J_e = m_g (v/ω)2. Werte: m_g = 500; v = 0,5; n = 1000/60 1/s; ω = 2 · π · n rad/s. Rechnung: J_e = 500 · (0,5 / (2 · π · (1000/60)))²
+
+⚠ Automatische Prüfung: Die erste Antwort des Modells wich von der Nachrechnung ab; gezeigt wird die Nachrechnung (Formel aus dem Lernmaterial).","500 · ( 0,5 / 16,67 ) ² ergibt 0,4498, nicht 0,25; Die unabhängige Python-Nachrechnung (J_e = m_g (v/ω)2) ergibt J_e = 0,0114 kg*m^2, die Lösung nennt 0,25 | RB-v4 Ergebnis J_e = 0,0114 kg*m^2 | Formel im Material | Bestätigung: ja (J_e = 0,0114 kg*m2)",fischer_pdf_1109; fischer_pdf_1085; fischer_pdf_1111; fischer_pdf_1108,ω = 2πn,,0,"Das Ersatzträgheitsmoment der Last beträgt 0,25 kg·m². Die Berechnung erfolgt mit der Formel J_e = m_g (v/ω)² aus dem Lernmaterial. Eingesetzt werden die Werte m_g = 500 kg und v = 0,5 m/s. Für ω wird die Winkelgeschwindigkeit berechnet: ω = 2 · π · n mit n = 1000 /min ≈ 16,67 /s (Umrechnung von min in s). Das Ergebnis ist J_e = 500 kg · (0,5 m/s / 16,67 /s)² = 0,25 kg·m².",,"FORMEL: J_e = m_g (v/ω)²
+WERTE:
+m_g = 500 kg
+v = 0,5 m/s
+n = 1000/60 1/s
+ω = 2*pi*n rad/s
+RECHNUNG:
+J_e = 500 * (0.5 / (2*pi*(1000/60)))**2 kg*m^2
+ERGEBNIS: J_e
+EINHEIT: kg*m^2
+QUELLE: J_e = m_g (v/ω)² ||| FORMEL: J_e = m_g (v/ω)²
+WERTE:
+m_g = 500 kg
+v = 0,5 m/s
+n = 1000/60 1/s
+ω = 2*pi*n rad/s
+RECHNUNG: J_e = 500 * (0,5 / (2*pi*(1000/60)))**2
+ERGEBNIS: J_e
+EINHEIT: kg*m²
+QUELLE: J_e = m_g (v/ω)²",,,,,

@@ -1,0 +1,130 @@
+"""Rechenfragen-Varianten RV-v1 (26 Oct 2026): 18 Buchaufgaben aus Fischer mit geänderten Zahlen + 4 schon getestete Fälle.
+Keine N100-Fragen (Entwicklungsset). Schickt jede Frage durch die echte Pipeline (wie die App) und prüft automatisch, ob die
+erwartete(n) Zahl(en) in der Lösung stehen (Toleranz 0,6 %). Ergebnis nach jeder Frage gespeichert (Abbruch verliert nichts).
+Start (aus ~/RAG, Ollama läuft, gewünschte Version exportiert):
+  export LERNASSISTENT_RP=RP-v10 LERNASSISTENT_G=G-v5 LERNASSISTENT_FS=FS-v3 LERNASSISTENT_CTX=8192
+  python skripte/evaluation/teste_rechen_varianten.py V134 2>&1 | tee protokolle/rechen_varianten_V134.txt
+Optionen: --nur R01,R07   --ab R10
+V13.4 (RV-Skript v2): Ausgabe sofort (flush); eine Zahl mit "%" dahinter zählt nicht als Vielfaches einer Nicht-Prozent-
+Erwartung (V1331 R18: "80 %" galt als 0,8 Ω); zusätzliche Spalten rb_roh, loesung_denk, loesung_original, buchergebnisse_entfernt.
+V14 (RV-Skript v3): Spalten werkzeug und werkzeug_protokoll (Rechenwerkzeug RW-v1, LERNASSISTENT_RW=RW-v1); Kopfzeile nennt RW.
+--fragen <csv> (z. B. daten/testfragen/n100_rechnung_v1.csv = die 22 N100-Rechenfragen). In "erwartet": ";" trennt Werte, die alle
+vorkommen müssen, "|" trennt gleichwertige Alternativen, "T:abc" prüft einen Text (ohne Leerzeichen, Groß/klein egal)."""
+import sys as _sys, pathlib as _pl
+_sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
+import argparse, csv, os, re, time
+import rag_pipeline as rp
+
+KB = "daten/wissensbasen/knowledge_base_fischer_boege_v7r.json"
+FRAGEN = "daten/testfragen/rechen_varianten_v1.csv"
+FELDER = ["nr", "vorlage", "richtig", "erwartet", "gefunden", "status", "rechen_pruefung", "sekunden", "loesung", "rechen_befund",
+          "quellen", "falle", "fehler", "buchergebnisse_entfernt", "loesung_original", "loesung_denk", "rb_roh", "werkzeug",
+          "werkzeug_protokoll", "werkzeug_roh", "werkzeug_vorgaben", "werkzeug_neu"]
+_print = print
+
+
+def print(*a, **k):  # noqa: A001 – sofort ausgeben, auch hinter tee
+    _print(*a, **{**k, "flush": True})
+
+
+def zahlen(text, mit_prozent=False):
+    out = []
+    for m in re.finditer(r"(?<![\w.,])\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:[.,]\d+)?", text or ""):
+        t = m.group(0)
+        prozent = bool(re.match(r"\s*%", (text or "")[m.end():]))
+        try:
+            z = (float(t.replace(".", "").replace(",", ".")) if re.fullmatch(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?", t)
+                 else float(t.replace(",", ".")))
+            out.append((z, prozent) if mit_prozent else z)
+        except ValueError:
+            pass
+    return out
+
+
+def treffer_v3(loesung, erwartet_text, einheiten=None):
+    """erwartet_text wie in der CSV (";" alle, "|" eine von, "T:" Text). Rückgabe (alle, einzeln)."""
+    kopf_text = re.sub(r"\s+", "", (loesung or "")[:600]).lower()
+    ok = []
+    teile = erwartet_text.split(";")
+    einheiten = einheiten if einheiten and len(einheiten) == len(teile) else [""] * len(teile)
+    for teil, eh in zip(teile, einheiten):
+        alternativen = [a.strip() for a in teil.split("|") if a.strip()]
+        ok.append(any((re.sub(r"\s+", "", a[2:]).lower() in kopf_text) if a.startswith("T:")
+                      else treffer(loesung, [float(a)], [eh])[0] for a in alternativen))
+    return all(ok), ok
+
+
+def treffer(loesung, erwartet, einheiten=None):
+    """Jede erwartete Zahl muss (auch als Vielfaches 10^±3, 100 für %) in den ersten 600 Zeichen der Lösung stehen.
+    Eine Zahl mit "%" passt zu einer Nicht-Prozent-Erwartung nur unverändert (nicht als ×100)."""
+    kopf = zahlen((loesung or "")[:600], mit_prozent=True)
+    einheiten = einheiten or [""] * len(erwartet)
+    ok = []
+    for e, eh in zip(erwartet, einheiten):
+        kand = [e, e * 1e3, e / 1e3, e * 1e6, e / 1e6, e * 100, e / 100]
+        ok.append(any(abs(z - k) <= 0.006 * abs(k) for z, proz in kopf for i, k in enumerate(kand)
+                      if k and (i == 0 or not proz or eh.strip() == "%")))
+    return all(ok), ok
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("label")
+    ap.add_argument("--nur", default="")
+    ap.add_argument("--ab", default="")
+    ap.add_argument("--fragen", default=FRAGEN)
+    a = ap.parse_args()
+    chunks = rp.lade_wissensbasis(KB)
+    fragen = list(csv.DictReader(open(a.fragen, encoding="utf-8")))
+    if a.nur:
+        fragen = [f for f in fragen if f["nr"] in a.nur.split(",")]
+    if a.ab:
+        fragen = [f for f in fragen if f["nr"] >= a.ab]
+    aus = f"evaluationsdaten/rechen_varianten_{a.label}.csv"
+
+    def _neu(w):  # Rechenweg mit Python in der Neufassung (Rechenprüfung)
+        if not isinstance(w, dict) or not w:
+            return ""
+        prot = " | ".join(f"{x} -> {r}" for x, _, r in w.get("werkzeug_protokoll", []))
+        return f"{w.get('werkzeug', '')} || {prot} || {(w.get('werkzeug_roh') or '')}"[:4000]
+    print(f"Version: RP={rp.RECHEN_PRUEFUNG_VERSION or '-'}{'+v12' if getattr(rp, 'RP_V12', False) else ''} G={rp.SCAFFOLDING_VERSION} FS={os.environ.get('LERNASSISTENT_FS', 'FS-v2')} "
+          f"CTX={rp.KONTEXT_TOKENS if hasattr(rp, 'KONTEXT_TOKENS') else '-'} RW={getattr(rp, 'RECHENWERKZEUG_VERSION', '') or '-'} RB={getattr(rp, 'NACHRECHNUNG_VERSION', '') or '-'} "
+          f"| {len(fragen)} Fragen -> {aus}")
+    neu = not os.path.exists(aus)
+    with open(aus, "a", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=FELDER)
+        if neu:
+            w.writeheader()
+        richtig = 0
+        for f in fragen:
+            t0 = time.perf_counter()
+            zeile = {"nr": f["nr"], "vorlage": f["vorlage"], "erwartet": f["erwartet"] + " " + f["einheit"], "falle": f["falle"]}
+            try:
+                e = rp.beantworte_frage(f["frage"], chunks, top_k=4, methode="hybrid_kg_rr")
+                eh = [x.strip() for x in f["einheit"].split(";")]
+                ok, einzeln = treffer_v3(e.get("loesung", ""), f["erwartet"], eh)
+                zeile.update({"richtig": "ja" if ok else ("teilweise" if any(einzeln) else "nein"),
+                              "gefunden": " ".join(f"{z:g}" for z in zahlen((e.get("loesung") or "")[:200])[:6]),
+                              "status": e.get("status", ""), "rechen_pruefung": e.get("rechen_pruefung", ""),
+                              "loesung": e.get("loesung", ""), "rechen_befund": e.get("rechen_befund", ""),
+                              "quellen": "; ".join(q["id"] for q in e.get("quellen", [])),
+                              "buchergebnisse_entfernt": e.get("buchergebnisse_entfernt", ""),
+                              "loesung_original": e.get("loesung_original", ""), "loesung_denk": e.get("loesung_denk", ""),
+                              "rb_roh": e.get("rb_roh", ""), "werkzeug": e.get("werkzeug", ""),
+                              "werkzeug_protokoll": " | ".join(f"{a} -> {r}" for a, _, r in e.get("werkzeug_protokoll", []))[:3000],
+                              "werkzeug_roh": (e.get("werkzeug_roh") or "")[:4000],
+                              "werkzeug_vorgaben": str(e.get("werkzeug_vorgaben") or ""),
+                              "werkzeug_neu": _neu(e.get("werkzeug_neu"))})
+                richtig += ok
+            except Exception as ex:  # ein Fehler stoppt den Lauf nicht
+                zeile.update({"richtig": "fehler", "fehler": f"{type(ex).__name__}: {ex}"[:300]})
+            zeile["sekunden"] = round(time.perf_counter() - t0, 1)
+            w.writerow(zeile); fh.flush()
+            print(f"{f['nr']} {zeile['richtig']:9s} {zeile.get('rechen_pruefung', ''):24s} {zeile['sekunden']:6.0f} s "
+                  f"{('| ' + zeile.get('werkzeug', '')) if zeile.get('werkzeug') else ''} | erwartet "
+                  f"{zeile['erwartet']} | gefunden {zeile.get('gefunden', '')} | {f['vorlage']}")
+    print(f"\nRichtig: {richtig} von {len(fragen)}. Datei: {aus}")
+
+
+if __name__ == "__main__":
+    main()

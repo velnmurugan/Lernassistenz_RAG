@@ -1,0 +1,46 @@
+{
+ "R01": {
+  "frage": "Ein Kohlekraftwerk gibt die elektrische Leistung PN = 600 MW ab und arbeitet 5000 Stunden im Jahr. Durch eine Modernisierung steigt der Wirkungsgrad von η1 = 38 % auf η2 = 40 %. Um wie viel sinkt die Verlustleistung ΔP, und wie viel Geld wird jährlich bei 0,08 € pro kWh eingespart?",
+  "rb": "FORMEL: P_ab = eta * P_zu; P_zu = P_ab / eta; P_verlust = P_zu - P_ab; K = W * k; W = P_ab * t\nWERTE: P_ab1 = 600e6 W; t = 5000 h; eta1 = 0.38; eta2 = 0.40; k = 0.08 €/kWh\nRECHNUNG: P_zu1 = P_ab1 / eta1; P_zu2 = P_ab2 / eta2; P_ab2 = P_ab1; delta_P = P_zu1 - P_zu2; W_jahrlich = P_ab1 * t; K_einsparung = (P_zu1 - P_zu2) * t * k\nERGEBNIS: delta_P, K_einsparung\nEINHEIT: W, €\nQUELLE: η = (P_ab / P_zu) 100 %"
+ },
+ "R02a": {
+  "frage": "Auf ein Keramikrohr mit dem Durchmesser D = 37 mm und der Länge lR = 180 mm wird ein Runddraht mit d = 1,5 mm und einseitigem Isolierauftrag von 0,25 mm dicht an dicht gewickelt. Welcher Widerstand ergibt sich bei ρ = 0,5 Ω·mm²/m?",
+  "rb": "FORMEL: R = ρ · l / A; l = N · l_w; N = l_R / d_is; l_w = (D + d_is) · π; A = d² · π / 4; d_is = d + 2 · Isolierung\nWERTE:\nD = 37 mm\nl_R = 180 mm\nd = 1,5 mm\nIsolierung = 0,25 mm\nρ = 0,5 Ω·mm²/m\nd_is = d + 2 * Isolierung\nN = l_R / d_is\nl_w = (D + d_is) * pi\nA = d**2 * pi / 4\nl = N * l_w\nR = ρ * l / A\nRECHNUNG:\nd_is = 1,5 mm + 2 * 0,25 mm\nN = 180 mm / d_is\nl_w = (37 mm + d_is) * pi\nA = 1,5**2 * pi / 4\nl = N * l_w\nR = 0,5 Ω·mm²/m * l / A\nERGEBNIS: R\nEINHEIT: Ω\nQUELLE: R = ρ · l / A; l = N · l_w; N = l_R / d_is; l_w = (D + d_is) · π; A = d² · π / 4"
+ },
+ "R02b": {
+  "frage": "Auf ein Keramikrohr mit dem Durchmesser D = 37 mm und der Länge lR = 180 mm wird ein Runddraht mit d = 1,5 mm und einseitigem Isolierauftrag von 0,25 mm dicht an dicht gewickelt. Welcher Widerstand ergibt sich bei ρ = 0,5 Ω·mm²/m?",
+  "rb": "FORMEL: N = l_R / d_is; l_w = (D + d_is) * pi; l = N * l_w; A = d**2 * pi / 4; R = rho * l / A\nWERTE: D = 37 mm / l_R = 180 mm / d = 1,5 mm / d_is = 1,5 + 2*0,25 mm / rho = 0,5 Ω·mm²/m\nRECHNUNG: d_is = 1,5 + 2*0,25 / N = 180 / (1,5 + 2*0,25) / l_w = (37 + 1,5 + 2*0,25) * pi / l = N * l_w / A = d**2 * pi / 4 / R = rho * l / A\nERGEBNIS: R\nEINHEIT: Ω\nQUELLE: R = ρ · l / A"
+ },
+ "R02c": {
+  "frage": "Auf ein Keramikrohr mit dem Durchmesser D = 37 mm und der Länge lR = 180 mm wird ein Runddraht mit d = 1,5 mm und einseitigem Isolierauftrag von 0,25 mm dicht an dicht gewickelt. Welcher Widerstand ergibt sich bei ρ = 0,5 Ω·mm²/m?",
+  "rb": "FORMEL: R = ρ · l / A; l = N · l_w; N = l_R / d_is; l_w = (D + d_is) · π; A = d² · π / 4; d_is = d + 2 · Isolierung\nWERTE:\nD = 37 mm\nl_R = 180 mm\nd = 1,5 mm\nIsolierung = 0,25 mm\nρ = 0,5 Ω·mm²/m\nd_is = d + 2 * Isolierung\nN = l_R / d_is\nl_w = (D + d_is) * pi\nA = d**2 * pi / 4\nl = N * l_w\nR = ρ * l / A\nRECHNUNG:\nd_is = 1,5 mm + 2 * 0,25 mm\nN = 180 mm / d_is\nl_w = (37 mm + d_is) * pi\nA = 1,5**2 * pi / 4\nl = N * l_w\nR = 0,5 Ω·mm²/m * l / A\nERGEBNIS: R\nEINHEIT: Ω\nQUELLE: R = ρ · l / A; l = N · l_w; N = l_R / d_is; l_w = (D + d_is) · π; A = d² · π / 4"
+ },
+ "R21": {
+  "frage": "Ein Gleichstrom-Kleinmotor hat die Leerlaufdrehzahl n0N = 2000 min⁻¹ und bei Bemessungsankerstrom IAN die Drehzahl nN = 1700 min⁻¹. Welche Drehzahl stellt sich bei Feldschwächung auf Φ/ΦN = 0,6 und weiterhin IAN ein?",
+  "rb": "FORMEL: n = n_0N * (phi_N / phi)\nWERTE:\nn_0N = 2000 min⁻¹\nphi_N / phi = 1/0.6\nRECHNUNG:\nn = 2000 * (1/0.6)\nERGEBNIS: n\nEINHEIT: min⁻¹\nQUELLE: Gl. 4.15 bei Feldschwächung"
+ },
+ "R22": {
+  "frage": "Ein Transformator hat bei rein ohmscher Bemessungslast die Abgabeleistung P2N = 250 kW, die Kupferverluste PCuN = 4,5 kW und die Eisenverluste PFe = 0,8 kW. Wie groß sind der Wirkungsgrad bei Bemessungslast ηN und der maximale Wirkungsgrad ηmax, und bei welcher Abgabeleistung tritt ηmax auf?",
+  "rb": "FORMEL: η_N = P_2N / (P_2N + P_Fe + P_CuN), η_max = P_2_opt / (P_2_opt + 2 * P_Fe), P_2_opt = P_2N * sqrt(P_Fe / P_CuN)\nWERTE:\nP_2N = 250 kW\nP_CuN = 4,5 kW\nP_Fe = 0,8 kW\nP_2_opt = 250 * sqrt(0,8 / 4,5) kW\nERGEBNIS: η_N, η_max, P_2_opt\nEINHEIT: %, %, kW\nQUELLE: η = (P₂)/(P₂ + P_v) mit P_v = P_Fe + P_CuN ((I₂)/(I_2N))² und P_Cu = P_CuN ((I₂)/(I_2N))² sowie P_2_opt = P_2N · √((P_Fe)/(P_CuN))"
+ },
+ "R04": {
+  "frage": "Ein Akkuwerkzeug wird mit U = 24 V und I = 10 A versorgt. Der Antriebsstrang hat den Wirkungsgrad η = 70 %, an der Welle wird n = 900 min⁻¹ gemessen. Wie groß ist das Drehmoment an der Welle?",
+  "rb": "FORMEL: P_2 = U * I; P_2 = eta * P_1; P_1 = U * I; M = (60 * P_2) / (2 * pi * n)\nWERTE:\nU = 24 V\nI = 10 A\neta = 0,7\nn = 900 min^-1\nP_1 = 24 * 10 W\nP_2 = 0,7 * P_1 W\nM = (60 * P_2) / (2 * pi * n) Nmm\nERGEBNIS: M\nEINHEIT: Nmm\nQUELLE: P = U * I; P_2 = eta * P_1; P = 2 * pi * n * M"
+ },
+ "R09": {
+  "frage": "Ein Kranmagnet erreicht beim Aufliegen B = 1,0 T und soll 6 m lange Stahlträger (ρ = 7,8 t/m³) mit dem Querschnitt Q = 150 cm² heben. Welche luftseitige Polfläche A muss der Magnet mindestens haben?",
+  "rb": "FORMEL: F_m = rho * g * V; V = Q * l; F_m = 1/2 * (B^2 * A) / mu_0\nWERTE:\nrho = 7800 kg/m³\ng = 9,81 m/s²\nl = 6 m\nQ = 150e-4 m²\nB = 1 T\nmu_0 = 1,2566370614359173e-6 Vs/(Am)\nRECHNUNG:\nV = Q * l\nF_gewicht = rho * g * V\nA = (2 * F_gewicht * mu_0) / (B^2)\nERGEBNIS: A\nEINHEIT: m²\nQUELLE: F_m = 1/2 · (B² A)/(μ₀); F_m d l = 1/2 · (B²)/(μ₀) A d l"
+ },
+ "R04b": {
+  "frage": "Ein Akkuwerkzeug wird mit U = 24 V und I = 10 A versorgt. Der Antriebsstrang hat den Wirkungsgrad η = 70 %, an der Welle wird n = 900 min⁻¹ gemessen. Wie groß ist das Drehmoment an der Welle?",
+  "rb": "FORMEL: P_2 = eta * U * I; P_2 = 2 * pi * n * M\nWERTE: U = 24 V / I = 10 A / eta = 70/100 / n = 900/60 1/s\nRECHNUNG: P_2 = eta * U * I / M = P_2 / (2 * pi * n)\nERGEBNIS: M\nEINHEIT: Nmm\nQUELLE: P = 2 π n M"
+ },
+ "F15": {
+  "frage": "Ein zweipoliger Generator hat 50 in Reihe geschaltete Windungen, B = 0,8 T bedeckt 70 % der Halbkreisfläche des Läufers (d = 0,3 m, l = 0,4 m). Bei welcher Drehzahl entstehen 400 V?",
+  "rb": "FORMEL: n = U_q / (0,7 * 2 * N * B * l * d * pi)\nWERTE:\nU_q = 400 V\nN = 50\nB = 0.8 T\nl = 0.4 m\nd = 0.3 m\nRECHNUNG:\nn = 400 / (0.7 * 2 * 50 * 0.8 * 0.4 * 0.3 * pi)\nn = 19.298 s^-1\nERGEBNIS: n\nEINHEIT: s^-1\nQUELLE: n = U_q/(0,7 · 2 N · B · l · d · π)"
+ },
+ "F7": {
+  "frage": "Ein Durchlauferhitzer erwärmt 0,2 Liter Wasser pro Sekunde von 15 °C auf 45 °C bei einem Wirkungsgrad von 80 %. Welche elektrische Leistung nimmt er auf?",
+  "rb": "FORMEL: P = (m * C * Δϑ) / (t * η)\nWERTE:\nm_dot = 0,2/1000 kg/s\nC = 4187 J/(°C*kg)\ndelta_theta = 30 °C\neta = 0,8\nRECHNUNG:\nP = (m_dot * C * delta_theta) / eta\nERGEBNIS: P\nEINHEIT: W\nQUELLE: φ = (m C Δ ϑ)/t; η = (P_ab / P_zu)"
+ }
+}

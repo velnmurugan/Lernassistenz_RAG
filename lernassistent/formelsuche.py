@@ -34,6 +34,12 @@ FS_MAX_PHRASEN = 4
 FS_KANDIDATEN = 6        # Treffer je Suchbegriff, die auf eine Formel geprüft werden
 FS_MAX_ZUSATZ = 2        # höchstens so viele Chunks werden ergänzt
 FS_OPTIONEN = {"temperature": 0, "seed": 42, "num_predict": 100}
+# V19 (28 Oct 2026), Schalter LERNASSISTENT_V19 (Standard aus). Buchstabe A = Formelsuche VORAB bei jeder Rechenfrage (siehe suche_v19):
+# Lösungsweg in Worten -> Suchbegriffe -> billige Suche je Begriff (ohne Reranker) -> kleiner Cross-Encoder wählt die 2 besten Formel-Chunks.
+V19_A = "A" in os.environ.get("LERNASSISTENT_V19", "")
+V19_KANDIDATEN = 20      # so viele Formel-Chunks (fusionierte Ränge der Suchbegriffe) bewertet der kleine Cross-Encoder
+V19_MODELL = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"   # ~118 Mio. Parameter, CPU, ca. 1,5 s für 20 Chunks (A/B 28 Oct: gleich gut wie bge, 10x schneller)
+V19_OPTIONEN = {"temperature": 0, "seed": 42, "num_predict": 260}
 
 _VERWEIS = re.compile(r"\b(?:Aufgabe|Aufg\.|Beispiel|Bsp\.|Abb\.|Abbildung|Tab\.|Tabelle|Gl\.|Gleichung|Kap\.|Kapitel)"
                       r"\s*\d+(?:[.,]\d+)*", re.I)
@@ -164,3 +170,86 @@ def notiz(info):
         return (f"{grund} {text} | neu erzeugt: {'ja' if info.get('neu') else 'nein'}"
                 f" | angenommen: {'ja' if info.get('angenommen') else 'nein'}")
     return f"FS-v1 {text}"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# V19a: Formelsuche vorab (28 Oct 2026). Anlass: Fälle, in denen die Hauptsuche die nötige Formel nicht findet, die erste Antwort
+# aber trotzdem eine Zahl nennt (falsche Physik) – FS-v2/v3 startet dann nie. Messung (diagnose_formelsuche_varianten.py, 11 gültige
+# Aufgaben): Formel im Kontext Hauptsuche Top-4 8/11; + 2 Chunks nach diesem Verfahren 10/11 (Kosten ca. 1,5 s + 1 kurzer Modellaufruf).
+# ---------------------------------------------------------------------------------------------------------------------
+_P_WEG = """Eine Rechenaufgabe aus der Technik soll gelöst werden. Beschreibe zuerst in 2 bis 4 kurzen Zeilen den Lösungsweg in Worten: welche Größe berechnet man nacheinander (z. B. "Strom aus Leistung und Spannung"). Keine Zahlen.
+Schreibe danach eine Zeile "### Suchbegriffe" und darunter je Schritt einen Fachbegriff (2 bis 6 Wörter), unter dem die dafür nötige Beziehung in einem Lehrbuch steht (Gesetz, Größe, Bauteil, Schaltung). Keine Zahlen, keine Formeln.
+
+### Aufgabe
+{frage}
+
+### Lösungsweg"""
+_ce = [None]
+
+
+def baue_prompt_weg(frage):
+    return _P_WEG.format(frage=frage)
+
+
+def parse_weg(roh):
+    """Suchbegriffe nach der Zeile '### Suchbegriffe' (ohne Zahlen/Gleichungen, höchstens FS_MAX_PHRASEN). Ohne Marke: leer."""
+    teil = (roh or "").split("### Suchbegriffe", 1)[1] if "### Suchbegriffe" in (roh or "") else ""
+    return parse(teil)
+
+
+def fuse_raenge(listen, k=10):
+    """Reciprocal Rank Fusion (Cormack et al. 2009) über mehrere ID-Listen."""
+    score = {}
+    for liste in listen:
+        for n, i in enumerate(liste, 1):
+            score[i] = score.get(i, 0.0) + 1.0 / (k + n)
+    return [i for i, _ in sorted(score.items(), key=lambda x: -x[1])]
+
+
+def _bewerte_klein(query, texte):
+    """Relevanzwerte des kleinen Cross-Encoders (lädt beim ersten Aufruf; Texte wie in reranker.py bereinigt)."""
+    if _ce[0] is None:
+        from sentence_transformers import CrossEncoder
+        _ce[0] = CrossEncoder(V19_MODELL, max_length=512, device="cpu")
+    paare = [(query, re.sub(r"\s+", " ", re.sub(r"(\w)-\s*\n\s*(\w)", r"\1\2", t)).strip()) for t in texte]
+    return [float(w) for w in _ce[0].predict(paare, batch_size=16, show_progress_bar=False)]
+
+
+def suche_v19(frage, chunks, top_chunks, retrieval_fn, llm_fn, bewerte_fn=None):
+    """Rückgabe (zusatz_chunks, info). info: phrasen, ids, kandidaten, sekunden, fehler. Wirft keine Ausnahme nach außen.
+    Ablauf: 1 kurzer Modellaufruf (Lösungsweg -> Suchbegriffe); je Suchbegriff eine Suche OHNE Reranker (hybrid_kg, ca. 0,2 s);
+    Rangfusion; nur Chunks mit Formel, die noch nicht im Kontext sind (höchstens V19_KANDIDATEN); der kleine Cross-Encoder
+    bewertet sie GEGEN DIE ZUSAMMENGESETZTEN Suchbegriffe; die 2 besten werden ergänzt (FS_MAX_ZUSATZ)."""
+    info = {"phrasen": [], "ids": [], "kandidaten": 0, "sekunden": 0.0, "fehler": ""}
+    t0 = time.perf_counter()
+    zusatz = []
+    try:
+        info["phrasen"] = parse_weg(llm_fn(baue_prompt_weg(frage), options=V19_OPTIONEN))
+        if info["phrasen"]:
+            vorhanden = {c["id"] for c in top_chunks}
+            listen, byid = [], {}
+            for phrase in info["phrasen"]:
+                _, voll = retrieval_fn(phrase, chunks, top_k=6, methode="hybrid_kg")
+                listen.append([c["id"] for c in voll[:300]])
+                for c in voll[:300]:
+                    byid.setdefault(c["id"], c)
+            kand = [i for i in fuse_raenge(listen) if i not in vorhanden and hat_formel(byid[i].get("text", ""))][:V19_KANDIDATEN]
+            info["kandidaten"] = len(kand)
+            if kand:
+                werte = (bewerte_fn or _bewerte_klein)(" ".join(info["phrasen"]), [byid[i]["text"] for i in kand])
+                beste = [i for i, _ in sorted(zip(kand, werte), key=lambda x: -x[1])][:FS_MAX_ZUSATZ]
+                zusatz = [{**byid[i], "fs_phrase": "V19a"} for i in beste]
+                info["ids"] = beste
+    except Exception as e:  # darf die Antwort nie verhindern
+        info["fehler"] = f"{type(e).__name__}: {e}"[:120]
+        zusatz = []
+    info["sekunden"] = round(time.perf_counter() - t0, 1)
+    return zusatz, info
+
+
+def notiz_v19(info):
+    """Kurzer Protokolltext für rechen_befund (kein Muster, das die Oberfläche als Chip liest)."""
+    if info.get("fehler"):
+        return "Formelsuche vorab Fehler: " + info["fehler"]
+    return (f"Formelsuche vorab (V19a): Suchbegriffe: {'; '.join(info.get('phrasen', [])) or 'keine'} | Kandidaten: {info.get('kandidaten', 0)}"
+            f" | ergänzt: {', '.join(info.get('ids', [])) or 'kein Zusatz'}")

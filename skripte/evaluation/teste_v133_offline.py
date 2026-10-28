@@ -80,6 +80,41 @@ try:
 finally:
     rpl.frage_llm, rpl.SCAFFOLDING_VERSION, rpl.RECHEN_PRUEFUNG_VERSION = alt
 
+# --- 3b. V13.3.1: Rechenfrage ohne jede Prüfung (Pumpenmotor, App-Test 18:38)
+FP = ("Ein Pumpenmotor mit Käfigläufer hat den Kippschlupf sK = 0,15. Um das Stillstandsmoment zu erhöhen, wird der "
+      "Läuferwiderstand Rr durch Abdrehen der Kurzschlussringe um 25 % vergrößert. Um welchen Faktor MstR/Mst steigt das Stillstandsmoment?")
+AP = ("Das Verhältnis M_stR / M_st beträgt 1,25.\nBegründung: Der Läuferwiderstand R_r wird um 25 % vergrößert, was dem Faktor 1,25 "
+      "entspricht. Nach dem Rechenweg aus Aufgabe 4.10 ergibt sich für das neue Stillstandsmoment M_stR = 1,25 · M_st.")
+DP = ("Das Stillstandsmoment steigt um den Faktor 1,235.\nBegründung: Nach Gl. 4.45 wird sK2 = 1,25 · 0,15 = 0,1875. Mit s = 1 gilt "
+      "nach Gl. 4.41 Mst = 2 MK/(sK + 1/sK): vorher 0,15 + 1/0,15 = 6,817, nachher 0,1875 + 1/0,1875 = 5,521. "
+      "Verhältnis: 6,817 / 5,521 = 1,235.")
+CP = {"id": "fischer_pdf_0948", "thema": "4.3", "score": 0.6, "text": "Aufgabe 4.10 ... Ergebnis: MstR/Mst = 1,18. Mst = 2 MK/(sK/1 + 1/sK)"}
+def lauf_p(version, denk, loesung=AP):
+    aufrufe = []
+    def llm(p, **k):
+        aufrufe.append((p, k))
+        if k.get("denken"):
+            return antwort(denk)
+        if "Du rechnest eine Aufgabe aus der Technik nach" in p:
+            return "kaputt"
+        return antwort(loesung)
+    rpl.frage_llm = llm
+    rpl.RECHEN_PRUEFUNG_VERSION = version
+    pr = "…\n### Frage\n" + FP + "\n\nAntworte genau …"
+    return rpl.rechnung_pruefen(pr, {"status": "BEANTWORTET", "loesung": loesung, "hinweis": "h"}, FP, [CP]), aufrufe
+try:
+    rpl.SCAFFOLDING_VERSION = "G-v5"
+    st, auf = lauf_p("RP-v8", DP)
+    check("V13.3.1 RP-v8 reproduziert: ok ohne Prüfung", st["rechen_pruefung"] == "ok" and not any(k.get("denken") for _, k in auf))
+    st, auf = lauf_p("RP-v9", DP)
+    check("V13.3.1 RP-v9: ungeprüfte Rechenantwort -> Denkmodus 1,235", st["rechen_pruefung"] == "denkmodus" and "1,235" in st["loesung"])
+    st, auf = lauf_p("RP-v9", AP)
+    check("V13.3.1 RP-v9: Denkmodus ohne Rechnung verworfen -> ungeprueft", st["rechen_pruefung"] == "ungeprueft" and "Denkmodus: verworfen" in st["rechen_befund"])
+    st, auf = lauf_p("RP-v9", DP, loesung=DP)
+    check("V13.3.1 RP-v9: Antwort mit eigener Rechnung bleibt ok, kein Denkmodus", st["rechen_pruefung"] == "ok" and not any(k.get("denken") for _, k in auf))
+finally:
+    rpl.frage_llm, rpl.SCAFFOLDING_VERSION, rpl.RECHEN_PRUEFUNG_VERSION = alt
+
 # --- 4. Kontextfenster in frage_llm (ohne Netz: requests.post ersetzt)
 class R:
     def __init__(self): self.payload = None
@@ -101,12 +136,30 @@ try:
     check("V13.3 num_ctx auch ohne options", gesendet[-1][0]["options"]["num_ctx"] == 8192)
     rpl.frage_llm("x", options={"temperature": 0}, denken=True)
     check("V13.3 Denkmodus: think True, num_ctx 16384, Timeout 900 s", gesendet[-1][0]["think"] is True and gesendet[-1][0]["options"]["num_ctx"] == 16384 and gesendet[-1][1] == 900)
+    check("V13.3.1 normale Zeitgrenze 300 s", gesendet[-2][1] == 300)
+    n = [0]
+    def post_timeout(url, json=None, timeout=None):
+        n[0] += 1
+        if n[0] == 1:
+            raise rpl.requests.exceptions.ReadTimeout("simuliert")
+        return R()
+    rpl.requests.post = post_timeout
+    check("V13.3.1 ein Wiederholungsversuch nach Zeitüberschreitung", rpl.frage_llm("x") == "ok" and n[0] == 2)
+    def post_immer(url, json=None, timeout=None):
+        raise rpl.requests.exceptions.ReadTimeout("simuliert")
+    rpl.requests.post = post_immer
+    try:
+        rpl.frage_llm("x"); geworfen = False
+    except rpl.requests.exceptions.ReadTimeout:
+        geworfen = True
+    check("V13.3.1 nach zwei Zeitüberschreitungen Fehler nach außen", geworfen)
 finally:
     rpl.requests.post, rpl.KONTEXT_TOKENS = alt_post, alt_ctx
 
 # --- 5. App-Chip
 app = open(next(p for p in (_pl.Path("app.py"), _pl.Path("lernassistent/app.py")) if p.exists()), encoding="utf-8").read()
 check("V13.3 App: Chip für Denkmodus", 'rp == "denkmodus"' in app)
+check("V13.3.1 App: Fehler statt Abbruch, Köpfe für denkmodus/ungeprueft", "st.stop()" in app and 'markiert == "denkmodus"' in app and 'rp == "ungeprueft"' in app)
 
 print(f"\n{ok} bestanden, {fail} fehlgeschlagen")
 _sys.exit(1 if fail else 0)

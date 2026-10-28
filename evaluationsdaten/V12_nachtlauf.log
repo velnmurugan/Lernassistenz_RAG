@@ -1,0 +1,69 @@
+### 1/3 Offline-Tests
+73 bestanden, 0 fehlgeschlagen
+46 passed, 0 failed
+22 passed, 0 failed
+ALLE TESTS BESTANDEN
+
+### 2/3 Formelsuche mit echter KB
+KB: 8805 Chunks | FS=FS-v2
+
+================================================================================ 
+1.32 Magnetkran (Variante)
+Rechenfrage erkannt: True
+Hauptsuche: ['fischer_pdf_0214', 'fischer_pdf_0207', 'fischer_pdf_0203', 'fischer_pdf_0205']
+Suchbegriffe: ['Hubkraft Hubmagnet Stahlträger', 'Masse Volumen Dichte Schwerkraft', 'Kraftflussdichte Polfläche Magnetfeld'] | Sekunden: 9.4 | Fehler: -
+  + pdf_2620 (über 'Hubkraft Hubmagnet Stahlträger'): Bei Relais, Motoren, Generatoren, Lautsprechern und Hubmagneten werden Elektromagnete verwendet. Für deren Tragkraft gilt (vgl. Abb. 26.20) F = (B² · A)/(2 · μ₀) (F mid B mid A mid μ₀)/(N mid T mid m² …
+  + pdf_1126 (über 'Masse Volumen Dichte Schwerkraft'): Beispiel: Ein Schleifstein hat eine Masse m₁ = 50 kg und ein Trägheitsmoment J₁ = 6 kg m². Er ist auf einer Welle mit dem Zapfendurchmesser d₁ = 30 mm montiert und wird mittels Riemen angetrieben. Die …
+Erwartete Formel: Hauptsuche=False | Zusatz=True
+================================================================================ 
+1.36 Transformator 400 V
+Rechenfrage erkannt: True
+Hauptsuche: ['fischer_pdf_0850', 'fischer_pdf_0698', 'fischer_pdf_0846', 'fischer_pdf_0115']
+Suchbegriffe: ['Umspannungsverhältnis', 'Leerlaufspannung', 'Kurzschlussimpedanz'] | Sekunden: 0.7 | Fehler: -
+  + pdf_0714 (über 'Umspannungsverhältnis'): ■■Massenwirkungsgesetz (MWG): Das Verhältnis der Gleichgewichtskonzentrationen c - nicht der Ausgangskonzentrationen! – aller Produkte und Edukte ist konstant. Die Gleichgewichtskonstante K_c ist das  …
+  + pdf_1650 (über 'Leerlaufspannung'): Reibungswiderstand: Der Reibungswiderstand c_wR entsteht durch die Reibungskraft in der körpernahen Strömungsschicht, der Grenzschicht. Er tritt bei allen umströmten Körpern auf. Durch glatte Oberfläc …
+Erwartete Formel: Hauptsuche=True | Zusatz=True
+================================================================================ 
+Trafo 40 kVA
+Rechenfrage erkannt: True
+Hauptsuche: ['fischer_pdf_0877', 'fischer_pdf_1023', 'pdf_2669', 'fischer_pdf_0858']
+Suchbegriffe: ['Bemessungsspannung des Transformators', 'Bemessungsleistung des Transformators', 'Primärstrom aus Leistung und Spannung', 'Sekundärstrom aus Leistung und Spannung'] | Sekunden: 1.1 | Fehler: -
+  + fischer_pdf_0873 (über 'Bemessungsspannung des Transformators'): Kenngrößen Die Bemessungsleistung (Scheinleistung) von Drehstromtransformatoren ist S_N = √3 U_1N I_1N = √3 U_2N I_2N (4.31) Die Leerlaufmessung wird in der Regel von der Unterspannungsseite aus durch …
+  + fischer_pdf_0864 (über 'Bemessungsleistung des Transformators'): Beispiel 4.7: Für den im vorstehenden Beispiel behandelten Transformator sollen Verluste, Wirkungsgrad sowie Spannungsänderung bei verschiedenen Belastungen ermittelt werden. a) Die Verluste des Trans …
+Erwartete Formel: Hauptsuche=True | Zusatz=True
+
+### 3/3 A/B V11b vs V12 (N100-Rechenfragen + 3 Varianten)
+22 Fragen | KB daten/wissensbasen/knowledge_base_fischer_boege_v7r.json (c2742e8c278f) | G-v4
+
+[      1] formel aus/an: True /True  ergänzt: -                              prüf aus/an: markiert/markiert ANDERS auto: / sek 56.8/50.3
+[      2] formel aus/an: True /True  ergänzt: -                              prüf aus/an: nachgebessert/nachgebessert gleich auto: / sek 60.6/59.7
+[      3] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ok/ok gleich auto: / sek 38.2/35.5
+[      4] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ersetzt/ersetzt gleich auto: / sek 90.4/85.9
+[      7] formel aus/an: True /True  ergänzt: -                              prüf aus/an: nachgebessert/nachgebessert gleich auto: / sek 67.4/71.8
+[     13] formel aus/an: True /True  ergänzt: -                              prüf aus/an: nachgebessert/nachgebessert gleich auto: / sek 54.3/53.4
+[     14] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ok/ok gleich auto: / sek 46.6/43.5
+[     15] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ersetzt/ersetzt gleich auto: / sek 56.9/50.7
+[     29] formel aus/an: True /True  ergänzt: -                              prüf aus/an: markiert/markiert gleich auto: / sek 59.4/55.5
+[     37] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ok/ok gleich auto: / sek 49.0/44.7
+[     38] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ok/ok gleich auto: / sek 42.4/40.3
+[     39] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ok/ok gleich auto: / sek 36.0/34.2
+[     40] formel aus/an: True /True  ergänzt: -                              prüf aus/an: nachgebessert/nachgebessert gleich auto: / sek 58.8/56.7
+[     43] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ok/ok gleich auto: / sek 46.1/43.5
+[     50] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ok/ok gleich auto: / sek 50.1/49.6
+[     52] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ok/ok gleich auto: / sek 42.3/40.9
+[     55] formel aus/an: True /True  ergänzt: -                              prüf aus/an: nachgebessert/nachgebessert ANDERS auto: / sek 51.0/49.1
+[     61] formel aus/an: True /True  ergänzt: -                              prüf aus/an: ersetzt/ok ANDERS auto: / sek 53.3/42.8
+[     62] formel aus/an: True /True  ergänzt: -                              prüf aus/an: nachgebessert/nachgebessert ANDERS auto: / sek 52.7/48.3
+[ V-1.32] formel aus/an: True /True  ergänzt: pdf_0425;pdf_0430              prüf aus/an: ok/ok ANDERS auto: False/False sek 40.6/117.3
+[V-Trafo] formel aus/an: True /True  ergänzt: -                              prüf aus/an: nachgebessert/nachgebessert gleich auto: True/True sek 60.6/60.4
+[ V-1.36] formel aus/an: True /True  ergänzt: -                              prüf aus/an: nachgebessert/ok ANDERS auto: / sek 68.0/60.8
+
+=== Zusammenfassung ===
+Formel im Kontext aus/an: 22 / 22 von 22
+FS hat ergänzt: 1 | Antwort geändert: 6
+Varianten automatisch richtig (aus): 1 / 2
+Varianten automatisch richtig (an): 1 / 2
+Mittlere Sekunden aus/an: 53.7 / 54.3
+Gespeichert: evaluationsdaten/v12_ab_V12-AB.csv
+
+FERTIG Fri Oct 23 18:49:28 CEST 2026

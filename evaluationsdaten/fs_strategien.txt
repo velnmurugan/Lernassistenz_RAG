@@ -1,0 +1,24 @@
+========================================================================================== 
+1.32 Magnetkran A | Ziel pdf_2620
+Hauptsuche (Rang des Ziels): -
+  S0 aktuelle Suchbegriffe (je Begriff)    Ränge je Anfrage: ['-', '-', '-']   Anfragen: ['Masse aus Dichte und Volumen', 'Gewichtskraft durch Masse berechnen', 'Kraft zwischen Magnetpolflächen']
+  S1 HyDE (Lehrbuchsätze)                  Ränge je Anfrage: ['-', '-']   Anfragen: ['Um die erforderliche magnetische Flussdichte zu bestimmen, w', 'Anschließend ergibt sich die minimale Flussdichte B durch Gl']
+  S2 Begriffe+Synonyme (eine Anfrage)      Ränge je Anfrage: ['-']   Anfragen: ['Magnetkran, Stahlträger, Länge, Querschnitt, Dichte, Flussdi']
+  S3 Gesucht/Gleichung (ein Satz)          Ränge je Anfrage: ['-']   Anfragen: ['Die gesuchte Größe ist die magnetische Flussdichte $B$, welc']
+  S4 Frage ohne Zahlen                     Ränge je Anfrage: ['-']   Anfragen: ['Ein Magnetkran hebt einen Stahlträger mit   m Länge, Quersch']
+========================================================================================== 
+1.32 Magnetkran B | Ziel pdf_2620
+Hauptsuche (Rang des Ziels): -
+  S0 aktuelle Suchbegriffe (je Begriff)    Ränge je Anfrage: [4, '-', '-']   Anfragen: ['Hubkraft Hubmagnet Stahlträger', 'Masse Volumen Dichte Schwerkraft', 'Kraftflussdichte Polfläche Magnetfeld']
+  S1 HyDE (Lehrbuchsätze)                  Ränge je Anfrage: ['-', '-']   Anfragen: ['Um die erforderliche Mindestflussdichte zu bestimmen, wird z', 'Anschließend ergibt sich die notwendige Flussdichte durch Gl']
+  S2 Begriffe+Synonyme (eine Anfrage)      Ränge je Anfrage: ['-']   Anfragen: ['Hubmagnet, Stahlträger, Länge, Querschnitt, Dichte, Flussdic']
+  S3 Gesucht/Gleichung (ein Satz)          Ränge je Anfrage: ['-']   Anfragen: ['Die gesuchte Größe ist die magnetische Flussdichte $B$, welc']
+  S4 Frage ohne Zahlen                     Ränge je Anfrage: ['-']   Anfragen: ['Ein Kran hebt mit einem Hubmagneten einen Stahlträger der Lä']
+========================================================================================== 
+Trafo 40 kVA | Ziel fischer_pdf_0873
+Hauptsuche (Rang des Ziels): -
+  S0 aktuelle Suchbegriffe (je Begriff)    Ränge je Anfrage: ['-', '-', '-', '-']   Anfragen: ['Nennleistung des Transformators', 'Primärspannung des Netzes', 'Sekundärspannung am Verbraucher', 'Bemessungsstrom berechnen']
+  S1 HyDE (Lehrbuchsätze)                  Ränge je Anfrage: ['-', '-']   Anfragen: ['Um die Bemessungsströme zu ermitteln, wird die Nennleistung ', 'Anschließend ergibt sich der Sekundärstrom aus dem Quotiente']
+  S2 Begriffe+Synonyme (eine Anfrage)      Ränge je Anfrage: ['-']   Anfragen: ['Drehstrom-Öltransformator, kVA, Volt, Schaltung, primär, sek']
+  S3 Gesucht/Gleichung (ein Satz)          Ränge je Anfrage: [4]   Anfragen: ['Die gesuchte Größe ist der Bemessungsstrom, der durch das Pr']
+  S4 Frage ohne Zahlen                     Ränge je Anfrage: [8]   Anfragen: ['Von einem Drehstrom-Öltransformator   kVA,   V /   V, Schalt']

@@ -1,0 +1,5 @@
+nr,datei,ziele,dense,bm25,hybrid,hybrid_kg,final,top4,fs_phrasen,fs_ergaenzt,fs_ziel,urteil
+R07,rechen_varianten_v1.csv,16,3,2,2,2,5,fischer_pdf_0165 fischer_pdf_0136 fischer_pdf_0161 fischer_pdf_0162,Ladungsgesetz für Kondensator; Zeitkonstante RC-Glied; Exponentieller Abfall des Stroms,pdf_6854 fischer_pdf_0550,ja,reranker
+R12,rechen_varianten_v1.csv,13,158,59,118,129,129,fischer_pdf_0296 fischer_pdf_0850 fischer_pdf_0817 fischer_pdf_1142,Induktivität des Motors; Widerstand der Wicklung; Stromstärke im Motor; Leistungswärmeabgabe,fischer_pdf_0228 fischer_pdf_0041,nein,fenster
+R07,rechen_varianten_v2.csv,16,3,2,2,2,5,fischer_pdf_0165 fischer_pdf_0136 fischer_pdf_0161 fischer_pdf_0162,Ladungsgesetz Kondensator; Spannungsabfall Widerstand; Zeitkonstante RC-Glied,fischer_pdf_0133 pdf_2654,nein,reranker
+R12,rechen_varianten_v2.csv,13,168,65,134,128,128,fischer_pdf_0296 fischer_pdf_0817 fischer_pdf_0850 fischer_pdf_1142,Induktivität des Motors; Widerstand der Wicklung; Stromstärke im Motor; Leistungswärmeabgabe,fischer_pdf_0228 fischer_pdf_0041,nein,fenster

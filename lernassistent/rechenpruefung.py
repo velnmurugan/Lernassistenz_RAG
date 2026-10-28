@@ -73,9 +73,16 @@ def zahl(text):
 # RP-v3: Buchstabe + 1-2 Ziffern direkt daneben ("P1", "U2", "R20") ist ein Variablenname -> tiefgestellte Ziffern,
 # die der Tokenizer als Teil des Wortes liest. Nur aktiv in pruefe(..., version="RP-v3"); sonst wie RP-v1/v2.
 _INDEX_FIX = False
+_V9_FIX = False  # RP-v9 (V13.3.1): Namen aus 2-4 Buchstaben + Ziffern ("sK2", "UAN1") als ein Name
+_V10_FIX = False  # RP-v10 (V13.4): Wurzel über Klammer, kein halber Ausdruck neben Namen, "Aufgabe 1.19" als Verweis
+_V11_FIX = False  # RP-v11 (V13.5): Zahl vor Klammer mit Anmerkung, LaTeX-Hochzahlen
+# V18-K (28 Oct 2026, LERNASSISTENT_V18 enthält "K"): Hochzahl mit „^“ nach einer entfernten Einheit gehört zur Einheit
+# ("150 cm^2 = 0,015 m^2" wurde als "150 ^ 2 = 0,015 ^ 2" geprüft; RV-v1 R09: richtige Denkmodus-Antwort verworfen)
+_V18_K = "K" in __import__("os").environ.get("LERNASSISTENT_V18", "")
 _V7_FIX = False  # RP-v7 (V13.1): Einheitenbrüche in Klammern, "/s" nach Zahl, Einheit kgm²
 _UNTERSTRICH_FIX = False  # RP-v5: "I_1N", "U_2N", "u_k" -> ein Name (siehe pruefe)
 _UNTERSTRICHNAME = re.compile(r"(?<![\w.,])([A-Za-zηφΦϑα-ωΑ-Ω]{1,3})_([A-Za-z0-9]{1,4})\b")
+_NAME_ZIFFER = re.compile(r"(?<![\w.,])([A-Za-zηφΦϑα-ωΑ-Ω]{2,4})(\d{1,2})\b(?![,.]\d)")
 _INDEXNAME = re.compile(r"(?<![\w.,])([A-Za-zηφΦϑα-ωΑ-Ω])(\d{1,2})\b(?![,.]\d)")
 _TIEF = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
 
@@ -96,6 +103,8 @@ def _tokens(teil):
     teil = _ZEHNERPOTENZ.sub(_zehnerpotenz, teil)
     if _UNTERSTRICH_FIX:
         teil = _UNTERSTRICHNAME.sub(lambda m: m.group(1) + m.group(2).translate(_TIEF), teil)
+    if _V9_FIX:  # V13.3.1: "sK2 = 1,25 · 0,15" las die Prüfung als "sK" und "2" (App-Test Pumpenmotor)
+        teil = _NAME_ZIFFER.sub(lambda m: m.group(1) + m.group(2).translate(_TIEF), teil)
     if _INDEX_FIX:
         teil = _INDEXNAME.sub(lambda m: m.group(1) + m.group(2).translate(_TIEF), teil)
     teil = _EINHEITENBRUCH.sub("", _EINHEIT_KEHRWERT.sub(" ", teil))
@@ -124,6 +133,11 @@ def _tokens(teil):
             continue
         if art == "hoch" and vorher == "einheit":  # "mm²", "m⁻¹": Hochzahl gehört zur Einheit
             continue
+        if _V18_K and art == "op" and wert == "^" and vorher == "einheit" and i < len(out):
+            j = i + 1 if out[i] == ("op", "-") and i + 1 < len(out) else i
+            if out[j][0] == "zahl":  # "cm^2", "m^3", "s^-1": Hochzahl der Einheit
+                i = j + 1
+                continue
         sauber.append((art, wert))
         vorher = art
     return sauber
@@ -161,12 +175,40 @@ def _ausdruck_text(toks):
         elif art == "prozent":
             py.append("/100")
         vorher = art
+    if _V10_FIX:
+        return _wurzel_v10(py)
     text = " ".join(py)
     # √ wirkt auf die folgende Zahl oder Klammer
     text = re.sub(r"WURZEL \* ", "WURZEL ", text)
     text = re.sub(r"WURZEL (\d+(?:\.\d+)?(?:e[-+]?\d+)?)", r"sqrt(\1)", text)
     text = text.replace("WURZEL (", "sqrt((")  # Klammer bleibt ausgeglichen: sqrt((...)
     return None if "WURZEL" in text else text
+
+
+def _wurzel_v10(py):
+    """RP-v10: √ wirkt auf die folgende Zahl oder die ganze folgende Klammer. Vorher wurde "√(2 · 25 / 0,5)" zu
+    "sqrt((2 * 25 / 0.5)" (eine Klammer zu wenig), nicht auswertbar; das Kürzen am Rand nahm dann "(2 · 25 / 0,5)" ohne Wurzel
+    und meldete "ergibt 100, nicht 10" (RV-v1 R10, R13, R22: richtige Rechnungen falsch markiert)."""
+    py = list(py)
+    while "WURZEL" in py:
+        i = py.index("WURZEL")
+        if i + 1 >= len(py):
+            return None
+        if py[i + 1] == "(":
+            tiefe, j = 0, i + 1
+            while j < len(py):
+                tiefe += {"(": 1, ")": -1}.get(py[j], 0)
+                if tiefe == 0:
+                    break
+                j += 1
+            if j >= len(py):
+                return None
+            py = py[:i] + ["sqrt("] + py[i + 1:j + 1] + [")"] + py[j + 1:]
+        elif re.fullmatch(r"\d+(?:\.\d+)?(?:e[-+]?\d+)?", py[i + 1]):
+            py = py[:i] + [f"sqrt({py[i + 1]})"] + py[i + 2:]
+        else:
+            return None
+    return " ".join(py)
 
 
 _OPS = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul, ast.Div: operator.truediv,
@@ -210,6 +252,15 @@ def _rand(toks, ende):
     # ist nur ein Teil des Produkts zu sehen; dann nicht prüfen statt die Hälfte zu rechnen
     if _INDEX_FIX and stopp == "wort" and folge and folge[0 if ende else -1][0] == "op":
         return None
+    # RP-v10: auch Hochzahl oder Klammer zu direkt nach einem Namen ("d² · π / 4", "(f₂ / f₁)^1,6") bzw. Klammer auf oder
+    # Wurzel direkt vor einem Namen: der Ausdruck gehört zu einem Produkt mit Symbol, nur ein Teil wäre zu sehen
+    # (RV-v1 R02: "π / 4 = (1,5)² · π / 4 ergibt 0,7854", R14: "… ergibt 2377, nicht 1,6").
+    if _V10_FIX and stopp == "wort" and folge and folge[0 if ende else -1][0] in (
+            ("hoch", "zu") if ende else ("auf", "wurzel")):
+        # RP-v11: "= 78,95 MW (Hinweis: …)" – eine einzelne Zahl vor einer Klammer mit Text ist ein Ergebnis mit Anmerkung
+        if not (_V11_FIX and not ende and folge[-1][0] == "auf" and len(folge) == 2 and folge[0][0] == "zahl"):
+            return None
+        folge = folge[:1]
     # so lange von außen kürzen, bis der Ausdruck auswertbar ist (unausgeglichene Klammern, Operator am Rand)
     for _ in range(len(folge)):
         if not any(a == "zahl" for a, _ in folge):
@@ -221,6 +272,8 @@ def _rand(toks, ende):
             zahlen = [v for a, v in folge if a == "zahl"]
             stellen = len(re.split(r"[,.]", zahlen[-1])[1]) if re.search(r"[,.]\d+$", zahlen[-1]) else 0
             return wert, anzeige, stellen, len(folge) == 1 or (len(folge) == 2 and folge[1][0] == "prozent")
+        if _V10_FIX and folge[0 if ende else -1][0] not in ("op", "auf", "zu"):
+            return None  # RP-v10: am Rand nur Klammern und Operatoren kürzen, nie eine Zahl, Wurzel oder Hochzahl
         folge = folge[1:] if ende else folge[:-1]
     return None
 
@@ -257,7 +310,9 @@ def _zahl_de(x):
         m, e = f"{x:.4e}".split("e")
         return f"{m.rstrip('0').rstrip('.').replace('.', ',')}·10^{int(e)}"
     stellen = max(0, 3 - int(math.floor(math.log10(abs(x)))))
-    t = f"{x:.{min(stellen, 6)}f}".rstrip("0").rstrip(".")
+    t = f"{x:.{min(stellen, 6)}f}"
+    if "." in t:  # V13.4: nur Nachkommanullen kürzen (vorher wurde 5840 als "584" und 3920 als "392" angezeigt)
+        t = t.rstrip("0").rstrip(".")
     return t.replace(".", ",")
 
 
@@ -317,6 +372,7 @@ UEBERLEGUNG_SICHTBAR = re.compile(
 _VERWEIS_ZAHL = re.compile(r"\b(?:Beispiel|Bsp\.|Abb\.|Abbildung|Bild|Tab\.|Tabelle|Kapitel|Kap\.|Abschnitt|"
                            r"Gl\.|Gleichung|Seite|S\.)\s*\d+(?:[.,]\d+)*"
                            r"|\b(?:DIN|VDE|EN|IEC|ISO)\b(?:\s*[A-Z]*\s*[\d][\d\-./]*)+", re.I)
+_VERWEIS_ZAHL_V10 = re.compile(r"\b(?:Aufgabe|Aufg\.|Übung|Lösung zu)\s*\d+(?:[.,]\d+)*(?:\s*[a-z]\))?|" + _VERWEIS_ZAHL.pattern, re.I)
 _ZAHL_TOKEN = re.compile(r"\d+(?:[.,]\d+)*")
 # Abkürzungen mit Punkt, die keinen Satz beenden ("ca. 23 A", "z. B.", "bzw.")
 _ABKUERZUNGEN = {"ca", "bzw", "bspw", "ggf", "evtl", "vgl", "inkl", "exkl", "max", "min", "mind", "nr", "abb",
@@ -368,7 +424,7 @@ def _stellen(t):
 
 def _zahlen_mit_stellen(text):
     out = []
-    for t in _ZAHL_TOKEN.findall(_VERWEIS_ZAHL.sub(" ", text or "")):
+    for t in _ZAHL_TOKEN.findall((_VERWEIS_ZAHL_V10 if _V10_FIX else _VERWEIS_ZAHL).sub(" ", text or "")):
         try:
             out.append((abs(zahl(t)), _stellen(t), t))
         except ValueError:
@@ -461,19 +517,79 @@ def pruefe(text, frage="", version="RP-v3"):
     """Alle Befunde der gewählten Version. RP-v1 = nur pruefe_rechnungen (unverändert); RP-v2 = + Konsistenz und
     sichtbare Überlegung; RP-v3 = RP-v2 mit Indexnamen-Korrektur; RP-v4 wie RP-v3; RP-v5 = RP-v3 + Unterstrich-Namen;
     RP-v6 = RP-v5 + Einheitenwächter (V13); RP-v7 = RP-v6 + Tokenizer-Korrekturen (V13.1)."""
-    global _INDEX_FIX, _UNTERSTRICH_FIX, _V7_FIX
-    alt, _INDEX_FIX = _INDEX_FIX, version not in ("RP-v1", "RP-v2")
-    alt_u, _UNTERSTRICH_FIX = _UNTERSTRICH_FIX, version in ("RP-v5", "RP-v6", "RP-v7", "RP-v8", "RP-v9")
-    alt_7, _V7_FIX = _V7_FIX, version in ("RP-v7", "RP-v8", "RP-v9")
-    try:
-        befunde = pruefe_rechnungen(text)
-        if version != "RP-v1":
-            befunde += pruefe_konsistenz(text, frage) + pruefe_ueberlegung(text)
-        if version in ("RP-v6", "RP-v7", "RP-v8", "RP-v9"):
-            befunde += pruefe_einheiten(text, frage)
-    finally:
-        _INDEX_FIX, _UNTERSTRICH_FIX, _V7_FIX = alt, alt_u, alt_7
+    with modus(version):
+        return _pruefe(text, frage, version)
+
+
+def _pruefe(text, frage, version):
+    if _V10_FIX:
+        text = entlatexe(text)
+    befunde = pruefe_rechnungen(text)
+    if version != "RP-v1":
+        befunde += pruefe_konsistenz(text, frage) + pruefe_ueberlegung(text)
+    if version in ("RP-v6", "RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11"):
+        befunde += pruefe_einheiten(text, frage)
     return befunde
+
+
+_NACHFOLGER = {"RP-v10": ("RP-v10", "RP-v11"), "RP-v9": ("RP-v9", "RP-v10", "RP-v11"),
+               "RP-v7": ("RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11"),
+               "RP-v5": ("RP-v5", "RP-v6", "RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11")}
+
+
+class modus:
+    """Kontext mit den Tokenizer-Schaltern einer Version (auch für Hilfsfunktionen außerhalb von pruefe()):
+    with rechenpruefung.modus("RP-v11"): ..."""
+
+    def __init__(self, version):
+        self.version = version
+
+    def __enter__(self):
+        global _INDEX_FIX, _UNTERSTRICH_FIX, _V7_FIX, _V9_FIX, _V10_FIX, _V11_FIX
+        self.alt = (_INDEX_FIX, _UNTERSTRICH_FIX, _V7_FIX, _V9_FIX, _V10_FIX, _V11_FIX)
+        v = self.version
+        _INDEX_FIX = v not in ("RP-v1", "RP-v2")
+        _UNTERSTRICH_FIX = v in _NACHFOLGER["RP-v5"]
+        _V7_FIX = v in _NACHFOLGER["RP-v7"]
+        _V9_FIX = v in _NACHFOLGER["RP-v9"]
+        _V10_FIX = v in _NACHFOLGER["RP-v10"]
+        _V11_FIX = v == "RP-v11"
+        return self
+
+    def __exit__(self, *a):
+        global _INDEX_FIX, _UNTERSTRICH_FIX, _V7_FIX, _V9_FIX, _V10_FIX, _V11_FIX
+        _INDEX_FIX, _UNTERSTRICH_FIX, _V7_FIX, _V9_FIX, _V10_FIX, _V11_FIX = self.alt
+        return False
+
+
+_HOCH_V11 = str.maketrans("0123456789-", "⁰¹²³⁴⁵⁶⁷⁸⁹⁻")
+
+
+def entlatexe(text):
+    """RP-v10: LaTeX-Schreibweise der Antwort (häufig im Denkmodus: "$I = \\frac{P}{U} = \\frac{500}{230}$") in die Klartext-
+    Schreibweise, die die Prüfung liest. Nur für die Prüfung; der angezeigte Text bleibt unverändert."""
+    t = text or ""
+    if "\\" not in t and "$" not in t:
+        return t
+    t = t.replace("$$", "\n").replace("$", "").replace("\\left", "").replace("\\right", "").replace("\\,", " ").replace("\\;", " ")
+    for a, b in (("\\cdot", "·"), ("\\times", "·"), ("\\approx", "≈"), ("\\pi", "π"), ("\\eta", "η"), ("\\varphi", "φ"),
+                 ("\\phi", "φ"), ("\\vartheta", "ϑ"), ("\\theta", "ϑ"), ("\\Omega", "Ω"), ("\\mu", "µ"), ("\\Delta", "Δ"),
+                 ("\\omega", "ω"), ("\\%", "%"), ("^\\circ", "°"), ("\\circ", "°"), ("\\quad", " ")):
+        t = t.replace(a, b)
+    t = t.replace("{,}", ",").replace("{.}", ".")
+    if _V11_FIX:  # RP-v11: "min^{-1}", "x^{2}" -> Hochzahlzeichen (vorher als Rechenoperation gelesen: "1700 min^(-1) / 0,6")
+        t = re.sub(r"\^\s*\{\s*([-−]?\d)\s*\}", lambda m: m.group(1).replace("−", "-").translate(_HOCH_V11), t)
+        t = re.sub(r"(?<=[A-Za-z])\^\s*([-−]?\d)(?![\d,.])", lambda m: m.group(1).replace("−", "-").translate(_HOCH_V11), t)
+        t = re.sub(r"_\s*\{([^{}]*)\}", r"_\1", t)  # Tiefzahlen vor den Brüchen auflösen ("\frac{P_{ab}}{P_{zu}}")
+    t = re.sub(r"\\(?:text|mathrm|mathit|operatorname)\s*\{([^{}]*)\}", r" \1", t)
+    for _ in range(3):
+        t = re.sub(r"\\[dt]?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}", r"(\1) / (\2)", t)
+        t = re.sub(r"\\sqrt\s*\{([^{}]*)\}", r"√(\1)", t)
+        t = re.sub(r"\\(?:text|mathrm|mathit|operatorname)\s*\{([^{}]*)\}", r"\1", t)
+    t = re.sub(r"\^\s*\{([^{}]*)\}", r"^(\1)", t)
+    t = re.sub(r"_\s*\{([^{}]*)\}", r"_\1", t)
+    t = t.replace("{", "").replace("}", "")
+    return re.sub(r"\\[A-Za-z]+", "", t)
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -531,7 +647,23 @@ def korrigiere_kopf(text, befund):
 # Buchaufgabe mit nN = 1440 min⁻¹, sK = 0,2, 180 °C, ohne eigene Rechnung.
 
 
-def pruefe_uebernahme(text, frage, kontext):
+def pruefe_uebernahme(text, frage, kontext, version=""):
+    """RP-v10: mit version="RP-v10" zählen Aufgabennummern ("Aufgabe 1.19") nicht als Wert (RV-v1 R05) und LaTeX wird gelesen."""
+    if version in ("RP-v10", "RP-v11"):
+        with modus(version):
+            if version == "RP-v11" and _frage_wie_im_buch(frage, kontext):
+                return []  # RP-v11: die Frage hat dieselben Zahlen wie das Buch -> der Buchwert ist die richtige Antwort (N100 F39, B30)
+            return _pruefe_uebernahme(entlatexe(text), frage, kontext)
+    return _pruefe_uebernahme(text, frage, kontext)
+
+
+def _frage_wie_im_buch(frage, kontext):
+    """RP-v11: alle Zahlen der Frage stehen im Lernmaterial (die Frage ist die Buchaufgabe oder eine Faktenfrage zum Buch)."""
+    fz = {round(w, 9) for w, _, _ in _zahlen_mit_stellen(frage)}
+    return bool(fz) and fz <= {round(w, 9) for w, _, _ in _zahlen_mit_stellen(kontext)}
+
+
+def _pruefe_uebernahme(text, frage, kontext):
     """Befund, wenn (1) die Frage mindestens zwei Zahlen nennt, (2) der erste Satz eine eigene Zahl nennt (nicht aus der Frage),
     (3) genau diese Zahl im Lernmaterial steht und (4) die Lösung keine Rechnung enthält, die zu einem Ergebnis führt.
     Keine Aussage darüber, ob der Wert stimmt; nur: er ist nicht aus den Werten der Frage berechnet."""
@@ -575,3 +707,28 @@ def bereinige_ueberlegung_v8(text):
             kopf = kopf.rstrip(" *\n\t")
             return kopf + ("" if kopf.endswith((".", "!", ")")) else "."), (rest + " " + t[start:]).strip()
     return bereinige_ueberlegung_v7(t)
+
+
+# RP-v11 (V13.5, 27 Oct 2026): weitere Denktext-Anfänge (RV-v1 Lauf V134, R01: "(Hinweis: Hier liegt ein Widerspruch … Ich muss die
+# Werte aus dem Material genau prüfen …" blieb stehen; danach rechnete die Prüfung mit einer Zwischenzahl).
+_LECK_V11 = re.compile(r"\(\s*Hinweis:\s*(?:Hier liegt ein Widerspruch|Ich|Moment|Warte)|\bIch muss (?:die|den|meine|nun|jetzt)\b|"
+                       r"\bmeiner (?:Berechnung|Rechnung|Überlegung)\b|\bLass mich\b|\bAber warte\b|\bIst das realistisch\?", re.I)
+
+
+def bereinige_ueberlegung_v11(text):
+    """Wie bereinige_ueberlegung_v8, zusätzlich _LECK_V11 (ab Satz- oder Klammeranfang der Fundstelle). Rückgabe (text, entfernt)."""
+    t, weg = bereinige_ueberlegung_v8(text)
+    m = _LECK_V11.search(t)
+    if not m:
+        return t, weg
+    vorher = t[:m.start()]
+    klammer = vorher.rfind("(") if "(" in t[m.start():m.start() + 1] or m.group(0).startswith("(") else -1
+    if m.group(0).startswith("("):
+        start = m.start()
+    else:
+        start = max(vorher.rfind(". "), vorher.rfind("\n"), klammer) + 1
+    if len(t[:start].strip()) < 40:
+        return t, weg
+    kopf = t[:start].rstrip(" ,;:*\n\t(")
+    kopf = kopf + ("" if kopf.endswith((".", "!", ")")) else ".")
+    return kopf, (t[start:] + " " + weg).strip()

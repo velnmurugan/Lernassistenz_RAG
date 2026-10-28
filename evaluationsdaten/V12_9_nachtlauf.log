@@ -1,0 +1,294 @@
+V12.9 Nachtlauf Start Sat Oct 24 00:41:36 CEST 2026
+NAME                   ID              SIZE      MODIFIED    
+qwen2.5vl:7b           5ced39dfa4ba    6.0 GB    10 days ago    
+qwen2.5vl:3b           fb90415cde1e    3.2 GB    10 days ago    
+mistral-nemo:latest    e7e06d107c6c    7.1 GB    3 weeks ago    
+qwen3.5:9b             6488c96fa5fa    6.6 GB    7 weeks ago    
+granite4.1:8b          444af1c4b2fe    5.3 GB    8 weeks ago    
+
+### 1/5 Offline-Tests (ca. 2 min) – 24.10. 00:41
+2026-10-24 00:41:37.374 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-24 00:41:37.627 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-24 00:41:37.787 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+108 bestanden, 0 fehlgeschlagen
+46 passed, 0 failed
+22 passed, 0 failed
+ALLE TESTS BESTANDEN
+
+### 2/5 Bildabgleich gegen Abbildungen der Wissensbasis (ca. 5-15 min; Bilder in testbilder/ und testbilder/abbildungen/) – 24.10. 00:41
+2982 Abbildungen der Wissensbasis indiziert in 18 s (Bildwurzel daten/extraktion)
+Screenshot 2026-10-23 125901.png: bester Treffer 27 Inlier – 1. Freiträger mit gleichbleibendem Querschnitt und Einzellas | Abbildung: Abb. 27.8 Synchronmotor mit ausgeprägten Polen un (12.6 s)
+Screenshot 2026-10-23 125938.png: bester Treffer 24 Inlier – 1 b) Auf- und Abwärtszähler > 74.2 Grafische Darstellung von | Abbildung: Abb. 74.12 Darstellung der Addition Abb. 74.13Dar (11.8 s)
+Screenshot 2026-10-23 130024.png: bester Treffer 40 Inlier – 2.1 Grundlagen und Bauelemente der Elektronik > 2.1.3 Halble | Abbildung: b (12.1 s)
+Screenshot 2026-10-23 130332.png: bester Treffer 45 Inlier – 2.1 Grundlagen und Bauelemente der Elektronik > 2.1.4 Halble | Abbildung (13.2 s)
+Screenshot 2026-10-23 130353.png: bester Treffer 35 Inlier – 1 Frequenzgang | Abbildung: Abb. 76.26 Reale Sprungantwort bei D-Verhalten (15.5 s)
+Screenshot 2026-10-23 130407.png: bester Treffer 67 Inlier – 1.3 Wechselstrom und Drehstrom > 1.3.3 Drehstrom > 1.3.3.5 S | Abbildung: a b Abb. 1.108 a Schaltplan der Abnehmergruppen I (12.0 s)
+Screenshot 2026-10-23 130436.png: bester Treffer 83 Inlier – 1 Kettencharakteristik ( Abb. 45.22) > 57.3 Umformen > 57.3. | Abbildung (14.1 s)
+Screenshot 2026-10-23 130636.png: bester Treffer 30 Inlier – 1 b) Auf- und Abwärtszähler > 74.2 Grafische Darstellung von | Abbildung: Abb. 74.12 Darstellung der Addition Abb. 74.13Dar (11.9 s)
+
+Fertig: evaluationsdaten/bildabgleich_BA-V12-9.csv · 8/8 Testbilder mit plausiblem Treffer (≥15 Inlier)
+
+### 3/5 Bildfragen, 9 Varianten in getrennten Durchgängen (ca. 1-1,5 h) – 24.10. 00:43
+8 Aufgaben-Bilder, 0 Abbildungen | KB c2742e8c278f | G-v4 | 0 Läufe schon vorhanden
+
+gelesen Screenshot 2026-10-23 125901.png: 10.5 s, Text 0 Z., Thema 'Wechselstrom und Drehstrom', Abbildung ja 
+gelesen Screenshot 2026-10-23 125938.png: 5.8 s, Text 150 Z., Thema 'Messung der Effektivwerte U und I bei Anschluss vo', Abbildung ja 
+gelesen Screenshot 2026-10-23 130024.png: 5.9 s, Text 170 Z., Thema 'Wechselstrom, Drehstrom, Leistungsdreieck, Arbeits', Abbildung nein 
+gelesen Screenshot 2026-10-23 130332.png: 6.6 s, Text 222 Z., Thema 'Gefährdung ohne Schutzleiter; Stromkreis L N S B R', Abbildung ja 
+gelesen Screenshot 2026-10-23 130353.png: 9.3 s, Text 705 Z., Thema 'Drehstrommotor Anschlusskasten Schaltplan Dreiecks', Abbildung ja 
+gelesen Screenshot 2026-10-23 130407.png: 12.3 s, Text 792 Z., Thema 'Wechselstrom und Drehstrom, Abnehmergruppen in ein', Abbildung ja 
+gelesen Screenshot 2026-10-23 130436.png: 10.1 s, Text 406 Z., Thema 'Transistorbetrieb Schalter Kennlinienfeld Schaltzu', Abbildung ja 
+gelesen Screenshot 2026-10-23 130636.png: 7.0 s, Text 193 Z., Thema 'Lagerbleche, Umlenk-Seilrolle, Wanddrehkran, Niete', Abbildung ja 
+
+--- A0_nur_text: Aufgabentext allein (Grundlinie, wie V12.4 ohne Abbildung) ---
+[Screenshot 2026-10-23 125901.png] übersprungen (Bild nicht lesbar: )
+[Screenshot 2026-10-23 125938.p] BEANTWORTET 54.9 s
+[Screenshot 2026-10-23 130024.p] BEANTWORTET 45.8 s
+[Screenshot 2026-10-23 130332.p] BEANTWORTET 50.6 s
+[Screenshot 2026-10-23 130353.p] BEANTWORTET 51.9 s
+[Screenshot 2026-10-23 130407.p] TEILWEISE 114.1 s
+[Screenshot 2026-10-23 130436.p] BEANTWORTET 47.5 s
+[Screenshot 2026-10-23 130636.p] TEILWEISE 51.0 s
+
+--- A1_text_beschr: Text + Abbildungsbeschreibung (V12.5/12.7) ---
+[Screenshot 2026-10-23 125901.png] übersprungen (Bild nicht lesbar: )
+[Screenshot 2026-10-23 125938.p] BEANTWORTET 49.7 s
+[Screenshot 2026-10-23 130024.p] BEANTWORTET 61.2 s
+[Screenshot 2026-10-23 130332.p] BEANTWORTET 49.0 s
+[Screenshot 2026-10-23 130353.p] BEANTWORTET 48.8 s
+[Screenshot 2026-10-23 130407.p] TEILWEISE 133.4 s
+[Screenshot 2026-10-23 130436.p] BEANTWORTET 46.9 s
+[Screenshot 2026-10-23 130636.p] BEANTWORTET 53.3 s
+
+--- A2_text_beschr_bild: Text + Beschreibung + Bild im Antwortaufruf (V12.6) ---
+[Screenshot 2026-10-23 125901.png] übersprungen (Bild nicht lesbar: )
+[Screenshot 2026-10-23 125938.p] BEANTWORTET 46.2 s
+[Screenshot 2026-10-23 130024.p] BEANTWORTET 55.5 s
+[Screenshot 2026-10-23 130332.p] BEANTWORTET 85.4 s
+[Screenshot 2026-10-23 130353.p] BEANTWORTET 50.6 s
+[Screenshot 2026-10-23 130407.p] BEANTWORTET 53.4 s
+[Screenshot 2026-10-23 130436.p] BEANTWORTET 50.5 s
+[Screenshot 2026-10-23 130636.p] BEANTWORTET 51.2 s
+
+--- A3_text_bild: Text + Bild im Antwortaufruf, ohne Beschreibung ---
+[Screenshot 2026-10-23 125901.png] übersprungen (Bild nicht lesbar: )
+[Screenshot 2026-10-23 125938.p] BEANTWORTET 46.8 s
+[Screenshot 2026-10-23 130024.p] BEANTWORTET 88.4 s
+[Screenshot 2026-10-23 130332.p] BEANTWORTET 50.5 s
+[Screenshot 2026-10-23 130353.p] BEANTWORTET 52.2 s
+[Screenshot 2026-10-23 130407.p] BEANTWORTET 57.0 s
+[Screenshot 2026-10-23 130436.p] BEANTWORTET 52.5 s
+[Screenshot 2026-10-23 130636.p] BEANTWORTET 47.8 s
+
+Fertig: evaluationsdaten/bildfragen_BF-V12-9.csv
+
+### 4/5 A/B Formelsuche aus gegen FS-v2, N100-Rechenfragen + 3 Varianten (ca. 1,5 h) – 24.10. 01:12
+22 Fragen | KB daten/wissensbasen/knowledge_base_fischer_boege_v7r.json (c2742e8c278f) | G-v4
+
+
+--- Arm 'aus' (Formelsuche aus) ---
+[      1] aus: prüf markiert       sek 79.8   auto: 
+[      2] aus: prüf nachgebessert  sek 64.7   auto: 
+[      3] aus: prüf ok             sek 38.6   auto: 
+[      4] aus: prüf ersetzt        sek 92.1   auto: 
+[      7] aus: prüf nachgebessert  sek 67.2   auto: 
+[     13] aus: prüf nachgebessert  sek 48.9   auto: 
+[     14] aus: prüf ok             sek 42.7   auto: 
+[     15] aus: prüf ersetzt        sek 56.5   auto: 
+[     29] aus: prüf markiert       sek 61.7   auto: 
+[     37] aus: prüf ok             sek 44.1   auto: 
+[     38] aus: prüf ok             sek 46.9   auto: 
+[     39] aus: prüf ok             sek 40.0   auto: 
+[     40] aus: prüf nachgebessert  sek 62.6   auto: 
+[     43] aus: prüf ok             sek 51.4   auto: 
+[     50] aus: prüf ok             sek 53.1   auto: 
+[     52] aus: prüf ok             sek 48.5   auto: 
+[     55] aus: prüf nachgebessert  sek 57.6   auto: 
+[     61] aus: prüf ersetzt        sek 59.2   auto: 
+[     62] aus: prüf nachgebessert  sek 57.7   auto: 
+[ V-1.32] aus: prüf ok             sek 45.5   auto: False
+[V-Trafo] aus: prüf nachgebessert  sek 62.4   auto: True
+[ V-1.36] aus: prüf nachgebessert  sek 70.2   auto: 
+
+--- Arm 'an' (Formelsuche FS-v2) ---
+[      1] an: prüf markiert       sek 57.3   auto: 
+[      2] an: prüf nachgebessert  sek 70.6   auto: 
+[      3] an: prüf ok             sek 43.6   auto: 
+[      4] an: prüf ersetzt        sek 94.4   auto: 
+[      7] an: prüf nachgebessert  sek 71.2   auto: 
+[     13] an: prüf nachgebessert  sek 48.2   auto: 
+[     14] an: prüf ok             sek 42.1   auto: 
+[     15] an: prüf ersetzt        sek 55.2   auto: 
+[     29] an: prüf markiert       sek 63.0   auto: 
+[     37] an: prüf ok             sek 46.0   auto: 
+[     38] an: prüf ok             sek 46.4   auto: 
+[     39] an: prüf ok             sek 37.7   auto: 
+[     40] an: prüf nachgebessert  sek 65.3   auto: 
+[     43] an: prüf ok             sek 49.2   auto: 
+[     50] an: prüf ok             sek 54.8   auto: 
+[     52] an: prüf ok             sek 48.0   auto: 
+[     55] an: prüf nachgebessert  sek 55.9   auto: 
+[     61] an: prüf ersetzt        sek 57.3   auto: 
+[     62] an: prüf nachgebessert  sek 58.1   auto: 
+[ V-1.32] an: prüf ok             sek 130.3  auto: False
+[V-Trafo] an: prüf nachgebessert  sek 66.3   auto: True
+[ V-1.36] an: prüf nachgebessert  sek 74.6   auto: 
+
+=== Zusammenfassung ===
+Formel im Kontext aus/an: 22 / 22 von 22
+FS hat ergänzt: 0 | Antwort geändert: 0
+Varianten automatisch richtig (aus): 1 / 2
+Varianten automatisch richtig (an): 1 / 2
+Mittlere Sekunden aus/an: 56.9 / 60.7
+Gespeichert: evaluationsdaten/v12_ab_V12-9-AB.csv
+
+### 5/5 N100 komplette Regression beider Bücher mit V12.9 (ca. 2-3 h; nur wenn das Skript existiert) – 24.10. 01:56
+=== Chunk-Zuordnung Fischer gegen kombinierte KB
+[64] fischer_pdf_1123
+[65] fischer_pdf_1125
+[66] fischer_pdf_1136
+[67] fischer_pdf_1140
+[68] fischer_pdf_1166
+[69] fischer_pdf_1185
+
+62 zugeordnet, 0 nicht gefunden -> daten/testfragen/testfragen_fischer_v2_chunks_beide.csv
+=== N100F-V12-9-BEIDE
+HINWEIS: Code hat nicht committete Änderungen — für saubere Läufe vorher committen.
+Konfiguration: evaluationsdaten/lauf_N100F-V12-9-BEIDE.json
+70 offene Fragen, 33269 Chunks, kb_hash=8fb4a54a4112, Sitzung=N100F-V12-9-BEIDE, Retrieval=hybrid_kg_rr, RRF_K=5, Generierung={'temperature': 0, 'seed': 42}, Stufen=G-v4
+
+[ 1] rechnung     score=0.775  Rang 125      47.3s
+[ 2] rechnung     score=0.747  Rang 3        62.6s
+[ 3] rechnung     score=0.725  Rang 225      24.6s
+[ 4] rechnung     score=0.768  Rang 1        51.2s
+[ 5] fakt         score=0.670  Rang 1        21.2s
+[ 6] konzept      score=0.734  Rang 1        23.4s
+[ 7] rechnung     score=0.869  Rang 1        31.5s
+[ 8] konzept      score=0.674  Rang 1        22.4s
+[ 9] ausserhalb   score=0.693  Rang -        17.0s
+[10] konzept      score=0.840  Rang 1        20.0s
+[11] konzept      score=0.824  Rang 1        26.7s
+[12] konzept      score=0.788  Rang 1        23.1s
+[13] rechnung     score=0.889  Rang 1        32.8s
+[14] rechnung     score=0.761  Rang 1        26.9s
+[15] rechnung     score=0.825  Rang 1        42.1s
+[16] konzept      score=0.777  Rang 1        20.1s
+[17] konzept      score=0.657  Rang 1        28.9s
+[18] ausserhalb   score=0.780  Rang -        22.4s
+[19] konzept      score=0.767  Rang 1        24.8s
+[20] fakt         score=0.730  Rang 1        28.9s
+[21] konzept      score=0.747  Rang 1        20.4s
+[22] konzept      score=0.659  Rang 1        21.9s
+[23] konzept      score=0.814  Rang 6        17.9s
+[24] konzept      score=0.619  Rang 1        24.2s
+[25] konzept      score=0.730  Rang 1        20.7s
+[26] konzept      score=0.761  Rang 1        26.2s
+[27] ausserhalb   score=0.669  Rang -        23.0s
+[28] konzept      score=0.689  Rang 1        25.2s
+[29] rechnung     score=0.684  Rang 6        33.7s
+[30] konzept      score=0.580  Rang 1        30.2s
+[31] konzept      score=0.733  Rang 1        21.5s
+[32] fakt         score=0.717  Rang 1        22.4s
+[33] konzept      score=0.634  Rang 1        24.1s
+[34] konzept      score=0.736  Rang 1        24.2s
+[35] fakt         score=0.724  Rang 1        24.7s
+[36] ausserhalb   score=0.498  Rang -        15.0s
+[37] rechnung     score=0.669  Rang 1        31.5s
+[38] rechnung     score=0.709  Rang 1        42.9s
+[39] rechnung     score=0.741  Rang 2        30.8s
+[40] rechnung     score=0.795  Rang 12       44.4s
+[41] konzept      score=0.625  Rang 1        29.8s
+[42] konzept      score=0.759  Rang 1        18.0s
+[43] rechnung     score=0.776  Rang 2        40.1s
+[44] konzept      score=0.790  Rang 1        30.5s
+[45] ausserhalb   score=0.647  Rang -        21.6s
+[46] fakt         score=0.693  Rang 5        31.6s
+[47] konzept      score=0.642  Rang 1        24.7s
+[48] konzept      score=0.690  Rang 1        26.4s
+[49] konzept      score=0.644  Rang 1        25.4s
+[50] rechnung     score=0.717  Rang 1        53.8s
+[51] fakt         score=0.721  Rang 2        31.2s
+[52] rechnung     score=0.712  Rang 1        34.9s
+[53] fakt         score=0.702  Rang 1        36.7s
+[54] ausserhalb   score=0.701  Rang -        19.5s
+[55] rechnung     score=0.846  Rang 4        43.1s
+[56] konzept      score=0.819  Rang 1        19.7s
+[57] konzept      score=0.735  Rang 1        30.6s
+[58] konzept      score=0.789  Rang 3        31.3s
+[59] konzept      score=0.739  Rang 1        26.3s
+[60] konzept      score=0.815  Rang 1        27.6s
+[61] rechnung     score=0.730  Rang 1        30.6s
+[62] rechnung     score=0.769  Rang 1        39.7s
+[63] ausserhalb   score=0.658  Rang -        18.9s
+[64] konzept      score=0.761  Rang 1        22.7s
+[65] konzept      score=0.754  Rang 1        22.0s
+[66] konzept      score=0.749  Rang 3        25.3s
+[67] fakt         score=0.720  Rang 1        27.9s
+[68] konzept      score=0.735  Rang 2        28.0s
+[69] konzept      score=0.635  Rang 1        19.3s
+[70] ausserhalb   score=0.591  Rang -        15.6s
+
+--- Zusammenfassung N100F-V12-9-BEIDE / hybrid_kg_rr (70/70 Fragen ohne Fehler) ---
+Recall@4 exakt:           56/62
+Recall@4 inkl. Nachbar:   57/62
+Korrekt verweigert (außerhalb): 0/8
+Stufen-Format eingehalten:      65/70
+Status je Fragetyp:
+  ausserhalb    BEANTWORTET 2, NICHT_IM_MATERIAL 5, TEILWEISE 1
+  fakt          BEANTWORTET 8
+  konzept       BEANTWORTET 35
+  rechnung      BEANTWORTET 19
+Formatfehler: 0/70
+Bericht: evaluationsdaten/testlauf_retrieval_N100F-V12-9-BEIDE.csv
+=== N100B-V12-9-BEIDE
+HINWEIS: Code hat nicht committete Änderungen — für saubere Läufe vorher committen.
+Konfiguration: evaluationsdaten/lauf_N100B-V12-9-BEIDE.json
+30 offene Fragen, 33269 Chunks, kb_hash=8fb4a54a4112, Sitzung=N100B-V12-9-BEIDE, Retrieval=hybrid_kg_rr, RRF_K=5, Generierung={'temperature': 0, 'seed': 42}, Stufen=G-v4
+
+[ 1] konzept      score=0.788  Rang 1        46.3s
+[ 2] konzept      score=0.673  Rang 1        22.9s
+[ 3] konzept      score=0.746  Rang 1        20.2s
+[ 4] fakt         score=0.734  Rang 3        22.6s
+[ 5] rechnung     score=0.748  Rang 3        17.2s
+[ 6] konzept      score=0.834  Rang 1        13.5s
+[ 7] tabelle      score=0.739  Rang 5        22.9s
+[ 8] konzept      score=0.643  Rang 1        15.3s
+[ 9] fakt         score=0.532  Rang 2        16.8s
+[10] konzept      score=0.778  Rang 2        27.6s
+[11] konzept      score=0.767  Rang 1        19.7s
+[12] tabelle      score=0.819  Rang 2        24.2s
+[13] konzept      score=0.713  Rang 1        19.3s
+[14] fakt         score=0.670  Rang 1        22.1s
+[15] konzept      score=0.612  Rang 101      15.2s
+[16] konzept      score=0.701  Rang 1        20.4s
+[17] fakt         score=0.799  Rang 1        16.2s
+[18] aufzaehlung  score=0.789  Rang 1        12.9s
+[19] konzept      score=0.792  Rang 1        19.1s
+[20] konzept      score=0.872  Rang 1        18.3s
+[21] konzept      score=0.769  Rang 2        13.7s
+[22] konzept      score=0.728  Rang 1        15.6s
+[23] konzept      score=0.814  Rang 2        15.8s
+[24] rechnung     score=0.720  Rang 8        43.2s
+[25] aufzaehlung  score=0.774  Rang 2        18.6s
+[26] fakt         score=0.714  Rang 2        14.3s
+[27] rechnung     score=0.750  Rang 62       35.5s
+[28] konzept      score=0.798  Rang 1        25.8s
+[29] fakt         score=0.781  Rang 2        14.1s
+[30] fakt         score=0.774  Rang 1        35.4s
+
+--- Zusammenfassung N100B-V12-9-BEIDE / hybrid_kg_rr (30/30 Fragen ohne Fehler) ---
+Recall@4 exakt:           26/30
+Recall@4 inkl. Nachbar:   27/30
+Stufen-Format eingehalten:      29/30
+Status je Fragetyp:
+  aufzaehlung   BEANTWORTET 2
+  fakt          BEANTWORTET 6, NICHT_IM_MATERIAL 1
+  konzept       BEANTWORTET 15, TEILWEISE 1
+  rechnung      BEANTWORTET 3
+  tabelle       BEANTWORTET 2
+Formatfehler: 0/30
+Bericht: evaluationsdaten/testlauf_retrieval_N100B-V12-9-BEIDE.csv
+evaluationsdaten/testlauf_retrieval_N100B-V12-9-BEIDE.csv
+evaluationsdaten/testlauf_retrieval_N100F-V12-9-BEIDE.csv
+
+FERTIG Sat Oct 24 03:10:43 CEST 2026

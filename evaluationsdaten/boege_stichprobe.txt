@@ -1,0 +1,568 @@
+=== pdf_0011 | S. 4 | 978 3 658 30273 3 ===
+Weder der V erlag noch die Autoren oder
+die Herausgeber übernehmen, ausdrücklich oder implizit, Gewähr für den Inhalt des Werkes, etwaige Fehler oder
+Äußerungen. Der V erlag bleibt im Hinblick auf geograﬁsche Zuordnungen und Gebietsb ezeichnungen in veröf-
+fentlichten Karten und Institutionsadressen neutral.
+
+=== pdf_0279 | S. 30 | 1.4 Einteilung der Zahlen ===
+Die Aussageform „ xC1 D 3“ wird zu einer falschen
+Aussage, wenn man für x die Zahl 1 einsetzt (denn die
+Lösung der Gleichung ist xD2). 9
+1.2.2 LogischeZeichen
+In der Mathematik ist es häuﬁg sinnvoll, kompliziertere
+Aussagen mit Hilfe logischer Zeichen zu formalisieren.
+
+=== pdf_0818 | S. 64 | 3.6 Arkusfunktionen ===
+3
+38 Kapitel3/SOHTrigonometrie
+Beziehungen zwischen den Hauptwerten:
+arcsinxD  
+2/NULarccosxD arctan xp
+1/NULx2
+arccosxD  
+2/NULarcsinxD arccot xp
+1/NULx2
+arctanxD  
+2/NULarccotxD arcsin xp
+1Cx2
+arccotxD  
+2/NULarctanxD arccos xp
+1Cx2
+Formeln für negative Argumente:
+arcsin./NULx/D/NULarcsinx
+arccos./NULx/D /NULarccosx
+arctan./NULx/D/NULarctanx
+arccot./NULx/D /NULarccotx
+7 Beispiele
+1.
+
+=== pdf_0956 | S. 74 | 4.5 Kegelschnitte ===
+Diese Gleichung heißt auch Mittelpunktsform der Hy-
+perbelgleichung. Gleichungen der Asymptoten:
+yD˙ b
+a.x/NULxm/Cym
+3. Koordinatenachsen als Asymptoten, Mittelpunkt im
+Koordinatenursprung:
+x/SOHyDc oder yD c
+x .c¤0/
+Für c >0 ist die Winkelhalbierende yD x die Haupt-
+achse, die Hyperbeläste liegen im ersten und im dritten
+Quadranten. Im Falle c <0 ist die Winkelhalbieren-
+de yD/NULx die Hauptachse, die Hyperbeläste liegen im
+zweiten und im vierten Quadranten. Gleichungen der Asymptoten: xD0, yD0
+7 Beispiel
+Gegeben: Hyperbelgleichung x2
+16/NULy2
+20D1.
+
+=== pdf_1397 | S. 105 | 6.3 Anfangswert- und Randwertprobleme ===
+6
+80 Kapitel6/SOHGewöhnlicheDifferentialgleichungen
+Man nennt eine Lösung auch Integral einer gewöhnli-
+chen Differentialgleichung, weil die Lösung mitunter durch
+(mehrmalige) unbestimmte Integration der Differentialglei-
+chung bestimmt werden kann. Als Integration einer ge-
+wöhnlichen Differentialgleichung bezeichnet man deshalb
+die Bestimmung aller ihrer Lösungen. Bei den Lösungen einer gewöhnlichen Differential-
+gleichung wird zwischen allgemeiner und spezieller oder
+partikulärer Lösung unterschieden. Die allgemeine Lösung einer gewöhnlichen Differenti-
+algleichungn-ter Ordnung enthältn voneinander unabhän-
+gige Parameter (Integrationskonstanten). Eine spezielle oder partikuläre Lösung ergibt sich aus
+der allgemeinen Lösung dadurch, dass durch zusätzliche
+Bedingungen dien Parameter feste Werte annehmen.
+
+=== pdf_2726 | S. 177 | 8.6 Säuren und Basen ===
+Indikatoren zeigen durch Farbumschlag den Endpunkt
+einer Titration an. Mit einer Glaselektrode kann man den
+pH aber auch direkt messen. pH-Puffer dämpfen pH-Änderungen bei Säure- oder
+Laugenzusatz in wässriger Lösung. Sie sind Mischungen
+aus einer schwachen Säuren oder Base und einem Salz da-
+von, z.
+
+=== pdf_3434 | S. 216 | 9.7 Reibung ===
+Mit/SUB2 und/SUB3 sind am Keil 2 die Wirklinien der dort
+angreifenden Ersatzkräfte F0
+e2, Fe3 bekannt, sodass durch
+Parallelverschiebung der Wirklinien von FeŠ3 und F das
+Krafteck 2 an 1 angeschlossen werden kann. Die Zerlegung
+der Ersatzkräfte Fe in Reibungskraft FR und Normalkraft
+FN vervollständigt den Kräfteplan. Die gesuchte V erschie-
+bekraft F kann daraus abgemessen werden.
+
+=== pdf_3901 | S. 251 | 10.4 Dynamik der Drehung (Rotation) des starren Körpers ===
+Dann bleibt der Dreh-
+impuls (Drall) des Körpers erhalten und es gilt:
+J!2/NULJ!1D0 J!2D J!1D konstant
+Impulserhaltungssatz (10.133)
+Wirken auf ein System keine äußeren Drehmomente oder
+ist deren Summe gleich null, so bleibt der Drehimpuls J! des Systems nach Betrag und Richtung unverändert.
+
+=== pdf_5984 | S. 388 | 12.3 Gasdynamik ===
+Abb. 12.77 a Ausﬂussfunktion für überkritisches Ausströmen ohne
+Überschalldüse, b Behälter mit Strahlexpansion
+.Abb.12.78 Ausﬂussfunktion  für Luft aus einem Behälter in loga-
+rithmischer Darstellung bei konstantem Außendruck p2D pbD100 kPa
+Bei dem überkritischen Druckverhältnis p=p0 < p/ETX=p0 ex-
+pandiert der Strahl nach dem Austritt aus der Öffnung und
+erweitert sich ( .
+
+=== pdf_6366 | S. 412 | 13.1 Allgemeines ===
+Anisotropie
+Änderung Beispiele
+Mischungsverhältnis
+der Phasen
+Stahl: Härte steigt mit dem C-Gehalt (=
+Carbidanteil)
+Form und Größe der
+Kristalle
+Gusseisen: Graphit in Lamellen- oder Ku-
+gelform! Festigkeit steigt
+Art und Form der
+Zusatzstoffe
+Quarzmehl in Phenolharz steigert Härte
+und Warmfestigkeit, Fasern die Zähigkeit
+und mindern Wärmedehnung, ergeben evtl.
+
+=== pdf_6527 | S. 419 | 14.3 Verhalten bei höheren Temperaturen ===
+Es verknüpft den mittleren Randabstand xm,
+bei dem die anfängliche Konzentrationsdifferenz (C-Atmo-
+sphäre – C-Werkstoff) auf die Hälfte abgesunken ist. 2.Fick’schesGesetz
+Wurzelgesetz x2
+mDDt)xmD
+p
+Dt
+Daraus ergeben sich einige Abhängigkeiten:
+Beziehung Abhängigkeit
+Eindringtiefex
+und Zeit t
+dien-fache Eindringtiefex2 erfordert
+dien2-fache Zeitt2
+Zeit t und
+Temperatur T
+t1Wt2DD1WD2 (D enthältT )
+ProduktDtD konstant! Beziehung Abhängigkeit
+Eindringtiefex
+und Zeit t
+dien-fache Eindringtiefex2 erfordert
+dien2-fache Zeitt2
+Zeit t und
+Temperatur T
+t1Wt2DD1WD2 (D enthältT )
+ProduktDtD konstant!
+
+=== pdf_8109 | S. 478 | 17.4 Thermoplastische Kunststoffe ===
+2KristallineThermoplaste( .Abb.17.3unten)
+haben einen tief liegenden Temperaturbereich Tg,i h rV e r -
+wendungsbereich liegt oberhalb im zähharten Bereich
+(hell schrafﬁert), aber noch unterhalb der Kristallitschmelz-
+temperatur TS. Darüber ist das Polymer plastisch verform-
+.Abb.17.3 Thermische Bereiche der Polymere, oben: Amorphe, unten:
+kristalline Thermoplaste
+
+=== pdf_8480 | S. 494 | 19.1 Korrosion ===
+18.2
+Werkstoff-
+gruppe
+Beständigkeitshinweise Hinweise
+Korrosions-
+beständige
+Stähle und
+Stahlguss
+DECHEMA-Werkstofftabellen
+geben Beständigkeit von
+Metallen, Polymeren und
+anorganischen Werkstoffen
+gegen die in der chemischen
+Industrie verwendeten aggres-
+siven Medien für verschiedene
+Temperaturen an
+7 Abschn. 15.3.3.14
+Cu und Cu-
+Legierungen
+Mit steigendem Korrosions-
+widerstand: CuZn, CuSnZn
+CuSn, CuAl, CuNiZn, CuNi
+7 Abschn.
+
+=== pdf_8747 | S. 505 | 20.3 Kerbschlagbiegeversuch (DIN EN ISO 148/11) ===
+Wenn das V erhältnis
+L0/d0 D5 gewahrt wird, ist es von den Abmessungen der
+Probe unabhängig. 20.3 Kerbschlagbiegeversuch(DINENISO
+148/11)
+Untersuchung des Werkstoffes auf seine V erformungsfä-
+higkeit unter ﬂießbehindernden Bedingungen. Als Fließbehinderung wirken:
+Schlag Gekerbte Proben
+Sehr kurze
+V erformungszeit
+Kleines V erfor-
+mungsvolumen
+Dreiachsiges Spannungs-
+system im Kerbgrund
+Schlag Gekerbte Proben
+Sehr kurze
+V erformungszeit
+Kleines V erfor-
+mungsvolumen
+Dreiachsiges Spannungs-
+system im Kerbgrund
+Gemessen wird die zum Zerbrechen genormter Proben be-
+nötigte Arbeit KV.
+
+=== pdf_9083 | S. 516 | 21.2 Druck ===
+positiv/
+pabs < pamb) pe <0. negativ/
+pabsD pamb) peD0
+.Abb.21.2 Absolute und relative Drücke
+Ist der absolute Druck eines Gases kleiner als der At-
+mosphärendruck pamb der umgebenden Luft, so spricht
+man in bestimmten Anwendungsbereichen (V akuumtech-
+nik) auch von einem V akuum unterschiedlicher Prozentig-
+keit (V ak %). Ein V akuum von 100 % liegt dann vor, wenn
+der absolute Druck gleich null ist.
+
+=== pdf_9420 | S. 536 | 23.1 Thermische Zustandsgleichung ===
+523 23
+ZustandsänderungenidealerGase;
+realeGaseundFlüssigkeiten
+Martin Dehli
+23.1 ThermischeZustandsgleichung
+Die Thermodynamik entwickelt ihre Gesetzmäßigkeiten
+mit Hilfe messbarer Größen, die für den jeweiligen Zustand
+eines Systems kennzeichnend sind. Die Thermodynamik
+verzichtet dabei auf jede atomistische Deutung des Wesens
+der Wärme, wie sie in der kinetischen Wärmetheorie zum
+Ausdruck kommt.
+
+=== pdf_9922 | S. 574 | 25.3 Brennwert und Heizwert ===
+Die Enthalpie HB des Brenn-
+stoffs umfasst neben der temperaturabhängigen Enthalpie
+auch die chemisch gebundene Energie des Brennstoffs. Nach einer vollständigen V erbrennung haben die V erbren-
+nungsprodukte bei demselben Druck p1 eine sehr viel hö-
+here Temperaturt2. Im Folgenden wird angenommen, dass
+die V erbrennungsprodukte durch Entzug der Wärme Q110
+auf die Temperatur der Ausgangsstoffe t0
+1Dt1 zurückge-
+kühlt werden; dabei soll vorausgesetzt werden, dass der
+als V erbrennungsprodukt entstandene Wasserdampf durch
+die Rückkühlung praktisch vollständig verﬂüssigt wird und
+dabei auch Kondensationsenthalpie (Kondensationswärme)
+frei wird.
+
+=== pdf_10629 | S. 607 | 28.3 Überstrom-Schutzeinrichtungen ===
+28.1)e r -
+folgt das Abschalten eines Üb erstromes durch Abschmel-
+zen eines sehr dünnen Drahtes, dem Schmelzleiter in dem
+Sicherungselement. Je größer der Überstrom, desto schnel-
+ler schmilzt der Draht und bewirkt damit die sichere Tren-
+nung des Stromkreises.
+
+=== pdf_12847 | S. 708 | 34.5 Verwendungsbeispiele für Passungen ===
+H7/e8
+H8/e8
+E9/h9
+Leichter Laufsitz: Teile mit reichlichem Spiel;
+mehrfach gelagerte Welle (Gleitlager), Gleitlager
+allgemein, Hauptlager für Kurbelwellen, Kolben in
+Zylindern, Pumpenlager, Hebellagerungen. H8/d9
+F8/h9
+D1 0/h9
+D1 0/h1 1
+Weiter Laufsitz: Teile mit sehr reichlichem Spiel;
+Transmissionslager, Lager für Landmaschinen,
+Stopfbuchsenteile, Leerlauf-Scheiben.
+
+=== pdf_12997 | S. 718 | 35.2 Schweißverbindungen ===
+aus der Biegebelastung zur relevanten
+Beanspruchung. Je nach Lage des betrachteten Querschnitts zu Belas-
+tungsart und -richtung (Kraft F in der Wirkung am Quer-
+schnitt) ergeben sich Schweißnahtspannungen als Normal-
+oder Tangentialspannungen aus ( 39.2) mit der Schweiß-
+nahtdicke a, der effektiven Schweißnahtlänge l und der
+entsprechenden Querschnittsﬂäche Aw (w – welding) nach
+
+=== pdf_13338 | S. 739 | 37.4 Schraubensicherungen ===
+Feder-
+ring, Fächerscheibe , Zahnscheibe und Federscheibe er-
+zeugen durch ihre Federwirkung eine hohe Reibung im
+Gewinde und an der Auﬂageﬂäche und durch Eindrücken
+in die Oberﬂächen noch zusätzlichen Formschluss. Zu be-
+achten ist, dass damit wohl die Mutter, nicht unbedingt die
+Schraube und damit die V erbindung, ausreichend gesichert
+ist.
+
+=== pdf_14457 | S. 810 | 41.6 Ringfederspannverbindungen ===
+Der
+.Abb.41.4 Klemmsitzverbindungen
+zulässige Flächendruck pzul sollte daher kleiner angesetzt
+werden als beim zylindrischen Pressverband. Sicherheitshalber ist in der Gleichung für die Spreng-
+kraft FS der Rutschbeiwert /ETBe (siehe 7 Abschn. 41.2.2.1)
+zu verwenden, der kleiner ist als der Haftbeiwert /ETB,d e ri n
+den Gleichungen für den zylindrischen Pressverband ver-
+wendet wird.
+
+=== pdf_14584 | S. 820 | 42.5 Schaltkupplungen ===
+42.8, werden beide
+Kupplungshälften (1) durch einen zweiteiligen Gummi-
+reifen (2) mit den Metallträgern (4) mit Schrauben (3)
+.Abb.42.8 Radaﬂex-Kupplung [Rexnord Antriebstechnik, Dortmund]
+verbunden. Die Kupplung ist dadurch leicht einzubauen
+und die V erbindung der Wellen ist ohne Axialverschiebung
+durch Abschrauben des Reifens leicht zu lösen.
+
+=== pdf_16580 | S. 929 | 46.3 Bremsen und Rücklaufsperren ===
+Der Wirkungsgrad steht im
+Zähler und vermindert das rechnerische Lastmoment,
+da die durch den Wirkungsgrad berücksichtigten Wi-
+derstände beim Bremsen helfen. Für das V erzögerungsmomentMR für die rotierenden Mas-
+sen und MT für die geradlinig bewegten Massen gilt:
+MRD
+X
+J/SOH/c129! tB
+MTD S
+g/SOH/c129v
+tB
+/SOHdT
+2 /SOH/DC1
+i
+mit
+P J Summe der Trägheitsmomente aller rotierenden
+Massen, die mit abzubremsen sind, reduziert auf
+die Bremsenwelle in kg m 2 (siehe Teil III Mechanik,
+7 Abschn.
+
+=== pdf_17061 | S. 949 | 47.2 Krane und Hängebahnen ===
+47.23 kann jedes Regalförderzeug in jedem Gang
+links und rechts jeweils 1 Palette pro Fach mit seiner
+V erschiebegabel ein- und auslagern. Nutzt man statt der
+V erschiebegabel selbständige Shuttles, so können diese
+auch tiefer in die Regalfächer hineinfahren und somit fünf
+oder noch mehr Paletten in das gleiche Regalfach hinein
+laden.
+
+=== pdf_17372 | S. 959 | 48.2 Stetigförderer für Stückgut ===
+48.2.1 Rollenförderer
+Rollenförderer sind Förderanlagen, bei denen in gleich-
+mäßigen Abständen Rollen angebracht sind, über die das
+(rollenlose) Stückgut gefördert wird. Man unterscheidet
+einfache Rollgänge, über die das Stückgut geschoben wer-
+den muss, Gefällerollbahnen und angetriebene Rollenbah-
+nen. Für leichtere Stückgüter werden Röllchenbahnen und
+Kugelrolltische eingesetzt. Auf Rollenförderern und den kleineren Röllchenbahnen
+werden Fördergüter meist in Ladehilfsmitteln, wie Paletten,
+Behältern oder Kisten befördert.
+
+=== pdf_18441 | S. 1005 | 51.5 Überdruckstufung ===
+51.5 Überdruckstufung
+Durch genügend große Stufenzahl wird der Druckunter-
+schied an den Zwischenböden klein (ca. 20 bis 30 N/mm2). Dann können die Düsenkanäle ähnlich wie die Leitkanäle
+beim mehrkränzigen Curtisrad gebaut werden. Als düsen-
+förmige Leitkränze greifen sie zwischen die Laufschaufel-
+kränze, die alle auf einem gemeinsamen Trommelkörper
+sitzen.
+
+=== pdf_18815 | S. 1025 | 53.6 Betriebsführung und Regelung von Windturbinen ===
+53
+1036 Kapitel53/SOHWindkraftanlagen
+.Abb.53.14 Rotordrehfrequenz und Schaufeldurchgangsfrequenz
+c∞
+d 
+Ablösepunkt l Γ
+b 
+A
+A
+.Abb.53.15 Kármánsche Wirbelstraße hinter einem umströmten Kör-
+per (Mast)
+4 Aerodynamische Belastung des Flügels durch cA- und
+cW-Wertänderung
+4 Turmvorstau des Windes und durch Kármán’sche Wir-
+bel bei Anström-Reynoldszahlen von RGD cd=/ETBD40
+bis2 cot105 (. Abb.
+
+=== pdf_19176 | S. 1043 | 55.1 Arbeitsdiagramm im Kolbenkompressor (Indikatordiagramm) ===
+Abb.55.2 Bauformen zweistuﬁger Hubkolbenverdichter: 1) Reihen-
+verdichter; 2) V -V erdichter; 3) W-V erdichter; 4) Boxerverdichter
+die Kühlung des Gases durch die Zylinderwand in der
+Endphase der Kompression ein. Trotz dieser Strömungs-
+und Wärmeaustauschvorgänge können die V erdichtungs-
+vorgänge in erster Näherung als einheitliche zeitabhängige
+thermodynamische V orgänge betrachtet werden.
+
+=== pdf_20364 | S. 1096 | 56.3 Bauteile und Funktionsgruppen von Verbrennungsmotoren ===
+Falls der Motor
+nach dem Kaltstart seine Betriebstemperatur noch nicht
+erreicht hat, wird der Wasserkühler umgangen. Dazu öff-
+net ein Thermostatventil die entsprechende Bypassleitung. Ein Teil des Kühlwassers strömt nicht durch das Kurbelge-
+häuse, sondern wird für andere Kühlaufgaben verwendet.
+
+=== pdf_21557 | S. 1149 | 57.3 Umformen ===
+Abb. 57.75) zeigt dass
+die maximale Presskraft innerhalb der Grenzkurve der
+Pressenkennlinie liegt. Da jedoch ungefähr 50ı vor dem un-
+teren Totpunkt des Stempels eine Kraftspitze auftritt, die
+über die Grenzkurve der Presse hinausgeht, kommt eine
+V erwendung dieses Pressentyps nicht in Betracht.
+
+=== pdf_25117 | S. 1332 | 64.3 Wasserstrahlschneidanlagen ===
+Je Schneidkopf steht eine Hoch-
+druckpumpe zu V erfügung. Besonders bei spröden Materialien wie Glas, Kera-
+mik, Stein, laminierten Kunststoffen sowie Kompositwerk-
+stoffen besteht beim Anbohren die Gefahr des Einrei-
+ßens oder Aufplatzens der Oberﬂäche unter der Wucht
+des auftreffenden Wasserstrahls.
+
+=== pdf_25180 | S. 1335 | 65.3 Spanende Feinstbearbeitungsmaschinen für Werkzeuge mit geometrisch unbestimmter Schneide ===
+Abb. 65.5 ist die V erbesserung der einzelnen Para-
+meter der Gestaltabweichung der bearbeiteten Werkstück-
+oberﬂäche durch das Superﬁnishen dargestellt. Es muss
+aber gesagt werden, dass bei den Parametern Rundheit und
+Zylindrizität, aber auch bei Ebenheit und Geradheit ei-
+ne hohe V orbearbeitungsgenauigkeit beim Schleifen oder
+Hartfeindrehen gefordert wird, um den Erfolg der Superﬁ-
+nishbearbeitung zu erreichen.
+
+=== pdf_26263 | S. 1396 | 69.2 Softwaresysteme ===
+Es sind aber auch komplexere
+Beispiele möglich, wo einzelne Baugruppen zu einem Er-
+zeugnis „geschichtet“ werden. Der Nachteil dieser V orgehensweise gegenüber den
+weiter entwickelten CAD-Systemen ist ebenfalls, dass die
+Erzeugung einer technischen Zeichnung im V ordergrund
+steht und eine darüber hinaus gehende Nutzung des CAD-
+Modells weitgehend unmöglich ist.
+
+=== pdf_27246 | S. 1433 | 70.7 Zahlensysteme und Codierungen ===
+bei der hexa-
+dezimalen Darstellung immer die Zusammenfassung von
+vier Bits erfolgen muss. Sind keine vier Stellen vorhan-
+den, so wird für die Zahl vor dem Komma nach links und
+für die Zahl nach dem Komma nach rechts mit 0 aufge-
+füllt.
+
+=== pdf_28308 | S. 1483 | 72.4 Vorgehen bei der Auswahl einer SPS ===
+Unter Routing ver-
+steht man die Wegsteuerung einer Nachricht durch das
+Netzwerk. 72.4 VorgehenbeiderAuswahleinerSPS
+Für die Auswahl einer SPS ist entscheidend:
+4 welche Funktionen im Prozess zu überwachen und zu
+stellen sind,
+4 wie diese Informationen zur V erfügung stehen bzw. be-
+reitgestellt werden müssen (binär, analog, digital),
+4 welche V erarbeitungsgeschwindigkeiten erforderlich
+sind, so dass die Zykluszeit einen Echtzeitbetrieb er-
+möglicht,
+4 wie umfangreich die Anweisungen bzw. Programme
+sind,
+4 welche Schnittstellen zu anderen Systemen zur V erfü-
+gung stehen müssen (Ethernet, WLAN etc.) und
+4 welche Sicherheitsfunktionen zu realisieren sind.
+
+=== pdf_28899 | S. 1512 | 75.4 Regelstrecken mit Verzögerung (PT_n-Strecken) ===
+75.37 Feder-Dämpfungs-System als Beispiel für eine
+PT1-Strecke
+.Abb.75.38 Bandzug einer Stoffbahn als Beispiel für eine PT1 -Strecke
+.Abb.75.39 Sprungantwort bei einer PT2 -Strecke. (Tu heißt V erzugs-
+zeit, Tg heißt Ausgleichzeit)
+1 PT2-Strecken
+Schalten wir zwei Speicherglieder in Reihe hintereinander,
+so ändert sich die Sprungantwort in grundlegender Wei-
+se ( .
+
+=== pdf_29327 | S. 1537 | 78.1 Fuzzy-Mengen ===
+1569 78
+Fuzzy-Regelung
+Berthold Heinrich
+Neben der klassischen Regelungstechnik hat eine andere
+Art der Herangehensweise an Regelungsaufgaben Bedeu-
+tung, die mit vermeintlich unscharfen (engl.: fuzzy) Begrif-
+fen wie ‚Temperatur ist viel zu hoch‘, ‚Laufkatze ist weit
+weg‘, ‚V entil wird weit geöffnet‘ arbeitet. Gerade in Zeiten
+von künstlicher Intelligenz, autonomem Fahren, Mechatro-
+nik, Internet of things und Smarthome erlangen unscharfe
+Aktionen wie „etwas mehr“, „etwas schneller“, „etwas
+wärmer“ und „etwas weniger Details“ eine immer größer
+werdende Bedeutung.
+
+=== pdf_29828 | S. 1561 | 82.5 Deckungsbeitragsrechnung ===
+82.8
+dargestellt (Maschinenstundensatzkalkulation). Die Gemeinkostensätze werden wie folgt errechnet:
+MatGK% D 100 /SOHMaterialGK=MaterialEK
+FertGK% D 100 /SOHFertigungsGK=Fertigungslohn
+EntGK D 100 /SOHEntwicklungsGK=Herstellkosten
+V erwGKD 100 /SOHV erwaltungsGK=Herstellkosten
+V ertrGKD 100 /SOHV ertriebsGK=Herstellkosten
+82.5 Deckungsbeitragsrechnung
+Die variablen Kosten der Felge in .
+
+=== pdf_30004 | S. 1569 | 83.4 Marketingstrategien ===
+Produkte am Ende ihrer Marktlebens-
+dauer sind die typischen Poor Dogs. 9
+Erwartetes
+Marktwachstum
+Cash Cow
+Omnibusse
+Poor Dog
+Leicht-LKW
+Star
+Schwer-LKW
+Question Mark
+Kommunalfahr-
+zeuge
+Markt-
+anteil
+niedrig
+niedrig
+hoch
+hoch
+.Abb.83.2 Marktwachstum-Marktanteil-Portfolio (4-Felder-Portfolio)
+Für die Weiterentwicklung der Produkte bieten sich im Bei-
+spiel folgende Maßnahmen an:
+4 Fördern der Star-Produkte (Investieren, Ausbauen) !
+
+=== pdf_30199 | S. 1578 | 84.3 Rechtliche Vorschriften ===
+Die Berufsgenos-
+senschaften (BG) sind im Hauptverband der gewerblichen
+Berufsgenossenschaften zusammengeschlossen. Als beispielhafte Unfallverhütungsvorschriften sind zu
+nennen:
+UVV 1.0 Allgemeine V orschriften
+UVV 1.2 Lärm
+UVV 1.4 Sicherheitsingenieure und andere Fachkräfte
+für Arbeitssicherheit
+UVV 1.5 Betriebsärzte
+Die Überwachung der UVV sowie die Beratung in Fra-
+gen der Unfallverhütung erfolgt durch die technischen
+Aufsichtsbeamten (T AB) der Berufsgenossenschaften.
+
+=== pdf_30436 | S. 1593 | 85.6 Fertigungsarten ===
+Zu bedenken ist, dass heute in allen Branchen
+aufgrund von Kundenanforderungen die Anzahl der Pro-
+duktvarianten zunimmt. Eine weitere inzwischen in Unternehmen mit Einzel-
+und Kleinserienfertigung angewendete Organisationsform
+der Fertigung (und auch der Montage) ist die Ferti-
+gungsinsel (bzw. Montageinsel).
+
+=== pdf_30768 | S. 1606 | 86.2 Arbeitsdatenmanagement ===
+Zusätzliches
+V erändern (A VZ)
+besteht im Einwirken und Fördern, sofern deren V orkommen oder V erlauf nicht vorausbestimmt werden kann (nicht
+vorgesehene Nacharbeit, fehlgeleitete, verschüttete oder schlecht gestapelte Teile umsetzen)
+5. Prüfen (AP) ist das Kontrollieren von Arbeitsgegenständen während der Bearbeit ung, es kann durch Zählen, Messen, Wiegen, Beur-
+teilen, Sortieren usw. erfolgen
+6.
+
+=== pdf_31115 | S. 1635 | 87.2 Begriffe des Qualitätsmanagements ===
+Weltstandards zum QM
+1987 General Motors Fähigkeit von Messeinrichtungen
+Malcom Baldrige National Award Amerikanischer Qualitätspreis
+1988 European Foundation for Qua lity Management Gründung der EFQM
+1989 Ford Motor Company FMEA, SPC, Prozessfähigkeitsanalyse
+1990 Bosch GmbH Fähigkeit von Messeinrichtungen
+DIN EN ISO 9000 ff. 1.
+
+=== pdf_31352 | S. 1652 | Literaturhinweise ===
+Der Fehleranteil er-
+höht sich auf 3,4 ppm, wenn die Schwankungsausschläge
+mit 1,5 Sigma angenommen werden. Für eine praktische
+Fehlerfreiheit ist daher ein Prozess mit 6 Sigma Gutanteil
+innerhalb der Toleranzbreite (was einer Prozessfähigkeit
+von c
+pk D 2 entspricht) notwendig.
+
