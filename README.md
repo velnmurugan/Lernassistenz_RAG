@@ -162,3 +162,8 @@ V19b (29 Oct 2026) – Schalter LERNASSISTENT_V19 (Standard: aus)
       (2) nicht auswertbare RECHNUNG-Zeile wird übersprungen, wenn ihre Größe weder Ergebnis noch in einem späteren Schritt gebraucht wird.
   Aufruf: LERNASSISTENT_V19=AB (beide) oder A. Lauf: bash skripte/evaluation/nachtlauf_v19b.sh [AB|aus|beide]
   Test: teste_v19b_offline.py. Kurzlauf: kurzlauf_v19a.sh [A|AB|aus] (Modus nur als Argument).
+
+## V19c (29 Oct 2026)
+V19c (29 Oct 2026) – Ziffer „1“ in LERNASSISTENT_V19 (z. B. AB1): die Formelsuche vorab (V19a) ergänzt nur 1 statt 2 Formel-Chunks (formelsuche.V19_ZUSATZ).
+  Grund: Im Lauf AB gegen aus änderten die zusätzlichen Chunks bei F4, RV-v2 R05 und RV-v1 R04 schon die erste Antwort (Verluste). Frage: Behält 1 Chunk die Gewinne?
+  Test: teste_v19c_offline.py. Lauf: bash skripte/evaluation/nachtlauf_v19c.sh [kern|voll]

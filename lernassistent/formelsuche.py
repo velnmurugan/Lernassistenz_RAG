@@ -37,6 +37,7 @@ FS_OPTIONEN = {"temperature": 0, "seed": 42, "num_predict": 100}
 # V19 (28 Oct 2026), Schalter LERNASSISTENT_V19 (Standard aus). Buchstabe A = Formelsuche VORAB bei jeder Rechenfrage (siehe suche_v19):
 # Lösungsweg in Worten -> Suchbegriffe -> billige Suche je Begriff (ohne Reranker) -> kleiner Cross-Encoder wählt die 2 besten Formel-Chunks.
 V19_A = "A" in os.environ.get("LERNASSISTENT_V19", "")
+V19_ZUSATZ = 1 if "1" in os.environ.get("LERNASSISTENT_V19", "") else FS_MAX_ZUSATZ   # V19c: Ziffer 1 = nur 1 Zusatz-Chunk statt 2
 V19_KANDIDATEN = 20      # so viele Formel-Chunks (fusionierte Ränge der Suchbegriffe) bewertet der kleine Cross-Encoder
 V19_MODELL = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"   # ~118 Mio. Parameter, CPU, ca. 1,5 s für 20 Chunks (A/B 28 Oct: gleich gut wie bge, 10x schneller)
 V19_OPTIONEN = {"temperature": 0, "seed": 42, "num_predict": 260}
@@ -237,7 +238,7 @@ def suche_v19(frage, chunks, top_chunks, retrieval_fn, llm_fn, bewerte_fn=None):
             info["kandidaten"] = len(kand)
             if kand:
                 werte = (bewerte_fn or _bewerte_klein)(" ".join(info["phrasen"]), [byid[i]["text"] for i in kand])
-                beste = [i for i, _ in sorted(zip(kand, werte), key=lambda x: -x[1])][:FS_MAX_ZUSATZ]
+                beste = [i for i, _ in sorted(zip(kand, werte), key=lambda x: -x[1])][:V19_ZUSATZ]
                 zusatz = [{**byid[i], "fs_phrase": "V19a"} for i in beste]
                 info["ids"] = beste
     except Exception as e:  # darf die Antwort nie verhindern
