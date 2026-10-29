@@ -154,3 +154,11 @@ Arbeitssicherheit Werkstatt · Wartung und Instandhaltung · Pneumatik
 
 Details und Quellenangaben zu jeder Entscheidung: siehe
 `Design_Entscheidungen_Literatur.md`.
+
+## V19b (29 Oct 2026)
+V19b (29 Oct 2026) – Schalter LERNASSISTENT_V19 (Standard: aus)
+  A = Formelsuche vorab (formelsuche.py, rag_pipeline.py)
+  B = Parser-Korrekturen der Nachrechnung (rechenbaustein.py): (1) Hochzahl an einer Einheit ("kg*m**2") gehört zur Einheit;
+      (2) nicht auswertbare RECHNUNG-Zeile wird übersprungen, wenn ihre Größe weder Ergebnis noch in einem späteren Schritt gebraucht wird.
+  Aufruf: LERNASSISTENT_V19=AB (beide) oder A. Lauf: bash skripte/evaluation/nachtlauf_v19b.sh [AB|aus|beide]
+  Test: teste_v19b_offline.py. Kurzlauf: kurzlauf_v19a.sh [A|AB|aus] (Modus nur als Argument).

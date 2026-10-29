@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# V19a Kurzlauf (nur RAG). Vordergrund, kein nohup. Aufruf: kurzlauf_v19a.sh [A|aus]   (Standard A = Formelsuche vorab an)
+# V19 Kurzlauf (nur RAG). Vordergrund, kein nohup. Aufruf: kurzlauf_v19a.sh [A|AB|aus]   (Standard A; der Modus kommt NUR aus dem Argument, nicht aus der Umgebung)
 # Zielfälle (Formel fehlte im Kontext oder wurde knapp verdrängt): RV-v1 R07, R12; RV-v2 R07, R12, R13.
 # Kontrollen (Formel war schon im Kontext, Antworten dürfen nicht schlechter werden): RV-v2 R04, R10, R11, R14, R17, R18, R22; N100 F15, F61, F62.
 # Start (aus ~/RAG, pilot_rag, nur Ollama läuft):
 #   bash skripte/evaluation/kurzlauf_v19a.sh 2>&1 | tee protokolle/kurzlauf_v19a_$(date +%Y%m%d_%H%M).txt
 cd "$(dirname "$0")/../.." || exit 1
 mkdir -p protokolle
-MODUS=${1:-A}; [ "$MODUS" = "aus" ] && V19="" || V19="A"
-ETI=$([ "$MODUS" = "aus" ] && echo "V19aaus" || echo "V19a")
+MODUS=${1:-A}; [ "$MODUS" = "aus" ] && V19="" || V19="$MODUS"   # A | AB | aus (AB = Formelsuche vorab + Parser-Korrekturen V19b)
+ETI=$([ "$MODUS" = "aus" ] && echo "V19aaus" || echo "V19${MODUS,,}")
 export PYTHONUNBUFFERED=1 LERNASSISTENT_G=G-v5 LERNASSISTENT_CTX=8192 LERNASSISTENT_RW=
 echo "=== Offline-Tests $(date +%H:%M) ==="
 for m in "" A; do

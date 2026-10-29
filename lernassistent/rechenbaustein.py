@@ -755,6 +755,8 @@ def _zuweisungen_v6(block, rechnung):
 
 
 def _ist_einheit_v6(tok):
+    if V19_B:
+        tok = re.sub(r"\*\*[-+]?\d+", "", tok)  # "kg*m**2" -> "kg*m"
     teile = [re.sub(r"[\^⁰¹²³⁴⁵⁶⁷⁸⁹⁻\-0-9]+$", "", x) for x in re.split(r"[·*/]", tok) if x]
     return bool(teile) and all(x and (x in ("€", "%", "Ω", "°C") or rp._EINHEIT.fullmatch(x)) for x in teile)
 
@@ -769,6 +771,9 @@ def _ohne_einheiten_v6(ausdruck, namen):
         if tok in namen or not _ist_einheit_v6(tok):
             return m.group(0)
         return m.group(1) + rest
+    if V19_B:  # V19b: Potenz an der Einheit gehört zur Einheit ("... kg*m**2"), sonst bliebe "**2" an der Zahl hängen (N100 F62: ^4 statt ^2)
+        return re.sub(r"((?:\d|\))\s*)(?<![A-Za-z_])([A-Za-zΩµμ°€%][^\s+\-*()]*(?:\*\*[-+]?\d+)?(?:[*·/][A-Za-zΩµμ°][^\s+\-*()]*(?:\*\*[-+]?\d+)?)*[)\],;]*)(?=\s|$|[*/+\-])",
+                      ersetze, ausdruck)
     return re.sub(r"((?:\d|\))\s*)(?<![A-Za-z_])([A-Za-zΩµμ°€%][^\s+\-*()]*(?:[*·/][A-Za-zΩµμ°][^\s+\-*()]*)*[)\],;]*)(?=\s|$|[*/+\-])",
                   ersetze, ausdruck)
 
@@ -865,6 +870,9 @@ def rechne_v6(parsed, frage, kontext):
             if wert is None:
                 if name in namen or any(n2 == name for n2, _ in schritte[i + 1:]):
                     continue  # (4) Umformungsschritt
+                if V19_B and name not in parsed["ergebnis_namen"] and not any(
+                        re.search(rf"(?<![A-Za-z0-9_]){re.escape(name)}(?![A-Za-z0-9_])", a2) for _, a2 in schritte[i + 1:]):
+                    continue  # V19b (5): Zeile, deren Größe weder Ergebnis noch in einem späteren Schritt gebraucht wird (R07: "I_t = 0,25 * I_0")
                 fehlt = [n for n in unleserlich if re.search(rf"(?<![A-Za-z0-9_]){re.escape(n)}(?![A-Za-z0-9_])", ausdruck)]
                 if fehlt:
                     return {"ergebnis": None, "ergebnisse": [], "grund": "wert_unlesbar", "detail": f"{fehlt[0]} = {unleserlich[fehlt[0]]}"}
@@ -969,6 +977,7 @@ _V18 = __import__("os").environ.get("LERNASSISTENT_V18", "")
 V18_A = "A" in _V18
 V18_B = "B" in _V18
 V18_D = "D" in _V18  # D: Zahlen in RECHNUNG müssen aus Frage/Material stammen oder vorher berechnet sein
+V19_B = "B" in __import__("os").environ.get("LERNASSISTENT_V19", "")  # V19b: Einheit mit Exponent ("kg*m**2") streichen; unbenutzte Zwischenzeile überspringen
 V18_E = "E" in _V18  # E: ERGEBNIS muss eine berechnete Größe nennen (kein stiller Rückfall auf den letzten Schritt)
 _STRUKTURZAHLEN_V18 = {0.25, 0.5, 1.5, 1e9, 1e-9}
 _PRAEFIX_V7 = {"T": 1e12, "G": 1e9, "M": 1e6, "k": 1e3, "h": 1e2, "d": 1e-1, "c": 1e-2, "m": 1e-3, "μ": 1e-6, "µ": 1e-6,

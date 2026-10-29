@@ -1,0 +1,62 @@
+nr,vorlage,richtig,erwartet,gefunden,status,rechen_pruefung,sekunden,loesung,rechen_befund,quellen,falle,fehler,buchergebnisse_entfernt,loesung_original,loesung_denk,rb_roh,werkzeug,werkzeug_protokoll,werkzeug_roh,werkzeug_vorgaben,werkzeug_neu
+R07,Aufgabe 1.25,nein,16.3943 µF,21 2.2 0.05,BEANTWORTET,nachgebessert,113.8,"Die Kapazität beträgt 21 nF. Der Ladestrom fällt exponentiell ab nach der Formel i(t) = I₀ · e^(-t/τ). Mit dem gegebenen Widerstand R = 2,2 kΩ und der Zeit t = 0,05 s ergibt sich aus der Gleichung für den Stromabfall die Zeitkonstante τ ≈ 0,046 s. Die Kapazität berechnet sich dann als C = τ / R = 0,046 s / 2200 Ω = 21 nF.","Der erste Satz nennt 37 / 2 / 13,5, die Rechnung ergibt aber 21 | RB-v4 nicht verwertbar: wert_unlesbar | Retry (RB-v3) nach wert_unlesbar [I_0 = <Symbol> <Einheit>]: nicht verwertbar (wert_unlesbar [i_t = 0,25 * I_0]) | Formelsuche vorab (V19a): Suchbegriffe: Ladestromabfall; Zeitkonstante; RC-Glied | Kandidaten: 20 | ergänzt: fischer_pdf_0156, fischer_pdf_0550",fischer_pdf_0165; fischer_pdf_0136; fischer_pdf_0161; fischer_pdf_0162; fischer_pdf_0156; fischer_pdf_0550,ln 4 statt ln 2; Exponentialgesetz,,2,"Der Ladestrom fällt exponentiell ab. Nach einer Zeitkonstante τ = R · C beträgt der Strom 37 % des Anfangswertes, nach 2τ sind es 13,5 %, nach 3τ etwa 5 %. Da bei t = 0,05 s nur noch 25 % des Anfangswertes fließen, liegt dieser Zeitpunkt zwischen 2τ und 3τ. Eine genaue Berechnung mit der Formel i(t) = I₀ · e^(-t/τ) ergibt τ ≈ 0,046 s. Mit R = 2,2 kΩ folgt C = τ / R = 0,046 s / 2200 Ω = 21 nF.",,"FORMEL: i(t) = I₀ * exp(-t / (R * C))
+WERTE:
+I_0 = <Symbol> <Einheit>
+I_t = 0,25 * I_0 <Einheit>
+t = 0,05 s <Einheit>
+R = 2200 Ω <Einheit>
+tau = - t / ln(I_t / I_0) <Einheit>
+C = tau / R <Einheit>
+RECHNUNG:
+I_t = 0,25 * I_0
+tau = - 0,05 / ln(0,25)
+C = (- 0,05 / ln(0,25)) / 2200
+ERGEBNIS: C
+EINHEIT: F
+QUELLE: i = U/R e^(-t/τ) mit τ = R C ||| FORMEL: i(t) = I_0 * exp(-t / (R * C))
+WERTE:
+R = 2200 Ω
+t = 0,05 s
+i_t = 0,25 * I_0
+RECHNUNG: tau = -t / ln(i_t / I_0)
+C = tau / R
+ERGEBNIS: C
+EINHEIT: F
+QUELLE: τ = R · C",,,,,
+R12,Aufgabe 1.42,ja,159.344 W,159.3 2 2 2 2 3,BEANTWORTET,ersetzt,71.4,"Nachgerechnet ergibt sich: P_Cu = 159,3 W.
+
+Begründung: Formel: P_Cu = I2 R; I = U / Z; Z = √(R2 + X_L2); X_L = ω L; ω = 2 π f. Werte: R = 3; L = 0,1; U = 230; f = 50; ω = 2 · π · 50; X_L = ω · L Ω; Z = √(R²+ X_L²; I = U / Z A. Rechnung: ω = 2 · π · 50; X_L = ω · L; Z = √(R²+ X_L²; I = U / Z; P_Cu = I² · R
+
+⚠ Automatische Prüfung: Die erste Antwort des Modells wich von der Nachrechnung ab; gezeigt wird die Nachrechnung. Ihre Formel steht nicht wörtlich im Lernmaterial; zwei unabhängige Nachrechnungen ergaben dasselbe Ergebnis. Bitte mit dem Buch oder der Lehrkraft prüfen.","Die unabhängige Python-Nachrechnung (P_Cu = I2 R; I = U / Z; Z = √(R2 + X_L2); X_L = ω L; ω = 2 π f) ergibt P_Cu = 159,3 W, die Lösung nennt 300 | RB-v4 Ergebnis P_Cu = 159,3 W | Formel nicht im Material | Bestätigung: ja (P_Cu = 159,3 W) | Formelsuche vorab (V19a): Suchbegriffe: Induktivität; Blindwiderstand; Impedanz; Stromstärke | Kandidaten: 20 | ergänzt: fischer_pdf_0262, fischer_pdf_1053",fischer_pdf_0296; fischer_pdf_0850; fischer_pdf_0817; fischer_pdf_1142; fischer_pdf_0262; fischer_pdf_1053,"Scheinwiderstand Z, nicht U²/R (=17633 W)",,2,"Die Stromwärmeverluste betragen 300 W.
+Begründung: Im Lernmaterial wird für die Wicklung eines Wechselstrommotors ein Rechenbeispiel mit R = 1,2 Ω und L = 0,2 H bei U = 230 V, 50 Hz gegeben. Dort werden die Verluste als P_vA = (I_AN)² · R_A berechnet. Um den Strom I_AN zu finden, muss man zunächst den Blindwiderstand X_L = ω · L berechnen (mit ω = 2 π f), dann den Impedanzbetrag Z = √(R² + X_L²) und daraus den Strom I = U / Z bestimmen. Anschließend wird dieser Strom mit dem gegebenen Widerstand R aus der Frage (3 Ω) multipliziert, um die Verlustleistung P = I² · R zu erhalten.",,"FORMEL: P_Cu = I² R; I = U / Z; Z = √(R² + X_L²); X_L = ω L; ω = 2 π f
+WERTE:
+R = 3 Ω
+L = 0,1 H
+U = 230 V
+f = 50 Hz
+ω = 2 * pi * 50 rad/s
+X_L = ω * L Ω
+Z = sqrt(R**2 + X_L**2) Ω
+I = U / Z A
+RECHNUNG:
+ω = 2 * pi * 50
+X_L = ω * L
+Z = sqrt(R**2 + X_L**2)
+I = U / Z
+P_Cu = I**2 * R
+ERGEBNIS: P_Cu
+EINHEIT: W
+QUELLE: P_Cu = I² R ||| FORMEL: P_Cu = I² R; I = U / Z; Z = sqrt(R² + X_L²); X_L = ω L; ω = 2 π f
+WERTE:
+R = 3 Ω
+L = 0,1 H
+U = 230 V
+f = 50 Hz
+X_L = 2*pi*50*0,1 V/A
+Z = sqrt(3**2 + (2*pi*50*0,1)**2) V/A
+I = 230 / sqrt(3**2 + (2*pi*50*0,1)**2) A
+P_Cu = I**2 * 3 W
+RECHNUNG: P_Cu = (230 / sqrt(3**2 + (2*pi*50*0,1)**2))**2 * 3
+ERGEBNIS: P_Cu
+EINHEIT: W
+QUELLE: P_Cu = I² R",,,,,
