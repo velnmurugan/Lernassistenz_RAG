@@ -1,0 +1,300 @@
+nr,vorlage,richtig,erwartet,gefunden,status,rechen_pruefung,sekunden,loesung,rechen_befund,quellen,falle,fehler,buchergebnisse_entfernt,loesung_original,loesung_denk,rb_roh,werkzeug,werkzeug_protokoll,werkzeug_roh,werkzeug_vorgaben,werkzeug_neu
+R03,Aufgabe 1.7,nein,13.6 K,2.5 1.12 0 0,BEANTWORTET,abweichung_ungestuetzt,146.5,"Die Übertemperatur wird um 2,5 K zu hoch bestimmt.
+Begründung: Nach Gleichung (1.12b) gilt für die Temperaturdifferenz Δθ = θ_w - θ_k die Beziehung R_w/R_k = (θ0 + θ_w)/(θ0 + θ_k). Da nur der Unterschied zwischen gemessenem und richtigem Widerstand relevant ist, berechnet man den Fehler über das Verhältnis der Widerstände.
+Rechenweg:
+Formel: Δθ_fehler = (R_falsch / R_richtig) · (θ0 + θ_w) - (θ0 + θ_k) - [(R_richtig / R_richtig) · (θ0 + θ_w) - (θ0 + θ_k)]
+Da der korrekte Fall Δθ = 0 ergibt, vereinfacht sich die Differenz zu:
+Δθ_fehler = [ (R_falsch / R_richtig) - 1 ] · (θ0 + θ_w) ... *.","Die unabhängige Python-Nachrechnung (R_w = R_k * (θ0 + θ_w) / (θ0 + θ_k); Δθ_berechnet = θ_w - θ_k; Δθ_richtig = θ_w - θ_k_richtig) ergibt Δθ_berechnet = 320 K; Δθ_richtig = 314 K, die Lösung nennt nur den gegebenen Wert 2,5 | RB-v4 Ergebnis Δθ_berechnet = 320 K; Δθ_richtig = 314 K | Formel nicht im Material | Retry (RB-v3) nach ergebnis_name [ERGEBNIS: Übertemperatur]: ok | Bestätigung: nicht bestätigt (Fehler_Kelvin = 204,8 K) | Formelsuche vorab (V19a): Suchbegriffe: Widerstandstemperaturkoeffizient; Temperaturkorrektur; Widerstandsänderung; Übertemperatur | Kandidaten: 20 | ergänzt: pdf_3809",fischer_pdf_0048; fischer_pdf_0042; fischer_pdf_0040; fischer_pdf_0035; pdf_3809,beide Übertemperaturen rechnen und Differenz bilden,,3,"Die Übertemperatur wird um 2,5 K zu hoch bestimmt.
+Begründung: Nach Gleichung (1.12b) gilt für die Temperaturdifferenz Δθ = θ_w - θ_k die Beziehung R_w/R_k = (θ0 + θ_w)/(θ0 + θ_k). Da nur der Unterschied zwischen gemessenem und richtigem Widerstand relevant ist, berechnet man den Fehler über das Verhältnis der Widerstände.
+Rechenweg:
+Formel: Δθ_fehler = (R_falsch / R_richtig) · (θ0 + θ_w) - (θ0 + θ_k) - [(R_richtig / R_richtig) · (θ0 + θ_w) - (θ0 + θ_k)]
+Da der korrekte Fall Δθ = 0 ergibt, vereinfacht sich die Differenz zu:
+Δθ_fehler = [ (R_falsch / R_richtig) - 1 ] · (θ0 + θ_w) ... *Warte, das ist kompliziert.*
+
+Korrekturer Ansatz basierend auf dem Material:
+Die Formel für die berechnete Temperatur ist θ_berechnet = (R_w / R_k_falsch) · (θ0 + θ_w_richtig?) Nein.
+Schauen wir uns den Rechenweg im Beispiel 1.6b an:
+θ_k = (R_k / R_w) · (θ0 + θ_w) - θ0.
+Das ist die Umstellung nach θ_k. Wir suchen aber Δθ bei der Übertemperaturbestimmung.
+
+Im Text steht: ""Um wie viel Kelvin wird die Übertemperatur zu hoch bestimmt?""
+Die gemessene Temperatur θ_w ist korrekt (3,2 Ω).
+Der falsche kalte Widerstand R_k_falsch = 2,4 Ω wurde verwendet.
+Der richtige kalte Widerstand R_k_richtig = 2,5 Ω.
+
+Wir berechnen mit dem falschen Wert eine Temperatur θ_berechnet und vergleichen sie mit der wahren Temperatur θ_w? Nein, die Frage ist: ""Um wie viel Kelvin wird die Übertemperatur zu hoch bestimmt"".
+Übertemperatur Δθ = θ_w - θ_k.
+Wenn man den falschen R_k verwendet, berechnet man einen falschen θ_k' oder einen falschen Δθ'?
+Normalerweise misst man R_w und R_k. Man kennt θ_k (z.B. 20°C).
+Man berechnet θ_w aus R_w und R_k? Nein, man misst R_w und bestimmt daraus die Temperatur, wenn man R_k kennt.
+Formel im Text: θ_w = (R_w / R_k) · (θ0 + θ_k) - θ0.
+Hier ist θ_w die gesuchte Wicklungstemperatur.
+Wenn R_k falsch ist (2,4 statt 2,5), dann berechnet sich ein falscher θ_w_berechnet.
+Dann ist der Fehler in der Temperatur Δθ_Fehler = θ_w_berechnet - θ_w_echt?
+Oder bestimmt man die Übertemperatur Δθ = θ_w - θ_k?
+Wenn θ_k bekannt ist (20°C), dann ist die berechnete Übertemperatur einfach θ_w_berechnet - 20°C.
+Die wahre Übertemperatur wäre θ_w_echt - 20°C.
+Der Unterschied ist also θ_w_berechnet - θ_w_echt.
+
+Rechnung:
+θ0 = 235°C (für Kupfer).
+R_w = 3,2 Ω.
+R_k_falsch = 2,4 Ω.
+R_k_richtig = 2,5 Ω.
+θ_k = 20°C.
+
+1. Berechnung der wahren Temperatur θ_w_echt:
+θ_w_echt = (R_w / R_k_richtig) · (θ0 + θ_k) - θ0
+θ_w_echt = (3,2 / 2,5) · (235 + 20) - 235
+θ_w_echt = 1,28 · 255 - 235
+θ_w_echt = 326,4 - 235 = 91,4°C.
+
+2. Berechnung der berechneten Temperatur θ_w_berechnet (mit falschem R_k):
+θ_w_berechnet = (R_w / R_k_falsch) · (θ0 + θ_k) - θ0
+θ_w_berechnet = (3,2 / 2,4) · (235 + 20) - 235
+θ_w_berechnet = 1,333... · 255 - 235
+θ_w_berechnet = 340 - 235 = 105°C.
+
+3. Unterschied in Kelvin:
+Δθ_Fehler = θ_w_berechnet - θ_w_echt = 105°C - 91,4°C = 13,6 K?
+Das scheint sehr hoch. Prüfen wir die Logik im Text nochmal.
+Textbeispiel 1.7: R_k falsch 1,15 statt 1,2. R_w = 1,6. θ_k = 15°C.
+Richtiges θ_w_echt = (1,6/1,2)*(235+15)-235 = 1,333*250 - 235 = 333,3 - 235 = 98,3°C.
+Falsches θ_w_berechnet = (1,6/1,15)*(235+15)-235 = 1,391*250 - 235 = 347,8 - 235 = 112,8°C.
+Differenz = 14,5 K.
+
+Vielleicht ist die Frage anders gemeint? ""Um wie viel Kelvin wird die Übertemperatur zu hoch bestimmt?""
+Übertemperatur Δθ = θ_w - θ_k.
+Wahre Übertemperatur: 91,4 - 20 = 71,4 K.
+Berechnete Übertemperatur: 105 - 20 = 85 K.
+Differenz: 13,6 K.
+
+Aber warte, im Beispiel 1.7 steht ""Um wie viel Kelvin wird die Übertemperatur zu hoch bestimmt?"".
+Vielleicht gibt es eine vereinfachte Formel?
+Δθ_Fehler ≈ (R_falsch - R_richtig)/R_richtig * (θ0 + θ_k)?
+(2,4 - 2,5)/2,5 * 255 = (-0,1/2,5)*255 = -10,2. Das wäre zu niedrig.
+Nein, der Fehler kommt vom Nenner.
+Faktor falsch / Faktor richtig = (R_w/R_k_falsch) / (R_w/R_k_richtig) = R_k_richtig / R_k_falsch.
+θ_berechnet - θ_echt = [ (R_k_richtig / R_k_falsch) - 1 ] * (θ0 + θ_k).
+Das ist der Term, der die Temperaturdifferenz verschiebt?
+Nein:
+θ_w = C * (θ0 + θ_k) - θ0.
+C = R_w / R_k.
+Wenn R_k falsch ist, ändert sich C.
+Δθ_Fehler = θ_w(falsch) - θ_w(richtig) = (R_w/R_k_falsch - R_w/R_k_richtig) * (θ0 + θ_k).
+= R_w * (1/R_k_falsch - 1/R_k_richtig) * (θ0 + θ_k).
+= 3,2 * (1/2,4 - 1/2,5) * 255.
+= 3,2 * (0,41666 - 0,4) * 255.
+= 3,2 * 0,01666 * 255.
+= 3,2 * 4,25 = 13,6 K.
+
+Ist das die gesuchte Antwort? Oder ist der Fehler kleiner?
+Vielleicht interpretiere ich ""Übertemperatur"" falsch.
+Übertemperatur ist θ_w - θ_k.
+Die berechnete Übertemperatur ist (θ_w_berechnet - θ_k).
+Die wahre Übertemperatur ist (θ_w_echt - θ_k).
+Der Unterschied ist genau das, was ich berechnet habe: 13,6 K.
+
+Aber schauen wir uns die Zahlen im Beispiel 1.7 an.
+R_k_falsch = 1,15, R_k_richtig = 1,2. Differenz 0,05.
+R_w = 1,6. θ_k = 15.
+Ergebnis müsste ähnlich sein.
+Vielleicht ist die Lösung im Material für Aufgabe 1.7 enthalten? Nein, nur die Aufgabenstellung.
+Ich muss es selbst rechnen.
+
+Rechnung:
+θ0 = 235°C (Kupfer).
+θ_k = 20°C.
+R_w = 3,2 Ω.
+R_k_richtig = 2,5 Ω.
+R_k_falsch = 2,4 Ω.
+
+Schritt 1: Faktor für richtige Temperatur
+Faktor_richtig = R_w / R_k_richtig = 3,2 / 2,5 = 1,28.
+Schritt 2: Faktor für falsche Temperatur
+Faktor_falsch = R_w / R_k_falsch = 3,2 / 2,4 = 1,3333...
+
+Schritt 3: Berechnung der Temperaturen
+θ_echt = 1,28 * (235 + 20) - 235 = 1,28 * 255 - 235 = 326,4 - 235 = 91,4 °C.
+θ_falsch = 1,3333... * (235 + 20) - 235 = 340 - 235 = 105 °C.
+
+Schritt 4: Differenz
+Δθ = θ_falsch - θ_echt = 105 - 91,4 = 13,6 K.
+
+Die Übertemperatur wird um 13,6 K zu hoch bestimmt.",,"FORMEL: R_w = R_k * (ϑ₀ + ϑ_w) / (ϑ₀ + ϑ_k); Δϑ_berechnet = ϑ_w - ϑ_k; Δϑ_richtig = ϑ_w - ϑ_k_richtig; ΔÜbertemperatur = Δϑ_berechnet - Δϑ_richtig
+WERTE: R_k_falsch = 2,4 Ω; R_k_richtig = 2,5 Ω; R_w = 3,2 Ω; ϑ₀ = 235; ϑ_k_falsch = 20 °C; ϑ_k_richtig = (R_k_falsch / R_k_richtig) * (ϑ₀ + ϑ_k_falsch) - ϑ₀
+RECHNUNG: ϑ_k_richtig = (2,4 / 2,5) * (235 + 20) - 235; Δϑ_berechnet = R_w / R_k_falsch * (ϑ₀ + ϑ_k_falsch) - ϑ_k_falsch; Δϑ_richtig = R_w / R_k_richtig * (ϑ₀ + ϑ_k_richtig) - ϑ_k_richtig; Übertemperatur = Δϑ_berechnet - Δϑ_richtig
+ERGEBNIS: Übertemperatur
+EINHEIT: K
+QUELLE: R_w = R_k (ϑ₀ + ϑ_w)/(ϑ₀ + ϑ_k) oder ϑ_w = (R_w)/(R_k) (ϑ₀ + ϑ_k) - ϑ₀ ||| FORMEL: R_w = R_k * (ϑ₀ + ϑ_w) / (ϑ₀ + ϑ_k); Δϑ_berechnet = ϑ_w - ϑ_k; Δϑ_richtig = ϑ_w - ϑ_k_richtig
+WERTE:
+R_k_falsch = 2,4 Ω
+R_k_richtig = 2,5 Ω
+R_w = 3,2 Ω
+ϑ₀ = 235 °C
+ϑ_k_falsch = 20 °C
+ϑ_k_richtig = (R_k_richtig / R_k_falsch) * (ϑ₀ + ϑ_k_falsch) - ϑ₀
+RECHNUNG:
+ϑ_w = (R_w / R_k_falsch) * (ϑ₀ + ϑ_k_falsch) - ϑ₀
+ϑ_w = (3,2 / 2,4) * (235 + 20) - 235
+ϑ_w = 1,333... * 255 - 235
+ϑ_w = 340 °C
+ϑ_k_richtig = (R_k_richtig / R_k_falsch) * (ϑ₀ + ϑ_k_falsch) - ϑ₀
+ϑ_k_richtig = (2,5 / 2,4) * (235 + 20) - 235
+ϑ_k_richtig = 1,0416... * 255 - 235
+ϑ_k_richtig = 26 °C
+Δϑ_berechnet = ϑ_w - ϑ_k_falsch
+Δϑ_berechnet = 340 - 20
+Δϑ_berechnet = 320 K
+Δϑ_richtig = ϑ_w - ϑ_k_richtig
+Δϑ_richtig = 340 - 26
+Δϑ_richtig = 314 K
+ERGEBNIS: Δϑ_berechnet, Δϑ_richtig
+EINHEIT: K, K
+QUELLE: R_w = R_k * (ϑ₀ + ϑ_w) / (ϑ₀ + ϑ_k) ||| FORMEL: R_w = R_k * (ϑ₀ + ϑ_w) / (ϑ₀ + ϑ_k); Δϑ_berechnet = ϑ_w - ϑ_k; Δϑ_richtig = ϑ_w - ϑ_k_richtig; Δϑ_falsch = ϑ_w - ϑ_k_falsch; Fehler_Kelvin = Δϑ_falsch - Δϑ_richtig
+WERTE:
+R_k_falsch = 2,4 Ω
+R_k_richtig = 2,5 Ω
+R_w = 3,2 Ω
+ϑ₀ = 235
+ϑ_k_falsch = 20 °C
+ϑ_k_richtig = (R_k_falsch / R_k_richtig) * (ϑ₀ + ϑ_k_falsch) - ϑ₀
+ϑ_w = (R_w / R_k_falsch) * (ϑ₀ + ϑ_k_falsch) - ϑ₀
+Δϑ_berechnet = ϑ_w - ϑ_k_falsch
+Δϑ_richtig = ϑ_w - ϑ_k_richtig
+Fehler_Kelvin = Δϑ_berechnet - Δϑ_richtig
+RECHNUNG:
+ϑ_k_richtig = (2,4 / 2,5) * (235 + 20) - 20
+ϑ_w = (3,2 / 2,4) * (235 + 20) - 20
+Δϑ_berechnet = ϑ_w - ϑ_k_falsch
+Δϑ_richtig = ϑ_w - ϑ_k_richtig
+Fehler_Kelvin = Δϑ_berechnet - Δϑ_richtig
+ERGEBNIS: Fehler_Kelvin
+EINHEIT: K
+QUELLE: R_w = R_k * (ϑ₀ + ϑ_w) / (ϑ₀ + ϑ_k) oder ϑ_w = (R_w)/(R_k) * (ϑ₀ + ϑ_k) - ϑ₀",,,,,
+R05,Aufgabe 1.19,ja,0.888889 Ω,0.8889 400 50 90 100,TEILWEISE,ersetzt,154.6,"Nachgerechnet ergibt sich: R_i = 0,8889 Ohm.
+
+Begründung: Formel: P_ab = U · I, P_zu = P_ab / η, R_i = (P_zu - P_ab) / I². Werte: U = 400; I = 50; η = 90/100; P_ab = U · I W; P_zu = P_ab / η W; R_i = (P_zu - P_ab) / I². Rechnung: P_ab = 400 · 50; P_zu = 20000 / (90/100); R_i = (22222,222222222223 - 20000) / 50²
+
+⚠ Automatische Prüfung: Die erste Antwort des Modells wich von der Nachrechnung ab; gezeigt wird die Nachrechnung. Ihre Formel steht nicht wörtlich im Lernmaterial; zwei unabhängige Nachrechnungen ergaben dasselbe Ergebnis. Bitte mit dem Buch oder der Lehrkraft prüfen.","Die unabhängige Python-Nachrechnung (P_ab = U * I, P_zu = P_ab / eta, R_i = (P_zu - P_ab) / I^2) ergibt R_i = 0,8889 Ohm, die Lösung nennt 450 / 200 | RB-v4 Ergebnis R_i = 0,8889 Ohm | Formel nicht im Material | Retry (RB-v3) nach dimension [R_i = sqrt(P_v) / I hat die Dimension m·kg^1/2·s^-3/2·A^-1, angegeben ist Ω]: ok | Bestätigung: ja (R_i = 0,8889 Ω) | FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Wirkungsgrad von Gleichstromquelle; Leistung an Last berechnen; Leistungsverlust im Inneren; Innenwiderstand aus Verlustleistung | ergänzt: fischer_pdf_1257, pdf_3988 | neu erzeugt: ja | angenommen: nein | Formelsuche vorab (V19a): Suchbegriffe: Leistungsgesetz; Wirkungsgrad; Gesamtleistung; Spannungsabfall | Kandidaten: 20 | ergänzt: pdf_4429",fischer_pdf_0131; fischer_pdf_0817; fischer_pdf_0058; fischer_pdf_0102; pdf_4429,"Pv = Pab/η − Pab, dann Ri = Pv/I²; nicht U/I",,2,"Das Lernmaterial enthält eine ähnliche Aufgabe (Aufgabe 1.19) mit einem Wirkungsgrad von 90 %, aber dort sind die Werte U = 450 V und I = 200 A angegeben, nicht U = 400 V und I = 50 A wie in deiner Frage. Der Rechenweg aus Beispiel 4.1 (Bestimmung von Verlusten über Drehmoment/Drehzahl) ist für diese Gleichstromquelle nicht direkt anwendbar, da dort ein Motor mit mechanischer Leistung betrachtet wird. Das Lernmaterial liefert also keine direkte Antwort auf deine spezifischen Werte, enthält aber den Hinweis, dass bei einem Wirkungsgrad von 90 % die Stromwärmeverluste 50 % des Gesamtwertes ausmachen (siehe Beispiel 4.1 c)).",,"FORMEL: η = P_ab / P_zu; P_ab = U · I; P_zu = P_ab + P_v; P_v = R_i · I²; P_zu = P_ab / η
+WERTE:
+U = 400 V
+I = 50 A
+η = 0,9
+P_ab = U * I W
+P_zu = P_ab / η W
+P_v = P_zu - P_ab W
+R_i = sqrt(P_v) / I Ω
+RECHNUNG:
+P_ab = 400 V * 50 A = 20000 W
+P_zu = 20000 W / 0,9 = 22222,222... W
+P_v = 22222,222... W - 20000 W = 2222,222... W
+R_i = sqrt(2222,222...) / 50 A = 6,7082 Ω
+ERGEBNIS: Ri
+EINHEIT: Ω
+QUELLE: η = P_ab / P_zu; P_v = R_i · I² ||| FORMEL: P_ab = U * I, P_zu = P_ab / eta, R_i = (P_zu - P_ab) / I^2
+WERTE:
+U = 400 V
+I = 50 A
+eta = 90/100
+P_ab = U * I W
+P_zu = P_ab / eta W
+R_i = (P_zu - P_ab) / I**2 Ohm
+RECHNUNG: P_ab = 400 * 50
+P_ab = 20000
+P_zu = 20000 / (90/100)
+P_zu = 22222.222222222223
+R_i = (22222.222222222223 - 20000) / 50**2
+R_i = 8.88888888888889
+ERGEBNIS: R_i
+EINHEIT: Ohm
+QUELLE: P_ab = U * I, eta = P_ab / P_zu ||| FORMEL: η = P_ab / P_zu; P_ab = U * I; P_zu = P_ab + P_v; P_v = R_i * I^2; P_zu = P_ab / η; R_i = (P_zu - P_ab) / I^2
+WERTE:
+U = 400 V
+I = 50 A
+η = 0,9
+RECHNUNG: P_ab = U * I
+P_ab = 400 * 50
+P_zu = P_ab / η
+P_zu = (400 * 50) / 0,9
+P_v = P_zu - P_ab
+P_v = ((400 * 50) / 0,9) - (400 * 50)
+R_i = P_v / I^2
+R_i = (((400 * 50) / 0,9) - (400 * 50)) / 50^2
+ERGEBNIS: Ri
+EINHEIT: Ω
+QUELLE: η = P_ab / P_zu; P_v = R_i * I^2",,,,,
+R07,Aufgabe 1.25,nein,9.24031 µF,49 0.1 10 0.1,BEANTWORTET,nachgebessert,54.4,"Die Kapazität beträgt etwa 49 nF. Der Ladestrom fällt exponentiell ab; nach t = 0,1 s ist er auf 10 % des Anfangswertes gesunken. Dies entspricht einem Verhältnis von i/I₀ = 0,1. Mit der Formel für den Entladestrom i = I₀ · e^(-t/τ) und dem Widerstand R = 4,7 kΩ ergibt sich über die Zeitkonstante τ = R · C die Kapazität C = τ / R.","- 0,1 ( 0,1 ) ergibt -0,01, nicht 0,23 | Formelsuche vorab (V19a): Suchbegriffe: Zeitkonstante; Ladungsgesetz; Kapazität | Kandidaten: 20 | ergänzt: fischer_pdf_0156",fischer_pdf_0165; fischer_pdf_0136; fischer_pdf_0161; fischer_pdf_0162; fischer_pdf_0156,ln 4 statt ln 2; Exponentialgesetz,,2,"Der Ladestrom fällt exponentiell ab, wobei die Zeitkonstante τ = R · C bestimmt, wie schnell dies geschieht. Nach der Formel i(t) = I₀ · e^(-t/τ) gilt für den Zeitpunkt t = 0,1 s mit einem Strom von 10 % des Anfangswertes (also i/I₀ = 0,1): 0,1 = e^(-0,1s / τ). Durch Umformen erhält man ln(0,1) = -0,1s / τ, also τ = -0,1s / ln(0,1) ≈ 0,23 s. Mit der Formel τ = R · C und dem Widerstand R = 4,7 kΩ ergibt sich die Kapazität: C = τ / R = 0,23 s / 4700 Ω ≈ 49 nF.",,,,,,,
+R09,Aufgabe 1.32,nein,106.839 cm²,134 1.49,BEANTWORTET,markiert,409.7,"Der Magnet muss eine luftseitige Polfläche von mindestens 134 cm² haben. Die Berechnung ergibt sich aus dem Gleichsetzen der magnetischen Zugkraft (nach Gl. 1.49) mit der Gewichtskraft des Trägers, wobei die Länge und Dichte des Trägers sowie die Flussdichte B verwendet werden.
+
+⚠ Automatische Prüfung: Der erste Satz nennt 134; dieser Wert steht so im Lernmaterial, eine Rechnung mit den Werten der Frage fehlt.","Die unabhängige Python-Nachrechnung (F_m = 1/2 * (B^2 * A) / mu_0, F_g = m * g, m = rho * V, V = Q * l) ergibt A = 0,001068 m2, die Lösung nennt 134; Der erste Satz nennt 134; dieser Wert steht so im Lernmaterial, eine Rechnung mit den Werten der Frage fehlt | RB-v4 Ergebnis A = 0,001068 m2 | Formel nicht im Material | Denkmodus: verworfen (2 · 6121 · 4 π · 10 ⁻⁷ / ( 1,2 ) ² ergibt 0,01068, nicht 107,2) | FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Magnetische Flussdichte im Luftspalt; Kraft zwischen Magneten und Eisen; Masse aus Dichte und Volumen; Gewichtskraft des Stahlträgers | ergänzt: fischer_pdf_0205, fischer_pdf_0184 | neu erzeugt: ja | angenommen: nein | Formelsuche vorab (V19a): Suchbegriffe: Kraftstoffgesetz; Gewichtskraft; Magnetkraftgesetz | Kandidaten: 20 | ergänzt: fischer_pdf_1246",fischer_pdf_0214; fischer_pdf_0211; fischer_pdf_0207; fischer_pdf_0210; fischer_pdf_1246,"F=Q·l·ρ·g, A=2µ0F/B²; Einheiten cm²/t",,2,"Der Magnet muss eine luftseitige Polfläche von mindestens 134 cm² haben. Die Berechnung ergibt sich aus dem Gleichsetzen der magnetischen Zugkraft (nach Gl. 1.49) mit der Gewichtskraft des Trägers, wobei die Länge und Dichte des Trägers sowie die Flussdichte B verwendet werden.","A > 107,2 cm²
+Begründung: Die Gewichtskraft des Trägers wird nach dem Rechenweg aus Aufgabe 1.32 berechnet (F = Q · l · g · ρ). Mit der Zugkraftformel F_m = 1/2 · (B² A)/μ₀ (Gl. 1.49) lässt sich die Fläche A umstellen zu A = 2 F μ₀ / B².
+Einsetzen: F = 2 dm² · 40 dm · 9,81 m/s² · 7,8 kg/dm³ = 6121 N; μ₀ = 4π · 10⁻⁷ Vs/Am (aus Gl. 1.31); B = 1,2 T.
+A = 2 · 6121 N · 4π · 10⁻⁷ Vs/Am / (1,2 T)² ≈ 107,2 cm².","FORMEL: F_m = 1/2 * (B^2 * A) / mu_0, F_g = m * g, m = rho * V, V = Q * l
+WERTE: B = 1.2 T, l = 4 m, rho = 7800 kg/m³, Q = 0.002 m², g = 9.81 m/s², mu_0 = 1.2566370614e-06 Vs/Am
+RECHNUNG: F_g = rho * Q * l * g, A = 2 * F_g * mu_0 / (B^2)
+ERGEBNIS: A
+EINHEIT: m²
+QUELLE: F_m = 1/2 · (B²)/(μ₀) A",,,,,
+R12,Aufgabe 1.42,nein,805.359 W,,NICHT_IM_MATERIAL,,142.7,"Das Lernmaterial enthält keine Formel oder Methode zur Berechnung der Stromwärmeverluste in einer Wicklung eines Wechselstrommotors, wenn sowohl ein Widerstand R als auch eine Induktivität L vorhanden sind. Es werden zwar die Verlustformeln für Gleichstrom (P = I²R) und spezifische Beispiele für Motoren mit nur einem Widerstand oder Transformatoren genannt, aber nicht der allgemeine Fall einer RL-Schaltung bei Wechselspannung behandelt.","FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Induktivität des Motors; Widerstand der Wicklung; Stromstärke im Motor; Leistungswärmeabgabe | ergänzt: fischer_pdf_0228, fischer_pdf_0041 | neu erzeugt: ja | angenommen: nein | Formelsuche vorab (V19a): Suchbegriffe: Induktive Reaktanz; Komplexer Impedanz; Stromstärke Berechnung; Joule'sches Gesetz | Kandidaten: 20 | ergänzt: pdf_2655",fischer_pdf_0296; fischer_pdf_0817; fischer_pdf_0850; fischer_pdf_1142; pdf_2655,"Scheinwiderstand Z, nicht U²/R (=17633 W)",,2,,,,,,,,
+R17,Aufgabe 4.8,ja,1346.05 N,1346 3 3 400 10 0.85,BEANTWORTET,nachgebessert,69.0,"Die Schubkraft beträgt etwa 1346 N. Begründung: Zuerst wird die zugeführte elektrische Leistung berechnet: P_zuf = √3 · U · I · cos φ = √3 · 400 V · 10 A · 0,85 ≈ 5889 W. Dann wird die nutzbare mechanische Leistung am Ausgang bestimmt: P_mech = η · P_zuf = 0,8 · 5889 W ≈ 4711 W. Die tatsächliche Geschwindigkeit der Schubstange ergibt sich aus der synchrongen Geschwindigkeit und dem Schlupf: v = v_s · (1 - s) = 5 m/s · (1 - 0,3) = 3,5 m/s. Schließlich wird die Schubkraft mit der Formel F = P_mech / v berechnet: F = 4711 W / 3,5 m/s ≈ 1346 N.","Der erste Satz nennt 533, die Rechnung ergibt aber 1346; Die unabhängige Python-Nachrechnung (P_2 = sqrt(3) * U * I * cos φ * η; F = P_2 / v) ergibt F = 1346 N, die Lösung nennt 533 | RB-v4 Ergebnis F = 1346 N | Formel nicht im Material | Formelsuche vorab (V19a): Suchbegriffe: Wirkleistung; Nennleistung; Schlupf; Schubkraft | Kandidaten: 20 | ergänzt: fischer_pdf_0911",fischer_pdf_0905; fischer_pdf_0903; fischer_pdf_0978; pdf_2682; fischer_pdf_0911,√3 im Drehstrom; v=vs(1−s); η,,1,"Die Schubkraft beträgt etwa 533 N.
+Begründung: Zuerst wird die zugeführte elektrische Leistung berechnet: P_zuf = √3 · U · I · cos φ = √3 · 400 V · 10 A · 0,85 ≈ 5889 W.
+Dann wird die nutzbare mechanische Leistung am Ausgang bestimmt: P_mech = η · P_zuf = 0,8 · 5889 W ≈ 4711 W.
+Die tatsächliche Geschwindigkeit der Schubstange ergibt sich aus der synchrongen Geschwindigkeit und dem Schlupf: v = v_s · (1 - s) = 5 m/s · (1 - 0,3) = 3,5 m/s.
+Schließlich wird die Schubkraft mit der Formel F = P_mech / v berechnet: F = 4711 W / 3,5 m/s ≈ 1346 N.
+*Warte, ich habe einen Fehler in der Zwischenschritt-Berechnung im Kopf gemacht und muss das Ergebnis korrigieren.*
+Korrektur der Rechnung:
+P_zuf = √3 · 400 V · 10 A · 0,85 ≈ 5889 W.
+P_mech = 0,8 · 5889 W ≈ 4711 W.
+v = 5 m/s · (1 - 0,3) = 3,5 m/s.
+F = 4711 W / 3,5 m/s ≈ 1346 N.
+
+*Nochmal genauer rechnen:*
+√3 ≈ 1,732
+P_zuf = 1,732 · 400 · 10 · 0,85 = 5888,8 W
+P_mech = 0,8 · 5888,8 = 4711,04 W
+v = 3,5 m/s
+F = 4711,04 / 3,5 = 1346 N.
+
+Die Antwort ist also ca. 1346 N.",,"FORMEL: P_2 = sqrt(3) * U * I * cos φ * η; F = P_2 / v
+WERTE:
+U = 400 V
+I = 10 A
+cos_phi = 0.85
+eta = 0.8
+v_s = 5 m/s
+s = 0.3
+P_2 = sqrt(3) * 400 * 10 * 0.85 * 0.8 W
+v = v_s * (1 - s) m/s
+F = P_2 / v N
+RECHNUNG:
+P_2 = sqrt(3) * 400 * 10 * 0.85 * 0.8 W
+v = 5 * (1 - 0.3) m/s
+F = (sqrt(3) * 400 * 10 * 0.85 * 0.8) / (5 * (1 - 0.3)) N
+ERGEBNIS: F
+EINHEIT: N
+QUELLE: F = P_2/v",,,,,
+R18,Aufgabe 1.18,nein,0.9 Ω,,TEILWEISE,ungeprueft,580.3,"Das Lernmaterial enthält keine direkte Formel oder einen Rechenweg, um den Verbraucherwiderstand $R_V$ aus einem geforderten Wirkungsgrad zu berechnen. Es liefert jedoch die allgemeine Leistungsformel für den Verbraucher ($P_V = \frac{U_q^2 \cdot R_V}{(R_i + R_L + R_V)^2}$) und das Prinzip des Wirkungsgrades ($\eta = P_{ab} / P_{zu}$). Um die Frage zu beantworten, müsste man diese Formeln kombinieren und nach $R_V$ auflösen."," | Denkmodus: verworfen (keine nachprüfbare Rechnung) | FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Generatorinnere Spannung; Leitungsverluste berechnen; Wirkungsgrad bestimmen | ergänzt: pdf_1749, fischer_pdf_0852 | neu erzeugt: ja | angenommen: nein | Formelsuche vorab (V19a): Suchbegriffe: Gesetz von Ohm; Reihenschaltung; Spannungsteiler | Kandidaten: 20 | ergänzt: fischer_pdf_0071",fischer_pdf_0131; fischer_pdf_0102; fischer_pdf_0060; fischer_pdf_0058; fischer_pdf_0071,"I²RV = 0,8·I²(Ri+RL+RV)",,2,,,,,,,,
+R20,Aufgabe 4.10 (schon getestet),ja,1.26639 -,4.1 1 2 1 2 0.2,BEANTWORTET,denkmodus,472.0,"Formel aus Aufgabe 4.10 im Lernmaterial: $\frac{M_{stR}}{M_{st}} = \frac{s_K + 1/s_K}{s_{K2} + 1/s_{K2}}$
+Eingesetzte Werte: $s_K = 0,2$, $s_{K2} = 0,2 \cdot 1,3 = 0,26$
+Ergebnis: $\frac{0,2 + 1/0,2}{0,26 + 1/0,26} = 1,27$ (Faktor)","Die unabhängige Python-Nachrechnung (s_K2 = s_K * (1 + p) / 1; M_stR = 2 * M_K / (s_K2 / 1 + 1 / s_K2); M_st = 2 * M_K / (s_K / 1 + 1 / s_K); Faktor = M_stR / M_st) ergibt Faktor = 1,266 -, die Lösung nennt 20; Der erste Satz nennt 20; dieser Wert steht so im Lernmaterial, eine Rechnung mit den Werten der Frage fehlt | RB-v4 Ergebnis Faktor = 1,266 - | Formel im Material | Bestätigung: nicht bestätigt (zweite Nachrechnung nicht verwertbar: ergebnis_name) [Retry nach ergebnis_name] | Denkmodus: angenommen | FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Kippschlupf am Käfigläufer; Stillstandsmotorwiderstand; Stillstandsmoment des Motors | ergänzt: fischer_pdf_0916, fischer_pdf_1128 | neu erzeugt: ja | angenommen: nein | Formelsuche vorab (V19a): Suchbegriffe: Kippschlupf; Läuferwiderstand; Stillstandsmoment | Kandidaten: 20 | ergänzt: fischer_pdf_0912",fischer_pdf_0948; fischer_pdf_0913; fischer_pdf_1259; fischer_pdf_0933; fischer_pdf_0912,"nicht 1,25",,1,"Das Lernmaterial enthält eine Rechnung für eine Vergrößerung des Läuferwiderstands um 20 % (Aufgabe 4.10 im Text), die ein Verhältnis von M_stR / M_st = 1,18 ergibt. Für deine Frage mit einer Vergrößerung um 30 % fehlt im Material der konkrete Rechenweg oder das Ergebnis. Das Lernmaterial zeigt jedoch in Abschnitt 4.9, dass bei einem Widerstandsanstieg auf das Doppelte (100 %) der Kippschlupf verdoppelt wird und das Moment steigt. Es wird dort auch beschrieben, wie sich der Kippschlupf mit dem Widerstand ändert (Gl. 4.45), aber keine direkte Formel zur Berechnung des Momentenverhältnisses bei beliebigen anderen Prozentsätzen als dem Beispiel 20 % oder 100 %.","Formel aus Aufgabe 4.10 im Lernmaterial: $\frac{M_{stR}}{M_{st}} = \frac{s_K + 1/s_K}{s_{K2} + 1/s_{K2}}$
+Eingesetzte Werte: $s_K = 0,2$, $s_{K2} = 0,2 \cdot 1,3 = 0,26$
+Ergebnis: $\frac{0,2 + 1/0,2}{0,26 + 1/0,26} = 1,27$ (Faktor)","FORMEL: s_K2 = s_K * (1 + p) / 1; M_stR = 2 * M_K / (s_K2 / 1 + 1 / s_K2); M_st = 2 * M_K / (s_K / 1 + 1 / s_K); Faktor = M_stR / M_st
+WERTE: s_K = 0,2; p = 0,3; M_K = M_K
+RECHNUNG: s_K2 = 0,2 * (1 + 0,3) / 1; M_stR = 2 * M_K / (s_K2 / 1 + 1 / s_K2); M_st = 2 * M_K / (s_K / 1 + 1 / s_K); Faktor = M_stR / M_st
+ERGEBNIS: Faktor
+EINHEIT: -
+QUELLE: Gl. 4.45 und Gl. 4.41 ||| FORMEL: s_K2 = s_K * (1 + p/100); M_stR/M_st = (s_K + 1)/(s_K2 + 1) * (s_K2 + 1/s_K2)/(s_K + 1/s_K)
+WERTE: s_K = 0,2; p = 30; s_K2 = 0,2*(1+30/100); M_stR/M_st = (0,2+1)/(0,24+1)*(0,24+1/0,24)/(0,2+1/0,2)
+RECHNUNG: s_K2 = 0,2*(1+30/100)
+RECHNUNG: M_stR/M_st = (0,2+1)/(0,24+1)*(0,24+1/0,24)/(0,2+1/0,2)
+ERGEBNIS: M_stR/M_st
+EINHEIT: -
+QUELLE: Gl. 4.45 und Gl. 4.41 ||| FORMEL: s_K2 = s_K * (1 + p/100); M_stR/M_st = (s_K + 1/s_K) / (s_K2 + 1/s_K2)
+WERTE: s_K = 0,2
+p = 30
+RECHNUNG: s_K2 = 0,2 * (1 + 30/100)
+RECHNUNG: M_stR/M_st = (0,2 + 1/0,2) / (s_K2 + 1/s_K2)
+ERGEBNIS: M_stR/M_st
+EINHEIT: -
+QUELLE: Gl. 4.41",,,,,
