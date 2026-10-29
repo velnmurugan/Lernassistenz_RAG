@@ -1,0 +1,958 @@
+nr,vorlage,richtig,erwartet,gefunden,status,rechen_pruefung,sekunden,loesung,rechen_befund,quellen,falle,fehler,buchergebnisse_entfernt,loesung_original,loesung_denk,rb_roh,werkzeug,werkzeug_protokoll,werkzeug_roh,werkzeug_vorgaben,werkzeug_neu
+R01,Aufgabe 1.5,teilweise,78.9474;31.5789 MW; Mio €,78.95 24000,BEANTWORTET,kopf_korrigiert,248.5,"Die Verlustleistung sinkt um 78,95 MW, und es werden jährlich 24.000 € eingespart.
+Begründung: Der Wirkungsgrad η ist definiert als das Verhältnis von abgegebener Leistung P_ab zur zugeführten Leistung P_zu (η = P_ab / P_zu). Die Verlustleistung ΔP ergibt sich aus der Differenz zwischen zugeführter und abgegebener Leistung (ΔP = P_zu - P_ab). Da die abgegebene Leistung P_ab konstant bei 600 MW bleibt, führt ein höherer Wirkungsgrad zu einer geringeren benötigten zugeführten Leistung und damit zu niedrigeren Verlusten.
+Rechnung für ΔP:
+Zugeführte Leistung vor Modernisierung (η1 = 38 %): P_zu1 = P_ab / η1 = 600 MW / 0,38 ≈ 1578,95 MW.
+Verlustleistung vor Modernisierung: ΔP1 = P_zu1 - P_ab = 1578,95 MW - 600 MW = 978,95 MW.
+Zugeführte Leistung nach Modernisierung (η2 = 40 %): P_zu2 = P_ab / η2 = 600 MW / 0,40 = 1500 MW.
+Verlustleistung nach Modernisierung: ΔP2 = P_zu2 - P_ab = 1500 MW - 600 MW = 900 MW.
+Sinken der Verlustleistung: Δ(ΔP) = ΔP1 - ΔP2 = 978,95 MW - 900 MW = 78,95 MW.","Der erste Satz nennt 30 / 24.000, die Rechnung ergibt aber 78,95; Die unabhängige Python-Nachrechnung (P_zu = P_ab / eta; P_v = P_zu - P_ab; Delta_P = P_v1 - P_v2; K = W_jahrlich * k; W_jahrlich = P_ab * t / 1000) ergibt Delta_P = 78,95 MW; K = 240000 €, die Lösung nennt 30 | RB-v4 Ergebnis Delta_P = 78,95 MW; K = 240000 € | Formel nicht im Material | Retry (RB-v3) nach auswertung [K = W_jahrlich * k €]: ok | Formelsuche vorab (V19a): Suchbegriffe: Wärmeeintrag; Verlustleistung; Leistungsdifferenz; Energiekosten | Kandidaten: 20 | ergänzt: fischer_pdf_0557, fischer_pdf_0004",fischer_pdf_0046; fischer_pdf_0060; fischer_pdf_0880; fischer_pdf_0032; fischer_pdf_0557; fischer_pdf_0004,"Verluste = Pab(1/η1 − 1/η2), nicht Pab·(η2−η1)=12 MW",,2,"Die Verlustleistung sinkt um 30 MW, und es werden jährlich 24.000 € eingespart.
+Begründung: Der Wirkungsgrad η ist definiert als das Verhältnis von abgegebener Leistung P_ab zur zugeführten Leistung P_zu (η = P_ab / P_zu). Die Verlustleistung ΔP ergibt sich aus der Differenz zwischen zugeführter und abgegebener Leistung (ΔP = P_zu - P_ab). Da die abgegebene Leistung P_ab konstant bei 600 MW bleibt, führt ein höherer Wirkungsgrad zu einer geringeren benötigten zugeführten Leistung und damit zu niedrigeren Verlusten.
+Rechnung für ΔP:
+Zugeführte Leistung vor Modernisierung (η1 = 38 %): P_zu1 = P_ab / η1 = 600 MW / 0,38 ≈ 1578,95 MW.
+Verlustleistung vor Modernisierung: ΔP1 = P_zu1 - P_ab = 1578,95 MW - 600 MW = 978,95 MW.
+Zugeführte Leistung nach Modernisierung (η2 = 40 %): P_zu2 = P_ab / η2 = 600 MW / 0,40 = 1500 MW.
+Verlustleistung nach Modernisierung: ΔP2 = P_zu2 - P_ab = 1500 MW - 600 MW = 900 MW.
+Sinken der Verlustleistung: Δ(ΔP) = ΔP1 - ΔP2 = 978,95 MW - 900 MW = 78,95 MW.
+*Warte, ich muss die Rechnung im Lernmaterial genau prüfen.* Im Lernmaterial steht bei Aufgabe 1.5 ein ähnlicher Fall, aber keine explizite Formel für ΔP in Abhängigkeit von η und P_ab allein ohne Umrechnung über P_zu. Die Definition η = P_ab / P_zu ist gegeben.
+Rechnung korrigiert:
+ΔP_vor = (600 MW / 0,38) - 600 MW = 1578,947... - 600 = 978,947 MW.
+ΔP_nach = (600 MW / 0,40) - 600 MW = 1500 - 600 = 900 MW.
+Differenz ΔP = 978,947 MW - 900 MW = 78,947 MW ≈ 79 MW.
+
+Rechnung für Kosten:
+Eingesparte Energie W_spar = ΔP * t = 78,947 MW * 5000 h = 394.735 MWh = 394.735.000 kWh.
+Einsparung K = W_spar * k = 394.735.000 kWh * 0,08 €/kWh = 31.578.800 €.
+
+*Ich habe einen Fehler in der Logik gemacht.* Die Frage ist: ""Um wie viel sinkt die Verlustleistung ΔP"".
+ΔP = P_zu - P_ab.
+P_zu = P_ab / η.
+Also ΔP = (P_ab / η) - P_ab = P_ab * (1/η - 1).
+Vorher: 600 * (1/0,38 - 1) = 600 * (2,6315 - 1) = 600 * 1,6315 = 978,9 MW.
+Nachher: 600 * (1/0,40 - 1) = 600 * (2,5 - 1) = 600 * 1,5 = 900 MW.
+Unterschied: 78,9 MW.
+
+Eingesparte Energie: 78,9 MW * 5000 h = 394.500 MWh = 394.500.000 kWh.
+Kosten: 394.500.000 * 0,08 = 31.560.000 €.
+
+*Warte, ich schaue mir das Lernmaterial nochmal an.*
+Im Lernmaterial steht bei Aufgabe 1.5: ""Es sind die erreichte Verlustminderung Δ P und die jährlich eingesparten Kosten K auf der Basis von 0,1 € pro kWh zu bestimmen.""
+Dort ist η1 = 41 %, η2 = 42 %, P_N = 500 MW, t = 4500 h.
+Rechnung dort (implizit):
+P_zu1 = 500 / 0,41 = 1219,5 MW. ΔP1 = 719,5 MW.
+P_zu2 = 500 / 0,42 = 1190,5 MW. ΔP2 = 690,5 MW.
+Δ(ΔP) = 29 MW.
+Energie = 29 MW * 4500 h = 130.500 MWh = 130.500.000 kWh.
+Kosten = 130.500.000 * 0,1 = 13.050.000 €.
+
+Okay, ich wende diesen Rechenweg auf die neue Frage an.
+P_ab = 600 MW.
+η1 = 0,38 -> P_zu1 = 600/0,38 = 1578,947 MW. ΔP1 = 978,947 MW.
+η2 = 0,40 -> P_zu2 = 600/0,40 = 1500 MW. ΔP2 = 900 MW.
+Δ(ΔP) = 78,947 MW.
+Energie = 78,947 MW * 5000 h = 394.735 MWh = 394.735.000 kWh.
+Kosten = 394.735.000 kWh * 0,08 €/kWh = 31.578.800 €.
+
+Ich muss die Antwort runden oder genau angeben? Im Lernmaterial werden oft gerundet (z.B. 29 MW). Ich werde auf eine ganze Zahl runden: 79 MW und 31.578.800 € -> 31,6 Mio €? Nein, besser exakt bis zum Euro oder Tausender.
+Lass mich die Werte nochmal genau berechnen.
+ΔP = 600 * (1/0,38 - 1/0,4) = 600 * (2,631579 - 2,5) = 600 * 0,131579 = 78,947 MW.
+Rundung auf 79 MW ist sinnvoll für technische Daten.
+Energie: 78,947 * 5000 = 394.735 MWh.
+Kosten: 394.735 * 10^6 Wh * 0,08 € = 31.578.800 €.
+
+Ich formuliere die Lösung so, dass ich den Rechenweg aus dem Material (Beispiel 1.12 c) und Aufgabe 1.5 übernehme.
+Formel: P_zu = P_ab / η. ΔP = P_zu - P_ab. W = ΔP * t. K = W * k.",,"FORMEL: P_ab = η · P_zu; P_zu = P_ab / η; P_v = P_zu - P_ab; ΔP = P_v1 - P_v2; K = W · k; W = P_ab · t
+WERTE: P_ab1 = 600e6 W; P_ab2 = 600e6 W; eta1 = 0.38; eta2 = 0.40; t = 5000 h; k = 0.08 €/kWh
+RECHNUNG: P_zu1 = P_ab1 / eta1 = 600e6 / 0.38 W; P_zu2 = P_ab2 / eta2 = 600e6 / 0.40 W; P_v1 = P_zu1 - P_ab1 W; P_v2 = P_zu2 - P_ab2 W; Delta_P = P_v1 - P_v2 W; W_jahrlich = P_ab1 * t kWh; K = W_jahrlich * k €
+ERGEBNIS: Delta_P, K
+EINHEIT: W, €
+QUELLE: η = (P_ab / P_zu) 100 % ||| FORMEL: P_zu = P_ab / eta; P_v = P_zu - P_ab; Delta_P = P_v1 - P_v2; K = W_jahrlich * k; W_jahrlich = P_ab * t / 1000
+WERTE: P_ab = 600 MW
+t = 5000 h
+eta1 = 38/100
+eta2 = 40/100
+k = 0,08 €/kWh
+P_zu1 = P_ab / eta1
+P_v1 = P_zu1 - P_ab
+P_zu2 = P_ab / eta2
+P_v2 = P_zu2 - P_ab
+W_jahrlich = P_ab * t / 1000
+Delta_P = P_v1 - P_v2
+K = W_jahrlich * k
+RECHNUNG: P_zu1 = 600 MW / (38/100) = 1578,947 MW
+P_v1 = 1578,947 MW - 600 MW = 978,947 MW
+P_zu2 = 600 MW / (40/100) = 1500 MW
+P_v2 = 1500 MW - 600 MW = 900 MW
+W_jahrlich = 600 MW * 5000 h / 1000 = 3000000 kWh
+Delta_P = 978,947 MW - 900 MW = 78,947 MW
+K = 3000000 kWh * 0,08 €/kWh = 240000 €
+ERGEBNIS: Delta_P, K
+EINHEIT: MW, €
+QUELLE: P_v = P_zu - P_ab; K = W_jahrlich * k",,,,,
+R02,Aufgabe 1.6,nein,3.12 Ω,3.1 1.6,BEANTWORTET,nachgebessert,83.0,"Der Widerstand beträgt 3,1 Ω.
+Begründung: Aus dem Lernmaterial (Aufgabe 1.6) wird der Rechenweg übernommen und mit den Werten aus deiner Frage gerechnet.
+Rechenweg:
+Formel: R = ρ · l / A
+Eingesetzte Werte:
+- Anzahl Windungen N = l_R / d_is
+- Isolierdicken-Effektivwert d_is = d + 2 · t_iso = 1,5 mm + 2 · 0,25 mm = 2,0 mm
+- Länge einer Windung l_w = (D + d_is) · π = (37 mm + 2,0 mm) · π ≈ 122,5 mm
+- Drahtlänge l = N · l_w = (180 mm / 2,0 mm) · 122,5 mm ≈ 11.025 mm ≈ 11,0 m
+- Querschnitt A = d² · π / 4 = (1,5 mm)² · π / 4 ≈ 1,77 mm²
+- Spezifischer Widerstand ρ = 0,5 Ω·mm²/m
+Ergebnis: R = 0,5 Ω·mm²/m · 11,0 m / 1,77 mm² ≈ 3,1 Ω","0,5 · 11,034 / 1,767 ergibt 3,122, nicht 0,8 | RB-v4 nicht verwertbar: erfunden | Formelsuche vorab (V19a): Suchbegriffe: Wicklungsdichte; Windungszahl; Gesamtlänge; Spulenwiderstand | Kandidaten: 20 | ergänzt: fischer_pdf_0237, fischer_pdf_0470",fischer_pdf_0047; fischer_pdf_0423; fischer_pdf_1025; fischer_pdf_1241; fischer_pdf_0237; fischer_pdf_0470,Windungsabstand d+2·Isolierung; mittlerer Windungsdurchmesser D+dis; Querschnitt mit blankem d,,1,"Der Widerstand beträgt 0,8 Ω.
+Begründung: Aus dem Lernmaterial (Aufgabe 1.6) wird der Rechenweg für den Drahtwiderstand übernommen und mit den Werten aus deiner Frage gerechnet.
+Rechenweg:
+Formel: R = ρ · l / A
+Eingesetzte Werte:
+- Länge des Drahtes l = N · l_w
+  - Anzahl Windungen N = l_R / d_is
+  - Isolierdicken-Effektivwert d_is = d + 2 · t_iso = 1,5 mm + 2 · 0,25 mm = 2,0 mm
+  - Länge einer Windung l_w = (D + d_is) · π = (37 mm + 2,0 mm) · π = 39 mm · π
+  - N = 180 mm / 2,0 mm = 90 Windungen
+  - l = 90 · 39 mm · π ≈ 11.034 mm ≈ 11,034 m
+- Querschnitt A = d² · π / 4 = (1,5 mm)² · π / 4 ≈ 1,767 mm²
+- Spezifischer Widerstand ρ = 0,5 Ω·mm²/m
+Ergebnis: R = 0,5 Ω·mm²/m · 11,034 m / 1,767 mm² ≈ 0,8 Ω",,"FORMEL: R = ρ · l / A; N = l_R / d_is; l_w = (D + d_is) · π; l = N · l_w; A = d² · π / 4; d_is = d_ + Isolierung
+WERTE:
+N = 180 / 3.25 Wdg
+l_w = (37 + 3.25) * pi mm
+l = N * l_w mm
+A = 1.5**2 * pi / 4 mm**2
+R = 0.5 * l / A Ohm
+RECHNUNG:
+N = 180 / 3.25 Wdg
+l_w = (37 + 3.25) * pi mm
+l = N * l_w mm
+A = 1.5**2 * pi / 4 mm**2
+R = 0.5 * l / A Ohm
+ERGEBNIS: R
+EINHEIT: Ohm
+QUELLE: R = ρ · l / A",,,,,
+R03,Aufgabe 1.7,ja,17.1053 K,17.1 2.6 1.9 235 15 235,BEANTWORTET,nachgebessert,75.6,"Die Übertemperatur wird um 17,1 K zu hoch bestimmt.
+Begründung: Zuerst wird der falsche berechnete Wert θ_w_falsch ermittelt: θ_w_falsch = (2,6 Ω / 1,9 Ω) · (235°C + 15°C) - 235°C = 107,1°C. Dann wird der korrekte Wert θ_w_richtig berechnet: θ_w_richtig = (2,6 Ω / 2,0 Ω) · (235°C + 15°C) - 235°C = 90°C. Die Differenz beträgt Δθ = 107,1°C - 90°C = 17,1 K. Da die Frage nach Kelvin fragt und °C zu K nur eine Verschiebung des Nullpunkts ist, entspricht die Differenz in K der Differenz in °C.","( 2,6 / 1,9 ) · ( 235 + 15 ) - 235 ergibt 107,1, nicht 248,7; ( 2,6 / 2,0 ) · ( 235 + 15 ) - 235 ergibt 90, nicht 246,2; Die unabhängige Python-Nachrechnung (R_w = R_k * (θ0 + θ_w) / (θ0 + θ_k); Δθ_falsch = θ_w_falsch - θ_k; Δθ_richtig = θ_w_richtig - θ_k; ΔΔθ = Δθ_falsch - Δθ_richtig) ergibt ΔΔθ = 17,11 K, die Lösung nennt 2,5 | RB-v4 Ergebnis ΔΔθ = 17,11 K | Formel nicht im Material | Formelsuche vorab (V19a): Suchbegriffe: Widerstandstemperaturbeziehung; Kupferwiderstandskoeffizient; Temperaturkorrektur | Kandidaten: 20 | ergänzt: pdf_3809, pdf_3810",fischer_pdf_0048; fischer_pdf_0042; fischer_pdf_0040; fischer_pdf_1137; pdf_3809; pdf_3810,beide Übertemperaturen rechnen und Differenz bilden,,3,"Die Übertemperatur wird um 2,5 K zu hoch bestimmt.
+Begründung: Im Lernmaterial steht für die Berechnung der warmen Temperatur θ_w die Formel θ_w = (R_w/R_k) · (θ0 + θ_k) - θ0 mit θ0 = 235°C für Kupfer. Zuerst wird der falsche berechnete Wert θ_w_falsch ermittelt: θ_w_falsch = (2,6 Ω / 1,9 Ω) · (235°C + 15°C) - 235°C = 248,7°C. Dann wird der korrekte Wert θ_w_richtig berechnet: θ_w_richtig = (2,6 Ω / 2,0 Ω) · (235°C + 15°C) - 235°C = 246,2°C. Die Differenz beträgt Δθ = 248,7°C - 246,2°C = 2,5 K. Da die Frage nach Kelvin fragt und °C zu K nur eine Verschiebung des Nullpunkts ist, entspricht die Differenz in K der Differenz in °C.",,"FORMEL: R_w = R_k * (ϑ₀ + ϑ_w) / (ϑ₀ + ϑ_k); Δϑ_falsch = ϑ_w_falsch - ϑ_k; Δϑ_richtig = ϑ_w_richtig - ϑ_k; ΔΔϑ = Δϑ_falsch - Δϑ_richtig
+WERTE:
+R_k_falsch = 1,9 Ω
+R_k_richtig = 2,0 Ω
+R_w = 2,6 Ω
+ϑ_k = 15 °C
+ϑ₀_Kupfer = 235 °C
+RECHNUNG:
+ϑ_w_falsch = (R_w / R_k_falsch) * (ϑ₀_Kupfer + ϑ_k) - ϑ₀_Kupfer
+ϑ_w_richtig = (R_w / R_k_richtig) * (ϑ₀_Kupfer + ϑ_k) - ϑ₀_Kupfer
+Δϑ_falsch = ϑ_w_falsch - ϑ_k
+Δϑ_richtig = ϑ_w_richtig - ϑ_k
+ΔΔϑ = Δϑ_falsch - Δϑ_richtig
+ERGEBNIS: ΔΔϑ
+EINHEIT: K
+QUELLE: R_w = R_k (ϑ₀ + ϑ_w)/(ϑ₀ + ϑ_k) oder ϑ_w = (R_w)/(R_k) (ϑ₀ + ϑ_k) - ϑ₀",,,,,
+R04,Aufgabe 1.12,nein,1.78254 N·m,20.4,BEANTWORTET,abweichung_ungestuetzt,63.4,"Das Drehmoment beträgt 20,4 N·m. Begründung: Die Abgabeleistung P₂ wird aus Spannung und Strom berechnet (P₁ = U · I), dann um den Wirkungsgrad η reduziert (P₂ = P₁ · η). Anschließend wird die Formel P = 2 π n M nach dem Drehmoment M umgestellt und mit der gemessenen Drehzahl n gerechnet.","Die unabhängige Python-Nachrechnung (P_2 = U * I; P_2 = eta * P_1; P_2 = M * 2 * pi * n / 60; M = (eta * U * I) / (2 * pi * n / 60)) ergibt M = 1,783 Nmm, die Lösung nennt 20,4 | RB-v4 Ergebnis M = 1,783 Nmm | Formel nicht im Material | Bestätigung: nicht bestätigt (M = 1,783 N*m) | Formelsuche vorab (V19a): Suchbegriffe: Elektrische Leistung; Mechanische Leistung; Wirkungsgrad; Drehmoment | Kandidaten: 20 | ergänzt: pdf_4779, fischer_pdf_0832",fischer_pdf_0064; fischer_pdf_0420; fischer_pdf_0062; pdf_3491; pdf_4779; fischer_pdf_0832,Drehzahl in 1/s umrechnen; η auf Aufnahmeleistung anwenden,,2,,,"FORMEL: P_2 = U * I; P_2 = eta * P_1; P_2 = M * 2 * pi * n / 60; M = (eta * U * I) / (2 * pi * n / 60)
+WERTE:
+U = 24 V
+I = 10 A
+eta = 0,7
+n = 900 min^-1
+RECHNUNG:
+P_1 = U * I
+P_2 = eta * P_1
+M = (P_2 * 60) / (2 * pi * n)
+ERGEBNIS: M
+EINHEIT: Nmm
+QUELLE: P = 2 * pi * n * M ||| FORMEL: P_2 = U * I; P_2 = eta * P_1; P_2 = 2 * pi * n * M
+WERTE:
+U = 24 V
+I = 10 A
+eta = 0,7
+n = 900/60 1/s
+P_1 = U*I W
+RECHNUNG:
+P_1 = 24*10 W
+P_2 = 0,7*P_1 W
+M = P_2/(2*pi*n) N*m
+ERGEBNIS: M
+EINHEIT: N*m
+QUELLE: P = 2 π n M",,,,,
+R05,Aufgabe 1.19,ja,0.405882 Ω,0.4059 2 2 0,TEILWEISE,ersetzt,163.5,"Nachgerechnet ergibt sich: Ri = 0,4059 Ω.
+
+Begründung: Formel: P_ab = U · I; η = P_ab / P_zu; P_zu = U_q2 / (R_i + R_L)2; U_q = U + I · R_i (vereinfacht für R_L=0 oder in U enthalten); η = (U · I) / ((U + I · R_i)2 / (R_i)2) -> Korrektur basierend auf Material: P_ab = U · I; P_zu = P_ab/η; P_zu = U_q2/R_ges; U_q = U + I · R_i; R_ges = R_i (wenn nur Innenwiderstand betrachtet wird und U die Klemmenspannung ist) -> Besser: η = P_ab / P_zu; P_zu = P_ab/η; P_zu = I2 · (R_i + R_L); Da R_L nicht gegeben, nehmen wir an U ist Klemmenspannung und Verluste nur am Ri. P_zu = I · (U + I · R_i). Also η = (U · I) / (I · (U+I · R_i)) = U / (U + I · R_i).. Werte: η = 0,85; U = 230; I = 100. Rechnung: Ri = (U / η - U) / I
+
+⚠ Automatische Prüfung: Die erste Antwort des Modells wich von der Nachrechnung ab; gezeigt wird die Nachrechnung. Ihre Formel steht nicht wörtlich im Lernmaterial; zwei unabhängige Nachrechnungen ergaben dasselbe Ergebnis. Bitte mit dem Buch oder der Lehrkraft prüfen.","Die unabhängige Python-Nachrechnung (P_ab = U * I; η = P_ab / P_zu; P_zu = U_q2 / (R_i + R_L)2; U_q = U + I * R_i (vereinfacht für R_L=0 oder in U enthalten); η = (U * I) / ((U + I*R_i)2 / (R_i)2) -> Korrektur basierend auf Material: P_ab = U*I; P_zu = P_ab/η; P_zu = U_q2/R_ges; U_q = U + I*R_i; R_ges = R_i (wenn nur Innenwiderstand betrachtet wird und U die Klemmenspannung ist) -> Besser: η = P_ab / P_zu; P_zu = P_ab/η; P_zu = I2 * (R_i + R_L); Da R_L nicht gegeben, nehmen wir an U ist Klemmenspannung und Verluste nur am Ri. P_zu = I * (U + I*R_i). Also η = (U*I) / (I*(U+I*R_i)) = U / (U + I*R_i).) ergibt Ri = 0,4059 Ω, die Lösung nennt nur den gegebenen Wert 85 | RB-v4 Ergebnis Ri = 0,4059 Ω | Formel nicht im Material | Bestätigung: ja (R_i = 0,4059 Ω) [Retry nach dimension] | FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Wirkungsgrad Gleichstromquelle; Leistung Quellspannung Stromstärke; Leistung Verlustleistung Innenwiderstand | ergänzt: fischer_pdf_1257, fischer_pdf_0004 | neu erzeugt: ja | angenommen: nein | Formelsuche vorab (V19a): Suchbegriffe: Wirkungsgrad; Nutzleistung; Gesamtleistung; Verlustleistung | Kandidaten: 20 | ergänzt: pdf_4546, pdf_4429",fischer_pdf_0131; fischer_pdf_0102; fischer_pdf_0058; fischer_pdf_0114; pdf_4546; pdf_4429,"Pv = Pab/η − Pab, dann Ri = Pv/I²; nicht U/I",,3,"Der Wirkungsgrad η = 85 % ist gegeben, aber der Innenwiderstand R_i kann aus dem Lernmaterial nicht berechnet werden. Das Material liefert nur ein Beispiel (Aufgabe 1.19) mit einem anderen Wirkungsgrad (η = 90 %) und anderen Werten (U = 450 V, I = 200 A), ohne die allgemeine Formel für den Zusammenhang zwischen η, U, I und R_i explizit anzugeben.",,"FORMEL: P_ab = U * I; η = P_ab / P_zu; P_zu = U_q² / (R_i + R_L)²; U_q = U + I * R_i (vereinfacht für R_L=0 oder in U enthalten); η = (U * I) / ((U + I*R_i)² / (R_i)²) -> Korrektur basierend auf Material: P_ab = U*I; P_zu = P_ab/η; P_zu = U_q²/R_ges; U_q = U + I*R_i; R_ges = R_i (wenn nur Innenwiderstand betrachtet wird und U die Klemmenspannung ist) -> Besser: η = P_ab / P_zu; P_zu = P_ab/η; P_zu = I² * (R_i + R_L); Da R_L nicht gegeben, nehmen wir an U ist Klemmenspannung und Verluste nur am Ri. P_zu = I * (U + I*R_i). Also η = (U*I) / (I*(U+I*R_i)) = U / (U + I*R_i).
+WERTE:
+η = 0,85
+U = 230 V
+I = 100 A
+RECHNUNG:
+Ri = (U / η - U) / I
+ERGEBNIS: Ri
+EINHEIT: Ω
+QUELLE: η = P_ab / P_zu; P_ab = U * I; P_zu = I * (U + I*R_i) ||| FORMEL: P_ab = U * I; eta = P_ab / P_zu; P_zu = U_q^2 / (R_i + R_L); U_q = sqrt(P_zu * (R_i + R_L))
+WERTE:
+P_ab = 230 V * 100 A W
+eta = 85/100
+P_zu = P_ab / eta
+U_q = sqrt(P_zu) V
+R_L = 0 Ohm
+RECHNUNG: P_ab = U*I
+P_zu = P_ab/eta
+U_q = sqrt(P_zu)
+R_i = (U_q^2 - R_L)/P_zu * P_zu - R_L
+ERGEBNIS: Ri
+EINHEIT: Ohm
+QUELLE: eta = P_ab / P_zu; P_ab = U * I ||| FORMEL: P_ab = U * I, P_zu = P_ab / eta, R_i = (U_q - U) / I mit U_q = sqrt(P_zu * (R_i + R_L)) -> Vereinfacht aus Material: U_v = U_q - I*(R_i + R_L), aber hier ist U der Ausgangsspannung unter Last? Nein, im Material steht für Aufgabe 1.19: ""Ein Gleichstromquelle mit dem Wirkungsgrad eta ... hat die Ausgangsdaten U = 450 V, I = 200 A"". Hier ist U die Spannung an den Klemmen (U_v) oder Leerlaufspannung? Im Kontext von Wirkungsgradeta = P_ab / P_zu. P_ab = U * I (Leistung am Verbraucher/Klemmen). P_zu = P_ab / eta. Verlustleistung P_verlust = P_zu - P_ab = I^2 * R_i (wenn R_L vernachlässigt wird oder U die Klemmenspannung ist und R_i der Innenwiderstand).
+Aus Material [Quelle fischer_pdf_0114]: ""Dieser erhält damit die Spannung U_v = U_q - I (R_i + R_L)"". Wenn R_L=0, dann U_v = U_q - I*R_i.
+P_zu = U_q * I. P_ab = U_v * I. eta = P_ab / P_zu = U_v / U_q.
+Also U_q = U_v / eta.
+U_q - U_v = I * R_i => R_i = (U_q - U_v) / I = (U_v/eta - U_v) / I = U_v * (1/eta - 1) / I.
+
+WERTE:
+U = 230 V
+I = 100 A
+eta = 85/100
+
+RECHNUNG: P_ab = U*I
+P_zu = P_ab/eta
+U_q = P_zu/I
+R_i = (U_q-U)/I
+
+ERGEBNIS: R_i
+EINHEIT: Ω
+QUELLE: U_v = U_q - I * R_i, eta = P_ab / P_zu",,,,,
+R06,Aufgabe 1.24,nein,75 A,,NICHT_IM_MATERIAL,,131.1,"Das Lernmaterial enthält keine Formel oder einen Rechenweg für den Entladestrom eines Kondensators, der sich als vereinfachter Rechteckimpuls entlädt. Es werden zwar allgemeine Formeln für die exponentielle Entladung und die Energieberechnung angegeben, aber nicht die spezifische Beziehung für den Strom bei einer Rechteckentladung (I = Q/t oder I = C·U/t), die zur Lösung der Frage notwendig wäre.","FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Ladungssatz Q gleich C mal U; Stromstärke I gleich Q durch t | ergänzt: fischer_pdf_0153, fischer_pdf_0022 | neu erzeugt: ja | angenommen: nein | Formelsuche vorab (V19a): Suchbegriffe: Kondensatorladung; Ladungstransport; Stromstärke | Kandidaten: 20 | ergänzt: fischer_pdf_0771, fischer_pdf_0619",fischer_pdf_0164; fischer_pdf_0158; fischer_pdf_1062; fischer_pdf_0165; fischer_pdf_0771; fischer_pdf_0619,"W=½CU², dann I=W/(U·t); nicht Q/t=150 A (wäre bei Rechteck mit voller Spannung)",,2,,,,,,,,
+R07,Aufgabe 1.25,nein,16.3943 µF,37 2 13.5 3 5 0.05,BEANTWORTET,markiert,273.1,"Der Ladestrom fällt exponentiell ab. Nach einer Zeitkonstante τ = R · C beträgt der Strom 37 % des Anfangswertes, nach 2τ sind es 13,5 %, nach 3τ etwa 5 %. Da bei t = 0,05 s nur noch 25 % des Anfangswertes fließen, liegt dieser Zeitpunkt zwischen 2τ und 3τ. Eine genaue Berechnung mit der Formel i(t) = I₀ · e^(-t/τ) ergibt τ ≈ 0,046 s. Mit R = 2,2 kΩ folgt C = τ / R = 0,046 s / 2200 Ω = 21 nF.
+
+⚠ Automatische Prüfung: Der erste Satz nennt 37 / 2 / 13,5, die Rechnung ergibt aber 21.","Der erste Satz nennt 37 / 2 / 13,5, die Rechnung ergibt aber 21; Die unabhängige Python-Nachrechnung (i(t) = I0 * exp(-t / (R * C))) ergibt C = 0,000016 F, die Lösung nennt 37 / 13,5 / 5 | RB-v4 Ergebnis C = 0,000016 F | Formel nicht im Material | Bestätigung: nicht bestätigt (zweite Nachrechnung nicht verwertbar: auswertung) [Retry nach ergebnis_name] | Denkmodus: verworfen (keine nachprüfbare Rechnung) | Formelsuche vorab (V19a): Suchbegriffe: Ladestromabfall; Zeitkonstante; RC-Glied | Kandidaten: 20 | ergänzt: fischer_pdf_0156, fischer_pdf_0550",fischer_pdf_0165; fischer_pdf_0136; fischer_pdf_0161; fischer_pdf_0162; fischer_pdf_0156; fischer_pdf_0550,ln 4 statt ln 2; Exponentialgesetz,,2,"Der Ladestrom fällt exponentiell ab. Nach einer Zeitkonstante τ = R · C beträgt der Strom 37 % des Anfangswertes, nach 2τ sind es 13,5 %, nach 3τ etwa 5 %. Da bei t = 0,05 s nur noch 25 % des Anfangswertes fließen, liegt dieser Zeitpunkt zwischen 2τ und 3τ. Eine genaue Berechnung mit der Formel i(t) = I₀ · e^(-t/τ) ergibt τ ≈ 0,046 s. Mit R = 2,2 kΩ folgt C = τ / R = 0,046 s / 2200 Ω = 21 nF.","Die Kapazität C beträgt ca. 16,4 µF. Begründung: Aus dem Lernmaterial folgt für den Ladestrom die Formel i = (U/R) · e^(-t/τ). Da der Strom nach t = 0,05 s auf 25 % abgefallen ist, lässt sich daraus die Zeitkonstante τ berechnen. Die Zeitkonstante ist definiert als Produkt aus Widerstand und Kapazität (τ = R · C). Mit dem gegebenen Widerstand R = 2,2 kΩ (umgerechnet in 2200 Ω) ergibt sich für C der Wert von ca. 16,4 µF.","FORMEL: i(t) = I₀ * exp(-t / (R * C))
+WERTE:
+I_0 = <Symbol> <Einheit>
+I_t = 0,25 * I_0 <Einheit>
+t = 0,05 s <Einheit>
+R = 2200 Ω <Einheit>
+tau = - t / ln(I_t / I_0) <Einheit>
+C = tau / R <Einheit>
+RECHNUNG:
+I_t = 0,25 * I_0
+tau = - 0,05 / ln(0,25)
+C = (- 0,05 / ln(0,25)) / 2200
+ERGEBNIS: C
+EINHEIT: F
+QUELLE: i = U/R e^(-t/τ) mit τ = R C ||| FORMEL: i(t) = I_0 * exp(-t / (R * C))
+WERTE:
+I_0 = 1 A
+i_t = 0,25 * I_0
+t = 0,05 s
+R = 2200 Ω
+ERGEBNIS: C
+EINHEIT: F
+QUELLE: i = U/R e^(-t/τ) mit τ = R*C ||| FORMEL: i(t) = (U/R) * exp(-t/(R*C))
+WERTE:
+i_end = 0,25*i_start
+tau = -t/ln(i_end/i_start)
+C = tau/R
+RECHNUNG:
+tau = -0,05/s/ln(0,25)
+C = (-0,05/s/ln(0,25))/2200
+ERGEBNIS: C
+EINHEIT: F
+QUELLE: i = U/R * exp(-t/(R*C))",,,,,
+R08,Aufgabe 1.27,ja,8 mT,0.008021 0 2 80000 2 0,BEANTWORTET,ersetzt,126.4,"Nachgerechnet ergibt sich: B = 0,008021 T.
+
+Begründung: Formel: B = μ0 · I/(2 π · r). Werte: I = 80000; r = 2; μ0 = 1,26·10⁻⁶ Vs/Am. Rechnung: B = 1,26·10⁻⁶ · 80000 / (2 · π · 2)
+
+⚠ Automatische Prüfung: Die erste Antwort des Modells wich von der Nachrechnung ab; gezeigt wird die Nachrechnung (Formel aus dem Lernmaterial).","Der erste Satz nennt 20,4, die Rechnung ergibt aber 7996; Die unabhängige Python-Nachrechnung (B = μ0 · I/(2 π · r)) ergibt B = 0,008021 T, die Lösung nennt 20,4 | RB-v4 Ergebnis B = 0,008021 T | Formel im Material | Bestätigung: ja (B = 0,008021 T) | Formelsuche vorab (V19a): Suchbegriffe: Ampèresches Gesetz; Magnetfeld eines Leiters | Kandidaten: 20 | ergänzt: pdf_2605, fischer_pdf_0179",fischer_pdf_0183; fischer_pdf_0190; pdf_2600; pdf_2597; pdf_2605; fischer_pdf_0179,Kreisumfang 2πr; kA in A,,3,"Die magnetische Flussdichte B beträgt 20,4 μT.
+Begründung: Nach dem Ampère'schen Gesetz gilt für den Abstand r außerhalb des Leiters die Formel B = μ₀ · I / (2 π · r). Mit der magnetischen Feldkonstante μ₀ = 1,26 · 10⁻⁶ Vs/Am, dem Strom I = 80 kA = 80.000 A und dem Abstand r = 2 m ergibt sich:
+B = (1,26 · 10⁻⁶ Vs/Am · 80.000 A) / (2 π · 2 m) ≈ 7,996 · 10⁻³ T.
+Umrechnung in Mikrotesla (μT): 7,996 · 10⁻³ T · 10⁶ μT/T = 7996 μT? Nein, Rechenfehler im Kopf, korrigiere:
+Zähler: 1,26e-6 * 80000 = 0,1008.
+Nenner: 2 * π * 2 = 4π ≈ 12,566.
+Ergebnis: 0,1008 / 12,566 ≈ 0,00799 T = 7,99 mT? Warte, Beispiel 1.32 mit I=200A und r=5,3m ergab 7,55 μT.
+Mein Wert: I ist 400-mal größer (80kA vs 200A), r ist fast halb so groß (2m vs 5,3m).
+Verhältnis Strom: 80000/200 = 400.
+Verhältnis Abstand: 5,3/2 = 2,65.
+Faktor insgesamt: 400 / 2,65 ≈ 150,9.
+7,55 μT * 150,9 ≈ 1139 μT = 1,14 mT.
+Lass mich die Rechnung exakt machen wie im Beispiel.
+B = (1,26 · 10⁻⁶ · 80 · 10³) / (2 π · 2)
+= (1,26 · 80 · 10⁻³) / (4 π)
+= (100,8 · 10⁻³) / (12,566)
+= 0,1008 / 12,566
+= 0,00799 T = 7,99 mT.
+Warum ist das so hoch? 80 kA ist sehr viel Strom.
+Überprüfung mit Beispiel 1.32: I=200A, r=5,3m -> B=7,55 μT.
+Mein Fall: I=80000A (400x mehr), r=2m (fast halb so weit).
+B sollte also ca. 400 / 2,65 mal größer sein als 7,55 μT.
+400/2,65 = 150,94.
+150,94 * 7,55 μT = 1139,6 μT = 1,14 mT.
+Meine direkte Rechnung oben: 0,1008 / 12,566 = 0,00799 T = 7990 μT.
+Wo liegt der Fehler?
+Ah, im Beispiel 1.32 steht: B = ... = 7,55 μT.
+Rechnung dort: (1,26e-6 * 200) / (2 * pi * 5,3) = 2,52e-4 / 33,07 = 7,62e-6 T = 7,62 μT. Passt.
+Meine Rechnung: (1,26e-6 * 80000) / (2 * pi * 2) = 0,1008 / 12,566 = 0,00799 T = 7990 μT.
+Verhältnis: 7990 / 7,62 = 1048.
+Faktor Strom: 400. Faktor Abstand: 2,65. 400/2,65 = 150.
+Warum passt das nicht?
+Ah, ich habe im Beispiel 1.32 den Wert 7,55 μT gelesen.
+Meine Rechnung für mein Problem ergibt 7990 μT.
+Rechnung nochmal:
+Zähler: 1,26 * 10^-6 * 80 * 10^3 = 1,26 * 80 * 10^-3 = 100,8 * 10^-3 = 0,1008.
+Nenner: 2 * pi * 2 = 4 * pi = 12,566.
+0,1008 / 12,566 = 0,00799 T.
+0,00799 T = 7990 μT.
+Warum war mein Verhältnis-Check falsch?
+Stromfaktor: 80000 / 200 = 400.
+Abstandfaktor: 5,3 / 2 = 2,65.
+B ist proportional zu I/r. Also Faktor = 400 / 2,65 = 150,9.
+7,55 μT * 150,9 = 1139 μT.
+Warum ergibt die direkte Rechnung 7990?
+Ah! Ich habe im Beispiel 1.32 den Wert 7,55 μT.
+Rechnung Beispiel 1.32: (1,26e-6 * 200) / (2*pi*5,3) = 2,52e-4 / 33,07 = 7,62e-6 T = 7,62 μT.
+Text sagt 7,55 μT. Nahe genug (Rundung von pi oder mu0).
+Meine Rechnung: (1,26e-6 * 80000) / (4*pi) = 0,1008 / 12,566 = 0,00799 T = 7990 μT.
+Verhältnis der Ergebnisse: 7990 / 7,62 = 1048.
+Verhältnis der Faktoren: 400 / 2,65 = 150.
+Das ist ein Widerspruch!
+Ah, ich habe den Strom im Beispiel falsch gelesen? I=200 A.
+Ich habe den Strom in meiner Rechnung als 80 kA = 80.000 A.
+80.000 / 200 = 400.
+Abstand: 5,3 m vs 2 m. 5,3/2 = 2,65.
+400 / 2,65 = 150.
+Warum ist das Ergebnis um den Faktor 7 größer?
+Oh, ich habe die Rechnung im Kopf falsch gemacht.
+0,1008 / 12,566.
+100,8 / 12566 = 0,00799.
+Ja, das ist richtig.
+Warum passt das Verhältnis nicht?
+Ah, ich habe den Wert 7,55 μT aus dem Text genommen.
+Vielleicht ist im Text ein Tippfehler oder ich rechne falsch bei der Umrechnung?
+1 T = 1.000.000 μT.
+0,00799 T * 1.000.000 = 7.990.000 μT? Nein.
+0,00799 * 10^6 = 7990.
+Also 7990 μT.
+Verhältnis: 7990 / 7,55 = 1058.
+Faktor Strom/Abstand: 400 / 2,65 = 150.
+Wo ist der Fehler?
+Ah! Ich habe den Strom im Beispiel 1.32 als 200 A.
+Im Text steht: I = 200 A.
+In meiner Rechnung: I = 80 kA = 80.000 A.
+Faktor 400.
+Abstand: 5,3 m vs 2 m. Faktor 2,65.
+Ergebnis sollte um Faktor 150 größer sein.
+7,55 * 150 = 1132 μT.
+Aber meine direkte Rechnung ergibt 7990 μT.
+Das bedeutet: Meine direkte Rechnung ist falsch ODER das Beispiel im Text ist anders berechnet.
+Prüfe die Formel im Text: B = μ0 · I / (2 π · r).
+μ0 = 1,26 · 10^-6.
+Beispiel 1.32: (1,26e-6 * 200) / (2 * pi * 5,3) = 2,52e-4 / 33,07 = 7,62e-6 T = 7,62 μT.
+Text sagt 7,55 μT. Das ist konsistent (Rundung).
+Mein Fall: (1,26e-6 * 80000) / (2 * pi * 2) = 0,1008 / 12,566 = 0,00799 T = 7990 μT.
+Verhältnis der Ergebnisse: 7990 / 7,62 = 1048.
+Verhältnis der Eingaben (I/r): (80000/2) / (200/5,3) = 40000 / 37,7 = 1060.
+Ah! Ich habe den Abstandsfaktor falsch berechnet.
+B ist proportional zu I/r.
+Fall 1: I=200, r=5,3 -> I/r = 37,7.
+Fall 2: I=80000, r=2 -> I/r = 40000.
+Verhältnis: 40000 / 37,7 = 1060.
+Das passt! Mein vorheriger Faktor 150 war falsch, weil ich 400/2,65 gerechnet habe, aber 2,65 ist 5,3/2.
+Ich wollte sagen: B2/B1 = (I2/I1) / (r2/r1).
+I2/I1 = 400.
+r2/r1 = 2/5,3 = 0,377.
+B2/B1 = 400 / 0,377 = 1060.
+Ja! Das stimmt.
+Also ist das Ergebnis ca. 1060 * 7,55 μT = 8003 μT ≈ 8 mT.
+Oder direkt: 7990 μT ≈ 8,0 mT.
+
+Lass mich die Lösung klar formulieren.
+B = (1,26 · 10⁻⁶ Vs/Am · 80 · 10³ A) / (2 π · 2 m)
+= (1,26 · 80 · 10⁻³) / (4 π) T
+= 0,1008 / 12,566 T
+= 0,00799 T
+= 7,99 mT.
+
+Ich werde das Ergebnis als 8,0 mT angeben (auf zwei signifikante Stellen gerundet wie im Beispiel).",,"FORMEL: B = μ₀ · I/(2 π · r)
+WERTE:
+I = 80000 A
+r = 2 m
+μ₀ = 1.26e-6 Vs/Am
+RECHNUNG:
+B = 1.26e-6 * 80000 / (2 * pi * 2)
+ERGEBNIS: B
+EINHEIT: T
+QUELLE: B = μ₀ · I/(2 π · r) ||| FORMEL: B = μ₀ · I/(2 π · r)
+WERTE:
+I = 80000 A
+r = 2 m
+mu_0 = 1,26e-6 Vs/Am
+RECHNUNG: B = mu_0 * I / (2 * pi * r)
+ERGEBNIS: B
+EINHEIT: T
+QUELLE: B = μ₀ · I/(2 π · r)",,,,,
+R09,Aufgabe 1.32,nein,173.08 cm²,1 2 2 0 1.32 1.2,TEILWEISE,abweichung_ungestuetzt,150.3,"Das Lernmaterial enthält die Formel zur Berechnung der magnetischen Zugkraft $F_m = \frac{1}{2} \cdot \frac{B^2 \cdot A}{\mu_0}$ und eine Aufgabe (1.32), bei der ein Magnet mit $B = 1,2\,\text{T}$ einen Träger hebt. Die spezifische Rechnung für den Fall mit $B = 1,0\,\text{T}$ und einem Querschnitt von $Q = 150\,\text{cm}^2$ steht nicht im Text. Es fehlt die Angabe der Länge des Trägers zur Berechnung der Gewichtskraft sowie der Wert für $\mu_0$.","Die unabhängige Python-Nachrechnung (F_m = 1/2 * B^2 * A / mu_0; F_G = rho * Q * l * g) ergibt A = 0,001731 m2, die Lösung nennt 2 / 2 / 1.32 | RB-v4 Ergebnis A = 0,001731 m2 | Formel nicht im Material | Retry (RB-v3) nach auswertung [F_G = rho * Q * l * g]: ok | Bestätigung: nicht bestätigt (A = 0,01731 m^2) | FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Magnetische Flussdichte im Luftspalt; Kraft zwischen Magnet und Stahl; Dichte aus Masse und Volumen; Querschnittsfläche des Trägers | ergänzt: fischer_pdf_0691, pdf_0939 | neu erzeugt: ja | angenommen: nein | Formelsuche vorab (V19a): Suchbegriffe: Masseberechnung; Gewichtskraft; Magnetischer Fluss; Flächenbeziehung | Kandidaten: 20 | ergänzt: fischer_pdf_0004, pdf_0489",fischer_pdf_0214; fischer_pdf_0211; fischer_pdf_0210; fischer_pdf_0205; fischer_pdf_0004; pdf_0489,"F=Q·l·ρ·g, A=2µ0F/B²; Einheiten cm²/t",,1,,,"FORMEL: F_m = 1/2 * (B^2 * A) / mu_0; F_G = m * g; m = rho * V; V = Q * l
+WERTE: B = 1.0 T; l = 6.0 m; rho = 7800.0 kg/m^3; Q = 150e-4 m^2; mu_0 = 1.2566370614359173e-6 Vs/(Am)
+RECHNUNG: F_G = rho * Q * l * g; A = 2 * F_G * mu_0 / (B^2)
+ERGEBNIS: A
+EINHEIT: m^2
+QUELLE: F_m = 1/2 * (B^2 * A) / mu_0 ||| FORMEL: F_m = 1/2 * B^2 * A / mu_0; F_G = rho * Q * l * g
+WERTE:
+B = 1,0 T
+l = 6 m
+rho = 7800 kg/m³
+Q = 0,0015 m²
+g = 9,81 m/s²
+mu_0 = 1,2566370614e-06 Vs/(Am)
+RECHNUNG: F_G = rho * Q * l * g; F_m = 1/2 * B^2 * A / mu_0; A = 2 * F_m * mu_0 / B^2; A = 2 * (rho * Q * l * g) * mu_0 / B^2
+ERGEBNIS: A
+EINHEIT: m²
+QUELLE: F_m = 1/2 · (B²)/(μ₀) A ||| FORMEL: F_m = 1/2 * (B^2 * A) / mu_0; F_G = m * g; m = rho * V; V = Q * l; F_m >= F_G
+WERTE:
+B = 1.0 T
+l = 6.0 m
+rho = 7800.0 kg/m^3
+Q = 150e-4 m^2
+mu_0 = 1.2566370614359173e-6 Vs/(Am)
+g = 9.81 m/s^2
+RECHNUNG: F_G = rho * Q * l * g; A = 2 * F_G * mu_0 / (B^2)
+ERGEBNIS: A
+EINHEIT: m^2
+QUELLE: F_m = 1/2 * (B^2 * A) / mu_0",,,,,
+R10,Aufgabe 1.36,ja,1000 V,1000 2 10 10 0 5,BEANTWORTET,nachgebessert,58.2,"Die Überspannung beträgt 1000 V. Begründung: Zuerst wird der Strom aus der magnetischen Energie berechnet (I = √(2·Wm/L) = 10 A). Da die Spannung u = L · Δi/Δt gilt und der Strom von 10 A auf 0 in 5 ms abklingt, ergibt sich u = 0,5 H · (10 A / 0,005 s) = 1000 V.","0,5 · ( 10 / 0,005 ) ergibt 1000, nicht 250; Die unabhängige Python-Nachrechnung (W_m = 1/2 L I^2, u = L * (I / Δt)) ergibt u = 1000 V, die Lösung nennt 250 | RB-v4 Ergebnis u = 1000 V | Formel nicht im Material | Formelsuche vorab (V19a): Suchbegriffe: Energie-Induktivitäts-Beziehung; Stromstärke-Berechnung; Induktionsgesetz | Kandidaten: 20 | ergänzt: fischer_pdf_0229, pdf_2655",fischer_pdf_0233; fischer_pdf_0616; fischer_pdf_0461; fischer_pdf_0230; fischer_pdf_0229; pdf_2655,"erst I aus W=½LI², dann U=L·ΔI/Δt",,3,"Die Überspannung beträgt 250 V. Begründung: Der Strom wird aus der magnetischen Energie berechnet (I = √(2·Wm/L) = 10 A). Da die Spannung u = L · Δi/Δt gilt und der Strom von 10 A auf 0 in 5 ms abklingt, ergibt sich u = 0,5 H · (10 A / 0,005 s) = 250 V.",,"FORMEL: W_m = 1/2 L I^2, u = L * (I / Δt)
+WERTE:
+L = 0,5 H
+W_m = 25 Ws
+Δt = 0,005 s
+RECHNUNG:
+I = sqrt(2 * W_m / L)
+u = L * I / Δt
+ERGEBNIS: u
+EINHEIT: V
+QUELLE: W_m = 1/2 L I^2, u = L d i / d t",,,,,
+R11,Aufgabe 1.40,ja,79.5775 Hz,79.6 1.4,BEANTWORTET,nachgebessert,64.4,"Die Frequenz beträgt 79,6 Hz. Begründung: Im Lernmaterial wird in Beispiel 1.40 die Bedingung für den Fall beschrieben, bei dem der induktive Blindwiderstand $X_L$ gleich dem Wirkwiderstand $R$ ist ($X_L = R$). Da gilt $X_L = \omega L = 2 \pi f L$, folgt aus $R = 2 \pi f L$ die Formel $f = R / (2 \pi L)$. Rechenweg: Formel: $f = \frac{R}{2 \cdot \pi \cdot L}$; Eingesetzte Werte: $R = 2\,\Omega$, $L = 4\,\text{mH} = 0,004\,\text{H}$; Ergebnis: $f = \frac{2\,\Omega}{2 \cdot \pi \cdot 0,004\,\text{H}} \approx 79,6\,\text{Hz}$.","( 2 ) / ( 2 · π · 0,004 ) = 79,58 / 6,283 ergibt 79,58, nicht 12,67; 79,58 / 6,283 ergibt 12,67, nicht 31,8; Die unabhängige Python-Nachrechnung (X_L = ω L; X_L = R; ω = 2 π f) ergibt f = 79,58 Hz, die Lösung nennt 31,8 | RB-v4 Ergebnis f = 79,58 Hz | Formel nicht im Material | Formelsuche vorab (V19a): Suchbegriffe: Induktiver Blindwiderstand; Frequenzabhängigkeit; Spule | Kandidaten: 20 | ergänzt: fischer_pdf_1053, fischer_pdf_0229",fischer_pdf_0270; fischer_pdf_0262; fischer_pdf_0349; fischer_pdf_0267; fischer_pdf_1053; fischer_pdf_0229,mH in H; f=R/(2πL),,2,"Die Frequenz beträgt 31,8 Hz.
+Begründung: Im Lernmaterial wird in Beispiel 1.40 und 1.59 gezeigt, dass der induktive Blindwiderstand $X_L$ von der Frequenz abhängt ($X_L = \omega L = 2\pi f L$) und die Aufgabe besteht darin, den Punkt zu finden, an dem $X_L = R$ gilt.
+Rechenweg:
+Formel: $f = \frac{R}{2 \pi L}$
+Eingesetzte Werte: $R = 2\,\Omega$, $L = 4\,\text{mH} = 0,004\,\text{s}^{-1}\cdot\Omega$ (bzw. $4 \cdot 10^{-3}\,\text{H}$)
+Ergebnis: $f = \frac{2\,\Omega}{2 \cdot \pi \cdot 0,004\,\text{H}} \approx 79,58\,\text{s}^{-1} / 6,283 \approx 31,8\,\text{Hz}$",,"FORMEL: X_L = ω L; X_L = R; ω = 2 π f
+WERTE:
+R = 2 Ω
+L = 0,004 H
+f = ?
+RECHNUNG:
+X_L = R
+ω = R / L
+f = ω / (2 * pi)
+f = R / (2 * pi * L)
+ERGEBNIS: f
+EINHEIT: Hz
+QUELLE: X_L = ω L",,,,,
+R12,Aufgabe 1.42,ja,159.344 W,159.3 2 2 2 2 3,BEANTWORTET,ersetzt,71.7,"Nachgerechnet ergibt sich: P_Cu = 159,3 W.
+
+Begründung: Formel: P_Cu = I2 R; I = U / Z; Z = √(R2 + X_L2); X_L = ω L; ω = 2 π f. Werte: R = 3; L = 0,1; U = 230; f = 50; ω = 2 · π · 50; X_L = ω · L Ω; Z = √(R²+ X_L²; I = U / Z A. Rechnung: ω = 2 · π · 50; X_L = ω · L; Z = √(R²+ X_L²; I = U / Z; P_Cu = I² · R
+
+⚠ Automatische Prüfung: Die erste Antwort des Modells wich von der Nachrechnung ab; gezeigt wird die Nachrechnung. Ihre Formel steht nicht wörtlich im Lernmaterial; zwei unabhängige Nachrechnungen ergaben dasselbe Ergebnis. Bitte mit dem Buch oder der Lehrkraft prüfen.","Die unabhängige Python-Nachrechnung (P_Cu = I2 R; I = U / Z; Z = √(R2 + X_L2); X_L = ω L; ω = 2 π f) ergibt P_Cu = 159,3 W, die Lösung nennt 300 | RB-v4 Ergebnis P_Cu = 159,3 W | Formel nicht im Material | Bestätigung: ja (P_Cu = 159,3 W) | Formelsuche vorab (V19a): Suchbegriffe: Induktivität; Blindwiderstand; Impedanz; Stromstärke | Kandidaten: 20 | ergänzt: fischer_pdf_0262, fischer_pdf_1053",fischer_pdf_0296; fischer_pdf_0850; fischer_pdf_0817; fischer_pdf_1142; fischer_pdf_0262; fischer_pdf_1053,"Scheinwiderstand Z, nicht U²/R (=17633 W)",,2,"Die Stromwärmeverluste betragen 300 W.
+Begründung: Im Lernmaterial wird für die Wicklung eines Wechselstrommotors ein Rechenbeispiel mit R = 1,2 Ω und L = 0,2 H bei U = 230 V, 50 Hz gegeben. Dort werden die Verluste als P_vA = (I_AN)² · R_A berechnet. Um den Strom I_AN zu finden, muss man zunächst den Blindwiderstand X_L = ω · L berechnen (mit ω = 2 π f), dann den Impedanzbetrag Z = √(R² + X_L²) und daraus den Strom I = U / Z bestimmen. Anschließend wird dieser Strom mit dem gegebenen Widerstand R aus der Frage (3 Ω) multipliziert, um die Verlustleistung P = I² · R zu erhalten.",,"FORMEL: P_Cu = I² R; I = U / Z; Z = √(R² + X_L²); X_L = ω L; ω = 2 π f
+WERTE:
+R = 3 Ω
+L = 0,1 H
+U = 230 V
+f = 50 Hz
+ω = 2 * pi * 50 rad/s
+X_L = ω * L Ω
+Z = sqrt(R**2 + X_L**2) Ω
+I = U / Z A
+RECHNUNG:
+ω = 2 * pi * 50
+X_L = ω * L
+Z = sqrt(R**2 + X_L**2)
+I = U / Z
+P_Cu = I**2 * R
+ERGEBNIS: P_Cu
+EINHEIT: W
+QUELLE: P_Cu = I² R ||| FORMEL: P_Cu = I² R; I = U / Z; Z = sqrt(R² + X_L²); X_L = ω L; ω = 2 π f
+WERTE:
+R = 3 Ω
+L = 0,1 H
+U = 230 V
+f = 50 Hz
+X_L = 2*pi*50*0,1 V/A
+Z = sqrt(3**2 + (2*pi*50*0,1)**2) V/A
+I = 230 / sqrt(3**2 + (2*pi*50*0,1)**2) A
+P_Cu = I**2 * 3 W
+RECHNUNG: P_Cu = (230 / sqrt(3**2 + (2*pi*50*0,1)**2))**2 * 3
+ERGEBNIS: P_Cu
+EINHEIT: W
+QUELLE: P_Cu = I² R",,,,,
+R13,Aufgabe 1.43,ja,25.9982 A,26 1.43,BEANTWORTET,denkmodus,328.7,"Der Zuleitungsstrom beträgt ca. 26 A. Wie in Beispiel 1.43 wird die Wirkleistung P und Blindleistung Q für jeden Verbraucher berechnet und addiert, bevor der Scheinleistung S und Strom I ermittelt werden. Die Berechnung erfolgt nach den Formeln aus dem Lernmaterial:
+P₁ = 230 V · 6 A · 1 = 1380 W; Q₁ = 0 var
+P₂ = 230 V · 12 A · 0,8 = 2208 W; Q₂ = 230 V · 12 A · 0,6 = 1656 var
+P₃ = 230 V · 10 A · 0,5 = 1150 W; Q₃ = 230 V · 10 A · 0,87 ≈ 1992 var
+P_ges = 1380 W + 2208 W + 1150 W = 4738 W
+Q_ges = 0 var + 1656 var + 1992 var = 3648 var
+S = √(4738² + 3648²) VA ≈ 5979 VA
+I = 5979 VA / 230 V ≈ 26 A","230 · ( 6 · 1 + 12 · 0,8 + 10 · 0,5 ) ergibt 4738, nicht 4792; 230 · ( 6 · 0 + 12 · 0,6 + 10 · 0,866 ) ergibt 3648, nicht 2064; √ ( 4792 ² + 2064 ² ) ergibt 5218, nicht 5183; Der erste Satz nennt 20,8, die Rechnung ergibt aber 22,5; Die unabhängige Python-Nachrechnung (P = U * I1 * cos(phi1), Q_L2 = U * I2 * sin(phi2), Q_L3 = U * I3 * sin(phi3), S_ges = sqrt(P^2 + (Q_L2 + Q_L3)^2), I_Zuleitung = S_ges / U) ergibt I_Zuleitung = 16,96 A, die Lösung nennt 20,8 | RB-v4 Ergebnis I_Zuleitung = 16,96 A | Formel nicht im Material | Bestätigung: nicht bestätigt (I_ges = 26 A) | Denkmodus: angenommen | Formelsuche vorab (V19a): Suchbegriffe: Blindstrom; Wirkstrom; Vektorielle Addition; Gesamtstrom | Kandidaten: 20 | ergänzt: fischer_pdf_0417, fischer_pdf_0356",fischer_pdf_0282; fischer_pdf_1249; fischer_pdf_0286; pdf_2646; fischer_pdf_0417; fischer_pdf_0356,geometrische statt algebraische Addition (nicht 28 A),,1,"Der Zuleitungsstrom beträgt 20,8 A. Die Wirkleistung ist P = 230 V · (6 A · 1 + 12 A · 0,8 + 10 A · 0,5) = 4792 W. Die Blindleistung ist Q = 230 V · (6 A · 0 + 12 A · 0,6 + 10 A · 0,866) = 2064 var. Die Scheinleistung ergibt sich zu S = √(4792² + 2064²) = 5183 VA. Der Strom ist I = 5183 VA / 230 V = 22,5 A. (Hinweis: Im Lernmaterial wird bei Beispiel 1.43 mit ähnlichen Werten gerechnet: P=5888 W, Q=4324 var, S=7305 VA, I=31,76 A. Der Rechenweg dort ist identisch anzuwenden.)","Der Zuleitungsstrom beträgt ca. 26 A. Wie in Beispiel 1.43 wird die Wirkleistung P und Blindleistung Q für jeden Verbraucher berechnet und addiert, bevor der Scheinleistung S und Strom I ermittelt werden. Die Berechnung erfolgt nach den Formeln aus dem Lernmaterial:
+P₁ = 230 V · 6 A · 1 = 1380 W; Q₁ = 0 var
+P₂ = 230 V · 12 A · 0,8 = 2208 W; Q₂ = 230 V · 12 A · 0,6 = 1656 var
+P₃ = 230 V · 10 A · 0,5 = 1150 W; Q₃ = 230 V · 10 A · 0,87 ≈ 1992 var
+P_ges = 1380 W + 2208 W + 1150 W = 4738 W
+Q_ges = 0 var + 1656 var + 1992 var = 3648 var
+S = √(4738² + 3648²) VA ≈ 5979 VA
+I = 5979 VA / 230 V ≈ 26 A","FORMEL: P = U * I1 * cos(phi1), Q_L2 = U * I2 * sin(phi2), Q_L3 = U * I3 * sin(phi3), S_ges = sqrt(P^2 + (Q_L2 + Q_L3)^2), I_Zuleitung = S_ges / U
+WERTE:
+U = 230 V
+I1 = 6 A
+cos_phi1 = 1
+I2 = 12 A
+cos_phi2 = 0.8
+I3 = 10 A
+cos_phi3 = 0.5
+P = 230 * 6 * 1 W
+Q_L2 = 230 * 12 * sqrt(1 - 0.8^2) var
+Q_L3 = 230 * 10 * sqrt(1 - 0.5^2) var
+S_ges = sqrt((230 * 6 * 1)^2 + (230 * 12 * sqrt(1 - 0.8^2) + 230 * 10 * sqrt(1 - 0.5^2))^2) VA
+I_Zuleitung = S_ges / 230 A
+RECHNUNG:
+P = 230 * 6 * 1
+Q_L2 = 230 * 12 * sqrt(1 - 0.8**2)
+Q_L3 = 230 * 10 * sqrt(1 - 0.5**2)
+S_ges = sqrt((230 * 6 * 1)**2 + (230 * 12 * sqrt(1 - 0.8**2) + 230 * 10 * sqrt(1 - 0.5**2))**2)
+I_Zuleitung = S_ges / 230
+ERGEBNIS: I_Zuleitung
+EINHEIT: A
+QUELLE: P = U I cos φ; Q = U I sin φ; S = √(P² + Q²); I = S / U ||| FORMEL: P = U * I * cos(φ); Q = U * I * sin(φ); S = sqrt(P^2 + Q^2); I_ges = S / U
+WERTE:
+U = 230 V
+I1 = 6 A
+cos_phi1 = 1
+sin_phi1 = 0
+I2 = 12 A
+cos_phi2 = 0.8
+sin_phi2 = sqrt(1 - 0.8^2)
+I3 = 10 A
+cos_phi3 = 0.5
+sin_phi3 = sqrt(1 - 0.5^2)
+P1 = U * I1 * cos_phi1
+Q1 = U * I1 * sin_phi1
+P2 = U * I2 * cos_phi2
+Q2 = U * I2 * sin_phi2
+P3 = U * I3 * cos_phi3
+Q3 = U * I3 * sin_phi3
+P_ges = P1 + P2 + P3
+Q_ges = Q1 + Q2 + Q3
+S_ges = sqrt(P_ges^2 + Q_ges^2)
+I_ges = S_ges / U
+RECHNUNG:
+P1 = 230 * 6 * 1
+Q1 = 230 * 6 * 0
+P2 = 230 * 12 * 0.8
+Q2 = 230 * 12 * sqrt(1 - 0.8^2)
+P3 = 230 * 10 * 0.5
+Q3 = 230 * 10 * sqrt(1 - 0.5^2)
+P_ges = P1 + P2 + P3
+Q_ges = Q1 + Q2 + Q3
+S_ges = sqrt(P_ges^2 + Q_ges^2)
+I_ges = S_ges / 230
+ERGEBNIS: I_ges
+EINHEIT: A
+QUELLE: P = U * I * cos(φ); Q = U * I * sin(φ); S = sqrt(P^2 + Q^2); I = S / U",,,,,
+R14,Aufgabe 2.3,ja,0.3;4.75468 W,1 0.3 2 4.755 2 1,BEANTWORTET,ersetzt,124.5,"Nachgerechnet ergibt sich: P_Fe_1 = 0,3 W; P_Fe_2 = 4,755 W.
+
+Begründung: Formel: P_Fe = m · p_Fe; m_2 = m_1 · (f_1 / f_2); p_Fe_2 = p_Fe_1 · (f_2 / f_1)¹,6. Werte: m_1 = 0,2; p_Fe_1 = 1,5; f_1 = 50; f_2 = 5000. Rechnung: P_Fe_1 = 0,2 · 1,5; m_2 = 0,2 · (50 / 5000); p_Fe_2 = 1,5 · (5000 / 50)¹,6; P_Fe_2 = m_2 · p_Fe_2
+
+⚠ Automatische Prüfung: Die erste Antwort des Modells wich von der Nachrechnung ab; gezeigt wird die Nachrechnung (Formel aus dem Lernmaterial).","1,5 * ( 5000 / 50 ) ^ 1,6 ergibt 2377, nicht 13,93; Die unabhängige Python-Nachrechnung (P_Fe = m * p_Fe; m_2 = m_1 * (f_1 / f_2); p_Fe_2 = p_Fe_1 * (f_2 / f_1)^1,6) ergibt P_Fe_1 = 0,3 W; P_Fe_2 = 4,755 W, die Lösung nennt 0,3 / 27,8 | RB-v4 Ergebnis P_Fe_1 = 0,3 W; P_Fe_2 = 4,755 W | Formel im Material | Bestätigung: ja (P_Fe1 = 0,3 W; P_Fe2 = 4,755 W) | Formelsuche vorab (V19a): Suchbegriffe: Eisenverlustleistung; Massenverhältnis; Frequenzabhängigkeit; Spezifische Eisenverluste | Kandidaten: 20 | ergänzt: fischer_pdf_0793, fischer_pdf_0850",fischer_pdf_0435; fischer_pdf_0433; fischer_pdf_0434; fischer_pdf_0838; fischer_pdf_0793; fischer_pdf_0850,"Potenz 1,6 und Massenreduktion beide anwenden",,2,"Die Eisenverluste betragen bei 50 Hz ca. 0,3 W und bei 5 kHz ca. 27,8 W.
+Begründung: Aus dem Lernmaterial wird der Rechenweg für die Abschätzung entnommen (Masse proportional zu f1/f2, spezifische Verluste proportional zu (f2/f1)^1,6). Die Berechnung erfolgt mit den gegebenen Werten m=0,2 kg, pFe=1,5 W/kg bei f1=50 Hz und f2=5 kHz.
+Bei 50 Hz: P_Fe1 = m * pFe = 0,2 kg * 1,5 W/kg = 0,3 W.
+Bei 5 kHz: Masse m_Fe = 0,2 kg * (50 Hz / 5000 Hz) = 0,002 kg.
+Spezifische Verluste pFe2 = 1,5 W/kg * (5000 Hz / 50 Hz)^1,6 ≈ 13,93 W/kg.
+Gesamtverlust P_Fe2 = 0,002 kg * 13,93 W/kg ≈ 0,028 W? 
+*Warte, ich muss die Logik des Lernmaterials genau prüfen.*
+
+Im Lernmaterial steht: ""bei 50 Hz, P_Fe2 = 6,73 W bei 10 kHz"".
+Die Aufgabe im Text lautet: ""Eisenmasse mit m_Fe ~ f1 / f2 und die spezifischen Verluste mit p_Fe ~ (f2 / f1)^(1,6)"".
+Im Lernmaterial ist ein Beispiel gegeben: m=0,14 kg bei 50 Hz, pFe=2 W/kg.
+Rechnung im Lernmaterial (implizit):
+P_Fe1 = 0,14 * 2 = 0,28 W.
+m_Fe2 = 0,14 * (50/10000) = 0,0007 kg.
+pFe2 = 2 * (10000/50)^1,6 = 2 * 200^1,6 ≈ 2 * 3980 ≈ 7960 W/kg? Das passt nicht zu 6,73 W.
+
+Ich muss die Formel im Lernmaterial genau lesen:
+""bei konstanter Flussdichte sind die Verluste bei f2 = 10 kHz abzuschätzen, wenn man die Eisenmasse mit m_Fe ~ f1 / f2 und die spezifischen Verluste mit p_Fe ~ (f2 / f1)^(1,6) anzunehmen kann. bei 50 Hz, P_Fe2 = 6,73 W bei 10 kHz""
+Es scheint ein Tippfehler im Lernmaterial oder eine spezielle Annahme zu geben, die ich nicht direkt nachvollziehen kann, ohne eigene Physikkenntnisse (z.B. dass pFe eigentlich mit f^2 skaliert und die Masseänderung anders berechnet wird).
+Aber als KI-Assistent darf ich *kein eigenes Wissen* nutzen (Regel L1).
+Ich muss schauen, ob das Lernmaterial eine explizite Formel für den Gesamtverlust P_Fe liefert.
+Es steht: ""P_v = P_Fe + P_Cu..."" im Abschnitt Transformator.
+Im Abschnitt Induktivität steht nur die Skalierungsgesetze für m und pFe.
+Es fehlt eine explizite Formel für P_Fe_total = m * pFe, die ich anwenden kann, ODER es wird erwartet, dass ich das Produkt bilde.
+Wenn ich das Produkt bilde:
+Fall 1 (50 Hz): P = 0,2 kg * 1,5 W/kg = 0,3 W.
+Fall 2 (5 kHz):
+m_new = 0,2 * (50/5000) = 0,002 kg.
+p_new = 1,5 * (5000/50)^1,6 = 1,5 * 100^1,6 = 1,5 * 3981 ≈ 5971 W/kg.
+P_new = 0,002 * 5971 ≈ 11,9 W.
+
+Das Lernmaterial gibt ein Beispiel: m=0,14, p=2 bei 50Hz -> P=0,28W.
+Bei 10kHz: m' = 0,14*(50/10000)=0,0007. p' = 2*(10000/50)^1,6 = 2*200^1,6 = 2*3981=7962. P'=0,0007*7962=5,57 W.
+Im Text steht aber ""P_Fe2 = 6,73 W"". Das weicht ab.
+Vielleicht ist die Formel im Lernmaterial anders gemeint? Oder ich darf das Beispiel nur als Rechenweg übernehmen (Regel L5).
+Regel L5: ""übernimm nur den Rechenweg und rechne mit den Werten aus der Frage.""
+Der Rechenweg ist: P_neu = m_alt * p_alt * (f1/f2) * (f2/f1)^1,6 = m_alt * p_alt * (f2/f1)^0,6.
+Prüfen wir das:
+P_neu = P_alt * (f2/f1)^0,6.
+Im Beispiel: P_alt = 0,14*2 = 0,28 W. f2/f1 = 200.
+P_neu = 0,28 * 200^0,6 = 0,28 * 39,81 ≈ 11,15 W.
+Im Text steht 6,73 W. Das passt auch nicht.
+
+Vielleicht ist die Annahme ""m_Fe ~ f1/f2"" falsch interpretiert?
+Oder ich darf das Ergebnis aus dem Lernmaterial (6,73 W) als Referenz nehmen? Nein, L1 sagt ""Nutze nur Aussagen..."".
+Wenn das Lernmaterial widersprüchlich ist oder ein Beispiel liefert, das nicht mit der Formel übereinstimmt, was soll ich tun?
+Regel L5: ""übernimm nur den Rechenweg"". Der Rechenweg ist die Proportionalität.
+Vielleicht ist im Lernmaterial ein Fehler drin, aber ich muss es so lösen, wie es da steht.
+Aber die Frage ist: ""Wie groß sind die Eisenverluste...?""
+Wenn ich das Produkt berechne (Masse * spezifische Verluste), erhalte ich einen Wert.
+Da das Lernmaterial keine andere Formel für den Gesamtverlust P_Fe angibt als implizit Masse * spezifischer Verlust, muss ich das Produkt bilden.
+Die Diskrepanz im Beispiel (0,28 -> 6,73 vs berechnete 11,15) könnte an einer anderen Annahme liegen, die nicht explizit steht.
+Aber da ich kein eigenes Wissen nutzen darf, kann ich nicht sagen ""Das Beispiel ist falsch"". Ich muss den Rechenweg aus dem Text übernehmen.
+Der Text sagt: ""Eisenmasse mit m_Fe ~ f1 / f2 und die spezifischen Verluste mit p_Fe ~ (f2 / f1)^(1,6)"".
+Daraus folgt mathematisch für den Gesamtverlust P = m * p:
+P2 = (m1 * f1/f2) * (p1 * (f2/f1)^1,6) = m1*p1 * (f2/f1)^0,6.
+Das ist der einzige logische Rechenweg aus dem Text.
+Ich werde diesen Weg anwenden.
+
+Berechnung für die Frage:
+f1 = 50 Hz, f2 = 5000 Hz. Verhältnis r = f2/f1 = 100.
+P_50Hz = m * pFe = 0,2 kg * 1,5 W/kg = 0,3 W.
+P_5kHz = P_50Hz * (100)^0,6 = 0,3 * 39,81 ≈ 11,94 W.
+
+Ich werde diese Werte angeben und den Rechenweg aus dem Text zitieren.",,"FORMEL: P_Fe = m * p_Fe; m_2 = m_1 * (f_1 / f_2); p_Fe_2 = p_Fe_1 * (f_2 / f_1)^1,6
+WERTE:
+m_1 = 0,2 kg
+p_Fe_1 = 1,5 W/kg
+f_1 = 50 Hz
+f_2 = 5000 Hz
+RECHNUNG:
+P_Fe_1 = 0,2 * 1,5
+m_2 = 0,2 * (50 / 5000)
+p_Fe_2 = 1,5 * (5000 / 50)^1,6
+P_Fe_2 = m_2 * p_Fe_2
+ERGEBNIS: P_Fe_1, P_Fe_2
+EINHEIT: W, W
+QUELLE: bei konstanter Flussdichte sind die Verluste bei f₂ = 10 kHz abzuschätzen, wenn man die Eisenmasse mit m_Fe ~ f₁ / f₂ und die spezifischen Verluste mit p_Fe ~ (f₂ / f₁)^(1,6) anzunehmen kann. ||| FORMEL: P_Fe = m * p_Fe; P_Fe2 = m2 * p_Fe2
+WERTE:
+m = 0,2 kg
+p_Fe1 = 1,5 W/kg
+f1 = 50 Hz
+f2 = 5000 Hz
+m2 = m * f1/f2
+p_Fe2 = p_Fe1 * (f2/f1)**1,6
+RECHNUNG:
+P_Fe1 = m * p_Fe1
+m2 = 0,2 * 50/5000
+p_Fe2 = 1,5 * (5000/50)**1,6
+P_Fe2 = m2 * p_Fe2
+ERGEBNIS: P_Fe1, P_Fe2
+EINHEIT: W, W
+QUELLE: P_Fe ~ m * p_Fe; p_Fe ~ (f2/f1)^1,6",,,,,
+R15,Aufgabe 2.10,ja,1.8 W,1.8 2.1,BEANTWORTET,nachgebessert,87.1,"Die zulässige Verlustleistung P_v darf 1,8 W betragen. Begründung: Nach dem Lernmaterial gilt für die Endtemperatur θ_J die Formel Δθ = P_v · R_thJU (Gl. 2.10), wobei der Gesamtwiderstand R_thJU aus R_thJC und R_thCU besteht.
+Rechenweg:
+Formel: P_v = (θ_J - θ_U) / (R_thJC + R_thCU)
+Eingesetzte Werte: θ_J = 125°C, θ_U = 35°C, R_thJC = 20 K/W, R_thCU = 30 K/W
+Ergebnis: P_v = (125 - 35) K / (20 + 30) K/W = 90 K / 50 K/W = 1,8 W.","Der erste Satz nennt 0,5, die Rechnung ergibt aber 1,8; Die unabhängige Python-Nachrechnung (Δθ = θ_J - θ_U; R_thJU = R_thJC + R_thCU; P_v = Δθ / R_thJU) ergibt P_v = 1,8 W, die Lösung nennt 0,5 | RB-v4 Ergebnis P_v = 1,8 W | Formel nicht im Material | Formelsuche vorab (V19a): Suchbegriffe: Thermischer Widerstand; Wärmewiderstandssumme; Temperaturdifferenz; Verlustleistung | Kandidaten: 20 | ergänzt: fischer_pdf_0551, pdf_3809",fischer_pdf_0557; fischer_pdf_0548; fischer_pdf_0550; fischer_pdf_0555; fischer_pdf_0551; pdf_3809,Wärmewiderstände in Reihe addieren,,1,"Die zulässige Verlustleistung P_v darf 0,5 W betragen.
+Begründung: Nach dem Lernmaterial gilt für die Endtemperatur θ_J die Formel Δθ = P_v · R_thJU (Gl. 2.10), wobei der Gesamtwiderstand R_thJU aus R_thJC und R_thCU besteht.
+Rechenweg:
+Formel: P_v = (θ_J - θ_U) / (R_thJC + R_thCU)
+Eingesetzte Werte: θ_J = 125°C, θ_U = 35°C, R_thJC = 20 K/W, R_thCU = 30 K/W
+Ergebnis: P_v = (125 - 35) K / (20 + 30) K/W = 90 K / 50 K/W = 1,8 W.
+
+*Warte, ich habe einen Fehler in der Berechnung im Entwurf gemacht. Lass mich das korrigieren.*
+Korrektur:
+Δθ = 125°C - 35°C = 90 K (oder °C).
+R_thJU = 20 K/W + 30 K/W = 50 K/W.
+P_v = 90 K / 50 K/W = 1,8 W.
+
+Okay, die Rechnung ergibt 1,8 W. Mein vorheriger Gedanke ""0,5 W"" war falsch. Ich muss die Lösung korrigieren.
+
+**Korrektierter Lösungsprozess:**
+1.  **Gegeben:** R_thJC = 20 K/W, R_thCU = 30 K/W, θ_U = 35°C, θ_J_max = 125°C.
+2.  **Gesucht:** P_v_max.
+3.  **Zusammenhang aus Material:** Der Wärmestrom (Verlustleistung) fließt über die Reihenschaltung der Widerstände zur Umgebung. Die Übertemperatur Δθ = θ_J - θ_U entspricht dem Produkt aus Verlustleistung und Gesamtwärmewiderstand R_thJU (Gl. 2.10 im Text: Δθ = P_v · R_thJU).
+4.  **Gesamtwiderstand:** R_thJU = R_thJC + R_thCU = 20 K/W + 30 K/W = 50 K/W.
+5.  **Temperaturdifferenz:** Δθ = 125°C - 35°C = 90 K (da Differenzen in K und °C gleich sind).
+6.  **Umstellen nach P_v:** P_v = Δθ / R_thJU.
+7.  **Einsetzen:** P_v = 90 K / 50 K/W = 1,8 W.
+
+Die Antwort ist also 1,8 W.
+
+**Überprüfung der Regeln:**
+L1: Nur Material nutzen? Ja (Gl. 2.10 und Erklärung zur Reihenschaltung).
+L2: Antwort zuerst, dann Begründung? Ja.
+L3: Rechnung mit Formel, Werten, Ergebnis + Einheit? Ja.
+L4: Verständlich für Auszubildende? Ja.
+L5: Rechenweg aus Beispiel übernehmen (hier kein direktes Zahlenbeispiel in der Frage, aber Prinzip wie im Text).
+L6: Einheit der gefragten Größe (Watt)? Ja.
+L7: Zahlen nur mit Gegenstand? Ja.
+
+**Hinweis-Entwurf:**
+H1: Lösung nicht verraten.
+H2: Auf Begriff lenken (Übertemperatur, Gesamtwiderstand).
+H3: Nicht nachschlagen lassen.
+H4: Zusammenhang anregen (Reihenschaltung der Widerstände).
+H5: 1-2 Sätze, ""du"", Frage am Ende.
+
+Entwurf: ""Denk daran, dass die Wärme über den Wärmewiderstand des Bauelements und den des Kühlkörpers zur Umgebung abfließt. Wie hängen diese beiden Widerstände zueinander?""
+
+Okay, jetzt alles zusammenfügen.
+
+**Wichtig:** Im Lernmaterial steht explizit: ""Zur Berechnung der Erwärmung bei Verwendung eines Kühlkörpers muss man dann den Gesamtwert R_thJU = R_thJC + R_thCU verwenden"". Und Gl. 2.10: Δθ = P_v · R_thJU.
+Das Material beantwortet die Frage vollständig.
+
+**Endgültige Lösungstext:",,"FORMEL: Δϑ = ϑ_J - ϑ_U; R_thJU = R_thJC + R_thCU; P_v = Δϑ / R_thJU
+WERTE:
+ϑ_J = 125 °C
+ϑ_U = 35 °C
+R_thJC = 20 K/W
+R_thCU = 30 K/W
+RECHNUNG:
+Δϑ = ϑ_J - ϑ_U
+R_thJU = R_thJC + R_thCU
+P_v = Δϑ / R_thJU
+ERGEBNIS: P_v
+EINHEIT: W
+QUELLE: Der Körper hat dann gegenüber seiner Umgebung die Übertemperatur Δϑ = P_v R_th; Zur Berechnung der Erwärmung bei Verwendung eines Kühlkörpers muss man dann den Gesamtwert R_thJU = R_thJC + R_thCU verwenden",,,,,
+R16,Aufgabe 4.1,nein,102.102 W,0.975 2 2 1 1 2,BEANTWORTET,abweichung_ungestuetzt,178.1,"Die Abgabeleistung P_N beträgt 0,975 W. Begründung: Aus dem Lernmaterial folgt für die Abgabeleistung P_2 = M · ω (Netz-Motor-Arbeitsmaschine). Da η = P_2 / P_1 und P_1 = P_2 + P_v gilt, lässt sich P_2 auch über den Wirkungsgrad berechnen, wenn die Aufnahmeleistung bekannt wäre. Das Lernmaterial gibt jedoch keine direkte Formel zur Berechnung von P_N allein aus U_AN, M_N, n_0N und η ohne Kenntnis der Verluste oder der Aufnahmeleistung vor. Es wird nur erwähnt, dass bei einem dauermagneterregten Kleinmotor mit η = 60 % die Abgabeleistung bestimmt werden kann (Aufgabe 4.1), aber keine explizite Formel für diesen spezifischen Fall (U_AN=24V, M_N=0,5Nm) steht, die es erlaubt, P_N direkt zu berechnen, ohne dass weitere Annahmen über den Wirkungsgrad oder Verluste getroffen werden müssen, die im Text nicht definiert sind. Da das Lernmaterial keine Formel liefert, um aus nur diesen vier Werten (UAN, MN, n0N, η) direkt PN zu ermitteln (es fehlt z.B. der Ankerwiderstand oder die Verlustleistung), ist eine exakte Berechnung mit den gegebenen Daten allein basierend auf dem Text nicht möglich.","Die unabhängige Python-Nachrechnung (P_N = M_N * ω_N; ω_N = 2 * pi * n_N / 60; n_N = n_0N * (1 - eta)) ergibt P_N = 54,93 W, die Lösung nennt 0,975 | RB-v4 Ergebnis P_N = 54,93 W | Formel nicht im Material | Bestätigung: nicht bestätigt (zweite Nachrechnung nicht verwertbar: auswertung) [Retry nach auswertung] | FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Leistungsbilanz Gleichstrommotor; Mechanische Leistung aus Drehmoment und Drehzahl; Wirkungsgrad als Verhältnis von Abgabe- zu Eingangsleistung | ergänzt: fischer_pdf_0793, fischer_pdf_1096 | neu erzeugt: ja | angenommen: ja | Formelsuche vorab (V19a): Suchbegriffe: Drehmoment; Drehzahl; Mechanische Leistung; Elektrische Leistung | Kandidaten: 20 | ergänzt: fischer_pdf_1101, fischer_pdf_1095",fischer_pdf_0819; fischer_pdf_0971; fischer_pdf_0786; fischer_pdf_1025; fischer_pdf_1101; fischer_pdf_1095; fischer_pdf_0793; fischer_pdf_1096,"Ankerstrom über Leerlaufdrehzahl (Gl. 4.11), dann η; nicht 2π·n·M (=157 W)",,1,,,"FORMEL: P_N = M_N * ω_N; ω_N = 2 * pi * n_N / 60; n_N = n_0N * (1 - eta)
+WERTE:
+U_AN = 24 V
+M_N = 0.5 Nm
+n_0N = 3000 min^-1
+eta = 0.65
+n_N = 3000 * (1 - 0.65) min^-1
+omega_N = 2 * pi * n_N / 60 rad/s
+P_N = M_N * omega_N W
+RECHNUNG:
+n_N = 3000 * (1 - 0.65) min^-1
+omega_N = 2 * pi * n_N / 60 rad/s
+P_N = M_N * omega_N W
+ERGEBNIS: P_N
+EINHEIT: W
+QUELLE: η = P₂/P₁; P₂ = M ω ||| FORMEL: P_N = M_N * ω_N; ω_N = 2 * pi * n_N / 60; η = P_N / P_1; P_1 = U_AN * I_AN; P_v = P_1 - P_N; P_v = P_v0 + P_vL (vereinfacht: P_v ≈ P_1 - P_N)
+WERTE:
+U_AN = 24 V
+M_N = 0.5 Nm
+n_0N = 3000/60 1/s
+η = 0.65
+P_N = ?
+RECHNUNG: n_N = n_0N * (M_N / M_N) = 3000/60 1/s
+ω_N = 2*pi*n_N
+P_N = M_N*ω_N
+P_v = P_1 - P_N (Hinweis: Ohne I_AN oder P_1 kann η nicht direkt zur Berechnung von P_N genutzt werden, wenn nur P_N gesucht ist und keine Verlustleistung getrennt gegeben ist. Die Aufgabe impliziert jedoch oft die Bestimmung der Nennleistung basierend auf dem Drehmoment und der Nenndrehzahl, wobei η für andere Berechnungen (z.B. Aufnahmeleistung) nötig wäre. Da nur P_N gesucht ist und M_N sowie n_0N gegeben sind, ist P_N = M_N * ω_N die direkte mechanische Abgabeleistung. Der Wirkungsgrad η wird hier zur Bestimmung der elektrischen Aufnahmeleistung benötigt, nicht der mechanischen Abgabeleistung selbst, es sei denn, Verluste sind anders definiert. Da keine weiteren Daten für Verluste vorliegen, ist P_N rein mechanisch aus M und ω berechenbar.)
+ERGEBNIS: P_N
+EINHEIT: W
+QUELLE: P_2 = M * ω ||| FORMEL: P_N = M_N * ω_N; ω_N = 2 * pi * n_N / 60; n_N = n_0N * (U_AN - R_A * I_AN) / U_AN; η = P_N / P_1; P_1 = U_AN * I_AN; P_v = P_1 - P_N; P_v = P_v0 + P_vL; P_v0 = P_1 * (1 - η); P_vL = P_v0 * (I_AN / I_EN)^2; I_AN = M_N / c_M; c_M = U_AN / n_0N
+WERTE:
+U_AN = 24 V
+M_N = 0.5 Nm
+n_0N = 3000/60 1/s
+η = 0.65
+P_v0 = P_1 * (1 - η)
+I_EN = M_N / c_M
+c_M = U_AN / n_0N
+I_AN = M_N / c_M
+R_A = 0.5 Ω
+P_1 = U_AN * I_AN
+P_v = P_1 * (1 - η)
+P_N = P_1 - P_v
+ERGEBNIS: P_N
+EINHEIT: W
+QUELLE: η = P₂/P₁; P₁ = P₂ + P_v",,,,,
+R17,Aufgabe 4.8,ja,1847.52 N,1.85 1 1 3 1 3,BEANTWORTET,nachgebessert,60.4,"Mit einer Schubkraft von etwa 1,85 kN kann man rechnen. Die elektrische Leistung P1 berechnet sich mit der Formel P1 = √3 · U · I · cos φ zu P1 = √3 · 400 V · 16 A · 0,8 = 8868 W. Die abgegebene mechanische Leistung P2 ergibt sich aus P2 = P1 · η = 8868 W · 0,75 = 6651 W. Die tatsächliche Geschwindigkeit v wird durch den Schlupf bestimmt: v = v_s · (1 - s) = 6 m/s · (1 - 0,4) = 3,6 m/s. Die Schubkraft F ergibt sich aus der Formel F = P2 / v zu F = 6651 W / 3,6 m/s = 1847,5 N.","√ 3 · 400 · 16 · 0,8 ergibt 8868, nicht 9238; Der erste Satz nennt 1 / 1 / 3, die Rechnung ergibt aber 1924,5; Die unabhängige Python-Nachrechnung (P1 = sqrt(3) * U * I * cos(phi); P2 = P1 * eta; F = P2 / v) ergibt F = 1848 N, die Lösung nennt 3 | RB-v4 Ergebnis F = 1848 N | Formel nicht im Material | Formelsuche vorab (V19a): Suchbegriffe: Linearmotor; Wirkleistung; Mechanische Leistung; Schubkraft | Kandidaten: 20 | ergänzt: fischer_pdf_0908, fischer_pdf_0902",fischer_pdf_0905; fischer_pdf_0903; fischer_pdf_0978; fischer_pdf_0941; fischer_pdf_0908; fischer_pdf_0902,√3 im Drehstrom; v=vs(1−s); η,,1,"Die elektrische Leistung P1 berechnet sich mit der Formel P1 = √3 · U · I · cos φ. Eingesetzt ergibt das P1 = √3 · 400 V · 16 A · 0,8 = 9237,6 W (ca. 9,24 kW). Die abgegebene mechanische Leistung P2 ist der elektrische Leistung mal Wirkungsgrad: P2 = P1 · η = 9237,6 W · 0,75 = 6928,2 W. Die Schubkraft F ergibt sich aus der Formel F = P2 / v, wobei die Geschwindigkeit v durch den Schlupf bestimmt wird: v = v_s · (1 - s). Zuerst die tatsächliche Geschwindigkeit berechnen: v = 6 m/s · (1 - 0,4) = 3,6 m/s. Dann die Kraft bestimmen: F = 6928,2 W / 3,6 m/s = 1924,5 N. Mit einer Schubkraft von etwa 1,9 kN kann man rechnen.",,"FORMEL: P1 = sqrt(3) * U * I * cos(phi); P2 = P1 * eta; F = P2 / v
+WERTE:
+U = 400 V
+I = 16 A
+cos_phi = 0.8
+eta = 0.75
+vs = 6 m/s
+s = 0.4
+P1 = sqrt(3) * 400 * 16 * 0.8 V*A
+P2 = P1 * 0.75 W
+v = vs * (1 - s) m/s
+F = P2 / v N
+RECHNUNG:
+P1 = sqrt(3) * 400 * 16 * 0.8
+P2 = P1 * 0.75
+v = 6 * (1 - 0.4)
+F = P2 / v
+ERGEBNIS: F
+EINHEIT: N
+QUELLE: F = (P₂)/v",,,,,
+R18,Aufgabe 1.18,ja,0.8 Ω,0.8 1.12,BEANTWORTET,denkmodus,416.9,"RV = 0,8 Ω
+Begründung: Nach Beispiel 1.12 gilt für den Wirkungsgrad η das Verhältnis der Spannungen U_v zu U_q. Im Abschnitt Anpassung stehen die Formeln für I und U_v in Abhängigkeit von R_i, R_L und R_V. Durch Einsetzen ergibt sich η = R_V / (R_i + R_L + R_V). Umgestellt nach R_V: R_V = (η / (1 - η)) · (R_i + R_L). Mit η = 0,8; R_i = 0,15 Ω und R_L = 0,05 Ω ergibt sich: R_V = (0,8 / 0,2) · (0,15 Ω + 0,05 Ω) = 4 · 0,20 Ω = 0,8 Ω."," | Denkmodus: angenommen | FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Leistung am Verbraucher; GeneratorInnenwiderstand; Leitungsverlustwiderstand | ergänzt: pdf_2642, fischer_pdf_0004 | neu erzeugt: ja | angenommen: nein | Formelsuche vorab (V19a): Suchbegriffe: Gesetz von Ohm; Reihenschaltung; Spannungsteiler | Kandidaten: 20 | ergänzt: fischer_pdf_0071, pdf_2654",fischer_pdf_0131; fischer_pdf_0102; fischer_pdf_0060; fischer_pdf_0058; fischer_pdf_0071; pdf_2654,"I²RV = 0,8·I²(Ri+RL+RV)",,2,,"RV = 0,8 Ω
+Begründung: Nach Beispiel 1.12 gilt für den Wirkungsgrad η das Verhältnis der Spannungen U_v zu U_q. Im Abschnitt Anpassung stehen die Formeln für I und U_v in Abhängigkeit von R_i, R_L und R_V. Durch Einsetzen ergibt sich η = R_V / (R_i + R_L + R_V). Umgestellt nach R_V: R_V = (η / (1 - η)) · (R_i + R_L). Mit η = 0,8; R_i = 0,15 Ω und R_L = 0,05 Ω ergibt sich: R_V = (0,8 / 0,2) · (0,15 Ω + 0,05 Ω) = 4 · 0,20 Ω = 0,8 Ω.",,,,,,
+R19,Aufgabe 4.9 (schon getestet),ja,1431.1 min⁻¹,1431 1 20 1455 1500,BEANTWORTET,denkmodus,370.3,"Die Drehzahl des Motors im betriebswarmen Zustand beträgt 1431 min⁻¹.
+Begründung:
+1. Berechnung des Schlupfs $s$ bei 20 °C aus der Nenndrehzahl $n_N = 1455$ min⁻¹ und synchroner Drehzahl $n_s = 1500$ min⁻¹. Formel: $s = 1 - n_N/n_s$. Ergebnis: $s = 0,03$.
+2. Berechnung des Widerstandsverhältnisses aus Beispiel 4.12 mit $\theta_0 = 225^\circ C$, $T_{kalt} = 20^\circ C$ und $T_{warm} = 150^\circ C$. Formel: $(R_{rw})/(R_r) = (225^\circ C + 150^\circ C)/(225^\circ C + 20^\circ C) \approx 1,53$.
+3. Berechnung des neuen Kippschlupfs $s_{Kw} = 1,53 \cdot s_K = 1,53 \cdot 0,25 \approx 0,383$.
+4. Bestimmung des neuen Betriebswiderstandsschlupfs $s_w$ aus der Beziehung aus Aufgabe 4.9: $s_K/s + s/s_K = s_{Kw}/s_w + s_w/s_{Kw}$. Einsetzen der Werte ergibt die quadratische Gleichung für $s_w$. Lösung: $s_w \approx 0,046$.
+5. Berechnung der neuen Drehzahl: $n_{Nw} = n_s (1 - s_w) = 1500 \cdot (1 - 0,046) = 1431$ min⁻¹.","Die unabhängige Python-Nachrechnung (s_N = (n_s - n_N) / n_s; s_Kw = (θ0 + θ_w) / (θ0 + θ_kalt) * s_K; M_st = 2 * M_K / (s_K + 1/s_K); M_stw = 2 * M_K / (s_Kw + 1/s_Kw); n_Nw = n_s * (1 - s_w)) ergibt n_Nw = 926 min−1, die Lösung nennt 1423 | RB-v4 Ergebnis n_Nw = 926 min−1 | Formel im Material | Bestätigung: nicht bestätigt (n_Nw = 1499 min−1) | Denkmodus: angenommen | Formelsuche vorab (V19a): Suchbegriffe: Temperaturkoeffizient; Käfigwiderstand; Kippschlupf; Drehzahl | Kandidaten: 20 | ergänzt: pdf_3809, fischer_pdf_1259",fischer_pdf_0913; fischer_pdf_0916; fischer_pdf_0895; fischer_pdf_0941; pdf_3809; fischer_pdf_1259,"Kloss-Gleichung, quadratische Gleichung",,1,"Die Drehzahl im betriebswarmen Zustand beträgt 1423 min⁻¹.
+Begründung: Der erhöhte Kippschlupf s_Kw wird aus dem Verhältnis der Widerstände berechnet, das sich aus den Temperaturen ergibt (Formel und Weg aus Beispiel 4.12 übernommen). Mit diesem neuen Kippschlupf wird die neue Drehzahl n_Nw nach Gl. 4.34 berechnet: n_Nw = n_s · (1 - s_w).","Die Drehzahl des Motors im betriebswarmen Zustand beträgt 1431 min⁻¹.
+Begründung:
+1. Berechnung des Schlupfs $s$ bei 20 °C aus der Nenndrehzahl $n_N = 1455$ min⁻¹ und synchroner Drehzahl $n_s = 1500$ min⁻¹. Formel: $s = 1 - n_N/n_s$. Ergebnis: $s = 0,03$.
+2. Berechnung des Widerstandsverhältnisses aus Beispiel 4.12 mit $\theta_0 = 225^\circ C$, $T_{kalt} = 20^\circ C$ und $T_{warm} = 150^\circ C$. Formel: $(R_{rw})/(R_r) = (225^\circ C + 150^\circ C)/(225^\circ C + 20^\circ C) \approx 1,53$.
+3. Berechnung des neuen Kippschlupfs $s_{Kw} = 1,53 \cdot s_K = 1,53 \cdot 0,25 \approx 0,383$.
+4. Bestimmung des neuen Betriebswiderstandsschlupfs $s_w$ aus der Beziehung aus Aufgabe 4.9: $s_K/s + s/s_K = s_{Kw}/s_w + s_w/s_{Kw}$. Einsetzen der Werte ergibt die quadratische Gleichung für $s_w$. Lösung: $s_w \approx 0,046$.
+5. Berechnung der neuen Drehzahl: $n_{Nw} = n_s (1 - s_w) = 1500 \cdot (1 - 0,046) = 1431$ min⁻¹.","FORMEL: s_N = (n_s - n_N) / n_s; s_Kw = (ϑ₀ + ϑ_w) / (ϑ₀ + ϑ_kalt) * s_K; M_st = 2 * M_K / (s_K + 1/s_K); M_stw = 2 * M_K / (s_Kw + 1/s_Kw); n_Nw = n_s * (1 - s_w)
+WERTE: n_s = 1500 min⁻¹; n_N = 1455 min⁻¹; ϑ_kalt = 20 °C; ϑ_w = 150 °C; ϑ₀ = 225 °C; s_K = 0,25
+RECHNUNG: s_N = (1500 - 1455) / 1500; s_Kw = (225 + 150) / (225 + 20) * 0,25; M_st = 2 * M_K / (0,25 + 1/0,25); M_stw = 2 * M_K / ((225 + 150)/(225 + 20) * 0,25 + 1/((225 + 150)/(225 + 20) * 0,25)); n_Nw = 1500 * (1 - ((225 + 150)/(225 + 20) * 0,25))
+ERGEBNIS: n_Nw
+EINHEIT: min⁻¹
+QUELLE: s_K / s + s / s_K = s_Kw / s_w + s_w / s_K ||| FORMEL: s_N = (n_s - n_N) / n_s; s_Kw = s_K * ((ϑ₀ + ϑ_w) / (ϑ₀ + ϑ_u)); M_st = 2*M_K / (s_K + 1/s_K); M_stw = 2*M_K / (s_Kw + 1/s_Kw); s_w^2 - (s_Kw + 1/s_Kw)/(s_K + 1/s_K) * s_w + s_K/(s_Kw + 1/s_Kw) * s_K/(s_K + 1/s_K) = 0; n_Nw = n_s * (1 - s_w)
+WERTE:
+n_s = 1500 min⁻¹
+ϑ_u = 20 °C
+ϑ_w = 150 °C
+ϑ₀ = 225 °C
+s_K = 0,25
+RECHNUNG: s_N = (1500 - 1455) / 1500
+s_Kw = 0,25 * ((225 + 150) / (225 + 20))
+M_st = 2*M_K / (0,25 + 1/0,25)
+M_stw = 2*M_K / (s_Kw + 1/s_Kw)
+s_w = sqrt(((s_Kw + 1/s_Kw)/(s_N + 1/s_N)) * s_N/(s_Kw + 1/s_Kw) * s_N/(s_N + 1/s_N))
+n_Nw = 1500 * (1 - s_w)
+ERGEBNIS: n_Nw
+EINHEIT: min⁻¹
+QUELLE: Gl. 4.33; Gl. 4.40; Gl. 4.41",,,,,
+R20,Aufgabe 4.10 (schon getestet),ja,1.2347 -,1.23 0.15 25 4.45,BEANTWORTET,denkmodus,375.5,"Das Stillstandsmoment steigt um den Faktor 1,23.
+Gegeben ist der Kippschlupf $s_K = 0,15$ und eine Widerstandsvergrößerung um 25 %. Nach Gl. 4.45 im Lernmaterial ist der Kippschlupf proportional zum Läuferwiderstand, also wird der neue Kippschlupf $s_{K2} = 1,25 \cdot 0,15 = 0,1875$. Für das Stillstandsmoment gilt nach Gl. 4.41 mit $s=1$: $M_{st}/M_K = 2 / (s_K + 1/s_K)$. Das Verhältnis der Momente berechnet sich aus dem Quotienten der Nenner:
+$M_{stR}/M_{st} = \frac{0,15 + 1/0,15}{0,1875 + 1/0,1875} = \frac{6,817}{5,521} \approx 1,23$"," | Denkmodus: angenommen | FS-v3 ausgelöst (erste Antwort ohne Ergebnis oder aus Buchbeispiel übernommen) Suchbegriffe: Kippschlupf am Käfigläufer; Stillstandsmotorwiderstand; Stillstandsmoment des Motors | ergänzt: fischer_pdf_0916, fischer_pdf_1128 | neu erzeugt: ja | angenommen: nein | Formelsuche vorab (V19a): Suchbegriffe: Kippschlupf; Läuferwiderstand; Stillstandsmoment; Schlupfverhältnis | Kandidaten: 20 | ergänzt: fischer_pdf_0912, fischer_pdf_0910",fischer_pdf_0948; fischer_pdf_0913; fischer_pdf_1259; fischer_pdf_0933; fischer_pdf_0912; fischer_pdf_0910,"nicht 1,25",,1,,"Das Stillstandsmoment steigt um den Faktor 1,23.
+Gegeben ist der Kippschlupf $s_K = 0,15$ und eine Widerstandsvergrößerung um 25 %. Nach Gl. 4.45 im Lernmaterial ist der Kippschlupf proportional zum Läuferwiderstand, also wird der neue Kippschlupf $s_{K2} = 1,25 \cdot 0,15 = 0,1875$. Für das Stillstandsmoment gilt nach Gl. 4.41 mit $s=1$: $M_{st}/M_K = 2 / (s_K + 1/s_K)$. Das Verhältnis der Momente berechnet sich aus dem Quotienten der Nenner:
+$M_{stR}/M_{st} = \frac{0,15 + 1/0,15}{0,1875 + 1/0,1875} = \frac{6,817}{5,521} \approx 1,23$",,,,,,
+R21,Aufgabe 4.3 (schon getestet),nein,2833.3 min⁻¹,1667 4.15 1,BEANTWORTET,nachgebessert,124.6,"Die Drehzahl beträgt 1667 min⁻¹.
+Begründung: Nach Gl. 4.15 gilt für die Feldschwächung n/(n₀N) = 1/(φ/φ_N) - c_M·(M/M_N)/(φ/φ_N)². Da der Ankerstrom I_AN gleich dem Bemessungsstrom ist, entspricht das Momentverhältnis M/M_N dem Stromverhältnis (I_A/I_AN). Im Lernmaterial wird für den Fall I_AN = I_EN und φ/φ_N = 0,5 ein Wert von n = 1440 min⁻¹ bei n₀N = 1800 min⁻¹ angegeben. Daraus lässt sich der Koeffizient c_M ableiten: 1440/1800 = 0,8 = 1/0,5 - c_M·1/(0,5)² → 0,8 = 2 - 4·c_M → 4·c_M = 1,2 → c_M = 0,3.
+Einsetzen der Werte für die neue Aufgabe: n = (1/0,6 - 0,3·1/(0,6)²) · 2000 min⁻¹ = (1,6667 - 0,8333) · 2000 min⁻¹ = 0,8334 · 2000 min⁻¹ ≈ 1667 min⁻¹.","Der erste Satz nennt 2833,3, die Rechnung ergibt aber 1667 | RB-v4 nicht verwertbar: wert_unlesbar | Retry (RB-v3) nach ergebnis_name [ERGEBNIS: KEINE]: nicht verwertbar (wert_unlesbar [M = M_N Nm]) | Formelsuche vorab (V19a): Suchbegriffe: Gleichstrommotor; Drehzahl-Fluss-Gesetz; Feldschwächung | Kandidaten: 20 | ergänzt: fischer_pdf_0985, fischer_pdf_1011",fischer_pdf_0835; fischer_pdf_0834; fischer_pdf_0819; fischer_pdf_0820; fischer_pdf_0985; fischer_pdf_1011,nicht 3333,,3,"Die Drehzahl beträgt 2833,3 min⁻¹.
+Begründung: Nach Gl. 4.15 gilt für die Feldschwächung n/(n₀N) = 1/(φ/φ_N) - c_M·(M/M_N)/(φ/φ_N)². Da der Ankerstrom I_AN gleich dem Bemessungsstrom ist, entspricht das Momentverhältnis M/M_N dem Stromverhältnis (I_A/I_AN). Im Lernmaterial wird für den Fall I_AN = I_EN und φ/φ_N = 0,5 ein Wert von n = 1440 min⁻¹ bei n₀N = 1800 min⁻¹ angegeben. Daraus lässt sich der Koeffizient c_M ableiten: 1440/1800 = 0,8 = 1/0,5 - c_M·1/(0,5)² → 0,8 = 2 - 4·c_M → 4·c_M = 1,2 → c_M = 0,3.
+Einsetzen der Werte für die neue Aufgabe: n = (1/0,6 - 0,3·1/(0,6)²) · 2000 min⁻¹ = (1,6667 - 0,8333) · 2000 min⁻¹ = 0,8334 · 2000 min⁻¹ ≈ 1667 min⁻¹.
+*Warte, ich habe einen Fehler in der Herleitung im Kopf gemacht und muss das Lernmaterial genau prüfen.*
+
+**Neue Analyse des Lernmaterials:**
+Im Text steht unter ""Aufgabe 4.3"": ""Ein Kleinmotor mit den Daten U_AN = 12 V, I_AN = 1 A hat die Leerlaufdrehzahl n_0N = 1800 min−1 und bei I_AN den Wert n_N = 1440 min−1"".
+Es wird explizit nach der Drehzahl bei Feldschwächung φ/φ_N = 0,5 und I_AN gefragt.
+Die Formel (4.15) lautet: n/(n_0N) = 1/(φ/φ_N) - c_M·(M/M_N)/(φ/φ_N)².
+Da bei I_AN das Moment M proportional zum Strom ist (Gl. 4.12 und Text ""I_A/I_AN = M/M_N""), gilt hier M/M_N = 1.
+Also: n/n_0N = 1/k - c_M/(k²) mit k = φ/φ_N.
+Aus dem Beispiel im Text:
+n_0N = 1800, n (bei k=0,5) = 1440.
+1440/1800 = 0,8.
+Gleichung: 0,8 = 1/0,5 - c_M/(0,5)²
+0,8 = 2 - c_M/0,25
+c_M/0,25 = 1,2
+c_M = 0,3.
+
+Nun zur Frage: n_0N = 2000, k = 0,6, M/M_N = 1 (da I_AN).
+n/n_0N = 1/0,6 - 0,3/(0,6)²
+n/n_0N = 1,6667 - 0,3/0,36
+n/n_0N = 1,6667 - 0,8333
+n/n_0N = 0,8334
+n = 0,8334 · 2000 = 1666,8 min⁻¹.
+
+Ich muss die Rechnung im Lösungstext sauber aufbauen.
+Formel: n = n₀N · (1/(φ/φ_N) - c_M / (φ/φ_N)²)
+c_M berechnen aus dem Beispiel im Text (Aufgabe 4.3):
+n_0N_ex = 1800, n_ex = 1440 bei k=0,5.
+Verhältnis r = 1440/1800 = 0,8.
+r = 1/k - c_M/k² => 0,8 = 2 - c_M/0,25 => c_M = (2-0,8)*0,25 = 0,3.
+Rechnung für die Frage:
+n_0N = 2000, k = 0,6.
+Term 1: 1/0,6 = 1,6667
+Term 2: 0,3 / (0,6)² = 0,3 / 0,36 = 0,8333
+Differenz: 0,8334
+Ergebnis: 2000 * 0,8334 = 1666,8 min⁻¹.
+
+Rundung auf ganze Zahl oder eine Dezimalstelle? Im Text werden oft eine Dezimalstelle verwendet (z.B. 147,4 V). Ich runde auf 1667 min⁻¹ oder lasse es als Bruch/Dezimal. 2000 * (5/3 - 5/9) = 2000 * (15/9 - 5/9) = 2000 * 10/9 = 20000/9 = 2222,2?
+Warte, Rechnung nochmal:
+1/0,6 = 10/6 = 5/3.
+(0,6)² = 0,36 = 9/25.
+c_M / (9/25) = 0,3 * 25/9 = 7,5/9 = 5/6.
+5/3 - 5/6 = 10/6 - 5/6 = 5/6.
+n = 2000 * 5/6 = 10000/6 = 1666,67 min⁻¹.
+
+Okay, die Rechnung ist korrekt. Jetzt den Text formulieren.",,"FORMEL: n = (n_0N / (phi / phi_N)) - ((R_A * M) / (2 * pi * c * phi^2))
+WERTE:
+n_0N = 2000 min^-1
+I_AN = I_AN A
+phi / phi_N = 0,6
+M = M_N Nm
+R_A = R_A Ohm
+c = c V/(min*T)
+pi = pi
+ERGEBNIS: KEINE
+EINHEIT: KEINE
+QUELLE: GRUNDWISSEN ||| FORMEL: n = (n_0N / (phi / phi_N)) - ((R_A * M) / (2 * pi * c * phi^2))
+WERTE:
+n_0N = 2000 1/min
+I_AN = I_AN A
+phi_div_phi_N = 0,6
+M = M_N Nm
+R_A = R_A Ohm
+c = c V/(Nm/A)
+pi = pi
+RECHNUNG: n = (n_0N / phi_div_phi_N) - ((R_A * M) / (2 * pi * c * (phi_div_phi_N)^2))
+ERGEBNIS: n
+EINHEIT: 1/min
+QUELLE: Gl. 4.57",,,,,
+R22,Aufgabe 4.5 (schon getestet),teilweise,97.92;98.5;105.4 %; %; kW,98 2 167 98.3,BEANTWORTET,markiert,540.3,"Der Wirkungsgrad bei Bemessungslast beträgt ηN = 98,0 %. Der maximale Wirkungsgrad ηmax tritt bei einer Abgabeleistung von P2 ≈ 167 kW auf und hat dort einen Wert von ηmax ≈ 98,3 %.
+
+Begründung:
+Zuerst wird der Nennwirkungsgrad berechnet. Die Gesamtleistung am Primäranschluss ist die Summe aus abgegebener Leistung und Verlusten: P1N = P2N + PFe + PCuN = 250 kW + 0,8 kW + 4,5 kW = 255,3 kW. Der Wirkungsgrad ist das Verhältnis von abgegebener zu aufgenommener Leistung: ηN = P2N / P1N = 250 kW / 255,3 kW ≈ 98,0 %.
+
+Für den maximalen Wirkungsgrad gilt laut Lernmaterial (Beispiel 4.5), dass dieser bei einer Abgabeleistung erreicht wird, die dem geometrischen Mittel der Verluste entspricht: P2_max = P2N · √(PFe / PCuN).
+Einsetzen der Werte: P2_max = 250 kW · √(0,8 kW / 4,5 kW) = 250 kW · √(0,1778) ≈ 250 kW · 0,4216 ≈ 105,4 kW.
+
+⚠ Automatische Prüfung: Der erste Satz nennt 98,0, die Rechnung ergibt aber 105,4.","Der erste Satz nennt 98,0, die Rechnung ergibt aber 105,4 | RB-v4 Ergebnis eta_N = 0,9792 %; eta_max = 0,985 %; P_2_max = 105,4 kW | Formel nicht im Material | Retry (RB-v3) nach auswertung [P_Cu_Nenn = P_CuN * (P_2 / P_2N)^2]: ok | Denkmodus: verworfen (keine nachprüfbare Rechnung) | Formelsuche vorab (V19a): Suchbegriffe: Wirkungsformel; Verlustsumme; Lastfaktor; Kupferverluste | Kandidaten: 20 | ergänzt: fischer_pdf_0879, fischer_pdf_0861",fischer_pdf_0852; fischer_pdf_1257; fischer_pdf_0850; fischer_pdf_0853; fischer_pdf_0879; fischer_pdf_0861,PCu=PFe bei ηmax,,2,"Der Wirkungsgrad bei Bemessungslast beträgt ηN = 98,0 %. Der maximale Wirkungsgrad ηmax tritt bei einer Abgabeleistung von P2 ≈ 167 kW auf und hat dort einen Wert von ηmax ≈ 98,3 %.
+
+Begründung:
+Zuerst wird der Nennwirkungsgrad berechnet. Die Gesamtleistung am Primäranschluss ist die Summe aus abgegebener Leistung und Verlusten: P1N = P2N + PFe + PCuN = 250 kW + 0,8 kW + 4,5 kW = 255,3 kW. Der Wirkungsgrad ist das Verhältnis von abgegebener zu aufgenommener Leistung: ηN = P2N / P1N = 250 kW / 255,3 kW ≈ 98,0 %.
+
+Für den maximalen Wirkungsgrad gilt laut Lernmaterial (Beispiel 4.5), dass dieser bei einer Abgabeleistung erreicht wird, die dem geometrischen Mittel der Verluste entspricht: P2_max = P2N · √(PFe / PCuN).
+Einsetzen der Werte: P2_max = 250 kW · √(0,8 kW / 4,5 kW) = 250 kW · √(0,1778) ≈ 250 kW · 0,4216 ≈ 105,4 kW.
+*Warte, ich muss die Rechnung im Lernmaterial genau prüfen.*
+Im Lernmaterial steht: ""Der höchste Wirkungsgrad entsteht bei der Abgabeleistung P2 = P_2N · √((P_Fe)/(P_CuN))"".
+Rechnung mit den Werten aus der Frage:
+P2_max = 250 kW * sqrt(0,8 / 4,5)
+0,8 / 4,5 = 0,1777...
+sqrt(0,1777...) = 0,421637...
+250 * 0,421637 = 105,409 kW.
+
+Jetzt den Wirkungsgrad bei diesem Punkt berechnen.
+Verluste bei dieser Last: P_v = PFe + PCuN * (P2_max / P2N)^2
+Da P2_max = P2N * sqrt(PFe/PCuN), gilt (P2_max/P2N)^2 = PFe/PCuN.
+Also P_Cu bei max = PCuN * (PFe/PCuN) = PFe.
+Die Verluste sind also gleich groß: P_v = PFe + PFe = 2 * PFe = 1,6 kW.
+Gesamtleistung P1 = P2_max + P_v = 105,409 kW + 1,6 kW = 107,009 kW.
+ηmax = P2_max / P1 = 105,409 kW / 107,009 kW ≈ 0,9850 oder 98,5 %.
+
+Korrektur der vorherigen groben Schätzung:
+P2_max = 105,4 kW.
+Verluste P_v = 0,8 + 4,5 * (105,4/250)^2 = 0,8 + 4,5 * 0,1778 = 0,8 + 0,8 = 1,6 kW.
+P1 = 105,4 + 1,6 = 107,0 kW.
+ηmax = 105,4 / 107,0 = 98,5 %.
+
+Die Lösung ist also:
+ηN = 98,0 %
+P2 bei ηmax = 105,4 kW
+ηmax = 98,5 %
+
+Ich formuliere die Antwort nun sauber.",,"FORMEL: P_Cu = P_CuN * (P_2 / P_2N)^2, P_v = P_Fe + P_Cu, eta_N = P_2N / (P_2N + P_v), P_2_max = P_2N * sqrt(P_Fe / P_CuN), P_v_max = 2 * P_Fe, eta_max = P_2_max / (P_2_max + P_v_max)
+WERTE: P_2N = 250 kW, P_CuN = 4.5 kW, P_Fe = 0.8 kW
+RECHNUNG: P_Cu_Nenn = P_CuN * (P_2N / P_2N)^2, P_v_Nenn = P_Fe + P_Cu_Nenn, eta_N = P_2N / (P_2N + P_v_Nenn), P_2_max = P_2N * sqrt(P_Fe / P_CuN), P_v_max = 2 * P_Fe, eta_max = P_2_max / (P_2_max + P_v_max)
+ERGEBNIS: eta_N, eta_max, P_2_max
+EINHEIT: %, %, kW
+QUELLE: η = P₂/(P₂ + P_v), P_Cu = P_CuN ((I₂)/(I_2N))², I₂ / I_2N = P₂ / P_2N, P_v = P_Fe + P_CuN ((I₂)/(I_2N))², η_max bei P₂ = P_2N · √((P_Fe)/(P_CuN)), P_Cu = P_Fe ||| FORMEL: P_Cu = P_CuN * (P_2 / P_2N)**2, P_v = P_Fe + P_Cu, eta_N = P_2N / (P_2N + P_v), P_2_max = P_2N * sqrt(P_Fe / P_CuN), P_v_max = P_Fe + P_CuN * (P_2_max / P_2N)**2, eta_max = P_2_max / (P_2_max + P_v_max)
+WERTE:
+P_2N = 250 kW
+P_CuN = 4.5 kW
+P_Fe = 0.8 kW
+RECHNUNG: P_Cu_Nenn = 4.5 * (250 / 250)**2
+P_v_Nenn = 0.8 + 4.5
+eta_N = 250 / (250 + 5.3)
+P_2_max = 250 * sqrt(0.8 / 4.5)
+P_Cu_max = 4.5 * (250 * sqrt(0.8 / 4.5) / 250)**2
+P_v_max = 0.8 + P_Cu_max
+eta_max = 250 * sqrt(0.8 / 4.5) / (250 * sqrt(0.8 / 4.5) + P_v_max)
+ERGEBNIS: eta_N, eta_max, P_2_max
+EINHEIT: %, %, kW
+QUELLE: η = P₂/(P₂ + P_v) mit P_v = P_Fe + P_CuN · (P₂/P_2N)² und dη/dP₂ = 0 für η_max",,,,,
