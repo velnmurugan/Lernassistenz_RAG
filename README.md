@@ -172,3 +172,10 @@ V19c (29 Oct 2026) – Ziffer „1“ in LERNASSISTENT_V19 (z. B. AB1): die Form
 Faithfulness mit und ohne Retrieval (29 Oct 2026): skripte/evaluation/faithfulness_rag_vs_ohne.py, Lauf skripte/laeufe/faithfulness_lauf.sh [probe].
   Bewertet werden die 95 beantwortbaren N100-Fragen (V11B-Antworten mit Retrieval; Antworten ohne Retrieval, Prompt O-v1) mit demselben Richter (mistral-nemo, J-v1)
   gegen dieselben vier abgerufenen Textabschnitte. Ergebnis: evaluationsdaten/faithfulness_rag_vs_ohne_V11B*.csv/.txt. Nur Pilotfragen, Richter nicht validiert.
+
+## Freeze-Lauf N100 (29 Oct 2026)
+Ziel: Prüfen, ob die Rechenpfad-Varianten "aus" (V18=ADEK, V19 aus) und "AB" (V19=AB) auf allen 100 Fragen stabil sind; V11B bleibt Referenz bis zur Entscheidung.
+Läufe: N100 (70 Fischer + 30 Böge) mit und ohne Retrieval je Variante (Labels V19AUS, V19AB); RV-v1 (22 Fragen) je Variante als Reproduzierbarkeitskontrolle gegen die früheren Läufe.
+Auswertung: vergleich_laeufe_n100.py (Antwort für Antwort gegen V11B, Liste geänderter Antworten zur Handbewertung), Faithfulness (V11B als Basis; identische Antworten übernommen, Stichprobenkontrolle), RAGAS Answer-/Context-Relevance.
+Entscheidungsregel (vorab festgelegt): Eine Variante wird eingefroren, wenn nach Handbewertung der geänderten Antworten keine Verschlechterung gegenüber V11B auf Nicht-Rechenfragen auftritt und die Rechenfragen nicht schlechter sind als bei der anderen Variante; sonst bleibt V11B.
+Hinweis: Entwicklungs- und Pilotfragen; keine Evidenz für den Beitrag ohne unabhängigen Satz.
