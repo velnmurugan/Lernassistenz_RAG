@@ -191,3 +191,6 @@ Grenzen: Entwicklungs- und Pilotfragen; Richtigkeit nur per Handbewertung; die R
 
 ## Vorab-Prüfsatz V1 (30 Oct 2026)
 Vorab-Prüfsatz V1 (30 Oct 2026): 100 frische Fragen (50 Fischer, 50 Böge) aus den Original-PDFs, ohne Überschneidung mit bisherigen Sätzen. Lauf mit V11B (G-v4, RP-v5, FS=aus, qwen3.5:9b, KB v7r) über skripte/laeufe/vorabsatz_lauf.sh; Ergebnisse in evaluationsdaten/ (testlauf_retrieval_VORAB*, vergleich_rag_RAGVGL-VORAB*). Privat, kein Beleg im Beitrag; nichts auf diesem Satz abstimmen.
+
+## Hinweis-Dialogtest HD-V2
+Hinweis-Dialogtest HD-V2 (30 Oct 2026): N100 (70 Fischer + 30 Böge), V11B eingefroren. Je Frage bis zu 3 Versuche: simulierte Lernende (anderes Modell, ca. 30 % richtig), Rückmeldung IF-v5, Folgehinweis HD-v2; Rubrik P1-P6 / R1-R4 durch einen Richter (kein Generator), Bewertungsbogen für zwei Menschen. Skript skripte/evaluation/teste_hinweis_dialog.py; Ergebnisse evaluationsdaten/hinweis_dialog_HD-V2_*. Kein Beleg im Beitrag ohne Abgleich Richter gegen Menschen.
