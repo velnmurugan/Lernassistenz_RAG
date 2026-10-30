@@ -1,0 +1,91 @@
+fall_id,frage_original,generierte_frage,cosinus
+F001,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Was ist der Unterschied zwischen einer allgemeinen Lösung und einer spezielle Lösung?,0.7364
+F001,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Wie viele Parameter hat die allgemeine Lösung?,0.5904
+F001,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Wie entsteht eine spezielle Lösung aus der allgemeinen Lösung?,0.6528
+F002,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Was ist ein pH-Puffer?,0.9545
+F002,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Wie wird ein pH-Puffer hergestellt?,0.9148
+F002,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Wie wirkt ein pH-Puffer bei der Zugabe von Säuren oder Laugen in wässriger Lösung?,0.7981
+F003,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,"Was geschieht mit dem Drehimpuls eines Systems, wenn keine äußeren Drehmomente wirken?",0.8356
+F003,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,Wie beeinflussen innere Kräfte den Drehimpuls eines Systems?,0.7508
+F003,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,Unter welchen Bedingungen bleibt der Drehimpuls eines Systems konstant?,0.9839
+F004,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Was ist eine Eigenschaft von Quarzmehl?,0.7962
+F004,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Wie beeinflussen Fasern die Zähigkeit?,0.7078
+F004,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Welche Eigenschaft wird durch Fasern gemindert?,0.6381
+F005,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,"Wie verändert sich die Zeit, wenn sich die Eindringtiefe um den Faktor 2 erhöht?",0.6244
+F005,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,Was besagt das 2. Fick'sche Gesetz bezüglich der Beziehung zwischen Eindringtiefe und Zeit?,0.4273
+F005,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,Wie beeinflusst eine konstante Temperatur den Diffusionskoeffizienten und damit die Zeit bei der Diffusion?,0.7982
+F006,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,Was ist der Verwendungsbereich von kristallinen Thermoplasten?,0.8928
+F006,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,In welchem Temperaturbereich werden kristalline Thermoplaste eingesetzt?,0.9867
+F006,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,Was ist die Begründung für den Verwendungsbereich von kristallinen Thermoplasten?,0.8616
+F007,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?","Was hat den höheren Korrosionswiderstand, CuNi oder CuZn?",0.8367
+F007,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?","Welche Legierung hat eine höhere Korrosionsbeständigkeit, wenn Ni hinzugefügt wird?",0.5133
+F007,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?","Welche Legierung hat eine höhere Festigkeit, aber nicht notwendigerweise einen höheren Korrosionswiderstand?",0.5043
+F008,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Was misst der Kerbschlagbiegeversuch?,0.7629
+F008,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Welche Arbeit misst der Kerbschlagbiegeversuch?,0.7702
+F008,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Welche Spannungskonzentration wird durch das Kerben der Proben erzeugt?,0.7061
+F009,Was bedeutet ein Vakuum von 100 %?,Was ist der absolute Druck in einem Vakuum von 100 %?,0.8145
+F009,Was bedeutet ein Vakuum von 100 %?,Wie viel Pa betragen in einem vollständigen Vakuum?,0.7595
+F009,Was bedeutet ein Vakuum von 100 %?,"Was bedeutet es, wenn der absolute Druck gleich null ist?",0.5512
+F010,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",Was ist der spezifische Brennwert?,0.8201
+F010,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",Wie wird der spezifische Brennwert berechnet?,0.8272
+F010,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?","Was sind die Verbrennungsprodukte, die bei der Berechnung des spezifischen Brennwerts berücksichtigt werden?",0.8769
+F011,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,Was ist die Funktion des Schmelzleiters in einer Schmelzsicherung?,0.7034
+F011,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,Wie erfolgt das Abschalten eines Überstromes durch eine Schmelzsicherung?,0.9576
+F011,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,"Was passiert bei einer Schmelzsicherung, wenn der Strom zu hoch ist?",0.6004
+F012,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,"Was sind Beispiele für Teile, bei denen ein weiter Laufsitz verwendet wird?",0.6173
+F012,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,Welche Art von Spiel erfordert den Einsatz eines weiten Laufsitzes?,0.4535
+F012,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,"Wo ist die Bezeichnung ""weiter Laufsitz"" in einem bestimmten Material zu finden?",0.4777
+F013,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Was sichert ein Federring nicht zwingend?,0.6795
+F013,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Welches Bauteil wird durch einen Federring ausreichend gesichert?,0.7193
+F013,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Was ist laut dem Lernmaterial die Hauptfunktion eines Federrings?,0.3008
+F014,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",Was ist der Rutschbeiwert ν_e?,0.4218
+F014,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",Wie wird der Rutschbeiwert ν_e verwendet?,0.3986
+F014,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?","Welche Gleichung wird verwendet, um die Sprengkraft F_S zu berechnen?",0.5977
+F015,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Was sind die beiden Hauptteile der Radaflex-Kupplung?,0.8694
+F015,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Wie sind die beiden Kupplungshälften verbunden?,0.4212
+F015,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Welche Vorteile bietet die Radaflex-Kupplung beim Ein- und Ausbau?,0.936
+F016,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,"Was ist der Grund dafür, dass der Wirkungsgrad im Zähler steht?",0.8462
+F016,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,Warum helfen die durch den Wirkungsgrad berücksichtigten Widerstände beim Bremsen?,0.6545
+F016,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,Wie beeinflussen die durch den Wirkungsgrad berücksichtigten Widerstände das rechnerische Lastmoment?,0.592
+F017,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Fach ein- und auslagern?,0.7558
+F017,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Kann ein Shuttle mehr als fünf Paletten in ein Regalfach laden?,0.8906
+F017,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Wie viele Paletten können mit einem Shuttle in ein Regalfach geladen werden?,0.9084
+F018,Welche Arten von Rollenförderern gibt es?,Was sind die verschiedenen Arten von Rollgängen?,0.4011
+F018,Welche Arten von Rollenförderern gibt es?,Welche Rollgänge werden für leichtere Stückgüter eingesetzt?,0.2616
+F018,Welche Arten von Rollenförderern gibt es?,Was ist die Begründung für die Unterscheidung der Rollgänge?,0.2757
+F019,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?",Wie wird der Wasserkühler nach einem Kaltstart umgangen?,0.6597
+F019,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?","Welche Bypassleitung wird geöffnet, um den Wasserkühler nach einem Kaltstart zu umgehen?",0.512
+F019,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?","Welche Kühlaufgaben werden von einem Teil des Kühlwassers nach einem Kaltstart übernommen, ohne durch das Kurbelgehäuse zu strömen?",0.6293
+F020,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?",Welche Art von Pressentyp wird hier nicht in Betracht gezogen?,0.6236
+F020,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?","Was ist der Grund dafür, dass dieser Pressentyp nicht eingesetzt werden kann?",0.7076
+F020,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?","An welchem Punkt tritt eine Kraftspitze auf, die den Einsatz des Pressentyps unmöglich macht?",0.7946
+F021,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,Was ist die Gefahr beim Anbohren spröder Werkstoffe?,0.8836
+F021,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,Was kann unter der Wucht des auftreffenden Wasserstrahls passieren?,0.6987
+F021,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,Was kann beim Anbohren spröder Werkstoffe einreißen oder aufplatzen?,0.8288
+F022,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?","Was sind die geforderten Parameter für eine hohe Vorbearbeitungsgenauigkeit beim Schleifen oder Hartfeindrehen, um Superfinishen erfolgreich durchzuführen?",0.8262
+F022,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?","Welche geometrischen Eigenschaften müssen bei der Vorbearbeitung mindestens der ISO-Qualität IT 7 entsprechen, um Superfinishen erfolgreich durchzuführen?",0.5482
+F022,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?","Welche Maßgenauigkeit muss bei der Vorbearbeitung von Bauteilen erreicht werden, um Superfinishen erfolgreich durchzuführen?",0.818
+F023,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,Was ist ein Nachteil einfacherer CAD-Systeme gegenüber weiterentwickelten?,0.9959
+F023,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,Was ist die Hauptnutzung einfacherer CAD-Systeme?,0.8227
+F023,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,Was ist bei weiterentwickelten CAD-Systemen im Vergleich zu einfacheren möglich?,0.8979
+F024,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,Was ist der Wert von hex in der Einheit [16]?,0.5762
+F024,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,Wie lautet die Formel zur Berechnung von hex?,0.522
+F024,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,Welche Rechnung führt zur Berechnung von hex?,0.5616
+F025,Worauf kommt es bei der Auswahl einer SPS an?,"Welche Funktionen müssen im Prozess überwacht und gestellt werden, um eine SPS auszuwählen?",0.802
+F025,Worauf kommt es bei der Auswahl einer SPS an?,"Wie stehen die Informationen zur Verfügung, um eine SPS auszuwählen?",0.8552
+F025,Worauf kommt es bei der Auswahl einer SPS an?,"Welche Verarbeitungsgeschwindigkeiten sind erforderlich, um eine Echtzeitbetrieb-Zykluszeit zu ermöglichen?",0.2537
+F026,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Was sind die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,0.9918
+F026,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Wie verläuft die Sprungantwort einer PT2-Strecke zunächst und danach?,0.8306
+F026,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Welche Bedeutung haben der Wendepunkt und die durch ihn gelegte Tangente bei der Bestimmung der Kenngrößen der Sprungantwort einer PT2-Strecke?,0.8005
+F027,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,Was ist der Materialgemeinkostenzuschlag in Prozent?,0.7911
+F027,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,Wie wird der Materialgemeinkostenzuschlag berechnet?,0.848
+F027,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,"Welche Werte wurden in die Formel eingesetzt, um den Materialgemeinkostenzuschlag zu berechnen?",0.7286
+F028,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,Was sind Poor Dogs?,0.6112
+F028,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,Was sind die Maßnahmen für Produkte am Ende ihrer Marktlebensdauer?,0.4377
+F028,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,"Was bedeutet es, den Marktaustritt zu prüfen?",0.4798
+F029,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Wer überwacht die Unfallverhütungsvorschriften?,0.9907
+F029,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Welche Institutionen sind für die Überwachung der UVV zuständig?,0.5778
+F029,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Wer berät in Fragen der Unfallverhütung?,0.9064
+F030,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?","Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit einer Schwankung von 1,5 Sigma?",0.9414
+F030,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?",Welche Prozessfähigkeit ist notwendig für eine praktische Fehlerfreiheit?,0.6575
+F030,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?","Was bedeutet ""ppm"" in diesem Kontext?",0.1076

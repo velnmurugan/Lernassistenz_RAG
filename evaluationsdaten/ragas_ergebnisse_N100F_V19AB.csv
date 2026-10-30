@@ -1,0 +1,71 @@
+fall_id,sitzungs_id,frage,stufe_max,geparst,richter,prompt_version,modell_verweigerung,n_aussagen,n_gestuetzt,n_unlesbar,n_meta_verworfen,faithfulness,answer_relevance,ar_roh,ausweichend,n_kontext_saetze,n_benoetigt,context_relevance
+F001,RAGVGL-N100F-V19AB-BEIDE7,"Ein Körper trägt eine Ladung von +3 C. Wie viele Elektronen fehlen ihm, wenn 1 C einer Ladung von 6,25·10^18 Elementarladungen entspricht?",2,True,mistral-nemo,J-v1,False,,,,,,0.8563,0.8563,False,29,2,0.069
+F002,RAGVGL-N100F-V19AB-BEIDE7,Zwischen zwei parallelen Platten im Abstand von 2 cm liegt eine Spannung von 500 V. Wie groß ist die elektrische Feldstärke zwischen den Platten?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6245,True,54,2,0.037
+F003,RAGVGL-N100F-V19AB-BEIDE7,Durch den Querschnitt eines Drahtes fließen in 20 Sekunden insgesamt 50 C. Wie groß ist die Stromstärke?,2,True,mistral-nemo,J-v1,False,,,,,,0.6278,0.6278,False,36,1,0.0278
+F004,RAGVGL-N100F-V19AB-BEIDE7,"Wie viel Energie ist in einer Knopfzelle gespeichert, die bei 1,35 V eine Ladung von 5 mAh liefert?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6647,True,58,1,0.0172
+F005,RAGVGL-N100F-V19AB-BEIDE7,"Welche Spannung liefert eine Lithium-Ionen-Zelle, und wie viel höher ist ihre Speicherfähigkeit pro kg im Vergleich zum Bleiakku?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7435,True,35,1,0.0286
+F006,RAGVGL-N100F-V19AB-BEIDE7,Wofür kann man Simulationsprogramme wie PSpice in der Elektrotechnik einsetzen?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8746,True,31,3,0.0968
+F007,RAGVGL-N100F-V19AB-BEIDE7,"Ein Durchlauferhitzer erwärmt 0,2 Liter Wasser pro Sekunde von 15 °C auf 45 °C bei einem Wirkungsgrad von 80 %. Welche elektrische Leistung nimmt er auf?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.5622,True,42,2,0.0476
+F008,RAGVGL-N100F-V19AB-BEIDE7,"Was versteht man unter der Flächenladungsdichte eines Kondensators, und welcher anderen Größe ist sie gleich?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.4725,True,38,2,0.0526
+F009,RAGVGL-N100F-V19AB-BEIDE7,"Wie funktioniert eine Wärmepumpe, und was bedeutet die Leistungszahl (COP)?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6342,True,28,3,0.1071
+F010,RAGVGL-N100F-V19AB-BEIDE7,"Was unterscheidet weichmagnetische von hartmagnetischen Werkstoffen, und wo setzt man sie ein?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8702,True,15,5,0.3333
+F011,RAGVGL-N100F-V19AB-BEIDE7,"Warum reicht die magnetische Feldstärke H allein nicht aus, um ein Magnetfeld zu beschreiben, und welche Größe kommt dazu?",2,True,mistral-nemo,J-v1,False,,,,,,0.7729,0.7729,False,53,2,0.0377
+F012,RAGVGL-N100F-V19AB-BEIDE7,Was bedeuten Remanenz und Koerzitivfeldstärke bei einem magnetischen Werkstoff?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6296,True,31,3,0.0968
+F013,RAGVGL-N100F-V19AB-BEIDE7,"In einer Spule mit 200 Windungen wird während 0,05 s eine Spannung von 100 V induziert. Welchen Endwert hat der Fluss, wenn er linear von null ansteigt?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.3238,True,36,2,0.0556
+F014,RAGVGL-N100F-V19AB-BEIDE7,"Eine Erregerspule hat eine Induktivität von 0,5 H und wird von 4 A durchflossen. Wie viel magnetische Energie ist darin gespeichert?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8422,True,52,1,0.0192
+F015,RAGVGL-N100F-V19AB-BEIDE7,"Ein zweipoliger Generator hat 50 in Reihe geschaltete Windungen, B = 0,8 T bedeckt 70 % der Halbkreisfläche des Läufers (d = 0,3 m, l = 0,4 m). Bei welcher Drehzahl entstehen 400 V?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6665,True,70,4,0.0571
+F016,RAGVGL-N100F-V19AB-BEIDE7,"Wie funktioniert eine Wirbelstrombremse, und wo findet man dieses Prinzip noch?",2,True,mistral-nemo,J-v1,False,,,,,,0.8861,0.8861,False,47,4,0.0851
+F017,RAGVGL-N100F-V19AB-BEIDE7,"Warum zeichnet man im Zeigerbild meist Effektivwerte statt Amplituden, und wie addiert man mehrere Zeiger?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6163,True,53,4,0.0755
+F018,RAGVGL-N100F-V19AB-BEIDE7,Wie berechnet man die Leistung einer Windkraftanlage?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7553,True,31,2,0.0645
+F019,RAGVGL-N100F-V19AB-BEIDE7,Warum nimmt man für Spulen im kHz-Bereich keine geblechten Eisenkerne mehr?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7005,True,32,1,0.0312
+F020,RAGVGL-N100F-V19AB-BEIDE7,Wann setzt man auch bei 50 Hz eine Luftspule ein?,2,True,mistral-nemo,J-v1,False,,,,,,0.6674,0.6674,False,38,0,0.0
+F021,RAGVGL-N100F-V19AB-BEIDE7,"Was passiert mit dem fünften Valenzelektron, wenn man Silizium mit Arsen dotiert, und warum ist der Kristall trotzdem neutral?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7194,True,32,3,0.0938
+F022,RAGVGL-N100F-V19AB-BEIDE7,"Wieso verhalten sich Löcher im P-Halbleiter wie positive Ladungen, und in welche Richtung wandern sie?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.5007,True,43,8,0.186
+F023,RAGVGL-N100F-V19AB-BEIDE7,Wie funktioniert eine Feldplatte als Magnetfeldsensor?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6354,True,28,2,0.0714
+F024,RAGVGL-N100F-V19AB-BEIDE7,Warum sind LCD-Anzeigen in Uhren und Taschenrechnern verbreitet?,2,True,mistral-nemo,J-v1,False,,,,,,0.665,0.665,False,41,2,0.0488
+F025,RAGVGL-N100F-V19AB-BEIDE7,Weshalb muss man beim Löten und Handhaben von MOS-FETs auf Erdung achten?,2,True,mistral-nemo,J-v1,False,,,,,,0.8954,0.8954,False,38,1,0.0263
+F026,RAGVGL-N100F-V19AB-BEIDE7,Warum leuchtet eine Gasentladung eigentlich?,2,True,mistral-nemo,J-v1,False,,,,,,0.7356,0.7356,False,37,2,0.0541
+F027,RAGVGL-N100F-V19AB-BEIDE7,"Was ist ein Supraleiter, und bei welcher Temperatur tritt Supraleitung auf?",2,True,mistral-nemo,J-v1,False,,,,,,0.7804,0.7804,False,31,0,0.0
+F028,RAGVGL-N100F-V19AB-BEIDE7,Welche Aufgabe hat der Starter in der Schaltung einer Leuchtstofflampe?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6837,True,35,5,0.1429
+F029,RAGVGL-N100F-V19AB-BEIDE7,Eine B2-Brückenschaltung soll 12 V Gleichspannung liefern (Dioden und Trafo als verlustfrei angenommen). Welche Wechselspannung muss sekundärseitig anliegen?,2,True,mistral-nemo,J-v1,False,,,,,,0.774,0.774,False,45,1,0.0222
+F030,RAGVGL-N100F-V19AB-BEIDE7,Warum erreicht ein konventionelles Netzteil mit Längstransistor nur 30 bis 50 % Wirkungsgrad?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6628,True,64,3,0.0469
+F031,RAGVGL-N100F-V19AB-BEIDE7,Warum legt man den Arbeitspunkt eines Transistorverstärkers etwa in die Mitte des Kennlinienfeldes?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.4668,True,39,1,0.0256
+F032,RAGVGL-N100F-V19AB-BEIDE7,"Wofür wurden Operationsverstärker ursprünglich entwickelt, und wie sind sie aufgebaut?",2,True,mistral-nemo,J-v1,False,,,,,,0.8106,0.8106,False,29,2,0.069
+F033,RAGVGL-N100F-V19AB-BEIDE7,Welche Aufgabe hat der IC TCA 785 in der Phasenanschnittsteuerung?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.5729,True,30,1,0.0333
+F034,RAGVGL-N100F-V19AB-BEIDE7,"Woher kommt bei Digitalmultimetern die Quantisierungsabweichung, und wie groß ist sie bei einer dreistelligen Anzeige?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7398,True,39,2,0.0513
+F035,RAGVGL-N100F-V19AB-BEIDE7,"Was bedeutet die Angabe „4½ Stellen“ bei einem Digitalvoltmeter, und was ist der größte anzeigbare Wert?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6051,True,29,3,0.1034
+F036,RAGVGL-N100F-V19AB-BEIDE7,Wie koppelt man zwei Geräte über Bluetooth?,2,False,mistral-nemo,J-v1,True,,,,,,,,,21,0,0.0
+F037,RAGVGL-N100F-V19AB-BEIDE7,Wie arbeitet ein Stufenumsetzer? Welche Bitfolge ergibt sich für Ue = 10 V bei UR = 16 V?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6642,True,39,2,0.0513
+F038,RAGVGL-N100F-V19AB-BEIDE7,"Beim Zweirampen-Umsetzer ist UR = 10 V, T1 = 20 ms und T2 = 13 ms. Welche Eingangsspannung wird gemessen?",2,True,mistral-nemo,J-v1,False,,,,,,0.5665,0.5665,False,38,2,0.0526
+F039,RAGVGL-N100F-V19AB-BEIDE7,"Eine Marke an einer Welle steht scheinbar still bei Blitzfrequenzen von 50 Hz, 25 Hz und 16,7 Hz. Mit welcher Drehzahl läuft die Welle?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7006,True,52,5,0.0962
+F040,RAGVGL-N100F-V19AB-BEIDE7,Ein Motor dreht mit 1450 1/min und liefert ein Drehmoment von 40 Nm. Wie groß ist seine Abgabeleistung?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.4072,True,57,2,0.0351
+F041,RAGVGL-N100F-V19AB-BEIDE7,Warum ist die stroboskopische Drehzahlmessung nicht eindeutig?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8298,True,23,0,0.0
+F042,RAGVGL-N100F-V19AB-BEIDE7,Wie bestimmt man mit einer Pendelmaschine das Drehmoment?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.683,True,22,2,0.0909
+F043,RAGVGL-N100F-V19AB-BEIDE7,"Ein Gleichstrommotor gibt 4,5 kW ab und hat insgesamt 0,5 kW Verluste. Wie hoch ist sein Wirkungsgrad?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.5446,True,40,2,0.05
+F044,RAGVGL-N100F-V19AB-BEIDE7,Welche Verluste eines Gleichstrommotors treten schon im Leerlauf auf und welche erst bei Belastung?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7246,True,38,3,0.0789
+F045,RAGVGL-N100F-V19AB-BEIDE7,Wie funktioniert ein Induktionskochfeld?,2,False,mistral-nemo,J-v1,True,,,,,,,,,58,0,0.0
+F046,RAGVGL-N100F-V19AB-BEIDE7,Welche Klemmenbezeichnung hat nach VDE die fremdversorgte Erregerwicklung einer Gleichstrommaschine?,2,True,mistral-nemo,J-v1,False,,,,,,0.4659,0.4659,False,24,1,0.0417
+F047,RAGVGL-N100F-V19AB-BEIDE7,Wie unterscheiden sich Fremd- und Reihenschlusserregung bei der Ausführung der Erregerwicklung?,2,True,mistral-nemo,J-v1,False,,,,,,0.688,0.688,False,36,2,0.0556
+F048,RAGVGL-N100F-V19AB-BEIDE7,"Was versteht man unter Ankerrückwirkung, und wie wirkt sie sich auf die Drehzahlkennlinie aus?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7339,True,37,14,0.3784
+F049,RAGVGL-N100F-V19AB-BEIDE7,"Warum nimmt man statt einer Kompensationswicklung oft eine Hilfsreihenschlusswicklung, und was ist beim Umkehren des Ankerstroms zu beachten?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7,True,44,4,0.0909
+F050,RAGVGL-N100F-V19AB-BEIDE7,"Ein Transformator hat eine relative Kurzschlussspannung von 5 %. Das Wievielfache des Bemessungsstroms fließt beim Dauerkurzschluss, und wie hoch kann die Stoßspitze werden?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.5937,True,40,2,0.05
+F051,RAGVGL-N100F-V19AB-BEIDE7,"Welche Bedingungen müssen erfüllt sein, damit man zwei Transformatoren parallel schalten darf?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.963,True,42,3,0.0714
+F052,RAGVGL-N100F-V19AB-BEIDE7,"Ein Drehstromtransformator hat 10 kV Oberspannung und 11,5 A Strangstrom auf der Oberspannungsseite. Welche Scheinleistung hat er?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6496,True,70,1,0.0143
+F053,RAGVGL-N100F-V19AB-BEIDE7,Welche Schaltgruppe wird für größere Netztransformatoren über 400 kVA bevorzugt und warum?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8589,True,24,1,0.0417
+F054,RAGVGL-N100F-V19AB-BEIDE7,Welche Steckertypen gibt es beim Laden eines Elektroautos an der öffentlichen Ladesäule?,2,False,mistral-nemo,J-v1,True,,,,,,,,,35,0,0.0
+F055,RAGVGL-N100F-V19AB-BEIDE7,Ein Asynchronmotor am 50-Hz-Netz (ns = 1500 1/min) wird mit 750 1/min entgegen der Drehfeldrichtung angetrieben. Wie groß sind Schlupf und Läuferfrequenz?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.3887,True,51,3,0.0588
+F056,RAGVGL-N100F-V19AB-BEIDE7,Wie kann man einen Drehstrommotor kleiner Leistung am einphasigen Wechselstromnetz betreiben?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7038,True,40,7,0.175
+F057,RAGVGL-N100F-V19AB-BEIDE7,"Wie ändert sich die Klemmenspannung eines Synchrongenerators im Inselbetrieb bei induktiver und kapazitiver Last, und was macht der Spannungsregler?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6112,True,34,4,0.1176
+F058,RAGVGL-N100F-V19AB-BEIDE7,"Warum pulsiert das Drehmoment eines Universalmotors am Wechselstromnetz, und mit welcher Frequenz?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6951,True,42,3,0.0714
+F059,RAGVGL-N100F-V19AB-BEIDE7,"Woran erkennt man, ob die Betriebsdrehzahl eines Lüfterantriebs stabil ist?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8003,True,31,2,0.0645
+F060,RAGVGL-N100F-V19AB-BEIDE7,Wie groß muss die Bemessungsleistung eines Motors für einen Lüfter im Dauerbetrieb mindestens sein?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.9211,True,40,2,0.05
+F061,RAGVGL-N100F-V19AB-BEIDE7,"Ein Motor (J0 = 0,02 kgm²) treibt über ein Getriebe eine Welle mit J1 = 1,5 kgm² an, die mit n/10 dreht. Wie groß ist das auf die Motordrehzahl umgerechnete Trägheitsmoment?",2,True,mistral-nemo,J-v1,False,,,,,,0.4759,0.4759,False,44,3,0.0682
+F062,RAGVGL-N100F-V19AB-BEIDE7,"Eine Last von 500 kg bewegt sich mit 0,5 m/s geradlinig; der Motor dreht mit 1000 1/min. Welches Ersatzträgheitsmoment hat die Last an der Motorwelle?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.3675,True,53,2,0.0377
+F063,RAGVGL-N100F-V19AB-BEIDE7,Wie erzeugt ein Mikrowellenherd die Wärme im Gargut?,2,False,mistral-nemo,J-v1,True,,,,,,,,,29,0,0.0
+F064,RAGVGL-N100F-V19AB-BEIDE7,"Wie funktioniert die Widerstandsbremsung eines Gleichstrom-Nebenschlussmotors, und was passiert mit der Bewegungsenergie?",2,True,mistral-nemo,J-v1,False,,,,,,0.8118,0.8118,False,42,5,0.119
+F065,RAGVGL-N100F-V19AB-BEIDE7,Warum verkleinert man den Bremswiderstand beim Widerstandsbremsen mit abnehmender Drehzahl stufenweise?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.3874,True,47,2,0.0426
+F066,RAGVGL-N100F-V19AB-BEIDE7,"Wie hängt die Endübertemperatur eines Motors mit seinen Verlusten zusammen, und was passiert bei Überlast?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8279,True,44,4,0.0909
+F067,RAGVGL-N100F-V19AB-BEIDE7,"Wie groß ist die Erwärmungszeitkonstante typischer Industriemotoren, und wie verhält sich die Abkühlung bei stehender eigenbelüfteter Maschine?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8268,True,46,2,0.0435
+F068,RAGVGL-N100F-V19AB-BEIDE7,Worin unterscheiden sich Übersichtsschaltplan und Stromlaufplan?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7492,True,56,3,0.0536
+F069,RAGVGL-N100F-V19AB-BEIDE7,"Welche Kontaktschaltung entspricht einer UND-Verknüpfung, und wann ist der Ausgang 1?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7236,True,41,2,0.0488
+F070,RAGVGL-N100F-V19AB-BEIDE7,Wie viel kostet die Meisterprüfung im Elektrohandwerk?,2,False,mistral-nemo,J-v1,True,,,,,,,,,35,0,0.0

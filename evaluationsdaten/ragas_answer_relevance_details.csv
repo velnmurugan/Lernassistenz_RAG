@@ -1,379 +1,91 @@
 fall_id,frage_original,generierte_frage,cosinus
-F001,"Ein Körper trägt eine Ladung von +3 C. Wie viele Elektronen fehlen ihm, wenn 1 C einer Ladung von 6,25·10^18 Elementarladungen entspricht?",Wie viele Elektronen fehlen in einem Körper mit einer Ladung von Q = +3 C?,0.9057
-F001,"Ein Körper trägt eine Ladung von +3 C. Wie viele Elektronen fehlen ihm, wenn 1 C einer Ladung von 6,25·10^18 Elementarladungen entspricht?","Welche Ladung hat ein Körper, der einen Überschuss von 6 · 6,25 · 10^18 positiven Elementarladungen hat?",0.6283
-F001,"Ein Körper trägt eine Ladung von +3 C. Wie viele Elektronen fehlen ihm, wenn 1 C einer Ladung von 6,25·10^18 Elementarladungen entspricht?",Wie viele Elektronen hat ein Körper mit einer Ladung von Q = -2 C im Überschuss?,0.8679
-F002,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Was ist die allgemeine Lösung einer Differentialgleichung?,0.822
-F002,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Wie viele Parameter hat die allgemeine Lösung einer Differentialgleichung?,0.8053
-F002,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Was ist eine spezielle oder partikuläre Lösung einer Differentialgleichung?,0.757
-F003,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Was ist ein pH-Puffer?,0.9545
-F003,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Wie wird ein pH-Puffer hergestellt?,0.9148
-F003,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Welche Wirkung hat ein pH-Puffer in wässriger Lösung?,0.768
-F004,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,"Was geschieht mit dem Drehimpuls eines Systems, wenn auf es keine äußeren Drehmomente wirken?",0.841
-F004,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,"Wie verändert sich der Drehimpuls eines Systems, wenn die Summe der äußeren Drehmomente gleich null ist?",0.778
-F004,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,Unter welchen Bedingungen bleibt der Drehimpuls eines Systems nach Betrag und Richtung unverändert?,0.901
-F005,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Was steigert die Härte und Warmfestigkeit?,0.551
-F005,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Was erhöht die Zähigkeit und mindert die Wärmedehnung?,0.5488
-F005,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Was sind die Auswirkungen von Fasern in einem Material?,0.5004
-F006,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,"Wie verändert sich die Zeit, wenn die Eindringtiefe verdoppelt wird?",0.7193
-F006,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,"Welcher Faktor verlängert die Zeit, wenn die Eindringtiefe verdoppelt wird?",0.7772
-F006,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,Nach welchem Gesetz ist die Eindringtiefe proportional zur Zeit?,0.3881
-F007,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,Was ist der Verwendungsbereich von kristallinen Thermoplasten?,0.8928
-F007,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,Wo liegt die untere Grenze des Verwendungsbereichs von kristallinen Thermoplasten?,0.8796
-F007,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,Wo liegt die obere Grenze des Verwendungsbereichs von kristallinen Thermoplasten?,0.8862
-F008,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?",Welche Legierung hat den höchsten Korrosionswiderstand unter den geannten Legierungen?,0.4238
-F008,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?",Welche Legierung hat eine höhere Korrosionsbeständigkeit als CuZn?,0.7408
-F008,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?",Welche Legierung hat eine höhere Korrosionsbeständigkeit als CuSnZn?,0.6954
-F009,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Was misst der Kerbschlagbiegeversuch?,0.7629
-F009,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Welche Arbeit misst der Kerbschlagbiegeversuch?,0.7702
-F009,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Was ist der Zweck der Kerbung bei Proben im Kerbschlagbiegeversuch?,0.8345
-F010,Was bedeutet ein Vakuum von 100 %?,Was ist der absolute Druck in einem Vakuum von 100 %?,0.8145
-F010,Was bedeutet ein Vakuum von 100 %?,Wie viel Pa betragen in einem vollständigen Vakuum?,0.7595
-F010,Was bedeutet ein Vakuum von 100 %?,"Was bedeutet es, wenn der absolute Druck gleich null ist?",0.5512
-F011,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",Was ist der spezifische Brennwert?,0.8201
-F011,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",Wie wird der spezifische Brennwert berechnet?,0.8272
-F011,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",Welche Bedingung wird bei der Berechnung des spezifischen Brennwerts angenommen?,0.789
-F012,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,Was bewirkt das Abschmelzen eines sehr dünnen Drahtes in einer Schmelzsicherung?,0.6146
-F012,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,Wie funktioniert eine Schmelzsicherung bei Überstrom?,0.9683
-F012,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,Was löst die sichere Trennung des Stromkreises in einer Schmelzsicherung aus?,0.6833
-F013,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,Was wird der Weiter Laufsitz für verwendet?,0.523
-F013,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,Welche Teile haben reichliches Spiel und werden mit dem Weiter Laufsitz verwendet?,0.4926
-F013,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,Welche Anwendungen hat der Weiter Laufsitz in der Industrie?,0.5009
-F014,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Was ist eine Kronenmutter mit Splint?,0.2493
-F014,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Welche Art von Sicherung bietet eine Kronenmutter mit Splint?,0.4883
-F014,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Welche Art von Verbindung ist mit einer Kronenmutter mit Splint ausreichend gesichert?,0.4144
-F015,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",Was ist der Rutschbeiwert $\nu_e$ in der Gleichung für die Sprengkraft $F_S$?,0.6712
-F015,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",Wie wird die Sprengkraft $F_S$ berechnet?,0.5618
-F015,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",Welche Bedeutung hat der Rutschbeiwert $\nu_e$ bei der Berechnung der Sprengkraft $F_S$?,0.653
-F016,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Was sind die beiden Hauptteile der Radaflex-Kupplung?,0.8694
-F016,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Wie sind die beiden Kupplungshälften verbunden?,0.4212
-F016,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Welche Vorteile bietet die Radaflex-Kupplung beim Ein- und Ausbau?,0.936
-F017,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,"Was ist der Grund dafür, dass der Wirkungsgrad im Zähler steht?",0.8462
-F017,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,Warum hilft der Wirkungsgrad beim Bremsen?,0.6936
-F017,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,Wie beeinflussen die durch den Wirkungsgrad berücksichtigten Widerstände das rechnerische Lastmoment?,0.592
-F018,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Fach ein- und auslagern?,0.7558
-F018,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Kann ein Shuttle mehr als fünf Paletten in ein Regalfach laden?,0.8906
-F018,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Wie viele Paletten können mit einem Shuttle in ein Regalfach geladen werden?,0.9084
-F019,Welche Arten von Rollenförderern gibt es?,Was sind die verschiedenen Arten von Rollgängen?,0.4011
-F019,Welche Arten von Rollenförderern gibt es?,Welche Rollgänge werden für leichtere Stückgüter eingesetzt?,0.2616
-F019,Welche Arten von Rollenförderern gibt es?,Welche Rollgänge sind angetrieben?,0.4489
-F020,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?",Wie wird der Wasserkühler nach einem Kaltstart umgangen?,0.6597
-F020,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?",Was passiert mit einem Teil des Kühlwassers nach dem Öffnen des Thermostatventils?,0.7223
-F020,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?","Welche Komponenten durchströmt das Kühlwasser, wenn es den Kurbelgehäuse umgangen hat?",0.5651
-F021,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?",Welche Art von Pressentyp wird nicht in Betracht gezogen?,0.6319
-F021,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?","Was ist der Grund dafür, dass dieser Pressentyp nicht in Betracht gezogen wird?",0.7356
-F021,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?","An welchem Punkt tritt eine Kraftspitze auf, die den Pressentyp unbrauchbar macht?",0.7645
-F022,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,"Was ist die Gefahr beim Anbohren spröder Werkstoffe wie Glas, Keramik oder Stein?",0.768
-F022,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,"Was kann beim Anbohren spröder Werkstoffe wie Glas, Keramik oder Stein unter der Wucht des Wasserstrahls passieren?",0.7734
-F022,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,"Welche Oberfläche kann unter der Wucht des Wasserstrahls einreißen oder aufplatzen beim Anbohren spröder Werkstoffe wie Glas, Keramik oder Stein?",0.7025
-F023,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?",Was sind die wichtigsten Parameter für eine erfolgreiche Superfinish-Bearbeitung?,0.8261
-F023,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?","Welche Anforderungen müssen bei der Vorbearbeitung durch Schleifen oder Hartfeindrehen erfüllt werden, um Superfinishen erfolgreich durchzuführen?",0.8499
-F023,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?",Welche geometrischen Eigenschaften müssen für eine erfolgreiche Superfinish-Bearbeitung vorliegen?,0.6898
-F024,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,Was ist ein Nachteil einfacherer CAD-Systeme gegenüber weiterentwickelten Systemen?,0.9852
-F024,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,"Was ist der Grund dafür, dass eine über die technische Zeichnung hinausgehende Nutzung des CAD-Modells bei einfacheren Systemen largely unmöglich ist?",0.8121
-F024,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,Was steht im Vordergrund bei der Erzeugung der Zeichnung in einfacheren CAD-Systemen?,0.751
-F025,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,Wie viele Stellen hat die Binärzahl 101101?,0.5106
-F025,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,Welche hexadezimalen Ziffern entsprechen den Gruppen 0010 und 1101?,0.7058
-F025,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,"Wie lautet die hexadezimale Zahl, die der Binärzahl 101101 entspricht?",0.7985
-F026,Worauf kommt es bei der Auswahl einer SPS an?,"Welche Funktionen müssen im Prozess überwacht und gestellt werden, um eine geeignete SPS auszuwählen?",0.7879
-F026,Worauf kommt es bei der Auswahl einer SPS an?,"Wie stehen die Informationen zur Verfügung, um eine passende SPS zu wählen (binär, analog, digital)?",0.7036
-F026,Worauf kommt es bei der Auswahl einer SPS an?,"Welche Verarbeitungsgeschwindigkeiten sind erforderlich, um Echtzeitbetrieb mit einer SPS zu ermöglichen?",0.6011
-F027,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Was sind die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,0.9918
-F027,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Wie verläuft die Anstiegsphase der Sprungantwort einer PT2-Strecke?,0.7846
-F027,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Was beschreibt die Ausgleichszeit Tg bei einer PT2-Strecke?,0.7197
-F028,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,Was ist der prozentuale Zuschlag für die Materialgemeinkosten?,0.8412
-F028,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,Wie hoch sind die Materialgemeinkosten in Euro?,0.6878
-F028,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,"Welche Methode wird verwendet, um den Zuschlag für die Materialgemeinkosten zu berechnen?",0.7886
-F029,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,Was sind Poor Dogs?,0.6112
-F029,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,Was ist die Strategie für Produkte am Ende ihrer Marktlebensdauer?,0.4201
-F029,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,Was ist der nächste Schritt nach dem Prüfen des Marktaustritts?,0.3809
-F030,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Wer überwacht die Unfallverhütungsvorschriften?,0.9907
-F030,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Welche Institutionen sind für die Überwachung der UVV zuständig?,0.5778
-F030,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Wer berät in Fragen der Unfallverhütung?,0.9064
-F031,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?","Wie viele Fehler entstehen pro Million bei einem 6-Sigma-Prozess mit einer Schwankung von 1,5 Sigma?",0.939
-F031,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?","Was bedeutet ""praktische Fehlerfreiheit"" in Bezug auf die Prozessfähigkeit?",0.6056
-F031,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?",Welche Prozessfähigkeit entspricht einer praktischen Fehlerfreiheit?,0.6751
-F032,"Ein Körper trägt eine Ladung von +3 C. Wie viele Elektronen fehlen ihm, wenn 1 C einer Ladung von 6,25·10^18 Elementarladungen entspricht?",Wie viele Elektronen fehlen in einem Körper mit einer Ladung von +3 C?,0.9178
-F032,"Ein Körper trägt eine Ladung von +3 C. Wie viele Elektronen fehlen ihm, wenn 1 C einer Ladung von 6,25·10^18 Elementarladungen entspricht?","Welche Ladung hat ein Körper, der einen Überschuss von 18,75 · 10^18 Elektronen hat?",0.8271
-F032,"Ein Körper trägt eine Ladung von +3 C. Wie viele Elektronen fehlen ihm, wenn 1 C einer Ladung von 6,25·10^18 Elementarladungen entspricht?",Wie viele Elektronen hat ein Körper mit einer Ladung von -2 C im Überschuss?,0.8678
-F033,Zwischen zwei parallelen Platten im Abstand von 2 cm liegt eine Spannung von 500 V. Wie groß ist die elektrische Feldstärke zwischen den Platten?,"Wie hoch ist die elektrische Feldstärke in einem homogenen Feld, wenn die Spannung 500 V und der Abstand 2 cm beträgt?",0.8099
-F033,Zwischen zwei parallelen Platten im Abstand von 2 cm liegt eine Spannung von 500 V. Wie groß ist die elektrische Feldstärke zwischen den Platten?,"Was ist die elektrische Feldstärke in einem homogenen Feld, wenn die Spannung 500 V und der Weg 0,02 m lang ist?",0.7552
-F033,Zwischen zwei parallelen Platten im Abstand von 2 cm liegt eine Spannung von 500 V. Wie groß ist die elektrische Feldstärke zwischen den Platten?,"Wie lässt sich die elektrische Feldstärke in einem homogenen Feld berechnen, wenn die Spannung 500 V und der Weg 2 cm beträgt?",0.768
-F034,Durch den Querschnitt eines Drahtes fließen in 20 Sekunden insgesamt 50 C. Wie groß ist die Stromstärke?,"Was ist die Stromstärke, die durch die Verwendung der Formel I = Q/t berechnet wurde?",0.6155
-F034,Durch den Querschnitt eines Drahtes fließen in 20 Sekunden insgesamt 50 C. Wie groß ist die Stromstärke?,"Wie viele Ampere ergeben sich, wenn man 50 C durch 20 s teilt?",0.73
-F034,Durch den Querschnitt eines Drahtes fließen in 20 Sekunden insgesamt 50 C. Wie groß ist die Stromstärke?,Was ist das Ergebnis der Berechnung der Stromstärke unter Verwendung der Ladungsmenge Q = 50 C und der Zeit t = 20 s?,0.7603
-F035,"Wie viel Energie ist in einer Knopfzelle gespeichert, die bei 1,35 V eine Ladung von 5 mAh liefert?",Wie viel Energie liefert eine Knopfzelle?,0.818
-F035,"Wie viel Energie ist in einer Knopfzelle gespeichert, die bei 1,35 V eine Ladung von 5 mAh liefert?",Was ist die Ladung einer Knopfzelle?,0.3488
-F035,"Wie viel Energie ist in einer Knopfzelle gespeichert, die bei 1,35 V eine Ladung von 5 mAh liefert?",Welche Spannung hat eine Knopfzelle?,0.4474
-F036,"Welche Spannung liefert eine Lithium-Ionen-Zelle, und wie viel höher ist ihre Speicherfähigkeit pro kg im Vergleich zum Bleiakku?",Wie viel Volt liefert eine Lithium-Ionen-Zelle?,0.8041
-F036,"Welche Spannung liefert eine Lithium-Ionen-Zelle, und wie viel höher ist ihre Speicherfähigkeit pro kg im Vergleich zum Bleiakku?",Wie viel höher ist die Speicherkapazität einer Lithium-Ionen-Zelle pro kg im Vergleich zu einem Bleiakkus?,0.87
-F036,"Welche Spannung liefert eine Lithium-Ionen-Zelle, und wie viel höher ist ihre Speicherfähigkeit pro kg im Vergleich zum Bleiakku?","Was ist die Spannung, die eine Lithium-Ionen-Zelle liefert, laut dem Lernmaterial?",0.8402
-F037,Wofür kann man Simulationsprogramme wie PSpice in der Elektrotechnik einsetzen?,Was sind die Anwendungsgebiete von Simulationsprogrammen wie PSpice?,0.8648
-F037,Wofür kann man Simulationsprogramme wie PSpice in der Elektrotechnik einsetzen?,Wie können Simulationsprogramme wie PSpice in der Praxis eingesetzt werden?,0.8913
-F037,Wofür kann man Simulationsprogramme wie PSpice in der Elektrotechnik einsetzen?,Welche Arten von Analysen und Verhaltensweisen können mit Simulationsprogrammen wie PSpice untersucht werden?,0.7957
-F038,"Ein Durchlauferhitzer erwärmt 0,2 Liter Wasser pro Sekunde von 15 °C auf 45 °C bei einem Wirkungsgrad von 80 %. Welche elektrische Leistung nimmt er auf?",Wie viel beträgt die elektrische Leistung?,0.6656
-F038,"Ein Durchlauferhitzer erwärmt 0,2 Liter Wasser pro Sekunde von 15 °C auf 45 °C bei einem Wirkungsgrad von 80 %. Welche elektrische Leistung nimmt er auf?",Was ist der Wert von φ?,0.3496
-F038,"Ein Durchlauferhitzer erwärmt 0,2 Liter Wasser pro Sekunde von 15 °C auf 45 °C bei einem Wirkungsgrad von 80 %. Welche elektrische Leistung nimmt er auf?",Welcher Wirkungsgrad liegt vor?,0.2759
-F039,"Was versteht man unter der Flächenladungsdichte eines Kondensators, und welcher anderen Größe ist sie gleich?",Was ist die Flächenladungsdichte σ?,0.493
-F039,"Was versteht man unter der Flächenladungsdichte eines Kondensators, und welcher anderen Größe ist sie gleich?",Wie ist die Flächenladungsdichte σ definiert?,0.4861
-F039,"Was versteht man unter der Flächenladungsdichte eines Kondensators, und welcher anderen Größe ist sie gleich?",Was ist die Beziehung zwischen der Flächenladungsdichte σ und der elektrischen Verschiebungsdichte D?,0.4384
-F040,"Wie funktioniert eine Wärmepumpe, und was bedeutet die Leistungszahl (COP)?",Was ist eine Wärmepumpe?,0.8104
-F040,"Wie funktioniert eine Wärmepumpe, und was bedeutet die Leistungszahl (COP)?",Welche Art von Kreisprozess entspricht einer Wärmepumpe?,0.7483
-F040,"Wie funktioniert eine Wärmepumpe, und was bedeutet die Leistungszahl (COP)?",Was ist die Leistungszahl ε_K einer Wärmepumpe?,0.7948
-F041,"Was unterscheidet weichmagnetische von hartmagnetischen Werkstoffen, und wo setzt man sie ein?",Was ist der Unterschied zwischen weichmagnetischen und hartmagnetischen Werkstoffen in Bezug auf die benötigte Stromstärke zur Aufhebung des Magnetismus?,0.8915
-F041,"Was unterscheidet weichmagnetische von hartmagnetischen Werkstoffen, und wo setzt man sie ein?",Welche Anwendung haben weichmagnetische Werkstoffe in Maschinen und Transformatoren?,0.8362
-F041,"Was unterscheidet weichmagnetische von hartmagnetischen Werkstoffen, und wo setzt man sie ein?",Welche Eigenschaft machen hartmagnetische Werkstoffe zu Dauer- oder Permanentmagneten?,0.8829
-F042,"Warum reicht die magnetische Feldstärke H allein nicht aus, um ein Magnetfeld zu beschreiben, und welche Größe kommt dazu?",Was ist die magnetische Feldstärke H alleine nicht in der Lage zu erfassen?,0.902
-F042,"Warum reicht die magnetische Feldstärke H allein nicht aus, um ein Magnetfeld zu beschreiben, und welche Größe kommt dazu?","Welche zweite magnetische Feldgröße wird eingeführt, um den Unterschied zwischen Anordnungen mit Luft und mit Eisen zu erfassen?",0.7359
-F042,"Warum reicht die magnetische Feldstärke H allein nicht aus, um ein Magnetfeld zu beschreiben, und welche Größe kommt dazu?","Wie wird die zweite magnetische Feldgröße genannt, die die magnetische Induktion B beschreibt?",0.7895
-F043,Was bedeuten Remanenz und Koerzitivfeldstärke bei einem magnetischen Werkstoff?,"Was ist die magnetische Flussdichte, die im Werkstoff bleibt, wenn die Erregung abgeschaltet ist?",0.676
-F043,Was bedeuten Remanenz und Koerzitivfeldstärke bei einem magnetischen Werkstoff?,"Was ist die entgegengesetzte Feldstärke, die benötigt wird, um die Restmagnetisierung aufzuheben?",0.7462
-F043,Was bedeuten Remanenz und Koerzitivfeldstärke bei einem magnetischen Werkstoff?,Wie kann der unmagnetische Zustand wiederhergestellt werden?,0.6817
-F044,"In einer Spule mit 200 Windungen wird während 0,05 s eine Spannung von 100 V induziert. Welchen Endwert hat der Fluss, wenn er linear von null ansteigt?",Was ist der Endwert des Flusses?,0.5562
-F044,"In einer Spule mit 200 Windungen wird während 0,05 s eine Spannung von 100 V induziert. Welchen Endwert hat der Fluss, wenn er linear von null ansteigt?",Welche Formel wird zur Berechnung des Flusses verwendet?,0.5932
-F044,"In einer Spule mit 200 Windungen wird während 0,05 s eine Spannung von 100 V induziert. Welchen Endwert hat der Fluss, wenn er linear von null ansteigt?","Welche Werte werden in die Formel eingesetzt, um den Endwert des Flusses zu berechnen?",0.5904
-F045,"Eine Erregerspule hat eine Induktivität von 0,5 H und wird von 4 A durchflossen. Wie viel magnetische Energie ist darin gespeichert?",Wie viel beträgt die gespeicherte magnetische Energie?,0.8118
-F045,"Eine Erregerspule hat eine Induktivität von 0,5 H und wird von 4 A durchflossen. Wie viel magnetische Energie ist darin gespeichert?",Was ist die Formel für die gespeicherte magnetische Energie?,0.7777
-F045,"Eine Erregerspule hat eine Induktivität von 0,5 H und wird von 4 A durchflossen. Wie viel magnetische Energie ist darin gespeichert?",Welche Werte wurden für L und I eingesetzt?,0.1932
-F046,"Ein zweipoliger Generator hat 50 in Reihe geschaltete Windungen, B = 0,8 T bedeckt 70 % der Halbkreisfläche des Läufers (d = 0,3 m, l = 0,4 m). Bei welcher Drehzahl entstehen 400 V?",Wie hoch ist die Drehzahl in s⁻¹?,0.6638
-F046,"Ein zweipoliger Generator hat 50 in Reihe geschaltete Windungen, B = 0,8 T bedeckt 70 % der Halbkreisfläche des Läufers (d = 0,3 m, l = 0,4 m). Bei welcher Drehzahl entstehen 400 V?",Wie viele Umdrehungen pro Minute (min⁻¹) hat die Welle?,0.5077
-F046,"Ein zweipoliger Generator hat 50 in Reihe geschaltete Windungen, B = 0,8 T bedeckt 70 % der Halbkreisfläche des Läufers (d = 0,3 m, l = 0,4 m). Bei welcher Drehzahl entstehen 400 V?","Welche Formel wurde verwendet, um die Drehzahl zu berechnen?",0.6068
-F047,"Wie funktioniert eine Wirbelstrombremse, und wo findet man dieses Prinzip noch?",Wie funktioniert eine Wirbelstrombremse?,0.931
-F047,"Wie funktioniert eine Wirbelstrombremse, und wo findet man dieses Prinzip noch?",Welche Art von Energie wird bei einer Wirbelstrombremse umgewandelt?,0.7768
-F047,"Wie funktioniert eine Wirbelstrombremse, und wo findet man dieses Prinzip noch?",Wo findet man das Prinzip der Wirbelstrombremse auch noch angewandt?,0.9504
-F048,"Warum zeichnet man im Zeigerbild meist Effektivwerte statt Amplituden, und wie addiert man mehrere Zeiger?",Was wird im Zeigerbild dargestellt?,0.49
-F048,"Warum zeichnet man im Zeigerbild meist Effektivwerte statt Amplituden, und wie addiert man mehrere Zeiger?",Wie werden gleichartige Zeiger addiert?,0.6106
-F048,"Warum zeichnet man im Zeigerbild meist Effektivwerte statt Amplituden, und wie addiert man mehrere Zeiger?",Warum werden Effektivwerte verwendet?,0.4759
-F049,Wie berechnet man die Leistung einer Windkraftanlage?,Was ist die Formel zur Berechnung der Leistung einer Windkraftanlage?,0.9257
-F049,Wie berechnet man die Leistung einer Windkraftanlage?,Welche Faktoren beeinflussen die theoretische Windleistung?,0.7489
-F049,Wie berechnet man die Leistung einer Windkraftanlage?,Was ist der maximale Wert für den Leistungsbeiwert nach Betz?,0.315
-F050,Warum nimmt man für Spulen im kHz-Bereich keine geblechten Eisenkerne mehr?,"Was ist der Frequenzbereich, ab dem Eisenverluste bei aus Blechen geschichteten Kernen zu groß werden?",0.5871
-F050,Warum nimmt man für Spulen im kHz-Bereich keine geblechten Eisenkerne mehr?,"Welche Art von Kernen verwendet man bei Frequenzen im kHz-Bereich, um Eisenverluste zu minimieren?",0.8005
-F050,Warum nimmt man für Spulen im kHz-Bereich keine geblechten Eisenkerne mehr?,Was sind gesinterte Ferritkerne und wann werden sie verwendet?,0.3312
-F051,Wann setzt man auch bei 50 Hz eine Luftspule ein?,Wann wird eine Luftspule bei 50 Hz eingesetzt?,0.9754
-F051,Wann setzt man auch bei 50 Hz eine Luftspule ein?,Welche Bedingung muss bei der Verwendung einer Luftspule erfüllt sein?,0.5736
-F051,Wann setzt man auch bei 50 Hz eine Luftspule ein?,"Wie hoch muss der Induktivitätswert einer Luftspule sein, um völlig lastunabhängig zu sein?",0.5142
-F052,"Was passiert mit dem fünften Valenzelektron, wenn man Silizium mit Arsen dotiert, und warum ist der Kristall trotzdem neutral?",Was passiert mit dem fünften Valenzelektron am Arsenatom?,0.8203
-F052,"Was passiert mit dem fünften Valenzelektron, wenn man Silizium mit Arsen dotiert, und warum ist der Kristall trotzdem neutral?","Wie bleibt der Kristall neutral, obwohl sich das fünfte Valenzelektron löst?",0.8808
-F052,"Was passiert mit dem fünften Valenzelektron, wenn man Silizium mit Arsen dotiert, und warum ist der Kristall trotzdem neutral?",Was sind die freien Ladungsträger im Kristall?,0.6363
-F053,"Wieso verhalten sich Löcher im P-Halbleiter wie positive Ladungen, und in welche Richtung wandern sie?",Was verhalten sich wie positive Ladungen?,0.4358
-F053,"Wieso verhalten sich Löcher im P-Halbleiter wie positive Ladungen, und in welche Richtung wandern sie?","Was bewirkt, dass Löcher zwangsläufig in die Gegenrichtung zur Elektronenbewegung wandern?",0.4825
-F053,"Wieso verhalten sich Löcher im P-Halbleiter wie positive Ladungen, und in welche Richtung wandern sie?","Welche Richtung nehmen Löcher ein, wenn Elektronen durch eine äußere Spannung zum Pluspol gezogen werden?",0.4594
-F054,Wie funktioniert eine Feldplatte als Magnetfeldsensor?,Wie funktioniert eine Feldplatte als Magnetfeldsensor?,1.0
-F054,Wie funktioniert eine Feldplatte als Magnetfeldsensor?,Welche Änderung erfährt der Widerstand des Bauteils bei einer magnetischen Induktion von 1 T?,0.5671
-F054,Wie funktioniert eine Feldplatte als Magnetfeldsensor?,Aus welchem Material bestehen die Halbleiterwiderstände in einer Feldplatte?,0.564
-F055,Warum sind LCD-Anzeigen in Uhren und Taschenrechnern verbreitet?,Was ist eine LCD-Anzeige?,0.7951
-F055,Warum sind LCD-Anzeigen in Uhren und Taschenrechnern verbreitet?,Welche Vorteile hat die Verwendung von LCD-Anzeigen in Uhren und Taschenrechnern?,0.855
-F055,Warum sind LCD-Anzeigen in Uhren und Taschenrechnern verbreitet?,Wie hoch ist die Stromaufnahme einer mehrstelligen Ziffer auf einer LCD-Anzeige bei Betriebsspannungen von 5 bis 8 V?,0.6761
-F056,Weshalb muss man beim Löten und Handhaben von MOS-FETs auf Erdung achten?,Was muss beim Löten und Handhaben von MOS-FETs beachtet werden?,0.93
-F056,Weshalb muss man beim Löten und Handhaben von MOS-FETs auf Erdung achten?,Welche Schicht kann durch statisch aufgeladene Personen zerstört werden?,0.3254
-F056,Weshalb muss man beim Löten und Handhaben von MOS-FETs auf Erdung achten?,Was verhindert die Ableitung von Ladungen bei MOS-FETs?,0.8464
-F057,Warum leuchtet eine Gasentladung eigentlich?,"Was ist der Grund dafür, dass eine Gasentladung leuchtet?",0.9789
-F057,Warum leuchtet eine Gasentladung eigentlich?,Warum führt nicht jeder Aufprall eines Elektrons auf ein Gasmolekül zur Freisetzung eines weiteren Elektrons?,0.4756
-F057,Warum leuchtet eine Gasentladung eigentlich?,"Wie wird die Energie der Elektronen teilweise abgegeben, wenn sie auf Gasmoleküle auftreffen?",0.5114
-F058,"Was ist ein Supraleiter, und bei welcher Temperatur tritt Supraleitung auf?",Was ist ein Supraleiter?,0.7292
-F058,"Was ist ein Supraleiter, und bei welcher Temperatur tritt Supraleitung auf?",Bei welcher Temperatur tritt bei dem Material Ti2Ba2Ca2Cu3O10 die Supraleitung ein?,0.7006
-F058,"Was ist ein Supraleiter, und bei welcher Temperatur tritt Supraleitung auf?",Welche Eigenschaft hat ein Supraleiter unterhalb einer bestimmten Temperatur?,0.9115
-F059,Welche Aufgabe hat der Starter in der Schaltung einer Leuchtstofflampe?,Wie funktioniert der Starter einer Leuchtstofflampe?,0.9479
-F059,Welche Aufgabe hat der Starter in der Schaltung einer Leuchtstofflampe?,Was passiert beim Einschalten einer Leuchtstofflampe?,0.8318
-F059,Welche Aufgabe hat der Starter in der Schaltung einer Leuchtstofflampe?,Welche Rolle spielt der Bimetallstreifen im Starter einer Leuchtstofflampe?,0.7965
-F060,Eine B2-Brückenschaltung soll 12 V Gleichspannung liefern (Dioden und Trafo als verlustfrei angenommen). Welche Wechselspannung muss sekundärseitig anliegen?,Was ist die erforderliche sekundäre Wechselspannung U?,0.7101
-F060,Eine B2-Brückenschaltung soll 12 V Gleichspannung liefern (Dioden und Trafo als verlustfrei angenommen). Welche Wechselspannung muss sekundärseitig anliegen?,Wie wird die erforderliche sekundäre Wechselspannung U berechnet?,0.7336
-F060,Eine B2-Brückenschaltung soll 12 V Gleichspannung liefern (Dioden und Trafo als verlustfrei angenommen). Welche Wechselspannung muss sekundärseitig anliegen?,Welche Werte wurden in die Berechnung der erforderlichen sekundären Wechselspannung U eingesetzt?,0.68
-F061,Warum erreicht ein konventionelles Netzteil mit Längstransistor nur 30 bis 50 % Wirkungsgrad?,Was ist der Wirkungsgrad eines konventionellen Netzteils mit Längstransistor?,0.7531
-F061,Warum erreicht ein konventionelles Netzteil mit Längstransistor nur 30 bis 50 % Wirkungsgrad?,Welche Verluste entstehen im IC-Baustein eines konventionellen Netzteils mit Längstransistor?,0.6204
-F061,Warum erreicht ein konventionelles Netzteil mit Längstransistor nur 30 bis 50 % Wirkungsgrad?,Was sind die Hauptverlustquellen in einem konventionellen Netzteil mit Längstransistor?,0.6856
-F062,Warum legt man den Arbeitspunkt eines Transistorverstärkers etwa in die Mitte des Kennlinienfeldes?,"Wie muss der Betriebspunkt liegen, damit beide Halbschwingungen der Wechselspannung verarbeitet werden können?",0.5439
-F062,Warum legt man den Arbeitspunkt eines Transistorverstärkers etwa in die Mitte des Kennlinienfeldes?,Was bewirkt die Wechselspannung im Betriebspunkt?,0.4849
-F062,Warum legt man den Arbeitspunkt eines Transistorverstärkers etwa in die Mitte des Kennlinienfeldes?,Welche Änderung des Basisstromes wird durch die Wechselspannung verursacht?,0.3955
-F063,"Wofür wurden Operationsverstärker ursprünglich entwickelt, und wie sind sie aufgebaut?",Was ist der ursprüngliche Verwendungszweck von Operationsverstärkern?,0.8597
-F063,"Wofür wurden Operationsverstärker ursprünglich entwickelt, und wie sind sie aufgebaut?",Für welche mathematischen Operationen wurden Operationsverstärker ursprünglich entwickelt?,0.7735
-F063,"Wofür wurden Operationsverstärker ursprünglich entwickelt, und wie sind sie aufgebaut?",Wie sind Operationsverstärker aufgebaut?,0.8847
-F064,Welche Aufgabe hat der IC TCA 785 in der Phasenanschnittsteuerung?,Was ist die Aufgabe des IC-Bausteins TCA 785?,0.8992
-F064,Welche Aufgabe hat der IC TCA 785 in der Phasenanschnittsteuerung?,Welche Impulse liefert der IC-Baustein TCA 785?,0.8441
-F064,Welche Aufgabe hat der IC TCA 785 in der Phasenanschnittsteuerung?,Wie sind die Zündimpulse für die Thyristoren synchronisiert?,0.3043
-F065,"Woher kommt bei Digitalmultimetern die Quantisierungsabweichung, und wie groß ist sie bei einer dreistelligen Anzeige?",Was ist die Quantisierungsabweichung?,0.6913
-F065,"Woher kommt bei Digitalmultimetern die Quantisierungsabweichung, und wie groß ist sie bei einer dreistelligen Anzeige?",Wie entsteht die Quantisierungsabweichung?,0.6937
-F065,"Woher kommt bei Digitalmultimetern die Quantisierungsabweichung, und wie groß ist sie bei einer dreistelligen Anzeige?",Wie groß ist die Quantisierungsabweichung bei einer dreistelligen Anzeige?,0.8344
-F066,"Was bedeutet die Angabe „4½ Stellen“ bei einem Digitalvoltmeter, und was ist der größte anzeigbare Wert?","Was ist die maximale Zahl, die mit 4½ Stellen angegeben werden kann?",0.6232
-F066,"Was bedeutet die Angabe „4½ Stellen“ bei einem Digitalvoltmeter, und was ist der größte anzeigbare Wert?","Welche Ziffer steht als vorderste Ziffer zur Verfügung, wenn 4½ Stellen zur Verfügung stehen?",0.5012
-F066,"Was bedeutet die Angabe „4½ Stellen“ bei einem Digitalvoltmeter, und was ist der größte anzeigbare Wert?","Was ist der größte Wert, der mit 4½ Stellen angegeben werden kann?",0.7002
-F068,Wie arbeitet ein Stufenumsetzer? Welche Bitfolge ergibt sich für Ue = 10 V bei UR = 16 V?,"Wie lautet die Bitfolge, die sich für U_e = 10 V und U_R = 16 V ergibt?",0.8642
-F068,Wie arbeitet ein Stufenumsetzer? Welche Bitfolge ergibt sich für Ue = 10 V bei UR = 16 V?,Welche Werte entsprechen den Bits der Bitfolge 011001?,0.6279
-F068,Wie arbeitet ein Stufenumsetzer? Welche Bitfolge ergibt sich für Ue = 10 V bei UR = 16 V?,"Wie viele Teile der Referenzspannung U_R müssen aufaddiert werden, um Übereinstimmung mit U_e = 10 V zu erreichen?",0.672
-F069,"Beim Zweirampen-Umsetzer ist UR = 10 V, T1 = 20 ms und T2 = 13 ms. Welche Eingangsspannung wird gemessen?",Was ist die gemessene Eingangsspannung?,0.7002
-F069,"Beim Zweirampen-Umsetzer ist UR = 10 V, T1 = 20 ms und T2 = 13 ms. Welche Eingangsspannung wird gemessen?",Welche Beziehung gilt beim Zweirampen-Umsetzer?,0.3573
-F069,"Beim Zweirampen-Umsetzer ist UR = 10 V, T1 = 20 ms und T2 = 13 ms. Welche Eingangsspannung wird gemessen?","Welche Werte wurden für U_R, T1 und T2 eingesetzt?",0.6418
-F070,"Eine Marke an einer Welle steht scheinbar still bei Blitzfrequenzen von 50 Hz, 25 Hz und 16,7 Hz. Mit welcher Drehzahl läuft die Welle?",Wie hoch ist die Drehfrequenz der Welle?,0.8411
-F070,"Eine Marke an einer Welle steht scheinbar still bei Blitzfrequenzen von 50 Hz, 25 Hz und 16,7 Hz. Mit welcher Drehzahl läuft die Welle?","Was ist die Blitzfrequenz, bei der die Marke scheinbar stillsteht?",0.6713
-F070,"Eine Marke an einer Welle steht scheinbar still bei Blitzfrequenzen von 50 Hz, 25 Hz und 16,7 Hz. Mit welcher Drehzahl läuft die Welle?","Wie hoch ist die Frequenz, bei der die Welle stillsteht?",0.7982
-F071,Ein Motor dreht mit 1450 1/min und liefert ein Drehmoment von 40 Nm. Wie groß ist seine Abgabeleistung?,Wie viel beträgt die Abgabeleistung in Watt?,0.4661
-F071,Ein Motor dreht mit 1450 1/min und liefert ein Drehmoment von 40 Nm. Wie groß ist seine Abgabeleistung?,"Welche Formel wurde verwendet, um die Abgabeleistung zu berechnen?",0.405
-F071,Ein Motor dreht mit 1450 1/min und liefert ein Drehmoment von 40 Nm. Wie groß ist seine Abgabeleistung?,"Welche Werte wurden in die Formel eingesetzt, um die Abgabeleistung zu berechnen?",0.3616
-F072,Warum ist die stroboskopische Drehzahlmessung nicht eindeutig?,Wie kann die stroboskopische Drehzahlmessung ungenau sein?,0.916
-F072,Warum ist die stroboskopische Drehzahlmessung nicht eindeutig?,"Was ist der Grund dafür, dass die Marke bei der stroboskopischen Drehzahlmessung stillstehen kann, obwohl die Welle sich dreht?",0.7301
-F072,Warum ist die stroboskopische Drehzahlmessung nicht eindeutig?,Welche Bedingung gilt für den Stillstand der Marke bei der stroboskopischen Drehzahlmessung?,0.7784
-F073,Wie bestimmt man mit einer Pendelmaschine das Drehmoment?,Wie lautet die Formel zur Bestimmung des Drehmoments M mit einer Pendelmaschine?,0.7292
-F073,Wie bestimmt man mit einer Pendelmaschine das Drehmoment?,Welche beiden Komponenten enthält die gesamte Messeinrichtung zur Messung des Drehmoments?,0.655
-F073,Wie bestimmt man mit einer Pendelmaschine das Drehmoment?,Wie wird der Wirkabstand l bei der Messung des Drehmoments gemessen?,0.6251
-F074,"Ein Gleichstrommotor gibt 4,5 kW ab und hat insgesamt 0,5 kW Verluste. Wie hoch ist sein Wirkungsgrad?",Was ist der Wirkungsgrad?,0.3729
-F074,"Ein Gleichstrommotor gibt 4,5 kW ab und hat insgesamt 0,5 kW Verluste. Wie hoch ist sein Wirkungsgrad?",Wie hoch ist die Abgabeleistung in kW?,0.7529
-F074,"Ein Gleichstrommotor gibt 4,5 kW ab und hat insgesamt 0,5 kW Verluste. Wie hoch ist sein Wirkungsgrad?",Wie hoch sind die Verluste in kW?,0.7837
-F075,Welche Verluste eines Gleichstrommotors treten schon im Leerlauf auf und welche erst bei Belastung?,"Was sind die beiden Arten von Verlusten, die bei einem Elektromotor auftreten?",0.8025
-F075,Welche Verluste eines Gleichstrommotors treten schon im Leerlauf auf und welche erst bei Belastung?,"Was sind die lastunabhängigen Verluste, die im Leerlauf eines Elektromotors auftreten?",0.8756
-F075,Welche Verluste eines Gleichstrommotors treten schon im Leerlauf auf und welche erst bei Belastung?,"Was sind die lastabhängigen Verluste, die bei Belastung eines Elektromotors auftreten?",0.87
-F077,Welche Klemmenbezeichnung hat nach VDE die fremdversorgte Erregerwicklung einer Gleichstrommaschine?,Welche Klemmenbezeichnung hat die fremdversorgte Erregerwicklung?,0.5252
-F077,Welche Klemmenbezeichnung hat nach VDE die fremdversorgte Erregerwicklung einer Gleichstrommaschine?,Welche Bezeichnungen gibt es für verschiedene Wicklungen in der Tabelle im Lernmaterial?,0.2617
-F077,Welche Klemmenbezeichnung hat nach VDE die fremdversorgte Erregerwicklung einer Gleichstrommaschine?,"Wie lautet die Klemmenbezeichnung für die fremdversorgte Erregerwicklung, die sich aus der Tabelle im Lernmaterial ergibt?",0.4669
-F078,Wie unterscheiden sich Fremd- und Reihenschlusserregung bei der Ausführung der Erregerwicklung?,Was ist der Unterschied zwischen einer Fremderregung und einer Reihenschlusserregung bezüglich der Anzahl und dem Leiterquerschnitt der Windungen in der Erregerwicklung?,0.8242
-F078,Wie unterscheiden sich Fremd- und Reihenschlusserregung bei der Ausführung der Erregerwicklung?,Wie verhält sich der Erregerstrom im Vergleich zum Ankerstrom bei einer Fremderregung?,0.5791
-F078,Wie unterscheiden sich Fremd- und Reihenschlusserregung bei der Ausführung der Erregerwicklung?,Was ist das Verhältnis von Erregerstrom zu Ankerstrom bei einer Reihenschlusserregung?,0.6452
-F079,"Was versteht man unter Ankerrückwirkung, und wie wirkt sie sich auf die Drehzahlkennlinie aus?",Was ist Ankerrückwirkung?,0.7691
-F079,"Was versteht man unter Ankerrückwirkung, und wie wirkt sie sich auf die Drehzahlkennlinie aus?",Wie beeinflusst der Ankerstrom das Hauptpolfeld?,0.6251
-F079,"Was versteht man unter Ankerrückwirkung, und wie wirkt sie sich auf die Drehzahlkennlinie aus?",Wie verändert sich die Drehzahl bei Belastung durch Ankerrückwirkung?,0.8076
-F080,"Warum nimmt man statt einer Kompensationswicklung oft eine Hilfsreihenschlusswicklung, und was ist beim Umkehren des Ankerstroms zu beachten?",Was ist eine Hilfsreihenschlusswicklung?,0.6735
-F080,"Warum nimmt man statt einer Kompensationswicklung oft eine Hilfsreihenschlusswicklung, und was ist beim Umkehren des Ankerstroms zu beachten?",Warum ist eine Hilfsreihenschlusswicklung im Vergleich zu einer Kompensationswicklung die einfachere und preiswertere Möglichkeit?,0.7778
-F080,"Warum nimmt man statt einer Kompensationswicklung oft eine Hilfsreihenschlusswicklung, und was ist beim Umkehren des Ankerstroms zu beachten?",Was muss man beim Umkehren des Ankerstroms beachten?,0.7044
-F081,"Ein Transformator hat eine relative Kurzschlussspannung von 5 %. Das Wievielfache des Bemessungsstroms fließt beim Dauerkurzschluss, und wie hoch kann die Stoßspitze werden?","Was ist der Faktor, um den sich der Dauerkurzschlussstrom beim Erreichen seiner Stoßspitze erhöht?",0.5858
-F081,"Ein Transformator hat eine relative Kurzschlussspannung von 5 %. Das Wievielfache des Bemessungsstroms fließt beim Dauerkurzschluss, und wie hoch kann die Stoßspitze werden?",Wie hoch ist der Bemessungsstrom im Vergleich zum Dauerkurzschlussstrom?,0.7037
-F081,"Ein Transformator hat eine relative Kurzschlussspannung von 5 %. Das Wievielfache des Bemessungsstroms fließt beim Dauerkurzschluss, und wie hoch kann die Stoßspitze werden?",Welche Formel beschreibt den Zusammenhang zwischen dem Dauerkurzschlussstrom und der Stoßspitze?,0.6293
-F082,"Welche Bedingungen müssen erfüllt sein, damit man zwei Transformatoren parallel schalten darf?","Was sind die Voraussetzungen, um zwei Transformatoren parallel zu schalten?",0.9661
-F082,"Welche Bedingungen müssen erfüllt sein, damit man zwei Transformatoren parallel schalten darf?","Welche Bedingungen müssen erfüllt sein, damit sich zwei Transformatoren im Verhältnis ihrer Einzelleistungen an der Gesamtlast beteiligen?",0.8358
-F082,"Welche Bedingungen müssen erfüllt sein, damit man zwei Transformatoren parallel schalten darf?",Welche Toleranz gibt es für die relativen Kurzschlussspannungen bei der Parallelschaltung von Transformatoren?,0.8033
-F083,"Ein Drehstromtransformator hat 10 kV Oberspannung und 11,5 A Strangstrom auf der Oberspannungsseite. Welche Scheinleistung hat er?",Wie lautet die Formel für die Bemessungsleistung (Scheinleistung) von Drehstromtransformatoren?,0.7468
-F083,"Ein Drehstromtransformator hat 10 kV Oberspannung und 11,5 A Strangstrom auf der Oberspannungsseite. Welche Scheinleistung hat er?","Welche Werte müssen in die Formel für die Bemessungsleistung (Scheinleistung) von Drehstromtransformatoren eingesetzt werden, um die Scheinleistung von 200 kW zu erhalten?",0.7423
-F083,"Ein Drehstromtransformator hat 10 kV Oberspannung und 11,5 A Strangstrom auf der Oberspannungsseite. Welche Scheinleistung hat er?","Wie lautet die Scheinleistung von Drehstromtransformatoren, wenn die Spannung 10 kV und der Strom 11,5 A betragen?",0.8646
-F084,Welche Schaltgruppe wird für größere Netztransformatoren über 400 kVA bevorzugt und warum?,Welche Schaltgruppe wird für Netztransformatoren mit einer Leistung über 400 kVA bevorzugt?,0.9616
-F084,Welche Schaltgruppe wird für größere Netztransformatoren über 400 kVA bevorzugt und warum?,"Was ist der Grund dafür, dass die Schaltgruppe Dyn 5 für Netztransformatoren mit einer Leistung über 400 kVA bevorzugt wird?",0.8479
-F084,Welche Schaltgruppe wird für größere Netztransformatoren über 400 kVA bevorzugt und warum?,Wie verhält sich der Sternpunktleiter in der Schaltgruppe Dyn 5 bei unsymmetrischer Belastung des Vierleiternetzes?,0.5702
-F086,Ein Asynchronmotor am 50-Hz-Netz (ns = 1500 1/min) wird mit 750 1/min entgegen der Drehfeldrichtung angetrieben. Wie groß sind Schlupf und Läuferfrequenz?,Was ist der Schlupf s?,0.0681
-F086,Ein Asynchronmotor am 50-Hz-Netz (ns = 1500 1/min) wird mit 750 1/min entgegen der Drehfeldrichtung angetrieben. Wie groß sind Schlupf und Läuferfrequenz?,Welche Läuferfrequenz f_r wird berechnet?,0.5586
-F086,Ein Asynchronmotor am 50-Hz-Netz (ns = 1500 1/min) wird mit 750 1/min entgegen der Drehfeldrichtung angetrieben. Wie groß sind Schlupf und Läuferfrequenz?,Wie wird der Schlupf s berechnet?,0.1831
-F087,Wie kann man einen Drehstrommotor kleiner Leistung am einphasigen Wechselstromnetz betreiben?,Wie kann man einen Drehstrommotor kleiner Leistung in Dreieckschaltung am einphasigen Netz betreiben?,0.8814
-F087,Wie kann man einen Drehstrommotor kleiner Leistung am einphasigen Wechselstromnetz betreiben?,"Welche Schaltung wird verwendet, um einen Drehstrommotor kleiner Leistung in Dreieckschaltung am einphasigen Netz zu betreiben?",0.8603
-F087,Wie kann man einen Drehstrommotor kleiner Leistung am einphasigen Wechselstromnetz betreiben?,Welche Art von Spannung entsteht durch die Verwendung einer nach Steinmetz benannten Schaltung mit einem Kondensator C bei einem Drehstrommotor kleiner Leistung in Dreieckschaltung am einphasigen Netz?,0.6896
-F088,"Wie ändert sich die Klemmenspannung eines Synchrongenerators im Inselbetrieb bei induktiver und kapazitiver Last, und was macht der Spannungsregler?",Was geschieht bei induktiver Last mit der Klemmenspannung?,0.6049
-F088,"Wie ändert sich die Klemmenspannung eines Synchrongenerators im Inselbetrieb bei induktiver und kapazitiver Last, und was macht der Spannungsregler?",Wie verändert sich die Klemmenspannung bei kapazitiver Last?,0.669
-F088,"Wie ändert sich die Klemmenspannung eines Synchrongenerators im Inselbetrieb bei induktiver und kapazitiver Last, und was macht der Spannungsregler?",Wie reagiert der Spannungsregler bei induktiver Belastung?,0.6687
-F089,"Warum pulsiert das Drehmoment eines Universalmotors am Wechselstromnetz, und mit welcher Frequenz?",Was ist die Frequenz des pulsierenden Drehmoments?,0.7274
-F089,"Warum pulsiert das Drehmoment eines Universalmotors am Wechselstromnetz, und mit welcher Frequenz?",Wie ist das Drehmoment proportional zum Strom?,0.6139
-F089,"Warum pulsiert das Drehmoment eines Universalmotors am Wechselstromnetz, und mit welcher Frequenz?","Was ist die Art des Stroms, der den Motor antreibt?",0.6405
-F090,"Woran erkennt man, ob die Betriebsdrehzahl eines Lüfterantriebs stabil ist?","Was ist die Bedingung für eine stabile Betriebsdrehzahl, wenn das Lastmoment das Motormoment geringfügig übersteigt?",0.8357
-F090,"Woran erkennt man, ob die Betriebsdrehzahl eines Lüfterantriebs stabil ist?","Welche Bedingung muss erfüllt sein, damit der Antrieb bei einer geringen Unterschreitung der Betriebsdrehzahl wieder auf diese zustrebt?",0.7321
-F090,"Woran erkennt man, ob die Betriebsdrehzahl eines Lüfterantriebs stabil ist?","Wie verhält sich das Motormoment im Vergleich zum Lastmoment, wenn die Betriebsdrehzahl geringfügig unterschritten wird?",0.7299
-F091,Wie groß muss die Bemessungsleistung eines Motors für einen Lüfter im Dauerbetrieb mindestens sein?,"Welche Bedingung muss die Bemessungsleistung des Motors erfüllen, um die bei der Betriebsdrehzahl auftretende Lüfterleistung sicherzustellen?",0.9048
-F091,Wie groß muss die Bemessungsleistung eines Motors für einen Lüfter im Dauerbetrieb mindestens sein?,"In welchem Drehzahlbereich muss die Betriebsdrehzahl liegen, um die Bedingung für die Bemessungsleistung des Motors zu erfüllen?",0.9058
-F091,Wie groß muss die Bemessungsleistung eines Motors für einen Lüfter im Dauerbetrieb mindestens sein?,"Welche beiden Drehzahlen definieren den Bereich, in dem die Betriebsdrehzahl liegen muss, um die Bedingung für die Bemessungsleistung des Motors zu erfüllen?",0.806
-F092,"Ein Motor (J0 = 0,02 kgm²) treibt über ein Getriebe eine Welle mit J1 = 1,5 kgm² an, die mit n/10 dreht. Wie groß ist das auf die Motordrehzahl umgerechnete Trägheitsmoment?","Was ist das Trägheitsmoment einer Schwungmasse, wenn es auf die Motordrehzahl umgerechnet wird?",0.6501
-F092,"Ein Motor (J0 = 0,02 kgm²) treibt über ein Getriebe eine Welle mit J1 = 1,5 kgm² an, die mit n/10 dreht. Wie groß ist das auf die Motordrehzahl umgerechnete Trägheitsmoment?","Wie lautet die Formel, die zur Umrechnung des Trägheitsmoments einer Schwungmasse auf die Motordrehzahl verwendet wird?",0.6245
-F092,"Ein Motor (J0 = 0,02 kgm²) treibt über ein Getriebe eine Welle mit J1 = 1,5 kgm² an, die mit n/10 dreht. Wie groß ist das auf die Motordrehzahl umgerechnete Trägheitsmoment?","Welche Übersetzung wurde in diesem Fall verwendet, um das Trägheitsmoment auf die Motordrehzahl umzurechnen?",0.5774
-F093,"Eine Last von 500 kg bewegt sich mit 0,5 m/s geradlinig; der Motor dreht mit 1000 1/min. Welches Ersatzträgheitsmoment hat die Last an der Motorwelle?",Was ist das Ersatzträgheitsmoment?,0.4455
-F093,"Eine Last von 500 kg bewegt sich mit 0,5 m/s geradlinig; der Motor dreht mit 1000 1/min. Welches Ersatzträgheitsmoment hat die Last an der Motorwelle?",Wie wird das Ersatzträgheitsmoment berechnet?,0.5557
-F093,"Eine Last von 500 kg bewegt sich mit 0,5 m/s geradlinig; der Motor dreht mit 1000 1/min. Welches Ersatzträgheitsmoment hat die Last an der Motorwelle?","Welche Werte wurden in die Formel eingesetzt, um das Ersatzträgheitsmoment zu berechnen?",0.5072
-F095,"Wie funktioniert die Widerstandsbremsung eines Gleichstrom-Nebenschlussmotors, und was passiert mit der Bewegungsenergie?",Was geschieht bei der Widerstandsbremsung?,0.7042
-F095,"Wie funktioniert die Widerstandsbremsung eines Gleichstrom-Nebenschlussmotors, und was passiert mit der Bewegungsenergie?",Wie wird die Bewegungsenergie des Antriebs bei der Widerstandsbremsung umgewandelt?,0.9068
-F095,"Wie funktioniert die Widerstandsbremsung eines Gleichstrom-Nebenschlussmotors, und was passiert mit der Bewegungsenergie?",Welche Kreise sind bei der Widerstandsbremsung betroffen?,0.5845
-F096,Warum verkleinert man den Bremswiderstand beim Widerstandsbremsen mit abnehmender Drehzahl stufenweise?,Wie kann man bei abnehmender Drehzahl ein ausreichendes Bremsmoment erzielen?,0.6971
-F096,Warum verkleinert man den Bremswiderstand beim Widerstandsbremsen mit abnehmender Drehzahl stufenweise?,Was zeigt die Bremskennlinie für R_b = 0?,0.1841
-F096,Warum verkleinert man den Bremswiderstand beim Widerstandsbremsen mit abnehmender Drehzahl stufenweise?,Wie verhält sich das elektrische Bremsen bei Annäherung an den Stillstand?,0.5027
-F097,"Wie hängt die Endübertemperatur eines Motors mit seinen Verlusten zusammen, und was passiert bei Überlast?",Wie hängt die Endübertemperatur eines Motors von seinen Verlusten ab?,0.9638
-F097,"Wie hängt die Endübertemperatur eines Motors mit seinen Verlusten zusammen, und was passiert bei Überlast?","Was geschieht, wenn ein Motor bei Überlast die Grenztemperatur θ_g erreicht?",0.8085
-F097,"Wie hängt die Endübertemperatur eines Motors mit seinen Verlusten zusammen, und was passiert bei Überlast?","Wie kann man verhindern, dass die Grenztemperatur θ_g eines Motors überschritten wird?",0.7042
-F098,"Wie groß ist die Erwärmungszeitkonstante typischer Industriemotoren, und wie verhält sich die Abkühlung bei stehender eigenbelüfteter Maschine?",Wie groß ist die Erwärmungszeitkonstante τ_θ für Motoren zwischen 1 und 100 kW?,0.8091
-F098,"Wie groß ist die Erwärmungszeitkonstante typischer Industriemotoren, und wie verhält sich die Abkühlung bei stehender eigenbelüfteter Maschine?",Wie verhält sich die Abkühlungszeitkonstante bei stillstehender Maschine im Vergleich zur Erwärmungszeitkonstante bei eigenbelüfteten Maschinen?,0.8393
-F098,"Wie groß ist die Erwärmungszeitkonstante typischer Industriemotoren, und wie verhält sich die Abkühlung bei stehender eigenbelüfteter Maschine?",Um welchen Faktor ist die Abkühlungszeitkonstante bei stillstehender Maschine größer als die Erwärmungszeitkonstante bei eigenbelüfteten Maschinen?,0.8205
-F099,Worin unterscheiden sich Übersichtsschaltplan und Stromlaufplan?,Was ist der Unterschied zwischen einem Übersichtsschaltplan und einem Stromlaufplan?,0.9544
-F099,Worin unterscheiden sich Übersichtsschaltplan und Stromlaufplan?,Welche Art von Darstellung zeigt der Übersichtsschaltplan?,0.5196
-F099,Worin unterscheiden sich Übersichtsschaltplan und Stromlaufplan?,Was enthält der Stromlaufplan in aufgelöster Darstellung?,0.7736
-F100,"Welche Kontaktschaltung entspricht einer UND-Verknüpfung, und wann ist der Ausgang 1?",Was entspricht einer UND-Verknüpfung in der Schaltungstechnik?,0.72
-F100,"Welche Kontaktschaltung entspricht einer UND-Verknüpfung, und wann ist der Ausgang 1?","Wie muss der Zustand der Eingangssignale sein, damit der Ausgang einer UND-Verknüpfung den Zustand 1 hat?",0.7223
-F100,"Welche Kontaktschaltung entspricht einer UND-Verknüpfung, und wann ist der Ausgang 1?",Welche Art von Schaltung entspricht einer UND-Verknüpfung?,0.7742
-F102,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Was ist die allgemeine Lösung einer Differentialgleichung?,0.822
-F102,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Wie viele Parameter hat die allgemeine Lösung einer Differentialgleichung?,0.8053
-F102,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Was ist eine spezielle oder partikuläre Lösung einer Differentialgleichung?,0.757
-F103,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Was ist ein pH-Puffer?,0.9545
-F103,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Wie wird ein pH-Puffer hergestellt?,0.9148
-F103,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Welche Wirkung hat ein pH-Puffer in wässriger Lösung?,0.768
-F104,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,"Was geschieht mit dem Drehimpuls eines Systems, wenn auf es keine äußeren Drehmomente wirken?",0.841
-F104,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,"Wie verändert sich der Drehimpuls eines Systems, wenn die Summe der äußeren Drehmomente gleich null ist?",0.778
-F104,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,Unter welchen Bedingungen bleibt der Drehimpuls eines Systems nach Betrag und Richtung unverändert?,0.901
-F105,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Was steigert die Härte und Warmfestigkeit?,0.551
-F105,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Was erhöht die Zähigkeit und mindert die Wärmedehnung?,0.5488
-F105,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Was sind die Auswirkungen von Fasern in einem Material?,0.5004
-F106,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,"Wie verändert sich die Zeit, wenn die Eindringtiefe verdoppelt wird?",0.7193
-F106,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,"Welcher Faktor verlängert die Zeit, wenn die Eindringtiefe verdoppelt wird?",0.7772
-F106,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,Nach welchem Gesetz ist die Eindringtiefe proportional zur Zeit?,0.3881
-F107,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,Was ist der Verwendungsbereich von kristallinen Thermoplasten?,0.8928
-F107,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,Wo liegt die untere Grenze des Verwendungsbereichs von kristallinen Thermoplasten?,0.8796
-F107,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,Wo liegt die obere Grenze des Verwendungsbereichs von kristallinen Thermoplasten?,0.8862
-F108,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?",Welche Legierung hat den höchsten Korrosionswiderstand unter den geannten Legierungen?,0.4238
-F108,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?",Welche Legierung hat eine höhere Korrosionsbeständigkeit als CuZn?,0.7408
-F108,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?",Welche Legierung hat eine höhere Korrosionsbeständigkeit als CuSnZn?,0.6954
-F109,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Was misst der Kerbschlagbiegeversuch?,0.7629
-F109,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Welche Arbeit misst der Kerbschlagbiegeversuch?,0.7702
-F109,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Was ist der Zweck der Kerbung bei Proben im Kerbschlagbiegeversuch?,0.8345
-F110,Was bedeutet ein Vakuum von 100 %?,Was ist der absolute Druck in einem Vakuum von 100 %?,0.8145
-F110,Was bedeutet ein Vakuum von 100 %?,Wie viel Pa betragen in einem vollständigen Vakuum?,0.7595
-F110,Was bedeutet ein Vakuum von 100 %?,"Was bedeutet es, wenn der absolute Druck gleich null ist?",0.5512
-F111,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",Was ist der spezifische Brennwert?,0.8201
-F111,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",Wie wird der spezifische Brennwert berechnet?,0.8272
-F111,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",Welche Bedingung wird bei der Berechnung des spezifischen Brennwerts angenommen?,0.789
-F112,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,Was bewirkt das Abschmelzen eines sehr dünnen Drahtes in einer Schmelzsicherung?,0.6146
-F112,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,Wie funktioniert eine Schmelzsicherung bei Überstrom?,0.9683
-F112,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,Was löst die sichere Trennung des Stromkreises in einer Schmelzsicherung aus?,0.6833
-F113,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,Was wird der Weiter Laufsitz für verwendet?,0.523
-F113,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,Welche Teile haben reichliches Spiel und werden mit dem Weiter Laufsitz verwendet?,0.4926
-F113,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,Welche Anwendungen hat der Weiter Laufsitz in der Industrie?,0.5009
-F114,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Was ist eine Kronenmutter mit Splint?,0.2493
-F114,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Welche Art von Sicherung bietet eine Kronenmutter mit Splint?,0.4883
-F114,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Welche Art von Verbindung ist mit einer Kronenmutter mit Splint ausreichend gesichert?,0.4144
-F115,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",Was ist der Rutschbeiwert $\nu_e$ in der Gleichung für die Sprengkraft $F_S$?,0.6712
-F115,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",Wie wird die Sprengkraft $F_S$ berechnet?,0.5618
-F115,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",Welche Bedeutung hat der Rutschbeiwert $\nu_e$ bei der Berechnung der Sprengkraft $F_S$?,0.653
-F116,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Was sind die beiden Hauptteile der Radaflex-Kupplung?,0.8694
-F116,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Wie sind die beiden Kupplungshälften verbunden?,0.4212
-F116,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Welche Vorteile bietet die Radaflex-Kupplung beim Ein- und Ausbau?,0.936
-F117,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,"Was ist der Grund dafür, dass der Wirkungsgrad im Zähler steht?",0.8462
-F117,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,Warum hilft der Wirkungsgrad beim Bremsen?,0.6936
-F117,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,Wie beeinflussen die durch den Wirkungsgrad berücksichtigten Widerstände das rechnerische Lastmoment?,0.592
-F118,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Fach ein- und auslagern?,0.7558
-F118,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Kann ein Shuttle mehr als fünf Paletten in ein Regalfach laden?,0.8906
-F118,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Wie viele Paletten können mit einem Shuttle in ein Regalfach geladen werden?,0.9084
-F119,Welche Arten von Rollenförderern gibt es?,Was sind die verschiedenen Arten von Rollgängen?,0.4011
-F119,Welche Arten von Rollenförderern gibt es?,Welche Rollgänge werden für leichtere Stückgüter eingesetzt?,0.2616
-F119,Welche Arten von Rollenförderern gibt es?,Welche Rollgänge sind angetrieben?,0.4489
-F120,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?",Wie wird der Wasserkühler nach einem Kaltstart umgangen?,0.6597
-F120,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?",Was passiert mit einem Teil des Kühlwassers nach dem Öffnen des Thermostatventils?,0.7223
-F120,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?","Welche Komponenten durchströmt das Kühlwasser, wenn es den Kurbelgehäuse umgangen hat?",0.5651
-F121,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?",Welche Art von Pressentyp wird nicht in Betracht gezogen?,0.6319
-F121,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?","Was ist der Grund dafür, dass dieser Pressentyp nicht in Betracht gezogen wird?",0.7356
-F121,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?","An welchem Punkt tritt eine Kraftspitze auf, die den Pressentyp unbrauchbar macht?",0.7645
-F122,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,"Was ist die Gefahr beim Anbohren spröder Werkstoffe wie Glas, Keramik oder Stein?",0.768
-F122,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,"Was kann beim Anbohren spröder Werkstoffe wie Glas, Keramik oder Stein unter der Wucht des Wasserstrahls passieren?",0.7734
-F122,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,"Welche Oberfläche kann unter der Wucht des Wasserstrahls einreißen oder aufplatzen beim Anbohren spröder Werkstoffe wie Glas, Keramik oder Stein?",0.7025
-F123,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?",Was sind die wichtigsten Parameter für eine erfolgreiche Superfinish-Bearbeitung?,0.8261
-F123,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?","Welche Anforderungen müssen bei der Vorbearbeitung durch Schleifen oder Hartfeindrehen erfüllt werden, um Superfinishen erfolgreich durchzuführen?",0.8499
-F123,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?",Welche geometrischen Eigenschaften müssen für eine erfolgreiche Superfinish-Bearbeitung vorliegen?,0.6898
-F124,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,Was ist ein Nachteil einfacherer CAD-Systeme gegenüber weiterentwickelten Systemen?,0.9852
-F124,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,"Was ist der Grund dafür, dass eine über die technische Zeichnung hinausgehende Nutzung des CAD-Modells bei einfacheren Systemen largely unmöglich ist?",0.8121
-F124,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,Was steht im Vordergrund bei der Erzeugung der Zeichnung in einfacheren CAD-Systemen?,0.751
-F125,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,Wie viele Stellen hat die Binärzahl 101101?,0.5106
-F125,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,Welche hexadezimalen Ziffern entsprechen den Gruppen 0010 und 1101?,0.7058
-F125,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,"Wie lautet die hexadezimale Zahl, die der Binärzahl 101101 entspricht?",0.7985
-F126,Worauf kommt es bei der Auswahl einer SPS an?,"Welche Funktionen müssen im Prozess überwacht und gestellt werden, um eine geeignete SPS auszuwählen?",0.7879
-F126,Worauf kommt es bei der Auswahl einer SPS an?,"Wie stehen die Informationen zur Verfügung, um eine passende SPS zu wählen (binär, analog, digital)?",0.7036
-F126,Worauf kommt es bei der Auswahl einer SPS an?,"Welche Verarbeitungsgeschwindigkeiten sind erforderlich, um Echtzeitbetrieb mit einer SPS zu ermöglichen?",0.6011
-F127,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Was sind die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,0.9918
-F127,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Wie verläuft die Anstiegsphase der Sprungantwort einer PT2-Strecke?,0.7846
-F127,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Was beschreibt die Ausgleichszeit Tg bei einer PT2-Strecke?,0.7197
-F128,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,Was ist der prozentuale Zuschlag für die Materialgemeinkosten?,0.8412
-F128,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,Wie hoch sind die Materialgemeinkosten in Euro?,0.6878
-F128,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,"Welche Methode wird verwendet, um den Zuschlag für die Materialgemeinkosten zu berechnen?",0.7886
-F129,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,Was sind Poor Dogs?,0.6112
-F129,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,Was ist die Strategie für Produkte am Ende ihrer Marktlebensdauer?,0.4201
-F129,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,Was ist der nächste Schritt nach dem Prüfen des Marktaustritts?,0.3809
-F130,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Wer überwacht die Unfallverhütungsvorschriften?,0.9907
-F130,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Welche Institutionen sind für die Überwachung der UVV zuständig?,0.5778
-F130,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Wer berät in Fragen der Unfallverhütung?,0.9064
-F131,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?","Wie viele Fehler entstehen pro Million bei einem 6-Sigma-Prozess mit einer Schwankung von 1,5 Sigma?",0.939
-F131,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?","Was bedeutet ""praktische Fehlerfreiheit"" in Bezug auf die Prozessfähigkeit?",0.6056
-F131,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?",Welche Prozessfähigkeit entspricht einer praktischen Fehlerfreiheit?,0.6751
+F001,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Was ist der Unterschied zwischen einer allgemeinen Lösung und einer spezielle Lösung?,0.7364
+F001,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Wie viele Parameter hat die allgemeine Lösung?,0.5904
+F001,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,Wie entsteht eine spezielle Lösung aus der allgemeinen Lösung?,0.6528
+F002,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Was ist ein pH-Puffer?,0.9545
+F002,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Wie wird ein pH-Puffer hergestellt?,0.9148
+F002,"Woraus besteht ein pH-Puffer, und was bewirkt er?",Wie wirkt ein pH-Puffer bei der Zugabe von Säuren oder Laugen in wässriger Lösung?,0.7981
+F003,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,"Was geschieht mit dem Drehimpuls eines Systems, wenn keine äußeren Drehmomente wirken?",0.8356
+F003,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,Wie beeinflussen innere Kräfte den Drehimpuls eines Systems?,0.7508
+F003,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,Unter welchen Bedingungen bleibt der Drehimpuls eines Systems konstant?,0.9839
+F004,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Was ist eine Eigenschaft von Quarzmehl?,0.7962
+F004,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Wie beeinflussen Fasern die Zähigkeit?,0.7078
+F004,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,Welche Eigenschaft wird durch Fasern gemindert?,0.6381
+F005,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,"Wie verändert sich die Zeit, wenn sich die Eindringtiefe um den Faktor 2 erhöht?",0.6244
+F005,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,Was besagt das 2. Fick'sche Gesetz bezüglich der Beziehung zwischen Eindringtiefe und Zeit?,0.4273
+F005,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,Wie beeinflusst eine konstante Temperatur den Diffusionskoeffizienten und damit die Zeit bei der Diffusion?,0.7982
+F006,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,Was ist der Verwendungsbereich von kristallinen Thermoplasten?,0.8928
+F006,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,In welchem Temperaturbereich werden kristalline Thermoplaste eingesetzt?,0.9867
+F006,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,Was ist die Begründung für den Verwendungsbereich von kristallinen Thermoplasten?,0.8616
+F007,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?","Was hat den höheren Korrosionswiderstand, CuNi oder CuZn?",0.8367
+F007,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?","Welche Legierung hat eine höhere Korrosionsbeständigkeit, wenn Ni hinzugefügt wird?",0.5133
+F007,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?","Welche Legierung hat eine höhere Festigkeit, aber nicht notwendigerweise einen höheren Korrosionswiderstand?",0.5043
+F008,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Was misst der Kerbschlagbiegeversuch?,0.7629
+F008,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Welche Arbeit misst der Kerbschlagbiegeversuch?,0.7702
+F008,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",Welche Spannungskonzentration wird durch das Kerben der Proben erzeugt?,0.7061
+F009,Was bedeutet ein Vakuum von 100 %?,Was ist der absolute Druck in einem Vakuum von 100 %?,0.8145
+F009,Was bedeutet ein Vakuum von 100 %?,Wie viel Pa betragen in einem vollständigen Vakuum?,0.7595
+F009,Was bedeutet ein Vakuum von 100 %?,"Was bedeutet es, wenn der absolute Druck gleich null ist?",0.5512
+F010,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",Was ist der spezifische Brennwert?,0.8201
+F010,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",Wie wird der spezifische Brennwert berechnet?,0.8272
+F010,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?","Was sind die Verbrennungsprodukte, die bei der Berechnung des spezifischen Brennwerts berücksichtigt werden?",0.8769
+F011,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,Was ist die Funktion des Schmelzleiters in einer Schmelzsicherung?,0.7034
+F011,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,Wie erfolgt das Abschalten eines Überstromes durch eine Schmelzsicherung?,0.9576
+F011,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,"Was passiert bei einer Schmelzsicherung, wenn der Strom zu hoch ist?",0.6004
+F012,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,"Was sind Beispiele für Teile, bei denen ein weiter Laufsitz verwendet wird?",0.6173
+F012,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,Welche Art von Spiel erfordert den Einsatz eines weiten Laufsitzes?,0.4535
+F012,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,"Wo ist die Bezeichnung ""weiter Laufsitz"" in einem bestimmten Material zu finden?",0.4777
+F013,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Was sichert ein Federring nicht zwingend?,0.6795
+F013,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Welches Bauteil wird durch einen Federring ausreichend gesichert?,0.7193
+F013,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",Was ist laut dem Lernmaterial die Hauptfunktion eines Federrings?,0.3008
+F014,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",Was ist der Rutschbeiwert ν_e?,0.4218
+F014,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",Wie wird der Rutschbeiwert ν_e verwendet?,0.3986
+F014,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?","Welche Gleichung wird verwendet, um die Sprengkraft F_S zu berechnen?",0.5977
+F015,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Was sind die beiden Hauptteile der Radaflex-Kupplung?,0.8694
+F015,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Wie sind die beiden Kupplungshälften verbunden?,0.4212
+F015,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",Welche Vorteile bietet die Radaflex-Kupplung beim Ein- und Ausbau?,0.936
+F016,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,"Was ist der Grund dafür, dass der Wirkungsgrad im Zähler steht?",0.8462
+F016,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,Warum helfen die durch den Wirkungsgrad berücksichtigten Widerstände beim Bremsen?,0.6545
+F016,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,Wie beeinflussen die durch den Wirkungsgrad berücksichtigten Widerstände das rechnerische Lastmoment?,0.592
+F017,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Fach ein- und auslagern?,0.7558
+F017,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Kann ein Shuttle mehr als fünf Paletten in ein Regalfach laden?,0.8906
+F017,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",Wie viele Paletten können mit einem Shuttle in ein Regalfach geladen werden?,0.9084
+F018,Welche Arten von Rollenförderern gibt es?,Was sind die verschiedenen Arten von Rollgängen?,0.4011
+F018,Welche Arten von Rollenförderern gibt es?,Welche Rollgänge werden für leichtere Stückgüter eingesetzt?,0.2616
+F018,Welche Arten von Rollenförderern gibt es?,Was ist die Begründung für die Unterscheidung der Rollgänge?,0.2757
+F019,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?",Wie wird der Wasserkühler nach einem Kaltstart umgangen?,0.6597
+F019,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?","Welche Bypassleitung wird geöffnet, um den Wasserkühler nach einem Kaltstart zu umgehen?",0.512
+F019,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?","Welche Kühlaufgaben werden von einem Teil des Kühlwassers nach einem Kaltstart übernommen, ohne durch das Kurbelgehäuse zu strömen?",0.6293
+F020,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?",Welche Art von Pressentyp wird hier nicht in Betracht gezogen?,0.6236
+F020,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?","Was ist der Grund dafür, dass dieser Pressentyp nicht eingesetzt werden kann?",0.7076
+F020,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?","An welchem Punkt tritt eine Kraftspitze auf, die den Einsatz des Pressentyps unmöglich macht?",0.7946
+F021,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,Was ist die Gefahr beim Anbohren spröder Werkstoffe?,0.8836
+F021,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,Was kann unter der Wucht des auftreffenden Wasserstrahls passieren?,0.6987
+F021,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,Was kann beim Anbohren spröder Werkstoffe einreißen oder aufplatzen?,0.8288
+F022,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?","Was sind die geforderten Parameter für eine hohe Vorbearbeitungsgenauigkeit beim Schleifen oder Hartfeindrehen, um Superfinishen erfolgreich durchzuführen?",0.8262
+F022,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?","Welche geometrischen Eigenschaften müssen bei der Vorbearbeitung mindestens der ISO-Qualität IT 7 entsprechen, um Superfinishen erfolgreich durchzuführen?",0.5482
+F022,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?","Welche Maßgenauigkeit muss bei der Vorbearbeitung von Bauteilen erreicht werden, um Superfinishen erfolgreich durchzuführen?",0.818
+F023,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,Was ist ein Nachteil einfacherer CAD-Systeme gegenüber weiterentwickelten?,0.9959
+F023,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,Was ist die Hauptnutzung einfacherer CAD-Systeme?,0.8227
+F023,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,Was ist bei weiterentwickelten CAD-Systemen im Vergleich zu einfacheren möglich?,0.8979
+F024,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,Was ist der Wert von hex in der Einheit [16]?,0.5762
+F024,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,Wie lautet die Formel zur Berechnung von hex?,0.522
+F024,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,Welche Rechnung führt zur Berechnung von hex?,0.5616
+F025,Worauf kommt es bei der Auswahl einer SPS an?,"Welche Funktionen müssen im Prozess überwacht und gestellt werden, um eine SPS auszuwählen?",0.802
+F025,Worauf kommt es bei der Auswahl einer SPS an?,"Wie stehen die Informationen zur Verfügung, um eine SPS auszuwählen?",0.8552
+F025,Worauf kommt es bei der Auswahl einer SPS an?,"Welche Verarbeitungsgeschwindigkeiten sind erforderlich, um eine Echtzeitbetrieb-Zykluszeit zu ermöglichen?",0.2537
+F026,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Was sind die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,0.9918
+F026,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Wie verläuft die Sprungantwort einer PT2-Strecke zunächst und danach?,0.8306
+F026,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,Welche Bedeutung haben der Wendepunkt und die durch ihn gelegte Tangente bei der Bestimmung der Kenngrößen der Sprungantwort einer PT2-Strecke?,0.8005
+F027,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,Was ist der Materialgemeinkostenzuschlag in Prozent?,0.7911
+F027,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,Wie wird der Materialgemeinkostenzuschlag berechnet?,0.848
+F027,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,"Welche Werte wurden in die Formel eingesetzt, um den Materialgemeinkostenzuschlag zu berechnen?",0.7286
+F028,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,Was sind Poor Dogs?,0.6112
+F028,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,Was sind die Maßnahmen für Produkte am Ende ihrer Marktlebensdauer?,0.4377
+F028,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,"Was bedeutet es, den Marktaustritt zu prüfen?",0.4798
+F029,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Wer überwacht die Unfallverhütungsvorschriften?,0.9907
+F029,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Welche Institutionen sind für die Überwachung der UVV zuständig?,0.5778
+F029,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,Wer berät in Fragen der Unfallverhütung?,0.9064
+F030,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?","Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit einer Schwankung von 1,5 Sigma?",0.9414
+F030,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?",Welche Prozessfähigkeit ist notwendig für eine praktische Fehlerfreiheit?,0.6575
+F030,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?","Was bedeutet ""ppm"" in diesem Kontext?",0.1076

@@ -1,0 +1,15 @@
+Faithfulness V19AB (Anteil durch die vier abgerufenen Textabschnitte gestützter Aussagen), Richter mistral-nemo, Prompt J-v1
+Bewertete Antworten: mit Retrieval 95, ohne Retrieval 95; Paare (beide bewertet): 95
+Davon neu bewertet: 96 von 190 Werten; übernommen aus dem Basislauf: 94
+Mittelwert über die Paare:  mit Retrieval 0.793   ohne Retrieval 0.329
+Paarvergleich: mit Retrieval höher bei 83, gleich bei 4, niedriger bei 8; Vorzeichentest (ohne Gleiche) p = 7.577e-17
+Nach Fragetyp (n; mit / ohne):
+  aufzaehlung  n=  2   1.000 / 0.300
+  ausserhalb   n=  3   0.619 / 0.352
+  fakt         n= 15   0.938 / 0.232
+  konzept      n= 51   0.922 / 0.369
+  rechnung     n= 22   0.404 / 0.322
+  tabelle      n=  2   0.750 / 0.083
+Ohne Rechenfragen (n=73): mit 0.910 / ohne 0.331
+Kontrolle (übernommene Werte neu bewertet): 5 geprüft, 2 abweichend (F5/ohne, F67/ohne)
+Hinweis: Entwicklungs-/Pilotfragen; Richter nicht an Handurteilen validiert; Rechenschritte werden teils als nicht gestützt gewertet.

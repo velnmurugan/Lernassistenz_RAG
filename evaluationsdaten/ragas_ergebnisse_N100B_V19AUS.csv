@@ -1,0 +1,31 @@
+fall_id,sitzungs_id,frage,stufe_max,geparst,richter,prompt_version,modell_verweigerung,n_aussagen,n_gestuetzt,n_unlesbar,n_meta_verworfen,faithfulness,answer_relevance,ar_roh,ausweichend,n_kontext_saetze,n_benoetigt,context_relevance
+F001,RAGVGL-N100B-V19AUS-BEIDE7,Was ist der Unterschied zwischen der allgemeinen und einer speziellen Lösung einer gewöhnlichen Differentialgleichung n-ter Ordnung?,2,True,mistral-nemo,J-v1,False,,,,,,0.6599,0.6599,False,33,3,0.0909
+F002,RAGVGL-N100B-V19AUS-BEIDE7,"Woraus besteht ein pH-Puffer, und was bewirkt er?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8891,True,34,2,0.0588
+F003,RAGVGL-N100B-V19AUS-BEIDE7,Unter welcher Bedingung bleibt der Drehimpuls eines Systems konstant?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8568,True,16,1,0.0625
+F004,RAGVGL-N100B-V19AUS-BEIDE7,Was bewirken Quarzmehl und Fasern in einem Phenolharz?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.714,True,21,1,0.0476
+F005,RAGVGL-N100B-V19AUS-BEIDE7,Bei einem Diffusionsvorgang soll die Eindringtiefe bei gleicher Temperatur verdoppelt werden. Um welchen Faktor verlängert sich die Zeit?,2,True,mistral-nemo,J-v1,False,,,,,,0.6167,0.6167,False,35,1,0.0286
+F006,RAGVGL-N100B-V19AUS-BEIDE7,In welchem Temperaturbereich setzt man kristalline Thermoplaste ein?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.9137,True,27,1,0.037
+F007,RAGVGL-N100B-V19AUS-BEIDE7,"Welche Kupferlegierung hat den höheren Korrosionswiderstand, CuZn oder CuNi?",2,True,mistral-nemo,J-v1,False,,,,,,0.6181,0.6181,False,26,2,0.0769
+F008,RAGVGL-N100B-V19AUS-BEIDE7,"Was misst der Kerbschlagbiegeversuch, und warum werden die Proben gekerbt?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7464,True,17,3,0.1765
+F009,RAGVGL-N100B-V19AUS-BEIDE7,Was bedeutet ein Vakuum von 100 %?,2,True,mistral-nemo,J-v1,False,,,,,,0.7084,0.7084,False,30,2,0.0667
+F010,RAGVGL-N100B-V19AUS-BEIDE7,"Wie ist der Brennwert eines Brennstoffs definiert, und was wird dabei über die Verbrennungsprodukte angenommen?",2,True,mistral-nemo,J-v1,False,,,,,,0.8414,0.8414,False,27,2,0.0741
+F011,RAGVGL-N100B-V19AUS-BEIDE7,Wie schaltet eine Schmelzsicherung bei Überstrom ab?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7538,True,46,2,0.0435
+F012,RAGVGL-N100B-V19AUS-BEIDE7,Für welche Maschinenteile verwendet man einen weiten Laufsitz?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.5162,True,35,1,0.0286
+F013,RAGVGL-N100B-V19AUS-BEIDE7,"Reicht ein Federring, um eine Schraubenverbindung sicher zu sichern?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.5665,True,33,1,0.0303
+F014,RAGVGL-N100B-V19AUS-BEIDE7,"Welchen Beiwert setzt man in der Gleichung für die Sprengkraft einer Klemmsitzverbindung an, den Haft- oder den Rutschbeiwert?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.4727,True,23,0,0.0
+F015,RAGVGL-N100B-V19AUS-BEIDE7,"Wie ist die Radaflex-Kupplung aufgebaut, und was ist ihr Vorteil beim Ein- und Ausbau?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7422,True,29,2,0.069
+F016,RAGVGL-N100B-V19AUS-BEIDE7,Warum steht der Wirkungsgrad bei der Berechnung des Lastmoments einer Bremse im Zähler?,2,True,mistral-nemo,J-v1,False,,,,,,0.6976,0.6976,False,40,1,0.025
+F017,RAGVGL-N100B-V19AUS-BEIDE7,"Wie viele Paletten kann ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern, und was ändert sich mit Shuttles?",2,True,mistral-nemo,J-v1,False,,,,,,0.8516,0.8516,False,34,2,0.0588
+F018,RAGVGL-N100B-V19AUS-BEIDE7,Welche Arten von Rollenförderern gibt es?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.3128,True,28,3,0.1071
+F019,RAGVGL-N100B-V19AUS-BEIDE7,"Was passiert im Kühlkreislauf eines Verbrennungsmotors nach dem Kaltstart, solange er seine Betriebstemperatur noch nicht erreicht hat?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.6003,True,35,5,0.1429
+F020,RAGVGL-N100B-V19AUS-BEIDE7,"Warum kommt ein Pressentyp nicht in Betracht, obwohl die maximale Presskraft innerhalb der Grenzkurve der Pressenkennlinie liegt?",2,True,mistral-nemo,J-v1,False,,,,,,0.7086,0.7086,False,21,2,0.0952
+F021,RAGVGL-N100B-V19AUS-BEIDE7,Welche Gefahr besteht beim Anbohren spröder Werkstoffe beim Wasserstrahlschneiden?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8037,True,48,1,0.0208
+F022,RAGVGL-N100B-V19AUS-BEIDE7,"Welche Voraussetzung muss das Werkstück erfüllen, damit Superfinishen Erfolg hat?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7308,True,38,1,0.0263
+F023,RAGVGL-N100B-V19AUS-BEIDE7,Was ist der Nachteil einfacherer CAD-Systeme gegenüber den weiterentwickelten?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.9055,True,31,2,0.0645
+F024,RAGVGL-N100B-V19AUS-BEIDE7,Wandle die Binärzahl 101101 ins Hexadezimalsystem um.,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.5533,True,31,1,0.0323
+F025,RAGVGL-N100B-V19AUS-BEIDE7,Worauf kommt es bei der Auswahl einer SPS an?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.637,True,37,1,0.027
+F026,RAGVGL-N100B-V19AUS-BEIDE7,Wie heißen die beiden Kenngrößen der Sprungantwort einer PT2-Strecke?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8743,True,31,2,0.0645
+F027,RAGVGL-N100B-V19AUS-BEIDE7,Die Materialeinzelkosten betragen 40.000 € und die Materialgemeinkosten 6.000 €. Wie hoch ist der Materialgemeinkostenzuschlag?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.8232,True,31,2,0.0645
+F028,RAGVGL-N100B-V19AUS-BEIDE7,Was versteht man im Marktanteil-Marktwachstum-Portfolio unter Poor Dogs?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.5096,True,35,1,0.0286
+F029,RAGVGL-N100B-V19AUS-BEIDE7,Wer überwacht die Einhaltung der Unfallverhütungsvorschriften?,2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.825,True,29,1,0.0345
+F030,RAGVGL-N100B-V19AUS-BEIDE7,"Wie viele Fehler pro Million entstehen bei einem 6-Sigma-Prozess mit 1,5 Sigma Schwankung, und welcher Prozessfähigkeit cpk entspricht praktische Fehlerfreiheit?",2,True,mistral-nemo,J-v1,False,,,,,,0.0,0.7406,True,23,2,0.087
