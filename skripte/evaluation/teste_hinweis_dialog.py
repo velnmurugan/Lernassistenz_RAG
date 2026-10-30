@@ -12,7 +12,7 @@ Probanden. Ablauf je N100-Frage (V11B-Konfiguration eingefroren, nichts am Syste
                 (davon 40 % teilweise, 40 % falsch mit typischem Denkfehler, 20 % keine Idee).
              b) System: Rückmeldung (IF-v5 + FP-v3) mit Urteil.
              c) Bei Urteil != richtig und Versuch < 3: System schreibt den nächsten Hinweis
-                (neuer Prompt HD-v1: Regeln H1-H5 aus H-v3 + Bezug auf die letzte Antwort + eine Stufe
+                (neuer Prompt HD-v2: Regeln H1-H5 aus H-v3 + Bezug auf die letzte Antwort + eine Stufe
                 konkreter; gleiche Leck-Prüfung HP-v4). Bei "richtig" endet der Dialog.
   Phase 3  Rubrik-Bewertung (Richter mistral-nemo, nie ein Generator): jeder gezeigte Hinweis
              (P1-P6) und jede Rückmeldung (R1-R4) mit ja / teilweise / nein; dazu eine Prüfung, ob die
@@ -74,7 +74,7 @@ KB = "daten/wissensbasen/knowledge_base_fischer_boege_v7r.json"
 FRAGEN = (("fischer", "daten/testfragen/testfragen_fischer_v2_chunks_beide_v7r.csv"),
           ("boege", "daten/testfragen/testfragen_boege_v2_v7r.csv"))
 RETRIEVAL = "hybrid_kg_rr"
-FOLGEHINWEIS_VERSION = "HD-v1"
+FOLGEHINWEIS_VERSION = "HD-v2"
 TYPEN = ("richtig", "teilweise", "falsch", "keine_idee")
 KEINE_IDEE_SAETZE = ("Ich weiß nicht weiter.", "Dazu fällt mir gerade nichts ein.",
                      "Keine Ahnung, ich sehe nicht, wie ich anfangen soll.", "Ich komme da nicht drauf.",
@@ -227,7 +227,7 @@ Antworte nur mit dem Text deiner Antwort."""
 
 # --------------------------------------------------------------------------------- Folgehinweis
 def baue_folgehinweis_prompt(s, t, stufe):
-    """HD-v1: H1-H5 wie H-v3; zusätzlich Bezug auf die letzte Antwort (H6) und eine Stufe konkreter (H7)."""
+    """HD-v2: H1-H5 wie H-v3; zusätzlich Bezug auf die letzte Antwort (H6) , eine Stufe konkreter (H7) und höchstens ein neuer Begriff (H8)."""
     return f"""Du schreibst den NÄCHSTEN Hinweis (Denkanstoß) für Auszubildende in technischen Berufen.
 Die/der Auszubildende hat die Frage schon einmal versucht, die Antwort war nicht richtig. Du kennst die Frage,
 die Lernmaterialien, die richtige Lösung und den bisherigen Verlauf. Die/der Auszubildende sieht NUR die Frage und
@@ -243,8 +243,11 @@ H4 Fördere Verständnis: lenke auf den Zusammenhang (wie hängt was zusammen, w
 H5 Klar und kurz: 1-2 Sätze, sprich die/den Auszubildende:n mit „du" an, du darfst mit einer Frage enden.
 H6 Knüpfe an die letzte Antwort an: lenke auf die Stelle, an der sie vom Richtigen abweicht oder etwas fehlt,
    aber nenne den fehlenden oder falschen Teil nicht selbst. Wiederhole die Rückmeldung nicht.
-H7 Dies ist Hinweisstufe {stufe}: sei etwas konkreter als die bisherigen Hinweise und wiederhole sie nicht,
-   ohne gegen H1 zu verstoßen.
+H7 Dies ist Hinweisstufe {stufe}: konkreter heißt eine engere, gezieltere Frage oder ein kleinerer Denkschritt,
+   NICHT mehr Inhalt aus der Lösung. Wiederhole die bisherigen Hinweise nicht.
+H8 Nenne höchstens einen Begriff oder eine Größe, die die Person noch nicht selbst genannt hat. Vervollständige nie
+   eine Aufzählung, nenne nie eine Bedingung, einen Grund oder eine Eigenschaft aus der Lösung als Aussage und
+   beschreibe nie die gesuchte Verbindung oder Zuordnung; formuliere als Frage.
 
 Lernmaterialien:
 {s['kontext']}
@@ -445,6 +448,7 @@ def ausgabe(args, zustand, label, t0):
                  "typ_soll": t["typ_soll"], "antwort": t["antwort"], "urteil": t["urteil"],
                  "urteil_treffer": t["urteil"] == t["typ_soll"],
                  "binaer_treffer": (t["urteil"] == "richtig") == (t["typ_soll"] == "richtig"),
+                 "sim_ok": "",
                  "rueckmeldung": t["rueckmeldung"], "feedback_pruefung": t["feedback_pruefung"],
                  "fb_leck_zahlen": t["leck_zahlen"], "fb_neue_zahlen": t["neue_zahlen"],
                  "folgehinweis": t["folgehinweis"], "folgehinweis_pruefung": t["folgehinweis_pruefung"],
@@ -456,6 +460,7 @@ def ausgabe(args, zustand, label, t0):
             for k in FEEDBACK_ITEMS:
                 z[f"J_R_{k}"] = ob("R").get(k, "")
             z["J_S1"] = ob("A").get("S1", "")
+            z["sim_ok"] = (z["J_S1"] == "ja") if z["J_S1"] else ""
             zeilen.append(z)
     felder = list(zeilen[0].keys()) if zeilen else ["id"]
     schreibe_csv(f"{basis}_dialoge.csv", felder, zeilen)
@@ -505,6 +510,11 @@ def ausgabe(args, zustand, label, t0):
     L.append(f"Exakter Treffer: {sum(z['urteil_treffer'] for z in zeilen)}/{len(zeilen)} "
              f"({sum(z['urteil_treffer'] for z in zeilen) / n:.0%}); richtig-vs-nicht-richtig: "
              f"{sum(z['binaer_treffer'] for z in zeilen)}/{len(zeilen)} ({sum(z['binaer_treffer'] for z in zeilen) / n:.0%})")
+    ok_z = [z for z in zeilen if z["sim_ok"] is True]
+    if ok_z:
+        L.append(f"Nur Versuche, bei denen der Richter die simulierte Antwort als typgerecht bewertet (S1 = ja): n={len(ok_z)}; exakter Treffer "
+                 f"{sum(z['urteil_treffer'] for z in ok_z)}/{len(ok_z)} ({sum(z['urteil_treffer'] for z in ok_z) / len(ok_z):.0%}); "
+                 f"richtig-vs-nicht-richtig {sum(z['binaer_treffer'] for z in ok_z)}/{len(ok_z)} ({sum(z['binaer_treffer'] for z in ok_z) / len(ok_z):.0%})")
     fa = sum(1 for z in zeilen if z["urteil"] == "richtig" and z["typ_soll"] != "richtig")
     fr = sum(1 for z in zeilen if z["urteil"] != "richtig" and z["typ_soll"] == "richtig")
     L.append(f"Falsch angenommen (Urteil richtig, Soll nicht richtig): {fa}; falsch abgelehnt (Soll richtig, Urteil nicht richtig): {fr}")
@@ -569,7 +579,7 @@ def doku_und_git(label, dateien, vorher):  # vorher=True: Pilot (keine Doku, kei
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--label", default="HD-V1")
+    ap.add_argument("--label", default="HD-V2")
     ap.add_argument("--limit", type=int, default=0, help="Pilot: nur so viele zufällig gewählte Fragen")
     ap.add_argument("--lerner", default="granite4.1:8b")
     ap.add_argument("--richter", default="mistral-nemo")
