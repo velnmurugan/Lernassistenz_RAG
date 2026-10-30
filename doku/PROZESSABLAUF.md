@@ -135,3 +135,12 @@ Studien-App selbst (siehe `Design_Entscheidungen_Literatur.md`, Punkt 4).
 |---|---|---|---|
 | `think=False` bei Ollama-Aufruf | Antwortzeit als Usability-Faktor (Perceived Ease of Use) | Davis (1989), TAM | Nicht separat gemessen (kein A/B-Vergleich think=True vs. False), aber plausibel begründet. |
 | Embedding-Retrieval statt TF-IDF | Bedeutungserfassung statt Wortoberfläche; bessere Handhabung deutscher Wortformvarianten | Reimers & Gurevych (2019) + eigener Testbefund ("einfachwirkenden" vs. "einfachwirkender") | Ursprünglicher TF-IDF-Vergleich dokumentiert (Phase 1) — **kein quantifizierter Vorher-Nachher-Vergleich** der Retrieval-Genauigkeit. |
+
+## Modellvergleich N100 mit der V11B-Konfiguration (30 Oct 2026)
+Frage: Wie verhält sich dieselbe Pipeline (V11B: Prompt G-v4, Rechenprüfung RP-v5, Hinweisprüfung HP-v4, Formelsuche aus, Retrieval hybrid_kg_rr mit Reranker, KB v7r), wenn nur das Generator-Modell gewechselt wird?
+Modelle (Ollama): qwen3.5:4b (3,3 GB), gemma4:e4b-it-qat (6,1 GB, Standard), gemma4:12b-it-qat (7,2 GB, optional), optional gpt-oss:20b (13 GB, Mixture-of-Experts; nur mit genug RAM). Referenz: qwen3.5:9b (gespeicherter Lauf V11B).
+Unverändert: Embedding (MiniLM), BM25, Konzeptgraph, Reranker bge, Gate 0,35, T = 0, Seed 42; Richter für Faithfulness bleibt mistral-nemo (kein Generator-Modell ist Richter).
+Technik: Patch M-v1 in rag_pipeline.py (idempotent): LERNASSISTENT_MODELL, LERNASSISTENT_THINK (aus | low | medium | high | ohne), LERNASSISTENT_TIMEOUT; Standardverhalten unverändert (qwen3.5:9b, think=False, 120 s). Antwortet Ollama mit HTTP 400 auf think, wird einmal ohne think wiederholt.
+Kontrolle vor den Modellläufen: qwen3.5:9b mit der festgenagelten V11B-Umgebung auf den ersten 8 Fischer-Fragen gegen den gespeicherten V11B-Lauf (Abbruch bei weniger als 3 identischen Antworten, GATE=weiter überspringt).
+Läufe: N100 (70 Fischer + 30 Böge) mit und ohne Retrieval je Modell, Labels V11BQWEN4B, V11BGEMMA12, V11BGPTOSS20. Auswertung: modell_kennzahlen.py (Status, Ablehnungen, Format, Denkreste, Sprache, Zeit), vergleich_laeufe_n100.py (Antwort für Antwort gegen V11B), Antwortbogen zur Handbewertung, optional Faithfulness (V11B als Basis).
+Grenzen: Entwicklungs- und Pilotfragen; Richtigkeit nur per Handbewertung; die Rechenprüfung RP-v5 ist auf das Ausgabeformat von qwen3.5 abgestimmt, bei anderen Modellen können Formatfehler (Status ungeprueft/markiert) auftreten, das ist ein Befund und kein Pipeline-Fehler; Laufzeiten hängen vom GPU/CPU-Anteil ab (8 GB VRAM).

@@ -31,7 +31,7 @@ import numpy as np
 import requests
 from sklearn.metrics.pairwise import cosine_similarity
 
-MODEL_NAME = "qwen3.5:9b"
+MODEL_NAME = os.environ.get("LERNASSISTENT_MODELL", "qwen3.5:9b")   # M-v1 (Modellwahl)
 
 
 # =============================================================================
@@ -1811,6 +1811,12 @@ def frage_llm(prompt, model=MODEL_NAME, options=None, bild=None, denken=False):
     ragas_auswertung.py genutzt, damit die LLM-als-Richter-Bewertung
     reproduzierbar ist."""
     payload = {"model": model, "prompt": prompt, "stream": False, "think": bool(denken)}
+    _denken = os.environ.get("LERNASSISTENT_THINK", "aus")
+    if not denken:
+        if _denken in ("low", "medium", "high"):
+            payload["think"] = _denken
+        elif _denken == "ohne":
+            payload.pop("think", None)
     if KONTEXT_TOKENS or denken:  # V13.3
         options = {**(options or {}), "num_ctx": max(KONTEXT_TOKENS or 0, DENK_KONTEXT_TOKENS if denken else 0)}
     if options:
@@ -1820,10 +1826,13 @@ def frage_llm(prompt, model=MODEL_NAME, options=None, bild=None, denken=False):
     # V13.3.1: längere Zeitgrenzen und EIN Wiederholungsversuch bei Zeitüberschreitung/Verbindungsfehler. Anlass: App-Test
     # 26 Oct 2026: nach einem Denkmodus-Aufruf (num_ctx 16384) lud Ollama das Modell für den nächsten Aufruf neu (anderes
     # num_ctx) -> ReadTimeout nach 120 s, die App brach ab. Am Antworttext ändert das nichts.
-    zeitgrenze = 900 if denken else 300
+    zeitgrenze = float(os.environ.get("LERNASSISTENT_TIMEOUT", "0") or 0) or (900 if denken else 300)
     for versuch in (1, 2):
         try:
             response = requests.post(OLLAMA_URL, json=payload, timeout=zeitgrenze)
+            if getattr(response, "status_code", 200) == 400 and "think" in payload:   # Modell ohne Denkschalter
+                payload.pop("think")
+                response = requests.post(OLLAMA_URL, json=payload, timeout=zeitgrenze)
             response.raise_for_status()
             return response.json()["response"].strip()
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
