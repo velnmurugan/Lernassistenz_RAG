@@ -36,6 +36,6 @@ for x in evaluationsdaten/rechen_varianten_RV1-$ETI.csv evaluationsdaten/rechen_
          $(ls -t protokolle/kurzlauf_v19a_*.txt 2>/dev/null | head -1); do
   [ -f "$x" ] && dateien="$dateien $x"
 done
-python -m zipfile -c ${ETI}_ergebnisse.zip $dateien && cp ${ETI}_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+python -m zipfile -c ${ETI}_ergebnisse.zip $dateien && cp ${ETI}_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/${ETI}_ergebnisse.zip (auch in Windows-Downloads)"
 echo "=== fertig $(date +%H:%M) ==="

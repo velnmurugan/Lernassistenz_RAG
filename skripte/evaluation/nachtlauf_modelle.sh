@@ -154,6 +154,6 @@ for x in evaluationsdaten/vergleich_rag_RAGVGL-N100?-V11B?*-BEIDE7*.csv evaluati
          $(ls -t protokolle/nachtlauf_modelle_*.txt 2>/dev/null | head -1); do
   [ -f "$x" ] && dateien="$dateien $x"
 done
-python -m zipfile -c N100_modelle_ergebnisse.zip $dateien && cp N100_modelle_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+python -m zipfile -c N100_modelle_ergebnisse.zip $dateien && cp N100_modelle_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/N100_modelle_ergebnisse.zip (auch in Windows-Downloads)"
 stunde "fertig"

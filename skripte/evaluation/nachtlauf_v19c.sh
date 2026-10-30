@@ -73,7 +73,7 @@ zippen () {
   for x in evaluationsdaten/rechen_varianten_*-V19b1?.csv protokolle/rechen_varianten_*-V19b1?.txt protokolle/vergleich_v19c.txt protokolle/teste_v19c_offline.txt $(ls -t protokolle/nachtlauf_v19c_*.txt 2>/dev/null | head -1); do
     [ -f "$x" ] && dateien="$dateien $x"
   done
-  python -m zipfile -c V19c_ergebnisse.zip $dateien && cp V19c_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+  python -m zipfile -c V19c_ergebnisse.zip $dateien && cp V19c_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
   echo "Ergebnis-Zip: ~/RAG/V19c_ergebnisse.zip (auch in Windows-Downloads: V19c_ergebnisse.zip)"
 }
 # Teil 1: kern

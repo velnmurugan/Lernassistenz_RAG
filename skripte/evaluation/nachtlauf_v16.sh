@@ -50,6 +50,6 @@ for x in evaluationsdaten/rechen_varianten_*V16*.csv evaluationsdaten/rechen_var
          $(ls -t protokolle/nachtlauf_v16_*.txt 2>/dev/null | head -1); do
   [ -f "$x" ] && dateien="$dateien $x"
 done
-python -m zipfile -c V16_ergebnisse.zip $dateien && cp V16_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+python -m zipfile -c V16_ergebnisse.zip $dateien && cp V16_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/V16_ergebnisse.zip (auch in Windows-Downloads)"
 echo "=== fertig $(date +%H:%M) ==="

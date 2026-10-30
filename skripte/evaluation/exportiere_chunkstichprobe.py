@@ -2,8 +2,8 @@
 exportiere_chunkstichprobe.py
 -----------------------------
 Zieht eine zufällige, nach Kapitel geschichtete Stichprobe von Chunks aus einer Wissensbasis,
-damit daraus neue, ungetunte Testfragen geschrieben werden können (Claude sieht die Wissensbasis
-nicht, nur diese Stichprobe).
+damit daraus neue, ungetunte Testfragen geschrieben werden können (die Wissensbasis ist
+nicht einsehbar, nur diese Stichprobe).
 
 - feste Zufallszahl (--seed), damit die Stichprobe reproduzierbar ist
 - schließt Chunks aus, die schon als Gold in einer vorhandenen Testfragen-CSV stehen

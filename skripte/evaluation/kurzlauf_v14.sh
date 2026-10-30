@@ -35,6 +35,6 @@ rm -f evaluationsdaten/rechen_varianten_V14K.csv
 python skripte/evaluation/teste_rechen_varianten.py V14K --nur R01,R02,R04,R12,R14,R17,R19,R20 2>&1 | tee protokolle/rechen_varianten_V14K.txt
 python -m zipfile -c V14K_ergebnisse.zip evaluationsdaten/rechen_varianten_V14K-PROBE-*.csv evaluationsdaten/rechen_varianten_{N100R-V14K,V14K}.csv \
   protokolle/rechen_varianten_{N100R-V14K,V14K}.txt $(ls -t protokolle/kurzlauf_v14_*.txt 2>/dev/null | head -1) \
-  && cp V14K_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+  && cp V14K_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/V14K_ergebnisse.zip (auch in Windows-Downloads)"
 echo "=== fertig $(date +%H:%M) ==="

@@ -12,6 +12,6 @@ for x in "RV1-OHNERAG daten/testfragen/rechen_varianten_v1.csv" "RV2-OHNERAG dat
   python skripte/evaluation/lauf_ohne_rag.py "$1" --fragen "$2"
 done
 python -m zipfile -c OHNERAG_ergebnisse.zip evaluationsdaten/ohne_rag_*OHNERAG.csv $(ls -t protokolle/ohne_rag_*.txt 2>/dev/null | head -1) \
-  && cp OHNERAG_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+  && cp OHNERAG_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/OHNERAG_ergebnisse.zip (auch in Windows-Downloads)"
 echo "=== fertig $(date +%H:%M) ==="

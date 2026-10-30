@@ -101,6 +101,6 @@ for x in evaluationsdaten/vergleich_rag_RAGVGL-N100?-V19A*-BEIDE7*.csv evaluatio
          $(ls -t protokolle/nachtlauf_n100_freeze_*.txt 2>/dev/null | head -1); do
   [ -f "$x" ] && dateien="$dateien $x"
 done
-python -m zipfile -c N100_freeze_ergebnisse.zip $dateien && cp N100_freeze_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+python -m zipfile -c N100_freeze_ergebnisse.zip $dateien && cp N100_freeze_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/N100_freeze_ergebnisse.zip (auch in Windows-Downloads)"
 stunde "fertig"

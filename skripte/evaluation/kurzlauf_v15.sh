@@ -16,6 +16,6 @@ python skripte/evaluation/teste_rechen_varianten.py N100R-V15 --fragen daten/tes
 dateien="evaluationsdaten/rechen_varianten_V15.csv evaluationsdaten/rechen_varianten_N100R-V15.csv protokolle/rechen_varianten_V15.txt protokolle/rechen_varianten_N100R-V15.txt"
 for x in evaluationsdaten/rechen_varianten_V135.csv evaluationsdaten/rechen_varianten_N100R-V135.csv protokolle/rechen_varianten_V135.txt protokolle/rechen_varianten_N100R-V135.txt; do [ -f "$x" ] && dateien="$dateien $x"; done
 python -m zipfile -c V15_ergebnisse.zip $dateien $(ls -t protokolle/kurzlauf_v15_*.txt 2>/dev/null | head -1) \
-  && cp V15_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+  && cp V15_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/V15_ergebnisse.zip (auch in Windows-Downloads; enthält V135, falls vorhanden)"
 echo "=== fertig $(date +%H:%M) ==="

@@ -24,6 +24,6 @@ echo; echo "=== Vergleich $(date +%H:%M) ==="
 python skripte/evaluation/vergleiche_n100_laeufe.py V11B V13B V134
 python -m zipfile -c V134_ergebnisse.zip evaluationsdaten/vergleich_rag_RAGVGL-N100*-V134-BEIDE7*.* evaluationsdaten/n100_vergleich_V11B_V13B_V134.csv \
   evaluationsdaten/rechen_varianten_V134.csv protokolle/rechen_varianten_V134.txt protokolle/diagnose_buchergebnisse.txt \
-  $(ls -t protokolle/nachtlauf_v134_*.txt 2>/dev/null | head -1) && cp V134_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+  $(ls -t protokolle/nachtlauf_v134_*.txt 2>/dev/null | head -1) && cp V134_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/V134_ergebnisse.zip (auch in Windows-Downloads)"
 echo "=== fertig $(date +%H:%M) ==="

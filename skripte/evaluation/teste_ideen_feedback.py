@@ -3,7 +3,7 @@ teste_ideen_feedback.py
 -----------------------
 Prüft die "Deine Idee?"-Rückmeldung (ideen_feedback.py) mit vorbereiteten
 Lernenden-Ideen (testideen_v1.csv: 8 Fragen x 4 Ideentypen richtig / teilweise /
-falsch / keine_idee). Die Ideen und das erwartete Urteil hat Claude entworfen ->
+falsch / keine_idee). Die Ideen und das erwartete Urteil wurden vorab entworfen ->
 vor der Auswertung von Vel prüfen (Limitation wie beim Testfragensatz).
 
 Pro Frage wird die Antwort einmal mit der echten Pipeline erzeugt (wie in der

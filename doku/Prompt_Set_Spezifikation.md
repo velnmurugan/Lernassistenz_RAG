@@ -376,7 +376,7 @@ IF-v2 and IF-v3 prompts verified unchanged; HP-v1 behaviour available via `HINWE
 
 ### G-v3, HP-v3, FP-v2 (14 Oct 2026, "V9")
 
-**Reason.** Idea test `V8D-IDEEN` (36 ideas) and the comparison with vs. without RAG (`RAGVGL-FISCHER`, 33 questions), both pre-rated by Claude:
+**Reason.** Idea test `V8D-IDEEN` (36 ideas) and the comparison with vs. without RAG (`RAGVGL-FISCHER`, 33 questions), both pre-rated:
 - Q13 (slip): with RAG the solution computed 75/1500 = 0,02 (correct 0,05); without RAG it was correct. The context contained the book example 1440 1/min → 0,04, so the model probably mixed the example into the calculation.
 - FP-v1 replaced a very good feedback (I32: "der Faktor √3 fehlt … Wirkungsgrad über 100 %") with the fixed text, because "100" and the "3" of √3 counted as new numbers.
 - "schau in deine Unterlagen nach" was not caught by the material check.
@@ -401,7 +401,7 @@ IF-v2 and IF-v3 prompts verified unchanged; HP-v1 behaviour available via `HINWE
 
 ### G-v4, RP-v2, HP-v4, FP-v3, IF-v5 (19 Oct 2026, "V10"; implemented, runs pending)
 
-**Reason** (runs V9D, 14 Oct 2026, pre-rated by Claude; `Entwicklung_und_Evaluation.md` §12, 2o):
+**Reason** (runs V9D, 14 Oct 2026, pre-rated; `Entwicklung_und_Evaluation.md` §12, 2o):
 - Since G-v3 the model checked its calculation visibly inside the solution: Q13 started with "Der Schlupf beträgt 0,02 oder 2 %" and then corrected itself ("Momentan habe ich einen Rechenfehler … lass uns das korrigieren … 0,05 oder 5 %"); Q27 contained a long deliberation ("*Korrektur basierend auf L1*", "Wiederholtes Überprüfen des Materials"). Most likely cause: "rechne jeden Schritt nach" in L5. RP-v1 reported "ok" for Q13, because every written equation was correct and the wrong 0,02 stood in no equation.
 - Hints not caught by HP-v3: "Suche im bereitgestellten Material nach dem Eintrag für Aluminium …", "Wenn du in der elektrochemischen Spannungsreihe nach dem Metall Zink suchst, was siehst du dann …".
 - Feedback still named the missing step for TEILWEISE/FALSCH ideas (sign of the zinc potential, "30 °C addieren", "75 durch 1500 teilen", "Reihenschaltung"): 6 of 33 non-safety feedbacks with partial leak in V8D and in V9D.

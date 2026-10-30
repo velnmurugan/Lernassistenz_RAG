@@ -2,7 +2,7 @@
 ideen_feedback.py
 -----------------
 "Deine Idee?" — Rückmeldung auf einen eigenen Lösungsversuch der/des Lernenden
-(Scaffolding-Spezifikation S-v1, Entscheidung D2; claude/Scaffolding_Spezifikation.md).
+(Scaffolding-Spezifikation S-v1, Entscheidung D2; doku/Scaffolding_Spezifikation.md).
 
 Ablauf in der Studien-App: Hinweis -> (optional) eigene Idee eintippen ->
 kurze Rückmeldung, die die Lösung NICHT verrät -> Lösung (ab V4 zwei Stufen;
@@ -58,7 +58,7 @@ FALLBACK_RUECKMELDUNG = (
 
 
 def baue_feedback_prompt(frage, top_chunks, hinweis, loesung, idee, version=None):
-    """Fester Prompt-Satz G2 (claude/Prompt_Set_Spezifikation.md §4.2). Die Lösung ist die Referenz;
+    """Fester Prompt-Satz G2 (doku/Prompt_Set_Spezifikation.md §4.2). Die Lösung ist die Referenz;
     das Lernmaterial wird nicht mitgeschickt (top_chunks bleibt nur für die Schnittstelle).
     Regeln F1–F5: Petukhova et al. (2026); Kochmar et al. (2025); Maurya et al. (2025); Wood et al. (1976);
     Abrar et al. (2027); Knievel et al. (2025). ÜBERLEGUNG zuerst: Zhao, Knežević & Käser (2026).

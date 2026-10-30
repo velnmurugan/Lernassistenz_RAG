@@ -16,6 +16,6 @@ OHNE_RAGAS=1 LERNASSISTENT_RP=RP-v9 LERNASSISTENT_G=G-v5 LERNASSISTENT_FS=FS-v3 
 echo; echo "=== Vergleich $(date +%H:%M) ==="
 python skripte/evaluation/vergleiche_n100_laeufe.py V11B V13B V133
 python -m zipfile -c V133_ergebnisse.zip evaluationsdaten/vergleich_rag_RAGVGL-N100*-V133-BEIDE7*.* evaluationsdaten/n100_vergleich_V11B_V13B_V133.csv \
-  $(ls -t protokolle/nachtlauf_v133_*.txt 2>/dev/null | head -1) && cp V133_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+  $(ls -t protokolle/nachtlauf_v133_*.txt 2>/dev/null | head -1) && cp V133_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/V133_ergebnisse.zip (auch in Windows-Downloads)"
 echo "=== fertig $(date +%H:%M) ==="

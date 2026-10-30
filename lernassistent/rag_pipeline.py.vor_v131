@@ -665,7 +665,7 @@ Antwort:"""
 # übernimmt die Zwischenstufe ("targeted feedback", Zourlidou et al. 2026).
 # Einordnung (van de Pol et al. 2010, via Chen et al. 2026): Hinweis = hinting,
 # Rückmeldung = feedback, Lösung = explaining + modeling.
-# Zusätzlich die Hinweis-Regeln H1–H3 aus claude/Scaffolding_Spezifikation.md:
+# Zusätzlich die Hinweis-Regeln H1–H3 aus doku/Scaffolding_Spezifikation.md:
 #   H1 Antwort nicht verraten (Jangra et al. 2025; MRBench "Revealing Answer"),
 #   H2 Begriff / Größe / nächsten Denkschritt nennen (Zourlidou-Stufe 1),
 #   H3 nicht auf den Kontext verweisen — die/der Lernende sieht ihn nicht
@@ -696,7 +696,7 @@ Antwort:"""
 # verraten darf. Muster übernommen aus ideen_feedback.py (IF-v1): sieht die Lösung,
 # verdecktes Überlegungsfeld vor der Ausgabe.
 #
-# V6 (G-v1, 13 Oct 2026): fester, domänenunabhängiger Prompt-Satz (claude/Prompt_Set_Spezifikation.md).
+# V6 (G-v1, 13 Oct 2026): fester, domänenunabhängiger Prompt-Satz (doku/Prompt_Set_Spezifikation.md).
 # EIN Aufruf: STATUS -> LÖSUNG -> verdeckte ÜBERLEGUNG -> HINWEIS. Die Lösung wird zuerst geschrieben,
 # damit der Hinweis "answer-aware" ist (Bhaskar & Hamouda 2025; Petukhova et al. 2026); die
 # Überlegung davor senkt das Verraten (Zhao, Knežević & Käser 2026). STATUS ersetzt den
@@ -1331,7 +1331,7 @@ _PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1, "S2-v2": _prompt_s2_
 
 def baue_hinweis_prompt(frage, ausgewaehlte_chunks, loesung):
     """V5 (S2-v2), Hinweis-Prompt H-v3: eigener Aufruf, der die Lösung kennt.
-    Regeln H1–H5 aus claude/Scaffolding_Spezifikation.md §3.1 (Jangra et al. 2025,
+    Regeln H1–H5 aus doku/Scaffolding_Spezifikation.md §3.1 (Jangra et al. 2025,
     Abschnitt 4.1; Zourlidou et al. 2026; Wood et al. 1976)."""
     return f"""Du schreibst einen Hinweis (Denkanstoß) für Auszubildende in technischen Berufen.
 Du kennst die Frage, die Lernmaterialien und die richtige Lösung. Die/der Auszubildende

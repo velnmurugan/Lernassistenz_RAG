@@ -10,7 +10,7 @@ beschreibt Tabellen/Abbildungen auf 8 GB VRAM. Standard hier: qwen2.5vl:3b über
 (kleines Modell aus Sicherheitsgründen: wenig VRAM, weniger Ausfälle über Nacht).
 
 Prompt B-v2 (B-v1 bis zum Pilot): fest und dokumentunabhängig (gleiche Prinzipien wie der Prompt-Satz,
-claude/Prompt_Set_Spezifikation.md): nur Sichtbares, Beschriftungen wörtlich, keine Deutung.
+doku/Prompt_Set_Spezifikation.md): nur Sichtbares, Beschriftungen wörtlich, keine Deutung.
 Risiko: erfundene Details würden zu "Quellmaterial" -> Beschreibungen werden als
 automatisch erzeugt markiert und vor der Nutzung stichprobenartig von Hand geprüft
 (Prüfdatei bildbeschreibungen_pruefung.csv).

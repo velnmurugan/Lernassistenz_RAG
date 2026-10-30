@@ -25,7 +25,7 @@ python skripte/evaluation/teste_rechen_varianten.py V14C --nur R01,R02,R04,R12,R
 if ! zusammenfassung V14C; then
   echo "ABBRUCH: RW-v4 in weniger als 2 Fragen genutzt. Ausgabe bitte schicken."
   python -m zipfile -c V14C_ergebnisse.zip evaluationsdaten/rechen_varianten_V14C.csv protokolle/rechen_varianten_V14C.txt \
-    && cp V14C_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+    && cp V14C_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
   exit 1
 fi
 echo; echo "=== N100-Rechenfragen (22), RW-v4 $(date +%H:%M) ==="
@@ -34,6 +34,6 @@ python skripte/evaluation/teste_rechen_varianten.py N100R-V14C --fragen daten/te
 echo; zusammenfassung V14C; zusammenfassung N100R-V14C
 python -m zipfile -c V14C_ergebnisse.zip evaluationsdaten/rechen_varianten_{V14C,N100R-V14C}.csv \
   protokolle/rechen_varianten_{V14C,N100R-V14C}.txt $(ls -t protokolle/kurzlauf_v14c_*.txt 2>/dev/null | head -1) \
-  && cp V14C_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+  && cp V14C_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/V14C_ergebnisse.zip (auch in Windows-Downloads)"
 echo "=== fertig $(date +%H:%M) ==="

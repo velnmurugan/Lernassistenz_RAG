@@ -10,7 +10,7 @@ python skripte/evaluation/teste_v14_offline.py | tail -1
 echo "=== Probe $(date +%H:%M) ==="
 rm -f evaluationsdaten/rechen_varianten_V14K-PROBE.csv
 python skripte/evaluation/teste_rechen_varianten.py V14K-PROBE --nur R12 2>&1 | tail -3
-python - <<'PY' || { echo "ABBRUCH: Werkzeug wird nicht genutzt (siehe oben). Ergebnis bitte an Claude schicken."; exit 1; }
+python - <<'PY' || { echo "ABBRUCH: Werkzeug wird nicht genutzt (siehe oben). Ergebnis bitte weitergeben."; exit 1; }
 import csv, sys; csv.field_size_limit(10**9)
 x = list(csv.DictReader(open("evaluationsdaten/rechen_varianten_V14K-PROBE.csv", encoding="utf-8")))[0]
 print("Werkzeug:", x["werkzeug"], "| Aufrufe:", x["werkzeug_protokoll"][:500])

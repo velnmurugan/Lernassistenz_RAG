@@ -13,6 +13,6 @@ ARG=""; [ "$1" = "probe" ] && ARG="--limit 3"
 python skripte/evaluation/faithfulness_rag_vs_ohne.py $ARG 2>&1 | tee "protokolle/faithfulness_$(date +%Y%m%d_%H%M).txt"
 dateien=""
 for x in evaluationsdaten/faithfulness_rag_vs_ohne_V11B.csv evaluationsdaten/faithfulness_rag_vs_ohne_V11B_details.csv evaluationsdaten/faithfulness_rag_vs_ohne_V11B_zusammenfassung.txt $(ls -t protokolle/faithfulness_*.txt | head -1); do [ -f "$x" ] && dateien="$dateien $x"; done
-python -m zipfile -c faithfulness_ergebnisse.zip $dateien && cp faithfulness_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+python -m zipfile -c faithfulness_ergebnisse.zip $dateien && cp faithfulness_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/faithfulness_ergebnisse.zip (auch in Windows-Downloads)"
 echo "=== fertig $(date +%H:%M) ==="

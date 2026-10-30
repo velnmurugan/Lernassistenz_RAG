@@ -1,7 +1,7 @@
 """
 pdf_struktur.py
 ---------------
-V7: Strukturtreue Extraktion und Chunking (claude/Entwicklung_und_Evaluation.md, V7).
+V7: Strukturtreue Extraktion und Chunking (doku/Entwicklung_und_Evaluation.md, V7).
 
 1. Extraktion mit MinerU (Layout-Erkennung, Formeln als LaTeX, Tabellen strukturiert,
    Abbildungen als Bildausschnitte, Überschriften). Quelle: MinerU, eingesetzt bei

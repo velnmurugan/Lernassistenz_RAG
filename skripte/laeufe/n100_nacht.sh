@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Nachtlauf N100 (100 Fragen, gemeinsame KB v7r): MIT RAG (volle Pipeline) gegen OHNE RAG, zwei Versionen der Rechenprüfung, danach RAGAS für beide.
 #   1. V11B = RP-v5 (neu)   2. V10A = RP-v3 (Vergleichslauf unter gleichen Bedingungen, gleicher Rechnerzustand)   3. RAGAS über beide
-# Start (aus ~/RAG, Umgebung pilot_rag; Browser, Claude und andere GPU-Programme schließen; Windows darf nicht schlafen):
+# Start (aus ~/RAG, Umgebung pilot_rag; Browser und andere GPU-Programme schließen; Windows darf nicht schlafen):
 #   nohup bash skripte/laeufe/n100_nacht.sh > protokolle/n100_nacht_$(date +%Y%m%d_%H%M).txt 2>&1 &
 #   tail -f protokolle/n100_nacht_*.txt         (Fortschritt ansehen; Strg+C beendet nur tail, nicht den Lauf)
 # Voraussetzung: V11b installiert, patch_vergleich_logge.py ausgeführt, n100_rag_vs_ohne_lauf.sh in skripte/laeufe/.

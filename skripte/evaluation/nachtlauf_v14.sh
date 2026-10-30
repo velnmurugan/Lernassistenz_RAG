@@ -27,6 +27,6 @@ echo; echo "=== Zusammenfassung $(date +%H:%M) ==="
 for l in V135 V14 N100R-V135 N100R-V14; do echo "$l: $(tail -1 protokolle/rechen_varianten_$l.txt)"; done
 python -m zipfile -c V14_ergebnisse.zip evaluationsdaten/rechen_varianten_{V135,V14,N100R-V135,N100R-V14}.csv \
   protokolle/rechen_varianten_{V135,V14,N100R-V135,N100R-V14}.txt $(ls -t protokolle/nachtlauf_v14_*.txt 2>/dev/null | head -1) \
-  && cp V14_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+  && cp V14_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/V14_ergebnisse.zip (auch in Windows-Downloads)"
 echo "=== fertig $(date +%H:%M) ==="

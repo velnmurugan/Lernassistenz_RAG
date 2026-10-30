@@ -33,6 +33,6 @@ for x in evaluationsdaten/rechen_varianten_RV1-V18b.csv evaluationsdaten/rechen_
          $(ls -t protokolle/kurzlauf_v18b_*.txt 2>/dev/null | head -1); do
   [ -f "$x" ] && dateien="$dateien $x"
 done
-python -m zipfile -c V18b_ergebnisse.zip $dateien && cp V18b_ergebnisse.zip "/mnt/c/Users/Vel Narayanasamy/Downloads/" 2>/dev/null
+python -m zipfile -c V18b_ergebnisse.zip $dateien && cp V18b_ergebnisse.zip "$(bash "$HOME/RAG/skripte/werkzeuge/windows_downloads.sh")/" 2>/dev/null
 echo "Ergebnis-Zip: ~/RAG/V18b_ergebnisse.zip (auch in Windows-Downloads)"
 echo "=== fertig $(date +%H:%M) ==="

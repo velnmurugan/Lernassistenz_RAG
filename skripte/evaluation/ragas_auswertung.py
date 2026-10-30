@@ -71,7 +71,7 @@ KB_PFAD = "daten/wissensbasen/knowledge_base_boege.json"
 JUDGE_MODELL_STANDARD = "mistral-nemo"  # bewusst NICHT der Generator (qwen3.5:9b): Selbstbevorzugung vermeiden
 JUDGE_OPTIONEN = {"temperature": 0, "seed": 42}
 # Richter-Prompts: "J-v1" (ab V6, fester Prompt-Satz nach Es et al. 2024, ohne Beispiel und ohne
-# dokumentspezifische PDF-Hinweise; claude/Prompt_Set_Spezifikation.md §4.3–4.6) oder "F-v2/AR-v3/CR-v1"
+# dokumentspezifische PDF-Hinweise; doku/Prompt_Set_Spezifikation.md §4.3–4.6) oder "F-v2/AR-v3/CR-v1"
 # (V0–V5, zur Reproduktion alter Ergebnisse). Werte sind nur innerhalb derselben Richter-Version vergleichbar.
 RICHTER_PROMPTS = {"J-v1": "J-v1", "F-v2": "F-v2/AR-v3/CR-v1"}
 PROMPT_VERSION = "J-v1"
