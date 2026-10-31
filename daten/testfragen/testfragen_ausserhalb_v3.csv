@@ -1,0 +1,11 @@
+nr,typ,frage,erwartete_kernaussage,buch_kapitel,seite_buch,seite_pdf
+1,ausserhalb,Wie wird bei einem Retrieval-Augmented-Generation-System eine Nutzereingabe mithilfe von Embeddings mit passenden Textabschnitten verknüpft?,(nicht im Buch – das System soll verweigern),Außerhalb beider Bücher,,
+2,ausserhalb,Wie reduziert Low-Rank Adaptation (LoRA) die Zahl der zu trainierenden Parameter bei der Anpassung eines großen Sprachmodells?,(nicht im Buch – das System soll verweigern),Außerhalb beider Bücher,,
+3,ausserhalb,Wie definiert man in einer Docker-Compose-Datei ein gemeinsames Netzwerk für zwei Dienste?,(nicht im Buch – das System soll verweigern),Außerhalb beider Bücher,,
+4,ausserhalb,Welche Aufgabe hat ein Kubernetes-Deployment bei der Bereitstellung einer containerisierten Anwendung?,(nicht im Buch – das System soll verweigern),Außerhalb beider Bücher,,
+5,ausserhalb,Wie liest man mit der Python-Bibliothek pandas ein bestimmtes Arbeitsblatt aus einer Excel-Datei ein?,(nicht im Buch – das System soll verweigern),Außerhalb beider Bücher,,
+6,ausserhalb,Wie unterscheidet sich das SAE-Anmeldeverfahren von WPA3-Personal vom Verbindungsaufbau mit WPA2-Personal?,(nicht im Buch – das System soll verweigern),Außerhalb beider Bücher,,
+7,ausserhalb,Welche Rollen haben Services und Characteristics im GATT-Profil von Bluetooth Low Energy?,(nicht im Buch – das System soll verweigern),Außerhalb beider Bücher,,
+8,ausserhalb,Wie erstellt man einen API-Schlüssel für die OpenAI-API und verwendet ihn zur Authentifizierung einer Anfrage?,(nicht im Buch – das System soll verweigern),Außerhalb beider Bücher,,
+9,ausserhalb,Welche Spannungs- und Stromwerte sind bei USB Power Delivery 3.1 für eine Leistungsübertragung von 240 W vorgesehen?,(nicht im Buch – das System soll verweigern),Außerhalb beider Bücher,,
+10,ausserhalb,"Welche Pflichten sieht der EU AI Act für Anbieter von KI-Systemen vor, die als Hochrisiko-KI eingestuft werden?",(nicht im Buch – das System soll verweigern),Außerhalb beider Bücher,,

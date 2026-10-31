@@ -1,0 +1,3867 @@
+{
+ "w": {
+  "B1_1": {
+   "basis": "Die allgemeine Lösung enthält noch unbekannte Parameter, die eine ganze Schar von Kurven beschreiben. Wenn du aber wissen willst, welche genau durch einen bestimmten Punkt verläuft, musst du diese Parameter festlegen. Wie nennt man solche zusätzlichen Informationen?",
+   "waechter": "Die allgemeine Lösung enthält noch unbekannte Parameter, die eine ganze Schar von Kurven beschreiben. Wenn du aber wissen willst, welche genau durch einen bestimmten Punkt verläuft, musst du diese Parameter festlegen. Wie nennt man solche zusätzlichen Informationen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "B10_1": {
+   "basis": "Wenn du dir vorstellst, dass alle Verbrennungsprodukte wieder auf die Temperatur der Ausgangsstoffe abgekühlt werden, was passiert dann mit dem in den Gasen enthaltenen Wasser?",
+   "waechter": "Wenn du dir vorstellst, dass alle Verbrennungsprodukte wieder auf die Temperatur der Ausgangsstoffe abgekühlt werden, was passiert dann mit dem in den Gasen enthaltenen Wasser?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur Fragestellung)"
+  },
+  "B11_1": {
+   "basis": "Stell dir vor, ein sehr starker Strom fließt durch einen extrem dünnen Draht. Was passiert dann mit dem Draht?",
+   "waechter": "Überlege zuerst, welche Größe oder welcher Begriff in der Frage gesucht ist und wovon er abhängen könnte. Was weißt du darüber schon?",
+   "start": "leck",
+   "ende": "leck",
+   "neu": 2,
+   "ersatz": true,
+   "genannt": "Schmelzleiter; Verlust der Leitfähigkeit durch Veränderung des Leiters"
+  },
+  "B12_1": {
+   "basis": "Ein weiter Laufsitz wird für Maschinenteile mit sehr reichlichem Spiel benötigt. Denke daran, welche Bauteile in der Lösung als Beispiele für solche großen Spalte genannt werden.",
+   "waechter": "Denke darüber nach, welche Maschinenteile besonders viel Spiel haben müssen, und überlege, wie sich das auf die Form des Sitzes auswirkt.",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "B13_1": {
+   "basis": "Ein Federring erzeugt zwar Reibung, aber reicht er allein aus, um eine Verbindung wirklich sicher zu halten?",
+   "waechter": "Ein Federring erzeugt zwar Reibung, aber reicht er allein aus, um eine Verbindung wirklich sicher zu halten?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil oder Bedingung genannt."
+  },
+  "B13_2": {
+   "basis": "Ein Federring erzeugt zwar durch seine Federwirkung hohe Reibung, aber reicht diese allein aus, um die Mutter wirklich zu sichern?",
+   "waechter": "Schau dir deine letzte Antwort noch einmal an: Welche Angabe aus der Frage hast du darin noch nicht berücksichtigt, und was weißt du darüber?",
+   "start": "leck",
+   "ende": "leck",
+   "neu": 2,
+   "ersatz": true,
+   "genannt": "Name der gesuchten Sache (Kronenmutter) und Bedingung (zusammen mit Mutter)."
+  },
+  "B14_1": {
+   "basis": "Denk darüber nach, warum man bei Sicherheitsberechnungen oft den kleineren Reibungsbeiwert wählt und was das für die benötigte Einpresskraft bedeutet.",
+   "waechter": "Welche Art von Reibungsbeiwert ist es, wenn man bei der Berechnung der notwendigen Verspannkraft eine sicherere Auslegung anstrebt und damit einen Wert wählt, der kleiner ist als der für den ruhenden Zustand gültige Beiwert?",
+   "start": "leck",
+   "ende": "teilweise",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Rutschbeiwert, kleiner als Haftbeiwert für sichere Auslegung."
+  },
+  "B15_1": {
+   "basis": "Bei dieser Kupplung verbinden Gummireifen die Hälften mit Metallträgern. Was macht das Lösen der Verbindung besonders einfach im Vergleich zu anderen Typen?",
+   "waechter": "Bei dieser Kupplung verbinden Gummireifen die Hälften mit Metallträgern. Was macht das Lösen der Verbindung besonders einfach im Vergleich zu anderen Typen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "B15_2": {
+   "basis": "Wenn du die Verbindung löst, müssen die Wellen nicht in Längsrichtung bewegt werden. Denk nach, was es für den Ein- und Ausbau bedeutet, wenn diese Bewegung entfällt?",
+   "waechter": "Wenn du die Verbindung löst, müssen die Wellen nicht in Längsrichtung bewegt werden. Denk nach, was es für den Ein- und Ausbau bedeutet, wenn diese Bewegung entfällt?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur Bedingung genannt)"
+  },
+  "B16_1": {
+   "basis": "Überlege dir einmal, was passiert, wenn du eine Treppe hinuntergehst und dabei die Hände an der Wand abstützt – hilft dir das nicht auch beim Abbremsen? Wie könnte sich das auf die Kraft auswirken, die du eigentlich aufwenden müsstest?",
+   "waechter": "Überlege zuerst, welche Größe oder welcher Begriff in der Frage gesucht ist und wovon er abhängen könnte. Was weißt du darüber schon?",
+   "start": "leck",
+   "ende": "leck",
+   "neu": 2,
+   "ersatz": true,
+   "genannt": "Richtung des Ergebnisses (vermindern) und Bedingung (Widerstände mit dir arbeiten)"
+  },
+  "B17_1": {
+   "basis": "Du kannst dir vorstellen, wie sich das Regalfach verändert, wenn du statt einer einfachen Gabel ein Fahrzeug nutzt, das tief hineinfahren kann. Wie viele Paletten könnten dann in einem Fach Platz finden?",
+   "waechter": "Wenn du statt einer einfachen Gabel ein Fahrzeug nutzt, das tief in das Regalfach hineinfahren kann, wie verändert sich dadurch die Raumnutzung im Fach und was bedeutet das für die Anzahl der dort unterzubringenden Ladeeinheiten?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur allgemeine Funktionsbeschreibung)"
+  },
+  "B18_1": {
+   "basis": "Hast du schon einmal darüber nachgedacht, woran man erkennt, ob eine Rolle einfach nur das Gut schiebt oder selbst antreibt?",
+   "waechter": "Hast du schon einmal darüber nachgedacht, woran man erkennt, ob eine Rolle einfach nur das Gut schiebt oder selbst antreibt?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine der Lösungsbegriffe werden genannt."
+  },
+  "B19_1": {
+   "basis": "Wenn der Motor noch kalt ist, wird eine spezielle Leitung geöffnet, damit das Wasser den großen Kühler umfließt. Was passiert dabei mit dem Hauptkühler und wo fließt das Wasser stattdessen hin?",
+   "waechter": "Wenn der Motor noch kalt ist, wird eine spezielle Leitung geöffnet, damit das Wasser den großen Kühler umfließt. Was passiert dabei mit dem Hauptkühler und wo fließt das Wasser stattdessen hin?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur allgemeine Beschreibung des Umgehens)."
+  },
+  "B2_1": {
+   "basis": "Du hast sicher gehört, dass es spezielle Mischungen gibt, die den pH-Wert stabil halten. Überlege dir, welche Bestandteile so eine Mischung haben muss, damit sie bei Zugabe von Säure oder Base nicht sofort ihren Wert ändert?",
+   "waechter": "Du hast sicher gehört, dass es spezielle Mischungen gibt, die den pH-Wert stabil halten. Überlege dir, welche Bestandteile so eine Mischung haben muss, damit sie bei Zugabe von Säure oder Base nicht sofort ihren Wert ändert?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur allgemeine Funktionsbeschreibung."
+  },
+  "B2_2": {
+   "basis": "Ein pH-Puffer besteht aus einer Mischung einer schwachen Säure und einem Salz davon. Diese Kombination bewirkt, dass pH-Änderungen bei Zugabe von Säuren oder Laugen gedämpft werden.",
+   "waechter": "Damit die Mischung bei Zugabe von Säure oder Base nicht sofort reagiert, welche Eigenschaft muss die darin enthaltene Säure besitzen?",
+   "start": "leck",
+   "ende": "teilweise",
+   "neu": 2,
+   "ersatz": false,
+   "genannt": "Eigenschaft der Säure (schwache Säure)"
+  },
+  "B20_1": {
+   "basis": "Überlege, warum es nicht ausreicht, wenn die höchste Kraft im gesamten Zyklus noch innerhalb der Grenze liegt, und achte auf den Verlauf der Kurve kurz vor dem Ende des Hubes.",
+   "waechter": "Überlege, warum es nicht ausreicht, wenn die höchste Kraft im gesamten Zyklus noch innerhalb der Grenze liegt, und achte auf den Verlauf der Kurve kurz vor dem Ende des Hubes.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur Verlaufsbezug)"
+  },
+  "B21_1": {
+   "basis": "Du hast gerade gelernt, dass es bei bestimmten Werkstoffen zu einem speziellen Schadensbild kommt. Was könnte passieren, wenn der Strahl direkt auf eine solche Oberfläche trifft?",
+   "waechter": "Du hast gerade gelernt, dass es bei bestimmten Werkstoffen zu einem speziellen Schadensbild kommt. Was könnte passieren, wenn der Strahl direkt auf eine solche Oberfläche trifft?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "B22_1": {
+   "basis": "Überlege dir, warum eine Bearbeitungsmethode, die feine Oberflächenverbesserungen erzielt, nicht direkt auf einem grob bearbeiteten Werkstück funktionieren kann.",
+   "waechter": "Überlege dir, warum eine Bearbeitungsmethode, die feine Oberflächenverbesserungen erzielt, nicht direkt auf einem grob bearbeiteten Werkstück funktionieren kann.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "B23_1": {
+   "basis": "Hast du schon einmal darüber nachgedacht, warum es wichtig ist, dass ein digitales Modell mehr kann als nur eine Zeichnung darzustellen?",
+   "waechter": "Hast du schon einmal darüber nachgedacht, warum es wichtig ist, dass ein digitales Modell mehr kann als nur eine Zeichnung darzustellen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "B24_1": {
+   "basis": "Um eine Binärzahl in Hexadezimal umzuwandeln, musst du die Bits immer zu Gruppen von vier zusammenfassen. Hast du weniger als vier Bits vor dem Komma (oder am Anfang), was machst du dann?",
+   "waechter": "Um eine Binärzahl in Hexadezimal umzuwandeln, musst du die Bits immer zu Gruppen von vier zusammenfassen. Hast du weniger als vier Bits vor dem Komma (oder am Anfang), was machst du dann?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt."
+  },
+  "B24_2": {
+   "basis": "Beachte, dass du bei der Zusammenfassung der letzten vier Bits genau auf die Summe achten musst, um zu prüfen, ob deine berechnete Ziffer wirklich zur Binärgruppe passt.",
+   "waechter": "Beachte, dass du bei der Zusammenfassung der letzten vier Bits genau auf die Summe achten musst, um zu prüfen, ob deine berechnete Ziffer wirklich zur Binärgruppe passt.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt."
+  },
+  "B24_3": {
+   "basis": "Denke daran, dass jede hexadezimale Ziffer einen bestimmten Wert hat, der von den vier zusammengefassten Bits abhängt. Bestimme zuerst die Bedeutung deiner Bitgruppen, um die richtige Ziffer zu finden.",
+   "waechter": "Denke daran, dass jede hexadezimale Ziffer einen bestimmten Wert hat, der von den vier zusammengefassten Bits abhängt. Bestimme zuerst die Bedeutung deiner Bitgruppen, um die richtige Ziffer zu finden.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "B25_1": {
+   "basis": "Hast du dir überlegt, welche Anforderungen an eine Steuerung gestellt werden müssen, bevor man sich für ein bestimmtes Modell entscheidet?",
+   "waechter": "Hast du dir überlegt, welche Anforderungen an eine Steuerung gestellt werden müssen, bevor man sich für ein bestimmtes Modell entscheidet?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "B26_1": {
+   "basis": "Überlege, welche zwei zeitlichen Werte die charakteristischen Phasen der Sprungantwort einer PT2-Strecke beschreiben. Denke daran, dass eine Größe den Übergang bis zum Wendepunkt und die andere die vollständige Stabilisierung erfasst.",
+   "waechter": "Überlege, welche zwei zeitlichen Werte die charakteristischen Phasen der Sprungantwort einer PT2-Strecke beschreiben. Denke daran, dass eine Größe den Übergang bis zum Wendepunkt und die andere die vollständige Stabilisierung erfasst.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine der gesuchten Größen wird genannt."
+  },
+  "B26_2": {
+   "basis": "Du hast den Begriff für die erste Phase noch nicht ganz getroffen; überlege, ob dieser Zeitraum als „Verzögerung\" oder mit einem spezifischen Buchstaben wie T_u bezeichnet wird. Wie lautet nun der Name für die zweite Größe, die angibt, wann das System vollständig stabil ist?",
+   "waechter": "Da du für die vollständige Stabilisierung bereits „Stabilisierungszeit\" genannt hast, prüfe nun, ob der erste Zeitraum besser als „Verzögerung\" oder mit einem spezifischen Buchstaben wie T_u bezeichnet wird; welche Bezeichnung passt hier fachlich korrekt?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile werden genannt."
+  },
+  "B27_1": {
+   "basis": "Du kannst den Zuschlagssatz berechnen, wenn du die Höhe der Gemeinkosten durch die Höhe der Einzelkosten teilst. Was bedeutet es eigentlich, dass diese Kosten „prozentual vom beschafften Material\" abhängen?",
+   "waechter": "Du kannst den Zuschlagssatz berechnen, wenn du die Höhe der Gemeinkosten durch die Höhe der Einzelkosten teilst. Was bedeutet es eigentlich, dass diese Kosten „prozentual vom beschafften Material\" abhängen?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "prozentual vom beschafften Material abhängen"
+  },
+  "B27_2": {
+   "basis": "Da ein Zuschlagssatz ein Verhältnis beschreibt und nicht eine Summe, musst du prüfen, wie sich die Gemeinkosten im Vergleich zu den Einzelkosten verhalten. Wie hoch ist der prozentuale Anteil, wenn du die Gemeinkosten durch die Einzelkosten teilst?",
+   "waechter": "Da ein Zuschlagssatz ein Verhältnis beschreibt und nicht eine Summe, musst du prüfen, wie sich die Gemeinkosten im Vergleich zu den Einzelkosten verhalten. Wie hoch ist der prozentuale Anteil, wenn du die Gemeinkosten durch die Einzelkosten teilst?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "prozentualer Anteil, Division von Gemeinkosten durch Einzelkosten"
+  },
+  "B28_1": {
+   "basis": "Du kennst die Definition von Poor Dogs, aber was passiert mit Produkten, die bereits in dieser Phase sind?",
+   "waechter": "Du kennst die Definition von Poor Dogs, aber was passiert mit Produkten, die bereits in dieser Phase sind?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine der Lösungsinhalte (Produktphase, Strategie) wird genannt."
+  },
+  "B28_2": {
+   "basis": "Überlege, welche Maßnahme für Produkte in dieser Phase geprüft werden sollte, damit sie nicht weiter Ressourcen binden?",
+   "waechter": "Überlege, welche Maßnahme für Produkte in dieser Phase geprüft werden sollte, damit sie nicht weiter Ressourcen binden?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine der Lösungsbegriffe oder spezifischen Maßnahmen sind genannt."
+  },
+  "B28_3": {
+   "basis": "Wenn du überlegst, was mit Produkten am Ende ihrer Lebensdauer passieren sollte, um weitere Investitionen zu vermeiden, prüfst du dann, ob du die Möglichkeit eines geordneten Ausscheidens aus dem Markt betrachtest?",
+   "waechter": "Wenn du überlegst, was mit Produkten am Ende ihrer Lebensdauer passieren sollte, um weitere Investitionen zu vermeiden, prüfst du dann, ob du die Möglichkeit eines geordneten Ausscheidens aus dem Markt betrachtest?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "geordnetes Ausscheiden aus dem Markt (Marktaustritt)"
+  },
+  "B29_1": {
+   "basis": "Wer genau ist dafür zuständig, wenn es um die Kontrolle der Vorschriften geht?",
+   "waechter": "Wer genau ist dafür zuständig, wenn es um die Kontrolle der Vorschriften geht?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine der Lösungsbegriffe (TAB, Berufsgenossenschaften) wird genannt."
+  },
+  "B29_2": {
+   "basis": "Überlege, welche Stelle speziell für die Beratung und Überwachung bei Fragen zur Unfallverhütung zuständig ist, und frage dich, ob diese nicht auch den Arbeitgeber anweisen kann, Maßnahmen einzuleiten?",
+   "waechter": "Überlege, welche Stelle speziell für die Beratung und Überwachung bei Fragen zur Unfallverhütung zuständig ist, und frage dich, ob diese nicht auch den Arbeitgeber anweisen kann, Maßnahmen einzuleiten?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Beratung und Überwachung bei Unfallverhütung sowie Anweisung von Maßnahmen."
+  },
+  "B3_1": {
+   "basis": "Du hast dir sicher, dass nur innere Kräfte oder gar keine äußeren Drehmomente wirken dürfen?",
+   "waechter": "Du hast dir sicher, dass nur innere Kräfte oder gar keine äußeren Drehmomente wirken dürfen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil genannt, nur Fragestellung wiederholt."
+  },
+  "B3_2": {
+   "basis": "Du hast bereits richtig erkannt, dass es auf die Summe der äußeren Einwirkungen ankommt, aber prüfe bitte noch einmal genau, ob du bei der Drehbewegung nicht statt von Kräften eine andere physikalische Größe betrachten musst.",
+   "waechter": "Du hast bereits richtig erkannt, dass es auf die Summe der äußeren Einwirkungen ankommt, aber prüfe bitte noch einmal genau, ob du bei der Drehbewegung nicht statt von Kräften eine andere physikalische Größe betrachten musst.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur allgemeine Begriffe wie „andere physikalische Größe\"."
+  },
+  "B30_1": {
+   "basis": "Denke darüber nach, welche Bedeutung die gesuchte Größe hat und worauf sie bei einem 6-Sigma-Prozess mit Schwankungen von 1,5 Sigma zurückzuführen ist. Überlege zudem, welcher Wert für die Prozessfähigkeit als Kennzeichen praktischer Fehlerfreiheit gilt.",
+   "waechter": "Denke darüber nach, welche Bedeutung die gesuchte Größe hat und worauf sie bei einem 6-Sigma-Prozess mit Schwankungen von 1,5 Sigma zurückzuführen ist. Überlege zudem, welcher Wert für die Prozessfähigkeit als Kennzeichen praktischer Fehlerfreiheit gilt.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine der gesuchten Werte (3,4 Fehler, cpk=2) wird genannt."
+  },
+  "B30_2": {
+   "basis": "Wenn du den Einfluss von Schwankungen auf den Fehleranteil betrachtest, dann steigt dieser bei einer Verschiebung des Mittelwerts um 1,5 Sigma deutlich an. Welche Prozessfähigkeit ist notwendig, um diesen Anstieg auszugleichen und eine sichere Fertigung zu gewährleisten?",
+   "waechter": "Wenn du den Einfluss von Schwankungen auf den Fehleranteil betrachtest, dann steigt dieser bei einer Verschiebung des Mittelwerts um 1,5 Sigma deutlich an. Welche Prozessfähigkeit ist notwendig, um diesen Anstieg auszugleichen und eine sichere Fertigung zu gewährleisten?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine der Lösungswerte (3,4 Fehler, cpk=2) wird genannt."
+  },
+  "B4_1": {
+   "basis": "Wenn du in einer Mischung verschiedene Zusätze hast, überlege dir, welche Eigenschaft jedes einzelne Material verbessert oder verschlechtert. Was passiert mit der Härte, wenn man Quarzmehl hinzufügt?",
+   "waechter": "Wenn du in einer Mischung verschiedene Zusätze hast, überlege dir, welche Eigenschaft jedes einzelne Material verbessert oder verschlechtert. Was passiert mit der Härte, wenn man Quarzmehl hinzufügt?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt."
+  },
+  "B5_1": {
+   "basis": "Denk daran, wie die Eindringtiefe mit der Zeit zusammenhängt: Ist sie proportional zur Wurzel aus der Zeit oder umgekehrt? Wenn du die Tiefe verdoppelst, was passiert dann mathematisch mit dem Quadrat dieser Tiefe im Vergleich zur Zeit?",
+   "waechter": "Denk daran, wie die Eindringtiefe mit der Zeit zusammenhängt: Ist sie proportional zur Wurzel aus der Zeit oder umgekehrt? Wenn du die Tiefe verdoppelst, was passiert dann mathematisch mit dem Quadrat dieser Tiefe im Vergleich zur Zeit?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Wurzel-Zusammenhang und Quadrat der Tiefe"
+  },
+  "B6_1": {
+   "basis": "Du weißt, dass Thermoplaste erst oberhalb einer bestimmten Temperatur weich werden?",
+   "waechter": "Du weißt, dass Thermoplaste erst oberhalb einer bestimmten Temperatur weich werden?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine der Lösungsbegriffe T_g oder T_S wird genannt."
+  },
+  "B6_2": {
+   "basis": "Wenn du überlegst, dass das Material oberhalb der Glasübergangstemperatur T_g bereits zäh und hart ist, welcher weitere Temperaturpunkt markiert dann die obere Grenze, ab der es wieder plastisch verformbar wird?",
+   "waechter": "Wenn du überlegst, dass das Material oberhalb der Glasübergangstemperatur T_g bereits zäh und hart ist, welcher weitere Temperaturpunkt markiert dann die obere Grenze, ab der es wieder plastisch verformbar wird?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Der Begriff „Glasübergangstemperatur T_g\" und die Bedingung „oberhalb\" sind genannt."
+  },
+  "B6_3": {
+   "basis": "Wenn du weißt, dass oberhalb von T_g das Material zäh und hart wird, welcher weitere Temperaturpunkt markiert dann die obere Grenze, ab der es wieder plastisch verformbar wird?",
+   "waechter": "Wenn du weißt, dass oberhalb von T_g das Material zäh und hart wird, welcher weitere Temperaturpunkt markiert dann die obere Grenze, ab der es wieder plastisch verformbar wird?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Der Begriff T_g und die Bedingung „oberhalb von T_g\" sind enthalten."
+  },
+  "B7_1": {
+   "basis": "Überlege, von welchen Faktoren der Korrosionswiderstand einer Legierung abhängt und wie sich diese Eigenschaft bei Nickel-Zusatz verändert.",
+   "waechter": "Überlege, von welchen Faktoren der Korrosionswiderstand einer Legierung abhängt und wie sich diese Eigenschaft bei Nickel-Zusatz verändert.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur allgemeine Überlegungen."
+  },
+  "B8_1": {
+   "basis": "Du hast gesehen, dass es verschiedene Probenformen mit unterschiedlichen Kerben gibt. Überlege doch einmal, warum man bei einem zähen Werkstoff eine scharfe Kerbe verwendet und was das für den Bruchprozess bedeutet?",
+   "waechter": "Du hast gesehen, dass es verschiedene Probenformen mit unterschiedlichen Kerben gibt. Überlege doch einmal, warum man bei einem zähen Werkstoff eine scharfe Kerbe verwendet und was das für den Bruchprozess bedeutet?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur Begriffe aus Frage)"
+  },
+  "B9_1": {
+   "basis": "Wenn du von einem Vakuum sprichst, denkst du an einen Zustand ohne Luft. Wie weit dieser Zustand geht, hängt davon ab, wie viel Druck noch vorhanden ist. Was passiert mit dem Druck, wenn das Vakuum 100 % erreicht?",
+   "waechter": "Wenn du von einem Vakuum sprichst, denkst du an einen Zustand ohne Luft. Wie weit dieser Zustand geht, hängt davon ab, wie viel Druck noch vorhanden ist. Was passiert mit dem Druck, wenn das Vakuum 100 % erreicht?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur Begriff \"Druck\" und Frage nach Wert)"
+  },
+  "F1_1": {
+   "basis": "Du hast eine positive Ladung von 3 C. Wie viele Elektronen fehlen einem Körper, wenn er positiv geladen ist?",
+   "waechter": "Überlege zuerst, welche Größe oder welcher Begriff in der Frage gesucht ist und wovon er abhängen könnte. Was weißt du darüber schon?",
+   "start": "leck",
+   "ende": "leck",
+   "neu": 2,
+   "ersatz": true,
+   "genannt": "Die Anzahl der fehlenden Elektronen pro Coulomb (6,25·10¹⁸) und die Multiplikation mit 3 C."
+  },
+  "F10_1": {
+   "basis": "Überlege dir, ob die gesuchte Größe die Fähigkeit beschreibt, den Magnetismus schnell umzukehren, oder ob sie darauf abzielt, dass dieser Zustand lange erhalten bleibt.",
+   "waechter": "Überlege dir, ob die gesuchte Größe die Fähigkeit beschreibt, den Magnetismus schnell umzukehren, oder ob sie darauf abzielt, dass dieser Zustand lange erhalten bleibt.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur überlegungsanregend."
+  },
+  "F10_2": {
+   "basis": "Denk daran, dass bei weichmagnetischen Materialien der Magnetismus leicht wieder aufgehoben werden kann, während er bei hartmagnetischen Werkstoffen lange bestehen bleibt; welche Anwendungen passen nun zu diesen unterschiedlichen Eigenschaften?",
+   "waechter": "Denk darüber nach, wie viel Energie nötig ist, um die Magnetisierung eines Materials wieder aufzuheben oder zu drehen.",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Keine spezifische Größe oder Lösungsteil genannt."
+  },
+  "F10_3": {
+   "basis": "Wenn du eine Anwendung suchst, bei der das Magnetfeld sofort wieder weg sein muss, um es im nächsten Takt neu einzustellen, welches Material passt dann besser?",
+   "waechter": "Wenn du eine Anwendung suchst, bei der das Magnetfeld sofort wieder weg sein muss, um es im nächsten Takt neu einzustellen, welches Material passt dann besser?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Anwendung mit sofortigem Wegfallen des Magnetfelds"
+  },
+  "F11_1": {
+   "basis": "Du hast gesehen, dass bei gleichem Strom die Feldstärke H unverändert bleibt, aber das Material (Luft oder Eisen) sich ändert. Was bedeutet das für die Anzahl der Feldlinien und wie könnte man diesen Unterschied beschreiben?",
+   "waechter": "Überlege zuerst, welche Größe oder welcher Begriff in der Frage gesucht ist und wovon er abhängen könnte. Was weißt du darüber schon?",
+   "start": "leck",
+   "ende": "leck",
+   "neu": 2,
+   "ersatz": true,
+   "genannt": "magnetische Flussdichte B wird genannt."
+  },
+  "F12_1": {
+   "basis": "Wenn du den Erregerstrom abschaltest, bleibt im Eisen noch etwas Magnetismus zurück. Wie nennt man diesen verbleibenden Wert? Und welche Größe musst du anwenden, um diesen Restmagnetismus wieder zu löschen?",
+   "waechter": "Wenn du den Erregerstrom abschaltest, bleibt im Eisen noch etwas Magnetismus zurück. Wie nennt man diesen verbleibenden Wert? Und welche Größe musst du anwenden, um diesen Restmagnetismus wieder zu löschen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur Fragestellung und Prozessbeschreibung."
+  },
+  "F13_1": {
+   "basis": "Du kannst den Zusammenhang zwischen Spannung, Zeit und Flussänderung nutzen, um auf den gesuchten Wert zu kommen. Wie hängen diese Größen genau zusammen?",
+   "waechter": "Du kannst den Zusammenhang zwischen Spannung, Zeit und Flussänderung nutzen, um auf den gesuchten Wert zu kommen. Wie hängen diese Größen genau zusammen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur Größen und Zusammenhang."
+  },
+  "F14_1": {
+   "basis": "Du kannst die magnetische Energie einer Spule berechnen, wenn du ihre Induktivität und den Strom kennst. Welche Größe hängt dabei quadratisch vom Strom ab?",
+   "waechter": "Du kannst die magnetische Energie einer Spule berechnen, wenn du ihre Induktivität und den Strom kennst. Welche Größe hängt dabei quadratisch vom Strom ab?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F14_2": {
+   "basis": "Du hast bereits die Induktivität genannt, aber welche weitere Größe aus der Aufgabenstellung bestimmt, wie viel Energie gespeichert ist?",
+   "waechter": "Du hast bereits die Induktivität genannt, aber welche weitere Größe aus der Aufgabenstellung bestimmt, wie viel Energie gespeichert ist?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Größe der Lösung wird genannt."
+  },
+  "F15_1": {
+   "basis": "Du kannst die Formel für die induzierte Spannung umstellen, um die gesuchte Drehzahl zu berechnen. Wie hängt die erzeugte Spannung von der Drehzahl ab?",
+   "waechter": "Du kannst die Formel für die induzierte Spannung umstellen, um die gesuchte Drehzahl zu berechnen. Wie hängt die erzeugte Spannung von der Drehzahl ab?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Formelaufbau und Name der gesuchten Größe (Drehzahl)"
+  },
+  "F15_2": {
+   "basis": "Wenn du dir vorstellst, dass sich die Leiter schneller durch das Magnetfeld bewegen, wie verändert sich dann die induzierte Spannung?",
+   "waechter": "Wenn du dir vorstellst, dass sich die Leiter schneller durch das Magnetfeld bewegen, wie verändert sich dann die induzierte Spannung?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Richtung des Ergebnisses (Spannung steigt mit Drehzahl)"
+  },
+  "F16_1": {
+   "basis": "Hast du überlegt, welche physikalische Größe bei der Bewegung des Metallkörpers entsteht und wohin diese Energie geht?",
+   "waechter": "Hast du überlegt, welche physikalische Größe bei der Bewegung des Metallkörpers entsteht und wohin diese Energie geht?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F17_1": {
+   "basis": "Hast du schon einmal darüber nachgedacht, warum Messgeräte im Alltag nicht die maximale Spannung anzeigen, sondern einen anderen Wert?",
+   "waechter": "Wenn du dir vorstellst, dass Spannungsmessgeräte im Alltag nicht den höchsten Ausschlag anzeigen, sondern einen Mittelwert, welcher Wert wird dann in deinem Zeigerbild dargestellt? Und wenn mehrere solcher Zeiger unterschiedlich zueinander geneigt sind, wie musst du sie dann zusammenfassen, damit ihre Projektionen korrekt addiert werden?",
+   "start": "leck",
+   "ende": "teilweise",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Mittelwert (Effektivwert) und vektorielle Addition"
+  },
+  "F19_1": {
+   "basis": "Wenn du bei kHz-Frequenzen einen Kern aus vielen dünnen Blechen verwendest, was passiert dann mit den Eisenverlusten?",
+   "waechter": "Wenn du bei kHz-Frequenzen einen Kern aus vielen dünnen Blechen verwendest, was passiert dann mit den Eisenverlusten?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F2_1": {
+   "basis": "Du kannst die elektrische Feldstärke berechnen, wenn du die Spannung durch den Plattenabstand teilst. Wie hängen diese beiden Größen zusammen?",
+   "waechter": "Wenn du eine Spannung anlegst, die sich über einen bestimmten Weg zwischen zwei Punkten ausbreitet, wie verhält sich dann der Wert dieser Spannung im Verhältnis zur Länge dieses Weges?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur allgemeine Fragestellung."
+  },
+  "F20_1": {
+   "basis": "Hast du schon einmal überlegt, warum eine Spule manchmal so gebaut werden muss, dass sie ihre Eigenschaft nicht ändert, egal welche Last angeschlossen ist?",
+   "waechter": "Hast du schon einmal überlegt, warum eine Spule manchmal so gebaut werden muss, dass sie ihre Eigenschaft nicht ändert, egal welche Last angeschlossen ist?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Begriff \"Induktivitätswert\" und Bedingung \"nicht ändert\""
+  },
+  "F21_1": {
+   "basis": "Wenn du ein fünfwertiges Element wie Arsen in Silizium bringst, gibt es ein Elektron mehr als nötig für die Bindungen. Was passiert mit diesem „übrigen\" Elektron? Und warum hebt sich die positive Ladung des Atoms nicht gegen die negative des Elektrons auf, wenn man den Kristall betrachtet?",
+   "waechter": "Wenn ein fünfwertiges Fremdatom im Kristallgitter sitzt, kann es nicht alle vier Bindungen des Siliziums vollständig ausfüllen. Verbleibt das zusätzliche Valenzelektron fest gebunden oder löst es sich von seinem Atom? Und wie addieren sich die positiven Ladungen der zurückbleibenden Gitterionen mit den negativen Ladungen insgesamt zum elektrischen Zustand des Kristalls?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 2,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur Fragewiederholung und Begriffsdefinition)."
+  },
+  "F22_1": {
+   "basis": "Stell dir vor, ein Elektron bewegt sich zu einem Ort mit fehlendem Partner. Was passiert an dem alten Platz des Elektrons? Und wohin muss das „Fehlen\" gehen, wenn die anderen Teilchen in die entgegengesetzte Richtung ziehen?",
+   "waechter": "Stell dir vor, ein Elektron bewegt sich zu einem Ort mit fehlendem Partner. Was passiert an dem alten Platz des Elektrons? Und wohin muss das „Fehlen\" gehen, wenn die anderen Teilchen in die entgegengesetzte Richtung ziehen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F23_1": {
+   "basis": "Stell dir vor, ein stromdurchflossener Leiter befindet sich in einem Magnetfeld. Was passiert dann mit dem Weg, den der Strom nimmt?",
+   "waechter": "Wenn ein stromdurchflossener Leiter in einem Magnetfeld liegt, welche mechanische Veränderung erfährt dann der Weg des Stroms?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Keine mechanische Veränderung des Stromwegs wird genannt."
+  },
+  "F23_2": {
+   "basis": "Denk daran, dass eine Feldplatte aus speziellen Halbleiterwiderständen besteht. Wie verhalten sich die Strombahnen in diesen Widerständen, wenn sie sich in einem Magnetfeld befinden?",
+   "waechter": "Denk daran, dass eine Feldplatte aus speziellen Halbleiterwiderständen besteht. Wie verhalten sich die Strombahnen in diesen Widerständen, wenn sie sich in einem Magnetfeld befinden?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Strombahnen verhalten sich in Halbleiterwiderständen im Magnetfeld (keine Richtung/Ergebnis genannt)"
+  },
+  "F24_1": {
+   "basis": "Du hast sicher schon einmal eine Uhr oder einen Taschenrechner benutzt, der mit Batterien läuft. Was wäre, wenn die Anzeige viel mehr Strom verbrauchen würde?",
+   "waechter": "Du hast sicher schon einmal eine Uhr oder einen Taschenrechner benutzt, der mit Batterien läuft. Was wäre, wenn die Anzeige viel mehr Strom verbrauchen würde?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Stromverbrauch"
+  },
+  "F25_1": {
+   "basis": "Du musst wissen, dass MOS-FETs eine sehr dünne Isolierschicht haben und diese durch statische Aufladung leicht zerstört werden kann. Warum verhindert der hohe Eingangswiderstand die Ableitung dieser Ladungen?",
+   "waechter": "Du musst wissen, dass MOS-FETs eine sehr dünne Isolierschicht haben und diese durch statische Aufladung leicht zerstört werden kann. Warum verhindert der hohe Eingangswiderstand die Ableitung dieser Ladungen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F25_2": {
+   "basis": "Wenn ein Stromfluss durch eine Schicht unmöglich ist, wie kann dann überhaupt eine statische Entladung stattfinden?",
+   "waechter": "Wenn ein Stromfluss durch eine Schicht unmöglich ist, wie kann dann überhaupt eine statische Entladung stattfinden?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F26_1": {
+   "basis": "Du hast dir vielleicht gedacht, dass die Elektronen beim Bremsen oder bei Kollisionen Energie abgeben müssen. Was passiert mit dieser Energie, wenn sie nicht genutzt wird, um ein neues Elektron zu lösen?",
+   "waechter": "Wenn ein beschleunigtes Elektron auf ein Gasmolekül trifft und dieses nicht zum Leiten bringt, wohin muss seine gewonnene Bewegungsenergie dann verschwinden?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F28_1": {
+   "basis": "Hast du schon einmal überlegt, warum eine kleine Glimmlampe in der Schaltung einer Leuchtstofflampe notwendig ist und was passiert, wenn sie sich durch den Strom erwärmt?",
+   "waechter": "Hast du schon einmal überlegt, warum eine kleine Glimmlampe in der Schaltung einer Leuchtstofflampe notwendig ist und was passiert, wenn sie sich durch den Strom erwärmt?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Glimmlampe (Starter), Erwärmung, Stromfluss"
+  },
+  "F28_2": {
+   "basis": "Wenn der Strom durch den Starter unterbrochen wird, ändert sich im induktiven Bauelement plötzlich etwas an der Stromstärke; welche Spannung entsteht dadurch kurzzeitig und zündet die Lampe?",
+   "waechter": "Wenn der Stromfluss durch den Starter unterbrochen wird, welche Eigenschaft der Drosselspule sorgt dafür, dass sich die Spannung plötzlich ändert und damit die Lampe zünden kann?",
+   "start": "leck",
+   "ende": "teilweise",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Eigenschaft der Drosselspule (Selbstinduktion) und Spannungänderung"
+  },
+  "F28_3": {
+   "basis": "Denk daran, dass der Starter erst durch den Stromfluss auf eine bestimmte Temperatur gebracht werden muss, bevor er sich wieder abkühlt und den Strom unterbricht; welche Eigenschaft müssen die Elektroden besitzen, damit dieser hohe Strom sie auf diese notwendige Temperatur bringt?",
+   "waechter": "Denk daran, dass der Starter erst durch den Stromfluss auf eine bestimmte Temperatur gebracht werden muss, bevor er sich wieder abkühlt und den Strom unterbricht; welche Eigenschaft müssen die Elektroden besitzen, damit dieser hohe Strom sie auf diese notwendige Temperatur bringt?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Erwärmung der Elektroden auf notwendige Temperatur"
+  },
+  "F29_1": {
+   "basis": "Überlege, wie sich die mittlere Gleichspannung aus der Scheitelspannung der Wechselspannung ergibt, wenn keine Diodenverluste vorhanden sind.",
+   "waechter": "Überlege, wie sich die mittlere Gleichspannung aus der Scheitelspannung der Wechselspannung ergibt, wenn keine Diodenverluste vorhanden sind.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungswerte oder Formeln genannt."
+  },
+  "F29_2": {
+   "basis": "Vergiss nicht, dass bei einer B2-Schaltung die geforderte Gleichspannung nur ein Teil des Scheitelwerts der sekundären Wechselspannung ist.",
+   "waechter": "Vergiss nicht, dass bei einer B2-Schaltung die geforderte Gleichspannung nur ein Teil des Scheitelwerts der sekundären Wechselspannung ist.",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Begriff \"Scheitelwert\" und dass Gleichspannung ein Teil davon ist."
+  },
+  "F29_3": {
+   "basis": "Für diese Frage habe ich keinen Hinweis, der ohne das Lernmaterial auskommt. Überlege kurz, was du schon über das Thema weißt, und öffne dann die Lösung.",
+   "waechter": "Für diese Frage habe ich keinen Hinweis, der ohne das Lernmaterial auskommt. Überlege kurz, was du schon über das Thema weißt, und öffne dann die Lösung.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungswerte oder Formeln genannt."
+  },
+  "F3_1": {
+   "basis": "Du kannst die Stromstärke berechnen, wenn du weißt, wie viel Ladung pro Sekunde fließt. Wie hängen Ladung und Zeit zusammen?",
+   "waechter": "Du kannst die Stromstärke berechnen, wenn du weißt, wie viel Ladung pro Sekunde fließt. Wie hängen Ladung und Zeit zusammen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt."
+  },
+  "F3_2": {
+   "basis": "Die Stromstärke gibt an, wie viele Coulomb pro Sekunde fließen; prüfe also, ob du die 50 C durch die vorgegebene Zeit von 20 s teilst.",
+   "waechter": "Die Stromstärke gibt an, wie viele Coulomb pro Sekunde fließen; prüfe also, ob du die 50 C durch die vorgegebene Zeit von 20 s teilst.",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Formelaufbau und Richtung des Ergebnisses (Teilen von Q durch t)"
+  },
+  "F30_1": {
+   "basis": "Du hast dir sicher schon einmal überlegt, wie viel Wärme ein Widerstand erzeugt, wenn Strom durch ihn fließt. Was denkst du, was passiert mit der Energie, die im Längstransistor als Verlustleistung entsteht?",
+   "waechter": "Du hast dir sicher schon einmal überlegt, wie viel Wärme ein Widerstand erzeugt, wenn Strom durch ihn fließt. Was denkst du, was passiert mit der Energie, die im Längstransistor als Verlustleistung entsteht?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Verlustleistung als Wärme im Transistor"
+  },
+  "F31_1": {
+   "basis": "Stell dir vor, du möchtest eine ganze Welle aufzeichnen. Wo musst du anfangen, damit du sowohl den höchsten als auch den tiefsten Punkt der Welle abbilden kannst, ohne dass sie abgeschnitten wird?",
+   "waechter": "Stell dir vor, du möchtest eine ganze Welle aufzeichnen. Wo musst du anfangen, damit du sowohl den höchsten als auch den tiefsten Punkt der Welle abbilden kannst, ohne dass sie abgeschnitten wird?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "höchste und tiefste Punkte der Welle"
+  },
+  "F32_1": {
+   "basis": "Hast du schon einmal darüber nachgedacht, welche mathematischen Aufgaben man mit rein analogen Bauteilen lösen kann?",
+   "waechter": "Hast du schon einmal darüber nachgedacht, welche mathematischen Aufgaben man mit rein analogen Bauteilen lösen kann?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F32_2": {
+   "basis": "Überlege nun konkret, wie man zwei Eingangsspannungen voneinander abzieht und das Ergebnis gleichzeitig verstärkt – welcher Verstärkertyp erfüllt genau diese Funktion?",
+   "waechter": "Schau dir deine letzte Antwort noch einmal an: Welche Angabe aus der Frage hast du darin noch nicht berücksichtigt, und was weißt du darüber?",
+   "start": "leck",
+   "ende": "leck",
+   "neu": 2,
+   "ersatz": true,
+   "genannt": "Differenzverstärker (Name der gesuchten Sache)"
+  },
+  "F32_3": {
+   "basis": "Wenn du zwei Spannungen voneinander abziehst und das Ergebnis verstärkst, dann handelt es sich um einen Differenzverstärker.",
+   "waechter": "Wenn du zwei Spannungen voneinander subtrahierst, entsteht an den Eingängen eine bestimmte Spannungsdifferenz – wie wird dieser spezielle Eingangsbereich in der Fachsprache bezeichnet?",
+   "start": "leck",
+   "ende": "teilweise",
+   "neu": 2,
+   "ersatz": false,
+   "genannt": "Begriff „Eingangsbereich\" und Subtraktion von Spannungen"
+  },
+  "F33_1": {
+   "basis": "Was macht der Baustein genau mit den Zündimpulsen im Bezug auf die Netzspannung?",
+   "waechter": "Was macht der Baustein genau mit den Zündimpulsen im Bezug auf die Netzspannung?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur Fragestellung und Zielgröße)."
+  },
+  "F34_1": {
+   "basis": "Hast du schon einmal darüber nachgedacht, warum ein Display nicht jeden beliebigen Zwischenwert anzeigen kann?",
+   "waechter": "Hast du schon einmal darüber nachgedacht, warum ein Display nicht jeden beliebigen Zwischenwert anzeigen kann?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F35_1": {
+   "basis": "Wenn du eine „4½ Stelle\"-Anzeige siehst, was bedeutet das für die erste Ziffer?",
+   "waechter": "Wenn die Stellenzahl als Bruch angegeben wird, was bedeutet das speziell für die erste Ziffer der Anzeige?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F37_1": {
+   "basis": "Denkst du darüber nach, wie man eine Spannung wie bei einem Stufenumsetzer durch aufaddieren kleinerer Anteile einer größeren Referenzspannung ermittelt?",
+   "waechter": "Denkst du darüber nach, wie man eine Spannung wie bei einem Stufenumsetzer durch aufaddieren kleinerer Anteile einer größeren Referenzspannung ermittelt?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt."
+  },
+  "F38_1": {
+   "basis": "Du kannst beim Zweirampen-Umsetzer die Eingangsspannung aus dem Verhältnis der beiden Zeitspannen bestimmen. Wie hängt U_e von T1 und T2 zusammen?",
+   "waechter": "Du kannst beim Zweirampen-Umsetzer die Eingangsspannung aus dem Verhältnis der beiden Zeitspannen bestimmen. Wie hängt U_e von T1 und T2 zusammen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungswerte oder Formeln genannt."
+  },
+  "F38_2": {
+   "basis": "Überprüfe, ob du die kürzere Zeit T₂ wirklich als den ersten Teil des Bruchs (den Zähler) verwendest, da eine kleinere Zeit dort zu einer kleineren Eingangsspannung führt.",
+   "waechter": "Überprüfe, ob du die kürzere Zeit T₂ wirklich als den ersten Teil des Bruchs (den Zähler) verwendest, da eine kleinere Zeit dort zu einer kleineren Eingangsspannung führt.",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Richtung des Ergebnisses (kleinere Zeit im Zähler führt zu kleinerer Spannung)"
+  },
+  "F39_1": {
+   "basis": "Du hast drei Frequenzen, bei denen die Marke stillsteht. Überlege dir, wie sich die Drehzahl der Welle und die Blitzfrequenz zueinander verhalten müssen, damit dieser Stillstand entsteht.",
+   "waechter": "Du hast drei Frequenzen, bei denen die Marke stillsteht. Überlege dir, wie sich die Drehzahl der Welle und die Blitzfrequenz zueinander verhalten müssen, damit dieser Stillstand entsteht.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt."
+  },
+  "F4_1": {
+   "basis": "Überlege dir, welche physikalische Größe durch die Spannung und die entnehmbare Ladung charakterisiert wird und wie sich diese Größen zur Energie zusammenfügen.",
+   "waechter": "Überlege dir, welche physikalische Größe durch die Spannung und die entnehmbare Ladung charakterisiert wird und wie sich diese Größen zur Energie zusammenfügen.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur Begriffsverbindung."
+  },
+  "F4_2": {
+   "basis": "Achte darauf, dass du den Wert für die entnehmbare Ladung erst in die Einheit Ah umrechnest, bevor du ihn mit der Spannung verknüpfst. Wie lautet dann das Ergebnis?",
+   "waechter": "Achte darauf, dass du den Wert für die entnehmbare Ladung erst in die Einheit Ah umrechnest, bevor du ihn mit der Spannung verknüpfst. Wie lautet dann das Ergebnis?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Umrechnung der Ladung in Ah und Multiplikation mit Spannung."
+  },
+  "F40_1": {
+   "basis": "Du musst bei der Berechnung der Leistung aus Drehzahl und Drehmoment beachten, dass die Drehzahl erst in Umdrehungen pro Sekunde umzurechnen ist. Wie lautet die Formel für diese Umrechnung?",
+   "waechter": "Du musst bei der Berechnung der Leistung aus Drehzahl und Drehmoment beachten, dass die Drehzahl erst in Umdrehungen pro Sekunde umzurechnen ist. Wie lautet die Formel für diese Umrechnung?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Umrechnung von Drehzahl in Umdrehungen pro Sekunde"
+  },
+  "F40_2": {
+   "basis": "Du musst sicherstellen, dass du vor dem Einsetzen der Drehzahl in die Formel für die Leistung erst auf die richtige Zeiteinheit umstellst. Wie rechnet man Umdrehungen pro Minute in die benötigte Winkelgeschwindigkeit um?",
+   "waechter": "Du musst sicherstellen, dass du vor dem Einsetzen der Drehzahl in die Formel für die Leistung erst auf die richtige Zeiteinheit umstellst. Wie rechnet man Umdrehungen pro Minute in die benötigte Winkelgeschwindigkeit um?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Winkelgeschwindigkeit und Umrechnung von Umdrehungen pro Minute"
+  },
+  "F41_1": {
+   "basis": "Hast du schon einmal darüber nachgedacht, wie die Marke aussieht, wenn der Blitz erst nach einer ganzen Reihe von Umdrehungen kommt?",
+   "waechter": "Hast du schon einmal darüber nachgedacht, wie die Marke aussieht, wenn der Blitz erst nach einer ganzen Reihe von Umdrehungen kommt?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F42_1": {
+   "basis": "Stell dir vor, du übst eine Kraft aus, um etwas zu drehen. Was passiert mit dem Drehmoment, wenn du diese Kraft an einem längeren oder kürzeren Abstand von der Drehachse anwendest?",
+   "waechter": "Stell dir vor, du übst eine Kraft aus, um etwas zu drehen. Was passiert mit dem Drehmoment, wenn du diese Kraft an einem längeren oder kürzeren Abstand von der Drehachse anwendest?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (Formel, Name der Kraft oder Hebelarm) genannt."
+  },
+  "F42_2": {
+   "basis": "Denk daran, dass das Drehmoment durch das Produkt aus einer Kraft und ihrem senkrechten Abstand zur Drehachse entsteht. Wenn du also eine Kraft F an einem Hebelarm l angreifst, wie rechnet man diesen Einfluss auf die Drehwirkung zusammen?",
+   "waechter": "Du hast bereits einen Hebelarm in deiner Überlegung genannt; wie verändert sich die Drehwirkung jedoch, wenn du diesen Abstand senkrecht zur Kraftwirkung misst?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur Begriff „senkrecht\" und Wiederholung von „Hebelarm\")."
+  },
+  "F43_1": {
+   "basis": "Du musst wissen, dass der Wirkungsgrad immer das Verhältnis von abgegebener zu aufgenommener Leistung ist. Wie lässt sich die aufgenommene Leistung aus der abgegebenen Leistung und den Verlusten berechnen?",
+   "waechter": "Du musst wissen, dass der Wirkungsgrad immer das Verhältnis von abgegebener zu aufgenommener Leistung ist. Wie lässt sich die aufgenommene Leistung aus der abgegebenen Leistung und den Verlusten berechnen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil ablesbar."
+  },
+  "F44_1": {
+   "basis": "Überlege dir, welche Verluste unabhängig von der Last sind und welche erst entstehen, wenn Strom fließt.",
+   "waechter": "Überlege dir, welche Verluste unabhängig von der Last sind und welche erst entstehen, wenn Strom fließt.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur allgemeine Überlegungsanweisungen."
+  },
+  "F46_1": {
+   "basis": "Überlege dir, welche Bezeichnung für eine fremdversorgte Erregerwicklung üblich ist und wie diese sich von anderen Wicklungen unterscheidet.",
+   "waechter": "Überlege dir, welche Bezeichnung für eine fremdversorgte Erregerwicklung üblich ist und wie diese sich von anderen Wicklungen unterscheidet.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F47_1": {
+   "basis": "Denk einmal darüber nach, wie sich die Anzahl der benötigten Windungen ändert, wenn der durchfließende Strom sehr klein ist im Vergleich zu einem großen Strom.",
+   "waechter": "Denk einmal darüber nach, wie sich die Anzahl der benötigten Windungen ändert, wenn der durchfließende Strom sehr klein ist im Vergleich zu einem großen Strom.",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Anzahl der Windungen bei kleinem Strom (Fremderregung)"
+  },
+  "F47_2": {
+   "basis": "Wenn du den Fall betrachtest, bei dem Erregerstrom und Ankerstrom exakt gleich groß sind, welche Windungseigenschaften benötigst du dann für die Erregerwicklung?",
+   "waechter": "Schau dir deine letzte Antwort noch einmal an: Welche Angabe aus der Frage hast du darin noch nicht berücksichtigt, und was weißt du darüber?",
+   "start": "leck",
+   "ende": "leck",
+   "neu": 2,
+   "ersatz": true,
+   "genannt": "Erregerstrom gleich Ankerstrom, wenige dicke Windungen"
+  },
+  "F48_1": {
+   "basis": "Hast du schon einmal überlegt, wie sich das Magnetfeld im Luftspalt verändert, wenn Strom durch die Ankerwicklung fließt?",
+   "waechter": "Hast du schon einmal überlegt, wie sich das Magnetfeld im Luftspalt verändert, wenn Strom durch die Ankerwicklung fließt?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteile genannt."
+  },
+  "F49_1": {
+   "basis": "Denke an den Vorteil der gesuchten Wicklung, der darin besteht, eine lastabhängige Feldschwächung zu vermeiden. Zudem musst du beim Umkehren des Ankerstroms die Anschlüsse tauschen, um eine Gegenwirkung des Feldes zu verhindern.",
+   "waechter": "Wenn du eine zusätzliche Erregung einbaust, um die durch den Ankerstrom verursachte Feldschwächung auszugleichen, wie musst du dann deren Anschlüsse verdrahten, damit sie bei einer Umkehr des Ankerstromes weiterhin das Feld stärken und nicht schwächen?",
+   "start": "leck",
+   "ende": "teilweise",
+   "neu": 2,
+   "ersatz": false,
+   "genannt": "Verdrahtung der zusätzlichen Erregung zur Feldstärkung"
+  },
+  "F5_1": {
+   "basis": "Du hast sicher gehört, dass Lithium-Ionen-Akkus eine hohe Energiedichte haben. Wie hoch ist genau die Spannung einer solchen Zelle und wie viel besser speichert sie Energie pro Kilogramm im Vergleich zum Bleiakkumulator?",
+   "waechter": "Du hast sicher gehört, dass Lithium-Ionen-Akkus eine hohe Energiedichte haben. Wie hoch ist genau die Spannung einer solchen Zelle und wie viel besser speichert sie Energie pro Kilogramm im Vergleich zum Bleiakkumulator?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur allgemeine Eigenschaft."
+  },
+  "F5_2": {
+   "basis": "Prüfe noch einmal die Angaben zur Leerlaufspannung einer einzelnen Zelle im Vergleich zum Bleiakkumulator. Ist die Spannung wirklich niedriger als erwartet oder liegt sie höher? Und wie verhält sich die Speicherkapazität pro Kilogramm genau zueinander?",
+   "waechter": "Prüfe noch einmal die Angaben zur Leerlaufspannung einer einzelnen Zelle im Vergleich zum Bleiakkumulator. Ist die Spannung wirklich niedriger als erwartet oder liegt sie höher? Und wie verhält sich die Speicherkapazität pro Kilogramm genau zueinander?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Leerlaufspannung einer einzelnen Zelle und Speicherkapazität pro Kilogramm"
+  },
+  "F50_1": {
+   "basis": "Du musst das Wievielfache des Bemessungsstroms bestimmen, indem du die relative Kurzschlussspannung in der Formel für den Dauerkurzschluss verwendest. Denke daran, dass die Stoßspitze etwa doppelt so hoch ist wie dieser berechnete Dauerwert.",
+   "waechter": "Du musst das Wievielfache des Bemessungsstroms bestimmen, indem du die relative Kurzschlussspannung in der Formel für den Dauerkurzschluss verwendest. Denke daran, dass die Stoßspitze etwa doppelt so hoch ist wie dieser berechnete Dauerwert.",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Stoßspitze ist etwa doppelt so hoch wie der Dauerwert."
+  },
+  "F50_2": {
+   "basis": "Du musst das Wievielfache des Bemessungsstroms bestimmen, indem du den Kehrwert der relativen Kurzschlussspannung bildest. Für die Stoßspitze ist zu beachten, dass dieser berechnete Wert in der Praxis etwa verdoppelt wird.",
+   "waechter": "Du musst das Wievielfache des Bemessungsstroms bestimmen, indem du den Kehrwert der relativen Kurzschlussspannung bildest. Für die Stoßspitze ist zu beachten, dass dieser berechnete Wert in der Praxis etwa verdoppelt wird.",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Verdopplung der Stoßspitze und Kehrwert der Spannung"
+  },
+  "F50_3": {
+   "basis": "Überprüfe, ob du den Faktor für die Stoßspitze auf den berechneten Dauerkurzschlussstrom anwendest oder fälschlicherweise auf den prozentualen Wert der Kurzschlussspannung. Ist es möglich, dass die Verdopplung erst nach dem Einsetzen des spezifischen u_k erfolgt?",
+   "waechter": "Überprüfe, ob du den Faktor für die Stoßspitze auf den berechneten Dauerkurzschlussstrom anwendest oder fälschlicherweise auf den prozentualen Wert der Kurzschlussspannung. Ist es möglich, dass die Verdopplung erst nach dem Einsetzen des spezifischen u_k erfolgt?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Verdopplung erst nach Einsetzen von u_k; Faktor auf Strom anwenden."
+  },
+  "F51_1": {
+   "basis": "Überlege dir, welche physikalischen Größen für die Spannung und Frequenz eines Transformators entscheidend sind.",
+   "waechter": "Überlege dir, welche physikalischen Größen für die Spannung und Frequenz eines Transformators entscheidend sind.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine der spezifischen Bedingungen (Spannung, Frequenz, Kurzschlussimpedanz) wird genannt."
+  },
+  "F52_1": {
+   "basis": "Um die Scheinleistung eines Drehstromtransformators zu berechnen, musst du wissen, welche Größe zusätzlich zur Spannung und zum Strom noch benötigt wird. Was ist das?",
+   "waechter": "Um die Scheinleistung eines Drehstromtransformators zu berechnen, musst du wissen, welche Größe zusätzlich zur Spannung und zum Strom noch benötigt wird. Was ist das?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Größe oder Formel wird genannt."
+  },
+  "F53_1": {
+   "basis": "Wenn du Transformatoren mit sehr hoher Leistung betrachtest, welche Schaltung wird dann bevorzugt, damit der Sternpunktleiter auch bei ungleicher Last genug Strom führen kann?",
+   "waechter": "Bei Transformatoren für große Leistungen ist es wichtig, eine Schaltung zu wählen, deren Sternpunkt den Strom aufnehmen kann, wenn die Last auf den Außenleitern nicht gleichmäßig verteilt ist. Welche Bauart bietet genau diese Eigenschaft?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Keine der Lösung (Dyn 5) wird genannt."
+  },
+  "F53_2": {
+   "basis": "Überlege, welche Eigenschaft der Wicklungsschaltung es ermöglicht, dass der Sternpunktleiter bei ungleicher Last den vollen Bemessungsstrom führen kann?",
+   "waechter": "Überlege, welche Eigenschaft der Wicklungsschaltung es ermöglicht, dass der Sternpunktleiter bei ungleicher Last den vollen Bemessungsstrom führen kann?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Sternpunktleiter kann vollen Bemessungsstrom führen"
+  },
+  "F53_3": {
+   "basis": "Schau in das Material nach, wie die Schaltung heißt, bei der die Oberspannungswicklung in Dreieck und die Unterspannungswicklung in Stern geschaltet ist, um den korrekten Namen für diese Konfiguration zu finden.",
+   "waechter": "Denke darüber nach, welche Bedeutung der gesuchten Schaltgruppe hat und wovon diese Eigenschaft abhängt.",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 2,
+   "ersatz": false,
+   "genannt": "Keine; Hinweis lenkt nur auf Abhängigkeit von Bedeutung und Eigenschaft."
+  },
+  "F55_1": {
+   "basis": "Du musst beim Anfahren entgegen der Drehfeldrichtung bedenken, dass die Drehzahl n negativ ist. Wie verändert sich dann der Nenner im Bruch für den Schlupf?",
+   "waechter": "Du musst beim Anfahren entgegen der Drehfeldrichtung bedenken, dass die Drehzahl n negativ ist. Wie verändert sich dann der Nenner im Bruch für den Schlupf?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur eine Bedingung zur Drehzahl."
+  },
+  "F56_1": {
+   "basis": "Um aus einer einphasigen Spannung ein rotierendes Magnetfeld aufzubauen, brauchst du zusätzlich zur Hauptwicklung noch einen Weg, der einen phasenverschobenen Strom führt. Wie kann man diese Phasenverschiebung technisch erreichen?",
+   "waechter": "Um aus einer einphasigen Spannung ein rotierendes Magnetfeld aufzubauen, brauchst du zusätzlich zur Hauptwicklung noch einen Weg, der einen phasenverschobenen Strom führt. Wie kann man diese Phasenverschiebung technisch erreichen?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur Prinzip der Phasenverschiebung."
+  },
+  "F56_2": {
+   "basis": "Um die notwendige Phasenverschiebung zu erzeugen, benötigst du einen Baustoff mit kapazitiver Wirkung. Welche Komponente erfüllt diese Eigenschaft?",
+   "waechter": "Um die notwendige Phasenverschiebung zu erzeugen, benötigst du einen Baustoff mit kapazitiver Wirkung. Welche Komponente erfüllt diese Eigenschaft?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Komponente wird genannt, nur die Eigenschaft „kapazitiver Wirkung\"."
+  },
+  "F57_1": {
+   "basis": "Du hast sicher gehört, dass die Klemmenspannung von der Art der Last abhängt. Was passiert eigentlich mit der Spannung, wenn du eine stark induktive Last anschließt?",
+   "waechter": "Du kennst bereits das Spannungsverhalten von Transformatoren bei unterschiedlichen Lastarten; kannst du diesen Zusammenhang nun auch für den Synchrongenerator nutzen und überlegen, wie sich die Klemmenspannung bei induktiver sowie kapazitiver Belastung verändert?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F58_1": {
+   "basis": "Wenn du den Strom als Sinusfunktion betrachtest, was passiert dann mit dem Moment, wenn du diesen Strom quadrierst?",
+   "waechter": "Wenn du den Strom als Sinusfunktion betrachtest, was passiert dann mit dem Moment, wenn du diesen Strom quadrierst?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Moment proportional zum Quadrat des Stroms"
+  },
+  "F58_2": {
+   "basis": "Da das Drehmoment von der Stromstärke abhängt und diese beim Wechselstrom ständig ihre Richtung ändert, überlege doch einmal, wie sich dieser ständige Wechsel auf die Größe des Drehmoments auswirkt?",
+   "waechter": "Da das Drehmoment von der Stromstärke abhängt und diese beim Wechselstrom ständig ihre Richtung ändert, überlege doch einmal, wie sich dieser ständige Wechsel auf die Größe des Drehmoments auswirkt?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt, nur allgemeine Abhängigkeit."
+  },
+  "F58_3": {
+   "basis": "Überlege doch einmal, ob die Verdopplung der Frequenz beim Quadrieren des Stroms wirklich direkt auf die Netzfrequenz angewendet wird oder ob hier eine andere Bezugsgröße wie die Grundfrequenz des Netzes eine Rolle spielt?",
+   "waechter": "Überlege doch einmal, ob die Verdopplung der Frequenz beim Quadrieren des Stroms wirklich direkt auf die Netzfrequenz angewendet wird oder ob hier eine andere Bezugsgröße wie die Grundfrequenz des Netzes eine Rolle spielt?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Grundfrequenz des Netzes und Verdopplung der Frequenz"
+  },
+  "F59_1": {
+   "basis": "Stell dir vor, die Drehzahl weicht leicht ab. Welche Kraft muss dann wirken, damit sie wieder in den ursprünglichen Zustand zurückkehrt?",
+   "waechter": "Stell dir vor, die Drehzahl weicht leicht ab. Welche Kraft muss dann wirken, damit sie wieder in den ursprünglichen Zustand zurückkehrt?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine zentrale Lösungsteil (nur hypothetische Situation)"
+  },
+  "F59_2": {
+   "basis": "Wenn du nun den Fall betrachtest, dass die Drehzahl etwas zu hoch wird, welches Moment muss dann größer sein, damit der Antrieb wieder zur Betriebsdrehzahl zurückfindet?",
+   "waechter": "Du hast bereits den Fall einer zu niedrigen Drehzahl richtig analysiert; betrachte nun den umgekehrten Fall, bei dem die Drehzahl leicht zu hoch wird, und frage dich, welches Moment in diesem Szenario das andere überwiegt?",
+   "start": "leck",
+   "ende": "teilweise",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "das Lastmoment überwiegt bei Überschreitung der Drehzahl"
+  },
+  "F59_3": {
+   "basis": "Wenn die Drehzahl höher als gewünscht ist, muss das Moment der Arbeitsmaschine so groß sein, dass es den Motor bremst; welche Eigenschaft hat dann das Lastmoment im Vergleich zum Motormoment?",
+   "waechter": "Wenn die Drehzahl über dem Sollwert liegt, wirkt ein Moment der Arbeitsmaschine entgegen; welche Eigenschaft hat dann dieses Moment im Vergleich zum Motormoment?",
+   "start": "leck",
+   "ende": "teilweise",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Name der Arbeitsmaschine und Richtung des Moments"
+  },
+  "F6_1": {
+   "basis": "Du kannst mit solchen Programmen verschiedene Eigenschaften von Schaltungen untersuchen. Welche Art von Verhalten lässt sich dabei besonders gut analysieren?",
+   "waechter": "Du kannst mit solchen Programmen verschiedene Eigenschaften von Schaltungen untersuchen. Welche Art von Verhalten lässt sich dabei besonders gut analysieren?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Verhalten von Schaltungen (dynamisches Verhalten)"
+  },
+  "F6_2": {
+   "basis": "Denk darüber nach, welche Art von Signalgrößen oder Zuständen neben dem reinen Zeitverhalten oft simuliert werden, um das Verhalten einer Schaltung vollständig zu charakterisieren?",
+   "waechter": "Denk darüber nach, welche Art von Signalgrößen oder Zuständen neben dem reinen Zeitverhalten oft simuliert werden, um das Verhalten einer Schaltung vollständig zu charakterisieren?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Signalgrößen und Zustände zur vollständigen Charakterisierung."
+  },
+  "F60_1": {
+   "basis": "Denke darüber nach, was passiert, wenn ein Motor weniger Leistung abgeben kann als die Arbeitsmaschine benötigt.",
+   "waechter": "Denke darüber nach, was passiert, wenn ein Motor weniger Leistung abgeben kann als die Arbeitsmaschine benötigt.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F60_2": {
+   "basis": "Du hast die Leistung mit der Drehzahl verwechselt, prüfe doch, welche physikalische Größe für das Überwinden des Lastmoments und damit für die nötige Motorgröße entscheidend ist?",
+   "waechter": "Du hast die Leistung mit der Drehzahl verwechselt, prüfe doch, welche physikalische Größe für das Überwinden des Lastmoments und damit für die nötige Motorgröße entscheidend ist?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F61_1": {
+   "basis": "Du musst das Trägheitsmoment der Welle auf die Motorwelle umrechnen. Denk daran, dass bei einer Übersetzung nur der Quotient der Drehzahlen ins Spiel kommt und dieser Wert quadriert werden muss. Wie lautet dann der Beitrag der Welle zum Gesamtträgheitsmoment?",
+   "waechter": "Du hast bereits das Trägheitsmoment des Motors berücksichtigt. Wie wirkt sich nun die deutlich langsamere Drehung der zweiten Welle auf ihren Beitrag zum Gesamtsystem aus?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F61_2": {
+   "basis": "Du hast das Verhältnis der Drehzahlen bestimmt, prüfe nun noch einmal genau, ob du im Zähler die höhere oder die niedrigere Drehzahl stehen hast, damit der Bruch korrekt auf die Motorwelle umgerechnet wird.",
+   "waechter": "Du hast das Verhältnis der Drehzahlen bestimmt, prüfe nun noch einmal genau, ob du im Zähler die höhere oder die niedrigere Drehzahl stehen hast, damit der Bruch korrekt auf die Motorwelle umgerechnet wird.",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Formelaufbau und Richtung des Ergebnisses (Quadrat im Zähler)"
+  },
+  "F62_1": {
+   "basis": "Du musst die Masse der Last mit dem Verhältnis ihrer Geschwindigkeit zur Winkelgeschwindigkeit des Motors quadrieren. Wie hängen diese Größen zusammen?",
+   "waechter": "Die Last besitzt eine bestimmte Bewegungsenergie, die du mit der Drehenergie des Motors vergleichen musst. Wie lässt sich diese Energiegleichheit nutzen, um den Einfluss der geradlinigen Bewegung auf das Trägheitsmoment am Motor zu beschreiben?",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 1,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt."
+  },
+  "F64_1": {
+   "basis": "Wenn du den Motor abschaltest und er sich weiterdreht, erzeugt er eine Spannung. Wie könnte diese Energie im Kreislauf abgebaut werden, wenn sie nicht ins Netz zurückgespeist wird?",
+   "waechter": "Wenn du den Motor abschaltest und er sich weiterdreht, erzeugt er eine Spannung. Wie könnte diese Energie im Kreislauf abgebaut werden, wenn sie nicht ins Netz zurückgespeist wird?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F65_1": {
+   "basis": "Überlege dir, was mit dem Bremsmoment passiert, wenn sich die Drehzahl stark verringert und der Widerstand konstant bleibt.",
+   "waechter": "Überlege dir, was mit dem Bremsmoment passiert, wenn sich die Drehzahl stark verringert und der Widerstand konstant bleibt.",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Bremsmoment bei konstantem Widerstand und sinkender Drehzahl."
+  },
+  "F65_2": {
+   "basis": "Überlege, warum das elektrische Bremsen sich bei Annäherung an den Stillstand fast nicht mehr auswirkt, wenn du die Drehzahl weiter senkst.",
+   "waechter": "Überlege, warum das elektrische Bremsen sich bei Annäherung an den Stillstand fast nicht mehr auswirkt, wenn du die Drehzahl weiter senkst.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Wirkungslosigkeit des elektrischen Bremseins bei niedrigen Drehzahlen"
+  },
+  "F66_1": {
+   "basis": "Du hast gesehen, dass sich die Endübertemperatur wie die Motorverluste verhalten. Was denkst du, was passiert mit der Zeit, die der Motor braucht, um die Grenztemperatur zu erreichen, wenn die Verluste größer sind als bei Bemessungslast?",
+   "waechter": "Du hast gesehen, dass sich die Endübertemperatur wie die Motorverluste verhalten. Was denkst du, was passiert mit der Zeit, die der Motor braucht, um die Grenztemperatur zu erreichen, wenn die Verluste größer sind als bei Bemessungslast?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt."
+  },
+  "F66_2": {
+   "basis": "Wenn die Verluste größer sind, erwärmt sich der Motor schneller; was denkst du, wie verändert sich dadurch die Betriebsdauer bis zur Grenztemperatur im Vergleich zum Bemessungsbetrieb?",
+   "waechter": "Wenn die Verluste größer sind, erwärmt sich der Motor schneller; was denkst du, wie verändert sich dadurch die Betriebsdauer bis zur Grenztemperatur im Vergleich zum Bemessungsbetrieb?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Betriebsdauer bis zur Grenztemperatur wird kleiner."
+  },
+  "F67_1": {
+   "basis": "Weißt du, wie sich die Wärmeabgabe ändert, wenn eine eigenbelüftete Maschine steht?",
+   "waechter": "Weißt du, wie sich die Wärmeabgabe ändert, wenn eine eigenbelüftete Maschine steht?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F67_2": {
+   "basis": "Wenn eine eigenbelüftete Maschine steht, verringert sich ihre Wärmeabgabefähigkeit stark – wie viele Mal größer wird dadurch also die Zeitkonstante im Vergleich zum Betrieb?",
+   "waechter": "Wenn eine eigenbelüftete Maschine steht, verringert sich ihre Wärmeabgabefähigkeit stark – wie viele Mal größer wird dadurch also die Zeitkonstante im Vergleich zum Betrieb?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F68_1": {
+   "basis": "Überlege dir, was es bedeutet, wenn Leitungen weggelassen werden, um den Überblick zu behalten, und wie sich das ändert, wenn man jeden einzelnen Stromweg separat darstellen möchte.",
+   "waechter": "Überlege dir, was es bedeutet, wenn Leitungen weggelassen werden, um den Überblick zu behalten, und wie sich das ändert, wenn man jeden einzelnen Stromweg separat darstellen möchte.",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "keine"
+  },
+  "F69_1": {
+   "basis": "Stell dir vor, du musst durch zwei Türen hindurchgehen, um ans Ziel zu kommen. Wann gelangst du dann sicher an den Ausgang?",
+   "waechter": "Stell dir vor, du musst durch zwei Türen hindurchgehen, um ans Ziel zu kommen. Wann gelangst du dann sicher an den Ausgang?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine der genannten Begriffe oder Lösungsteile wird genannt."
+  },
+  "F7_1": {
+   "basis": "Du musst wissen, dass der Durchlauferhitzer nicht nur die Energie für das Wasser aufnimmt, sondern auch Verluste hat. Wie hängt die elektrische Leistung vom Wirkungsgrad ab?",
+   "waechter": "Du musst wissen, dass der Durchlauferhitzer nicht nur die Energie für das Wasser aufnimmt, sondern auch Verluste hat. Wie hängt die elektrische Leistung vom Wirkungsgrad ab?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Wirkungsgrad η und Zusammenhang P = φ/η"
+  },
+  "F7_2": {
+   "basis": "Da der Durchlauferhitzer Verluste hat, muss er mehr elektrische Energie aufnehmen, als das Wasser tatsächlich aufnimmt. Ist die benötigte elektrische Leistung also größer oder kleiner als der berechnete Wärmestrom?",
+   "waechter": "Da der Durchlauferhitzer Verluste hat, muss er mehr elektrische Energie aufnehmen, als das Wasser tatsächlich aufnimmt. Ist die benötigte elektrische Leistung also größer oder kleiner als der berechnete Wärmestrom?",
+   "start": "teilweise",
+   "ende": "teilweise",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Richtung des Ergebnisses (größer als Wärmestrom)"
+  },
+  "F7_3": {
+   "basis": "Da nur ein Teil der aufgenommenen elektrischen Energie tatsächlich das Wasser erwärmt und der Rest verloren geht, ist die benötigte elektrische Leistung größer als der reine Wärmestrom. Wie berechnet man diese größere elektrische Leistung aus dem bekannten Wärmestrom und dem Wirkungsgrad?",
+   "waechter": "Schau dir deine letzte Antwort noch einmal an: Welche Angabe aus der Frage hast du darin noch nicht berücksichtigt, und was weißt du darüber?",
+   "start": "leck",
+   "ende": "leck",
+   "neu": 2,
+   "ersatz": true,
+   "genannt": "Richtung des Ergebnisses (elektrische Leistung größer als Wärmestrom)"
+  },
+  "F8_1": {
+   "basis": "Du hast eine Ladung Q auf einer Fläche A verteilt. Wenn du diese Ladung durch die Fläche teilst, erhältst du eine bestimmte Dichte. Diese Dichte ist an der Grenzfläche betragsmäßig gleich einer anderen wichtigen Größe im elektrischen Feld. Welche Größe ist das?",
+   "waechter": "Du hast eine Ladung Q auf einer Fläche A verteilt. Wenn du diese Ladung durch die Fläche teilst, erhältst du eine bestimmte Dichte. Diese Dichte ist an der Grenzfläche betragsmäßig gleich einer anderen wichtigen Größe im elektrischen Feld. Welche Größe ist das?",
+   "start": "kein_leck",
+   "ende": "kein_leck",
+   "neu": 0,
+   "ersatz": false,
+   "genannt": "Keine Lösungsteile genannt."
+  },
+  "F8_2": {
+   "basis": "Die Flächenladungsdichte ist betragsmäßig gleich einer Größe, die wie die Feldstärke im ganzen Feldraum wirkt und in der Vektorgleichung D = ε · E vorkommt. Welche dieser beiden Größen in der Gleichung das gesuchte Symbol für diese Feldgröße darstellt?",
+   "waechter": "Die gesuchte Größe beschreibt die Ladung pro Fläche und hängt direkt von der auf den Platten gespeicherten Ladung sowie deren Oberfläche ab. Denke darüber nach, welche andere vektorielle Größe an dieser Grenzfläche ebenfalls eine ähnliche Definition besitzt.",
+   "start": "leck",
+   "ende": "kein_leck",
+   "neu": 2,
+   "ersatz": false,
+   "genannt": "keine"
+  }
+ },
+ "rb": {
+  "B1_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B10_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B11_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B12_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B13_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B13_2": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B14_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B15_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B15_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B16_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B17_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B18_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B19_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B2_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B2_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B20_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B21_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B22_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B23_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B24_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B24_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B24_3": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B25_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B26_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B26_2": {
+   "basis": {
+    "P1": "teilweise",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B27_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B27_2": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B28_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B28_2": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B28_3": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B29_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B29_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B3_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B3_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B30_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B30_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B4_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B5_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B6_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B6_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B6_3": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B7_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B8_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "B9_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F1_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F10_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F10_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F10_3": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F11_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F12_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F13_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F14_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F14_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F15_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F15_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F16_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F17_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F19_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F2_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F20_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F21_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F22_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F23_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F23_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F24_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F25_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F25_2": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F26_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F28_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F28_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F28_3": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F29_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F29_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F29_3": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F3_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F3_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F30_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F31_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F32_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F32_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F32_3": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F33_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F34_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F35_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "nein",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F37_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F38_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F38_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F39_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F4_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F4_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F40_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "nein",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "nein",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F40_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F41_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F42_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F42_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F43_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F44_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F46_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F47_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F47_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F48_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F49_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F5_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F5_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F50_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F50_2": {
+   "basis": {
+    "P1": "teilweise",
+    "P2": "ja",
+    "P3": "nein",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "teilweise",
+    "P2": "ja",
+    "P3": "nein",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F50_3": {
+   "basis": {
+    "P1": "teilweise",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "teilweise",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F51_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F52_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F53_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F53_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F53_3": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F55_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F56_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F56_2": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F57_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F58_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F58_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F58_3": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F59_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F59_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F59_3": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "teilweise",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F6_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F6_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F60_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F60_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F61_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F61_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F62_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F64_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F65_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F65_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F66_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F66_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F67_1": {
+   "basis": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "nein",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F67_2": {
+   "basis": {
+    "P1": "teilweise",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "teilweise",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F68_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F69_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F7_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "nein",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F7_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F7_3": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F8_1": {
+   "basis": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "ja",
+    "P3": "teilweise",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  },
+  "F8_2": {
+   "basis": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "teilweise",
+    "P5": "ja",
+    "P6": "ja"
+   },
+   "waechter": {
+    "P1": "ja",
+    "P2": "teilweise",
+    "P3": "ja",
+    "P4": "ja",
+    "P5": "ja",
+    "P6": "ja"
+   }
+  }
+ }
+}

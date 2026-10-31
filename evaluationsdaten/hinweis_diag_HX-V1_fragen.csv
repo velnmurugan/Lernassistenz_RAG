@@ -1,0 +1,9 @@
+id,quelle_live,live=gespeichert,replay=gespeichert,live=replay,direkt=live,kontext_gleich,loesung_hinweiszeit_gleich,loesung_ende_gleich,prompt_gleich,prompt_abw_pos,ursache,sek,h_gesp,h_live,h_replay,h_direkt
+B9,,True,False,False,False,False,False,True,False,0,kein separater Hinweis (Quelle: ?),112,f2c038bd,f2c038bd,dcd57392,d41d8cd9
+F30,,True,False,False,False,False,False,True,False,0,kein separater Hinweis (Quelle: ?),47,16387377,16387377,b85669b0,d41d8cd9
+B1,,True,False,False,False,False,False,True,False,0,kein separater Hinweis (Quelle: ?),39,4d627b55,4d627b55,1adb7608,d41d8cd9
+B17,,True,False,False,False,False,False,True,False,0,kein separater Hinweis (Quelle: ?),38,e31d70e6,e31d70e6,61f6a101,d41d8cd9
+F2,,True,False,False,False,False,False,True,False,0,kein separater Hinweis (Quelle: ?),69,9b392e82,9b392e82,7e48d894,d41d8cd9
+F19,,True,False,False,False,False,False,True,False,0,kein separater Hinweis (Quelle: ?),35,b637e75e,b637e75e,7135704e,d41d8cd9
+F37,,True,False,False,False,False,False,True,False,0,kein separater Hinweis (Quelle: ?),46,edcba976,edcba976,2bee122a,d41d8cd9
+F53,,True,False,False,False,False,False,True,False,0,kein separater Hinweis (Quelle: ?),50,7e59bbe7,7e59bbe7,b0be0e79,d41d8cd9

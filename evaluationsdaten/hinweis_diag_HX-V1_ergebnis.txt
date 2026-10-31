@@ -1,0 +1,25 @@
+Diagnose erster Hinweis HX-V1  31.10.2026 18:45
+Pipeline-Datei: /home/vel_narayanasamy/RAG/lernassistent/rag_pipeline.py (md5 397347d8e5, 141690 Byte, geändert 30.10.2026 10:50)
+Umgebung: {"version": "0.33.0", "modelle": {"qwen3.5:4b": "d8b0f5e9760c", "qwen3.5:9b": "6488c96fa5fa"}, "optionen": {"temperature": 0, "seed": 42}}
+Konfiguration: SCAFFOLDING_VERSION=G-v4, RRF_K=5, KONTEXT_TOKENS=None, Optionen={'temperature': 0, 'seed': 42}, kb_hash=c2742e8c278f
+
+=== Teil 1: echte Pipeline auf 8 Fragen (erster Hinweis, T=0 Seed 42)
+  Pipeline heute = gespeichert hinweis0 : 8/8
+  Replay (prompt_basis) = gespeichert    : 0/8
+  Pipeline heute = Replay                : 0/8
+  Pipeline heute = direkte Neuerzeugung  : 0/8
+  Kontext gleich dem gespeicherten       : 0/8
+  Lösung zum Hinweiszeitpunkt gleich     : 0/8
+  Lösung am Ende gleich                  : 8/8
+  Prompt (Pipeline) = Prompt (Replay)    : 0/8
+  Ursachen:
+    8x kein separater Hinweis (Quelle: ?)
+  Teil 1b (Pipeline zweimal): gleich 2/2
+
+=== Teil 2: 12 Folgehinweise nachgebaut
+  gleich dem gespeicherten: 12/12
+
+Lesehilfe: Ist der Prompt gleich und der Hinweis trotzdem verschieden, liegt es an Umgebung/Software (Ollama-Version,
+Modell-Digest, Pipeline-Stand seit HD-V2), nicht an der Eingabe. Weicht Kontext oder Lösung ab, ist das Replay kein
+getreuer Nachbau; dann bleibt für Vergleiche nur die Pipeline selbst (oder gespeicherte Hinweise) maßgeblich.
+Gesamtdauer: 10 min

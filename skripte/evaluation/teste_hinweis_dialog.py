@@ -73,6 +73,8 @@ from ideen_feedback import gib_feedback, idee_moeglich, MAX_VERSUCHE, FEEDBACK_P
 KB = "daten/wissensbasen/knowledge_base_fischer_boege_v7r.json"
 FRAGEN = (("fischer", "daten/testfragen/testfragen_fischer_v2_chunks_beide_v7r.csv"),
           ("boege", "daten/testfragen/testfragen_boege_v2_v7r.csv"))
+if os.environ.get("HD_FRAGEN"):  # HG-v1: anderer Fragensatz, z. B. HD_FRAGEN="fischer=pfad1.csv;boege=pfad2.csv"
+    FRAGEN = tuple((a.split("=", 1)[0].strip(), a.split("=", 1)[1].strip()) for a in os.environ["HD_FRAGEN"].split(";") if "=" in a)
 RETRIEVAL = "hybrid_kg_rr"
 FOLGEHINWEIS_VERSION = "HD-v2"
 TYPEN = ("richtig", "teilweise", "falsch", "keine_idee")
@@ -272,6 +274,20 @@ def folgehinweis(s, t, stufe):
         return "", "format_fehler", ueb
     stufen = {"hinweis": h, "loesung": s["loesung"], "status": s["status"]}
     hinweis_pruefen(s["frage"], stufen)
+    import hinweiswaechter as _hw  # HG-v1
+    if _hw.aktiv():
+        def _neu(zusatz):
+            r2, _ = parse_hinweis(frage_llm(baue_folgehinweis_prompt(s, t, stufe) + zusatz, options=GENERIERUNGS_OPTIONEN))
+            if not r2:
+                return ""
+            st2 = {"hinweis": r2, "loesung": s["loesung"], "status": s["status"]}
+            hinweis_pruefen(s["frage"], st2)
+            return st2["hinweis"]
+        r = _hw.waechter(rag_pipeline, s["frage"], s["loesung"], stufen["hinweis"], verlauf_text(s, stufe - 1), stufe, _neu)
+        t["folgehinweis_vor_waechter"] = stufen["hinweis"]
+        t["folgehinweis_waechter"] = (f"{_hw.VERSION} {r['urteil_start'] or '?'}->{r['urteil_ende'] or '?'} "
+                                      f"neu={r['neu']} ersatz={'ja' if r['ersatz'] else 'nein'}")
+        stufen["hinweis"] = r["hinweis"]
     return stufen["hinweis"], stufen.get("hinweis_pruefung", ""), ueb
 
 
@@ -349,6 +365,7 @@ def phase1(args, zustand, fragen, chunks, pfad, t0):
         zustand["q"][q["id"]] = {
             **q, "ok": ok, "status": erg.get("status", ""), "hinweis0": erg.get("hinweis", ""),
             "hinweis0_pruefung": erg.get("hinweis_pruefung", ""), "hinweis0_quelle": erg.get("hinweis_quelle", ""),
+            "hinweis0_vor_waechter": erg.get("hinweis_vor_waechter", ""), "hinweis0_waechter": erg.get("hinweis_waechter", ""),
             "loesung": erg.get("loesung", ""), "kontext": _kontext_text(erg["top_chunks"]) if ok else "",
             "quellen": [c["id"] for c in erg.get("top_chunks", [])], "turns": [], "ende": "",
             "sek_antwort": round(time.time() - z0, 1)}

@@ -2389,6 +2389,9 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None, fortschritt=None):
     if SCAFFOLDING_VERSION == "S2-v2":
         stufen.update(_hinweis_separat(frage, top_chunks, stufen))
     hinweis_pruefen(frage, stufen)  # ab V8 (HP-v1); ohne Wirkung bei älteren Versionen
+    if os.environ.get("LERNASSISTENT_HG", "aus").strip().lower() not in ("", "aus", "0", "nein"):  # HG-v1: Hinweis-Wächter
+        import hinweiswaechter as _hw
+        _hw.anwenden(__import__("sys").modules[__name__], frage, top_chunks, stufen)
     _ende("pruefung", t0)
 
     ergebnis.update(stufen)

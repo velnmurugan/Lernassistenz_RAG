@@ -1,0 +1,16 @@
+Wächter HG-v1 auf den gespeicherten Hinweisen aus HD-V2 (HG-R)  31.10.2026 20:40
+Situationen: 3 (Versuch 1: 1, 2: 1, 3: 1); Prüfer qwen3.5:9b/C2, Richter mistral-nemo
+
+Hinweis geändert: 1 von 3 (33%); davon Ersatztext: 0; Prüfer-Urteil vor Eingriff: {'kein_leck': 2, 'leck': 1}
+Geändert je Versuch: V1: 0/1, V2: 1/1, V3: 0/1
+
+Rubrik (Richter): Anteil 'ja' / gepaart besser-schlechter (nur geänderte Hinweise zählen als Unterschied; Vorzeichentest zweiseitig)
+  P1 Zurückhalten   Basis 100%  Wächter 100%   besser 0 / schlechter 0  p=1.00
+  P2 Richtung       Basis 100%  Wächter 67%   besser 0 / schlechter 1  p=1.00
+  P3 Eigenes Denken Basis 33%  Wächter 67%   besser 1 / schlechter 0  p=1.00
+  P4 Anpassung      Basis 33%  Wächter 67%   besser 1 / schlechter 0  p=1.00
+  P5 Fachlich stimmig Basis 100%  Wächter 100%   besser 0 / schlechter 0  p=1.00
+  P6 Zugänglich     Basis 100%  Wächter 100%   besser 0 / schlechter 0  p=1.00
+
+Hinweis zur Lesart: Der Richter (mistral-nemo) ist ungeprüft; der Wächter-Prüfer hatte in HO-V1 kappa 0.28-0.34. Das ist Orientierung.
+Verbindlich ist die Handbewertung des blinden Bogens (1 geänderte Hinweise).
