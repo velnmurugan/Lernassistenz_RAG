@@ -153,3 +153,6 @@ Hinweis-Dialogtest HD-V2 (30 Oct 2026): N100 (70 Fischer + 30 Böge), V11B einge
 
 ## Hinweis-Optimierung HO-V1
 Hinweis-Optimierung HO-V1 (31 Oct 2026): Replay der 143 Hinweis-Situationen aus HD-V2; Varianten Basis, Wächter (Leck-Prüfer mit Neufassung), Prompt H-v4 (Lösungsbausteine, ein Ziel, Formregeln P1-P6) und Kombination; Leck-Prüfer vorher gegen Referenzurteile kalibriert. Vorläufige Empfehlung nach Leck-Rate: V1. Skript skripte/evaluation/optimiere_hinweise.py; Ergebnisse evaluationsdaten/hinweis_opt_HO-V1_*. Entwicklungsbefund, kein Beleg im Beitrag; Bewertungsbogen für zwei Menschen liegt bei.
+
+## Stabilität Hinweise HS-V1
+Stabilität der Hinweis-Erzeugung HS-V1 (31 Oct 2026): Teil A prüft, ob neu erzeugte Basis-Hinweise bei T=0/Seed 42 den gespeicherten gleichen (direkt, mit anderer Situation, mit Modellwechsel dazwischen) und wie stabil die Leck-Prüfer sind; Teil B erzeugt Basis und Basis+Wächter in mehreren Runden (T0 und Temperatur 0.3) und vergleicht den Unterschied mit dem Rauschen. Skript skripte/evaluation/teste_hinweis_stabilitaet.py; Ergebnisse evaluationsdaten/hinweis_stab_HS-V1_*. Entwicklungsbefund, kein Beleg im Beitrag.
