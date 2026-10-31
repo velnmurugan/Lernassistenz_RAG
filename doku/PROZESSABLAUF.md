@@ -156,3 +156,6 @@ Hinweis-Optimierung HO-V1 (31 Oct 2026): Replay der 143 Hinweis-Situationen aus 
 
 ## Stabilität Hinweise HS-V1
 Stabilität der Hinweis-Erzeugung HS-V1 (31 Oct 2026): Teil A prüft, ob neu erzeugte Basis-Hinweise bei T=0/Seed 42 den gespeicherten gleichen (direkt, mit anderer Situation, mit Modellwechsel dazwischen) und wie stabil die Leck-Prüfer sind; Teil B erzeugt Basis und Basis+Wächter in mehreren Runden (T0 und Temperatur 0.3) und vergleicht den Unterschied mit dem Rauschen. Skript skripte/evaluation/teste_hinweis_stabilitaet.py; Ergebnisse evaluationsdaten/hinweis_stab_HS-V1_*. Entwicklungsbefund, kein Beleg im Beitrag.
+
+## Hinweis-Dialogtest HD-V3
+Hinweis-Dialogtest HD-V3 (01 Nov 2026): N100 (70 Fischer + 30 Böge), V11B eingefroren. Je Frage bis zu 3 Versuche: simulierte Lernende (anderes Modell, ca. 30 % richtig), Rückmeldung IF-v5, Folgehinweis HD-v2; Rubrik P1-P6 / R1-R4 durch einen Richter (kein Generator), Bewertungsbogen für zwei Menschen. Skript skripte/evaluation/teste_hinweis_dialog.py; Ergebnisse evaluationsdaten/hinweis_dialog_HD-V3_*. Kein Beleg im Beitrag ohne Abgleich Richter gegen Menschen.
