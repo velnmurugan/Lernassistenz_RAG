@@ -1,0 +1,50 @@
+Hinweis-Optimierung HO-V1 (HO-v1, Prompt H-v4)  31.10.2026 02:05
+Replay von 143 Hinweis-Situationen aus HD-V2 (Versuch 1: 92, Versuch 2: 39, Versuch 3: 12); Generator qwen3.5:9b (T=0, Seed 42)
+Leck-Prüfer Auswertung (unabhängig): granite4.1:8b / C2  kappa(Leck ja/nein) gegen Referenz = 0.28, kappa_w = 0.19, Recall = 0.78
+Leck-Prüfer Wächter (qwen3.5:9b): qwen3.5:9b / C2  kappa = 0.34
+
+HINWEIS: Der Leck-Prüfer erreicht gegen die Referenz kein kappa >= 0.4. Die Leck-Raten unten sind nur Orientierung; die Entscheidung stützt sich auf den Bewertungsbogen (zwei Menschen).
+
+Kalibrierung aller Prüfer (kappa Leck ja/nein | kappa_w | Recall | Präzision):
+  mistral-nemo|C1              n=143 0.03 | 0.15 | 0.06 | 0.33
+  mistral-nemo|C2              n=143 -0.04 | -0.00 | 0.00 | 0.00
+  granite4.1:8b|C1             n=143 -0.06 | -0.09 | 0.08 | 0.18
+  granite4.1:8b|C2             n=143 0.28 | 0.19 | 0.78 | 0.39
+  qwen3.5:9b|C1                n=143 0.21 | 0.18 | 0.94 | 0.34
+  qwen3.5:9b|C2                n=143 0.34 | 0.38 | 0.47 | 0.53
+
+Leck-Rate laut unabhängigem Prüfer (leck / teilweise / kein_leck) je Variante und Versuch:
+     Variante                               Versuch 1                 Versuch 2                 Versuch 3                    gesamt
+     B Basis (H-v3 / HD-v2)    46%/  51%/   3% (n=92)    59%/  33%/   8% (n=39)    58%/  33%/   8% (n=12)   50%/  45%/   5% (n=143)
+     V1 Basis + Wächter        41%/  52%/   7% (n=92)    56%/  33%/  10% (n=39)    58%/  33%/   8% (n=12)   47%/  45%/   8% (n=143)
+     V2 Prompt H-v4            50%/  47%/   3% (n=92)    69%/  28%/   3% (n=39)    58%/  33%/   8% (n=12)   56%/  41%/   3% (n=143)
+     V3 H-v4 + Wächter         46%/  48%/   7% (n=92)    62%/  36%/   3% (n=39)    50%/  42%/   8% (n=12)   50%/  44%/   6% (n=143)
+
+Gepaarter Vergleich mit der Basis (Leck laut Prüfer; besser = Basis Leck, Variante nicht; Vorzeichentest zweiseitig):
+  V1: besser 8, schlechter 3, p = 0.227
+  V2: besser 23, schlechter 31, p = 0.341
+  V3: besser 29, schlechter 29, p = 1.000
+
+Objektive Kennzahlen (Anteil der Hinweise; ohne Modell):
+     Variante                   zahlleck      zu_lang  endet_frage      ja_nein     material     erfunden wiederholung  Wortanteil  Bezug(V>=2)
+     B Basis (H-v3 / HD-v2)           0%           1%          77%          12%           1%           8%           1%        0.09          49%
+     V1 Basis + Wächter               0%           1%          78%          12%           1%           8%           1%        0.08          43%
+     V2 Prompt H-v4                   0%           0%          63%           0%           2%           4%           1%        0.12          57%
+     V3 H-v4 + Wächter                0%           0%          64%           0%           3%           3%           1%        0.10          47%
+
+Wächter: V1: Neufassungen im Mittel 0.29, Ersatzhinweis 4x; V3: Neufassungen im Mittel 0.29, Ersatzhinweis 9x
+
+Rubrik durch mistral-nemo (Anteil ja; nur ergänzend, P1 des Richters war in HD-V2 nicht belastbar):
+     Variante                    P1      P2      P3      P4      P5      P6
+     B Basis (H-v3 / HD-v2)     77%     54%     65%     77%    100%    100%
+     V1 Basis + Wächter         74%     52%     62%     76%    100%    100%
+     V2 Prompt H-v4             71%     61%     69%     63%     99%    100%
+     V3 H-v4 + Wächter          71%     58%     71%     64%    100%    100%
+
+Vorläufige Empfehlung nach Leck-Rate (nur wenn Material/erfundener Kontext/Wiederholung/Länge nicht um mehr als 5 Prozentpunkte schlechter als die Basis und höchstens 10 % Ersatzhinweise; bei Gleichstand bis 3 Prozentpunkte die einfachere Variante): V1 (Basis + Wächter).
+Das ist ein Entwicklungsbefund. Verbindlich ist erst der Bewertungsbogen (zwei Menschen) und ein einmaliger Lauf der eingefrorenen Variante auf einem Held-out-Satz.
+
+Reproduzierbarkeit: Basis-Hinweise bei erneuter Erzeugung gleich: 0/8.
+Grenzen: Replay mit festen früheren Verläufen; Entwicklungsdaten (N100 kein Held-out); Leck-Prüfer an einem Satz Referenzurteile kalibriert (nur Basis-Hinweise);
+keine echten Lernenden; kein Beleg für Lernwirkung. P2-P6 der Varianten sind nur objektiv/durch den Richter erfasst.
+Gesamtdauer: 171 min

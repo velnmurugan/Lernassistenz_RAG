@@ -1,0 +1,419 @@
+{
+ "leck": {
+  "mistral-nemo|C1": {
+   "B1_1|4d627b": {
+    "urteil": "teilweise",
+    "genannt": "unbekannte Parameter, zusätzliche Informationen"
+   },
+   "B17_1|e31d70": {
+    "urteil": "teilweise",
+    "genannt": "Shuttles, Veränderungen im Fach"
+   },
+   "F23_2|38e9cb": {
+    "urteil": "teilweise",
+    "genannt": "Halbleiterwiderstände, Magnetfeld, Verhalten der Strombahnen"
+   }
+  },
+  "mistral-nemo|C2": {
+   "B1_1|4d627b": {
+    "urteil": "teilweise",
+    "genannt": "zusätzliche Informationen"
+   },
+   "B17_1|e31d70": {
+    "urteil": "teilweise",
+    "genannt": "Ein Fahrzeug, das tief hineinfahren kann"
+   },
+   "F23_2|38e9cb": {
+    "urteil": "teilweise",
+    "genannt": "Feldplatte besteht aus speziellen Halbleiterwiderständen, Strombahnen verändern sich in Magnetfeld"
+   }
+  },
+  "granite4.1:8b|C1": {
+   "B1_1|4d627b": {
+    "urteil": "teilweise",
+    "genannt": "Begriff, Aussage, Bedingung, Rechenschritt"
+   },
+   "B17_1|e31d70": {
+    "urteil": "teilweise",
+    "genannt": "Fahrzeugtyp, Eingangsrichtung, Regalfachkapazität, Vergleich, Ergebnis"
+   },
+   "F23_2|38e9cb": {
+    "urteil": "kein_leck",
+    "genannt": "1. speziellen Halbleiterwiderständen"
+   }
+  },
+  "granite4.1:8b|C2": {
+   "B1_1|4d627b": {
+    "urteil": "teilweise",
+    "genannt": "Zusätzliche Informationen, die Parameter festlegen."
+   },
+   "B17_1|e31d70": {
+    "urteil": "teilweise",
+    "genannt": "Die Anzahl der Paletten, die in einem Regalfach hineingeladen werden können, steigt mit einem tief einfahr­baren Shuttle."
+   },
+   "F23_2|38e9cb": {
+    "urteil": "leck",
+    "genannt": "Die Strombahnen in speziellen Halbleiterwiderständen ändern ihren Weg in einem Magnetfeld, was den Widerstand beeinflusst."
+   },
+   "B1_1|8ef7ca": {
+    "urteil": "leck",
+    "genannt": "Integrationskonstanten und spezielle Lösung durch Bedingungen"
+   },
+   "B17_1|8ef7ca": {
+    "urteil": "teilweise",
+    "genannt": "Die Frage sucht nach der Anzahl der Paletten, die ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern kann."
+   },
+   "F23_2|d3eb98": {
+    "urteil": "leck",
+    "genannt": "Die Änderung des elektrischen Widerstands durch die Abweichung der Ladungsträgerbahnen in einem Magnetfeld."
+   },
+   "B1_1|0a3f9e": {
+    "urteil": "leck",
+    "genannt": "Die freien Parameter werden durch spezifische Bedingungen festgelegt."
+   },
+   "B17_1|02da8b": {
+    "urteil": "leck",
+    "genannt": "Die Anzahl der Paletten, die ein Regalförderzeug mit Verschiebegabel pro Regalfach ein- und auslagern kann, und die Erhöhung dieser Anzahl durch Shuttles."
+   },
+   "F23_2|552605": {
+    "urteil": "leck",
+    "genannt": "Die spezifische Zusammensetzung des Leiters als stromdurchflossener Halbleiter (z. B. Indiumarsenid) ist entscheidend für die Funktion der Feldplatte als Magnetfeldsensor."
+   },
+   "B17_1|3f1199": {
+    "urteil": "teilweise",
+    "genannt": "Die theoretische Anzahl der Ladeeinheiten, die in ein Regalfach untergebracht werden könnten, wenn ein Shuttle sich frei im Inneren bewegen kann."
+   }
+  },
+  "qwen3.5:9b|C1": {
+   "B1_1|4d627b": {
+    "urteil": "leck",
+    "genannt": "allgemeine Lösung, spezielle Lösung, Parameter, Kurvenschar, zusätzliche Bedingungen, feste Werte"
+   },
+   "B17_1|e31d70": {
+    "urteil": "leck",
+    "genannt": "[\"Regalförderzeug mit Verschiebegabel\", \"pro Regalfach links und rechts jeweils 1 Palette\", \"Shuttles nutzen\", \"fünf oder noch mehr Paletten\", \"in das gleiche Regalfach hineingeladen werden\", \"Lager dichter wird\"]"
+   },
+   "F23_2|38e9cb": {
+    "urteil": "leck",
+    "genannt": "Halbleiterwiderstände (wörtlich), Strombahnen (wörtlich), Magnetfeld (wörtlich), Ablenkung/Verlängerung des Weges (umschrieben durch „Wie verhalten sich...\"), Widerstand wird feldabhängig (implizit durch die Frage nach dem Verhalten, das den Widerstand beeinflusst)"
+   },
+   "B1_1|2a926e": {
+    "urteil": "leck",
+    "genannt": "Lösungsfunktion, freie Größen, bestimmte Werte"
+   },
+   "B1_1|eb0d57": {
+    "urteil": "leck",
+    "genannt": "Kurvenschar, Parameter, feste Werte, Menge aller möglichen Kurven"
+   },
+   "B1_1|0a3f9e": {
+    "urteil": "leck",
+    "genannt": "allgemeine Lösung, spezielle Lösung, Parameter, Kurvenschar, feste Werte, Bedingungen"
+   },
+   "B1_1|0b0fc6": {
+    "urteil": "leck",
+    "genannt": "Kurvenschar, Parameter, feste Werte, zusätzliche Bedingungen"
+   },
+   "B17_1|8eb25c": {
+    "urteil": "leck",
+    "genannt": "[\"Regalförderzeug mit Verschiebegabel\", \"tief in das Fach hineinfahren\", \"links und rechts jeweils 1 Palette\", \"Shuttles\", \"fünf oder noch mehr Paletten\", \"Lager dichter\"]"
+   },
+   "B17_1|9543cb": {
+    "urteil": "leck",
+    "genannt": "[Regalförderzeug mit Verschiebegabel, 1 Palette pro Fach (links/rechts), Shuttle, 5 oder mehr Paletten pro Fach, dichteres Lager]"
+   },
+   "B17_1|02da8b": {
+    "urteil": "leck",
+    "genannt": "[\"Regalförderzeug\", \"Verschiebegabel\", \"pro Regalfach\", \"Shuttles\", \"fünf oder mehr Paletten\", \"Lager dichter\"]"
+   },
+   "B17_1|3d4568": {
+    "urteil": "leck",
+    "genannt": "[\"Regalförderzeug mit Verschiebegabel\", \"pro Fach links und rechts jeweils 1 Palette\", \"Shuttles\", \"fünf oder noch mehr Paletten\", \"in das gleiche Regalfach hineingeladen werden\", \"Lager dichter wird\"]"
+   },
+   "B17_1|3f1199": {
+    "urteil": "teilweise",
+    "genannt": "[\"Shuttles\", \"fünf oder noch mehr Paletten\", \"in das gleiche Regalfach hineingeladen werden\", \"Lager dichter wird\"]"
+   },
+   "F23_2|d3eb98": {
+    "urteil": "teilweise",
+    "genannt": "keine"
+   },
+   "F23_2|552605": {
+    "urteil": "teilweise",
+    "genannt": "[Halbleiterwiderstand (umschrieben als „dieser spezielle Leiter\"), Indiumarsenid (nicht genannt), Strombahnen (umschrieben als „Bahnverlängerung\"), Widerstand (im Kontext der Änderung)]"
+   }
+  },
+  "qwen3.5:9b|C2": {
+   "B1_1|4d627b": {
+    "urteil": "kein_leck",
+    "genannt": "keine"
+   },
+   "B17_1|e31d70": {
+    "urteil": "leck",
+    "genannt": "Anzahl der Paletten im Fach mit Shuttle"
+   },
+   "F23_2|38e9cb": {
+    "urteil": "teilweise",
+    "genannt": "Strombahnen in Halbleiterwiderständen verhalten sich im Magnetfeld."
+   }
+  }
+ },
+ "gen": {
+  "V1": {
+   "B1_1": {
+    "hinweis": "Überlege zuerst, welche Größe oder welcher Begriff in der Frage gesucht ist und wovon er abhängen könnte. Was weißt du darüber schon?",
+    "pruefung": "waechter_ersatz",
+    "retries": 2,
+    "ersatz": true
+   },
+   "B17_1": {
+    "hinweis": "Überlege zuerst, welche Größe oder welcher Begriff in der Frage gesucht ist und wovon er abhängen könnte. Was weißt du darüber schon?",
+    "pruefung": "waechter_ersatz",
+    "retries": 2,
+    "ersatz": true
+   },
+   "F23_2": {
+    "hinweis": "Wenn du eine Feldplatte in ein Magnetfeld bringst, welche Eigenschaft der darin fließenden Ladungsträger ändert sich so stark, dass sich der elektrische Widerstand des Bauteils verändert?",
+    "pruefung": "ok",
+    "retries": 1,
+    "ersatz": false
+   }
+  },
+  "V2": {
+   "B1_1": {
+    "hinweis": "Was passiert mit den freien Parametern in der allgemeinen Lösung, wenn man eine spezielle Lösungskurve aus der Kurvenschar herausgreift?",
+    "pruefung": "ok"
+   },
+   "B17_1": {
+    "hinweis": "Überlege dir, was die gesuchte Größe bedeutet und worauf sie ankommt. Denke daran, dass Shuttles im Gegensatz zur Verschiebegabel anders arbeiten.",
+    "pruefung": "nachgebessert"
+   },
+   "F23_2": {
+    "hinweis": "Du hast richtig gesehen, dass die Bahnverlängerung den Widerstand ändert, aber beachte genau, woraus dieser spezielle Leiter besteht, der in deinem letzten Satz nur als „Material\" bezeichnet wurde – was ist das für ein Material?",
+    "pruefung": "ok"
+   }
+  },
+  "V3": {
+   "B1_1": {
+    "hinweis": "Überlege zuerst, welche Größe oder welcher Begriff in der Frage gesucht ist und wovon er abhängen könnte. Was weißt du darüber schon?",
+    "pruefung": "waechter_ersatz",
+    "retries": 2,
+    "ersatz": true
+   },
+   "B17_1": {
+    "hinweis": "Wenn du dir vorstellst, dass ein Shuttle sich frei im Inneren des Fachs bewegen kann, wie viele Ladeeinheiten könnten dann theoretisch dort untergebracht werden?",
+    "pruefung": "ok",
+    "retries": 2,
+    "ersatz": false
+   },
+   "F23_2": {
+    "hinweis": "Du hast richtig gesehen, dass die Bahnverlängerung den Widerstand ändert, aber beachte genau, woraus dieser spezielle Leiter besteht, der in deinem letzten Satz nur als „Material\" bezeichnet wurde – was ist das für ein Material?",
+    "pruefung": "ok",
+    "retries": 0,
+    "ersatz": false
+   }
+  }
+ },
+ "rubrik": {
+  "V1|B1_1": {
+   "P1": "ja",
+   "P1_grund": "Der Hinweis verrät nicht Ergebnis, Zahlenwert, Kernaussage oder gesuchte Benennung.",
+   "P2": "ja",
+   "P2_grund": "Der Hinweis nennt den Begriff, der gesucht ist: Größe oder Begriff.",
+   "P3": "teilweise",
+   "P3_grund": "Der Hinweis regt zum Nachdenken an, aber nicht explizit zum Herleiten oder Zusammenhängen.",
+   "P4": "ja",
+   "P4_grund": "Der Hinweis ist für Versuch 1 angemessen und nicht überfordernd.",
+   "P5": "ja",
+   "P5_grund": "Der Hinweis enthält keine fachlich unstimmigen Aussagen.",
+   "P6": "ja",
+   "P6_grund": "Der Hinweis ist verständlich und enthält keine Verweise auf fehlendes Material."
+  },
+  "V1|B17_1": {
+   "P1": "ja",
+   "P1_grund": "Keine Ergebnis-, Zahlen- oder Kernaussage verraten.",
+   "P2": "teilweise",
+   "P2_grund": "Richtung ist gegeben, aber nicht klar oder richtig.",
+   "P3": "ja",
+   "P3_grund": "Regt zum Nachdenken an, aber keine spezifische Frage gestellt.",
+   "P4": "ja",
+   "P4_grund": "Angemessener Schwierigkeitsgrad für Versuch 1.",
+   "P5": "ja",
+   "P5_grund": "Keine fachlichen Unstimmigkeiten oder erfundenen Fakten.",
+   "P6": "ja",
+   "P6_grund": "Kein Verweis auf fehlendes Material, verständlich und mit \"du\" angesprochen."
+  },
+  "V1|F23_2": {
+   "P1": "ja",
+   "P1_grund": "Der Hinweis verrät nicht Ergebnis, Zahlenwert, Kernaussage oder die gesuchte Benennung.",
+   "P2": "ja",
+   "P2_grund": "Der Hinweis nennt den Begriff \"Feldplatte\" und die Größe \"elektrischer Widerstand\", die zum nächsten Denkschritt führen.",
+   "P3": "ja",
+   "P3_grund": "Der Hinweis regt zum Nachdenken an, welche Eigenschaft der Ladungsträger sich in einem Magnetfeld verändert.",
+   "P4": "teilweise",
+   "P4_grund": "Der Hinweis greift die bisherige Antwort auf und lenkt auf die Stelle, ist aber nicht konkreter als der vorherige Hinweis.",
+   "P5": "ja",
+   "P5_grund": "Keine Aussage im Hinweis widerspricht der Lösung oder enthält erfundene Fakten oder Zahlen.",
+   "P6": "ja",
+   "P6_grund": "Kein Verweis auf Material, Text oder Tabelle, die die Person nicht hat; drei kurze Sätze; Anrede mit \"du\"; verständlich."
+  },
+  "V2|B1_1": {
+   "P1": "ja",
+   "P1_grund": "Der Hinweis verrät nicht das Ergebnis oder die Lösung.",
+   "P2": "ja",
+   "P2_grund": "Der Hinweis nennt den nächsten Denkschritt (\"Was passiert mit...\").",
+   "P3": "teilweise",
+   "P3_grund": "Der Hinweis regt zum Nachdenken an, aber es fehlt eine konkrete Frage oder ein Zusammenhang.",
+   "P4": "ja",
+   "P4_grund": "Der Hinweis passt zum Versuch 1 und ist nicht überfordernd.",
+   "P5": "ja",
+   "P5_grund": "Der Hinweis ist fachlich korrekt und enthält keine erfundenen Fakten.",
+   "P6": "ja",
+   "P6_grund": "Der Hinweis ist verständlich und enthält keine Verweise auf fehlendes Material."
+  },
+  "V2|B17_1": {
+   "P1": "nein",
+   "P1_grund": "Der Hinweis verrät nichts über Ergebnis, Zahlenwert, Kernaussage oder Benennung.",
+   "P2": "ja",
+   "P2_grund": "Der Hinweis nennt den Begriff \"gesuchte Größe\" und regt zum Nachdenken an.",
+   "P3": "ja",
+   "P3_grund": "Der Hinweis regt zum Herleiten und Nachdenken an und liefert kein Stichwort.",
+   "P4": "ja",
+   "P4_grund": "Der Hinweis ist angemessen schwierig für Versuch 1 und greift keine vorherige Antwort auf.",
+   "P5": "ja",
+   "P5_grund": "Der Hinweis enthält keine fachlich unstimmigen Aussagen.",
+   "P6": "ja",
+   "P6_grund": "Der Hinweis ist verständlich, enthält keine Verweise auf fehlendes Material und ist in drei Sätzen gehalten."
+  },
+  "V2|F23_2": {
+   "P1": "ja",
+   "P1_grund": "Der Hinweis verrät nicht das Ergebnis oder die gesuchte Benennung.",
+   "P2": "teilweise",
+   "P2_grund": "Der Hinweis nennt den Begriff \"Material\", aber nicht die gesuchte Benennung.",
+   "P3": "ja",
+   "P3_grund": "Der Hinweis regt zum Nachdenken an, welche Art von Material es ist.",
+   "P4": "ja",
+   "P4_grund": "Der Hinweis greift die bisherige Antwort auf und lenkt auf die Stelle, die verbessert werden soll.",
+   "P5": "ja",
+   "P5_grund": "Der Hinweis ist fachlich stimmig und enthält keine erfundenen Fakten oder Zahlen.",
+   "P6": "ja",
+   "P6_grund": "Der Hinweis ist verständlich und enthält keine Verweise auf Materialien, die die Person nicht hat."
+  },
+  "V3|B1_1": {
+   "P1": "ja",
+   "P1_grund": "Der Hinweis verrät nicht das Ergebnis oder die Lösung.",
+   "P2": "teilweise",
+   "P2_grund": "Der Hinweis regt zum Nachdenken an, aber er nennt nicht direkt den Begriff oder die Größe, die in der Frage gesucht ist.",
+   "P3": "ja",
+   "P3_grund": "Der Hinweis regt zum eigenen Denken an und gibt keine direkte Antwort.",
+   "P4": "ja",
+   "P4_grund": "Der Hinweis ist für Versuch 1 geeignet und nicht überfordernd.",
+   "P5": "ja",
+   "P5_grund": "Der Hinweis enthält keine fachlich unstimmigen Aussagen.",
+   "P6": "ja",
+   "P6_grund": "Der Hinweis ist verständlich und enthält keine Verweise auf fehlendes Material."
+  },
+  "V3|B17_1": {
+   "P1": "nein",
+   "P1_grund": "Verrät Ergebnis umschrieben.",
+   "P2": "ja",
+   "P2_grund": "Nimmt auf Lösung Bezug und gibt richtige Richtung.",
+   "P3": "ja",
+   "P3_grund": "Regt zum Nachdenken an und gibt keinen Stichwort.",
+   "P4": "ja",
+   "P4_grund": "Angemessen schwierig und nicht überfordernd.",
+   "P5": "ja",
+   "P5_grund": "Keine Widersprüche oder erfundenen Fakten.",
+   "P6": "ja",
+   "P6_grund": "Kein Verweis auf fehlendes Material, verständlich."
+  },
+  "V3|F23_2": {
+   "P1": "ja",
+   "P1_grund": "Der Hinweis verrät nicht das Ergebnis oder die gesuchte Benennung.",
+   "P2": "teilweise",
+   "P2_grund": "Der Hinweis nennt den nächsten Denkschritt, aber nicht den Begriff oder die Größe.",
+   "P3": "ja",
+   "P3_grund": "Der Hinweis regt zum Nachdenken an, indem er fragt, woraus der spezielle Leiter besteht.",
+   "P4": "ja",
+   "P4_grund": "Der Hinweis greift die bisherige Antwort auf und lenkt auf die Stelle, die verbessert werden soll.",
+   "P5": "ja",
+   "P5_grund": "Der Hinweis enthält keine Aussagen, die der Lösung widersprechen oder erfundene Fakten.",
+   "P6": "ja",
+   "P6_grund": "Der Hinweis ist verständlich, enthält keine Verweise auf fehlendes Material und ist in drei kurze Sätze unterteilt."
+  }
+ },
+ "kalibrierung": {
+  "mistral-nemo|C1": {
+   "n": 3,
+   "ungueltig": 0,
+   "kappa_bin": NaN,
+   "kappa_w": 0.0,
+   "f1": 0.0,
+   "recall": 0.0,
+   "praez": 0.0,
+   "treffer": 0.6666666666666666
+  },
+  "mistral-nemo|C2": {
+   "n": 3,
+   "ungueltig": 0,
+   "kappa_bin": NaN,
+   "kappa_w": 0.0,
+   "f1": 0.0,
+   "recall": 0.0,
+   "praez": 0.0,
+   "treffer": 0.6666666666666666
+  },
+  "granite4.1:8b|C1": {
+   "n": 3,
+   "ungueltig": 0,
+   "kappa_bin": NaN,
+   "kappa_w": 1.0,
+   "f1": 0.0,
+   "recall": 0.0,
+   "praez": 0.0,
+   "treffer": 1.0
+  },
+  "granite4.1:8b|C2": {
+   "n": 3,
+   "ungueltig": 0,
+   "kappa_bin": 0.0,
+   "kappa_w": -0.5,
+   "f1": 0.0,
+   "recall": 0.0,
+   "praez": 0.0,
+   "treffer": 0.6666666666666666
+  },
+  "qwen3.5:9b|C1": {
+   "n": 3,
+   "ungueltig": 0,
+   "kappa_bin": 0.0,
+   "kappa_w": 0.0,
+   "f1": 0.0,
+   "recall": 0.0,
+   "praez": 0.0,
+   "treffer": 0.0
+  },
+  "qwen3.5:9b|C2": {
+   "n": 3,
+   "ungueltig": 0,
+   "kappa_bin": 0.0,
+   "kappa_w": 0.0,
+   "f1": 0.0,
+   "recall": 0.0,
+   "praez": 0.0,
+   "treffer": 0.0
+  }
+ },
+ "pruefer_eval": [
+  "granite4.1:8b",
+  "C2"
+ ],
+ "pruefer_waechter": [
+  "qwen3.5:9b",
+  "C1"
+ ],
+ "repro": {
+  "B1_1": false,
+  "B17_1": false,
+  "F23_2": false
+ }
+}

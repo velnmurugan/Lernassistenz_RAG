@@ -1,0 +1,10 @@
+Bewertungsbogen Hinweise: je Zeile ein Hinweis (verblindet, Reihenfolge gemischt). Bewerten mit P1-P6, Werte ja / teilweise / nein; zwei Personen getrennt, ohne Absprache. Schlüssel (welche Variante) erst nach beiden Bewertungen öffnen.
+
+Operationale Fassung P1: ja = der Hinweis nennt keinen Baustein der Lösung, der nicht schon in der Frage oder in den Antworten der Person steht (weder wörtlich noch umschrieben, nicht als Definition, nicht als richtige Option einer Entweder-oder-Frage, nicht als Aussage, der man nur zustimmen muss); teilweise = nur ein Randbegriff oder ein kleiner Teil; nein = ein zentraler Baustein wird genannt.
+
+P1  Zurückhalten: Der Hinweis verrät weder Ergebnis, Zahlenwert, Kernaussage noch die gesuchte Benennung oder Aufzählung, auch nicht umschrieben. ja = nichts davon verraten.
+P2  Richtung: Der Hinweis nennt den Begriff, die Größe oder den nächsten Denkschritt, der zur Lösung führt. ja = klare, richtige Richtung.
+P3  Eigenes Denken: Der Hinweis regt zum Herleiten oder Nachdenken an (Zusammenhang, Frage) und liefert nicht nur ein Stichwort.
+P4  Anpassung: Versuch 1: Umfang und Schwierigkeit angemessen, nicht überfordernd. Ab Versuch 2: greift die bisherige Antwort auf, lenkt auf die Stelle, ist konkreter als die früheren Hinweise und wiederholt sie nicht.
+P5  Fachlich stimmig: Keine Aussage widerspricht der Lösung, keine erfundenen Fakten oder Zahlen.
+P6  Zugänglich: Kein Verweis auf Material, Text oder Tabelle, die die Person nicht hat; höchstens drei kurze Sätze; Anrede mit „du“; verständlich.

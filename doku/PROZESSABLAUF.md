@@ -150,3 +150,6 @@ Vorab-Prüfsatz V1 (30 Oct 2026): 100 frische Fragen (50 Fischer, 50 Böge) aus 
 
 ## Hinweis-Dialogtest HD-V2
 Hinweis-Dialogtest HD-V2 (30 Oct 2026): N100 (70 Fischer + 30 Böge), V11B eingefroren. Je Frage bis zu 3 Versuche: simulierte Lernende (anderes Modell, ca. 30 % richtig), Rückmeldung IF-v5, Folgehinweis HD-v2; Rubrik P1-P6 / R1-R4 durch einen Richter (kein Generator), Bewertungsbogen für zwei Menschen. Skript skripte/evaluation/teste_hinweis_dialog.py; Ergebnisse evaluationsdaten/hinweis_dialog_HD-V2_*. Kein Beleg im Beitrag ohne Abgleich Richter gegen Menschen.
+
+## Hinweis-Optimierung HO-V1
+Hinweis-Optimierung HO-V1 (31 Oct 2026): Replay der 143 Hinweis-Situationen aus HD-V2; Varianten Basis, Wächter (Leck-Prüfer mit Neufassung), Prompt H-v4 (Lösungsbausteine, ein Ziel, Formregeln P1-P6) und Kombination; Leck-Prüfer vorher gegen Referenzurteile kalibriert. Vorläufige Empfehlung nach Leck-Rate: V1. Skript skripte/evaluation/optimiere_hinweise.py; Ergebnisse evaluationsdaten/hinweis_opt_HO-V1_*. Entwicklungsbefund, kein Beleg im Beitrag; Bewertungsbogen für zwei Menschen liegt bei.
