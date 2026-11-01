@@ -203,3 +203,6 @@ Stabilität der Hinweis-Erzeugung HS-V1 (31 Oct 2026): Teil A prüft, ob neu erz
 
 ## Hinweis-Dialogtest HD-V3
 Hinweis-Dialogtest HD-V3 (01 Nov 2026): N100 (70 Fischer + 30 Böge), V11B eingefroren. Je Frage bis zu 3 Versuche: simulierte Lernende (anderes Modell, ca. 30 % richtig), Rückmeldung IF-v5, Folgehinweis HD-v2; Rubrik P1-P6 / R1-R4 durch einen Richter (kein Generator), Bewertungsbogen für zwei Menschen. Skript skripte/evaluation/teste_hinweis_dialog.py; Ergebnisse evaluationsdaten/hinweis_dialog_HD-V3_*. Kein Beleg im Beitrag ohne Abgleich Richter gegen Menschen.
+
+## Hinweis-Dialogtest HD-V3N
+Hinweis-Dialogtest HD-V3N (01 Nov 2026): N100 (70 Fischer + 30 Böge), V11B eingefroren. Je Frage bis zu 3 Versuche: simulierte Lernende (anderes Modell, ca. 30 % richtig), Rückmeldung IF-v5, Folgehinweis HD-v2; Rubrik P1-P6 / R1-R4 durch einen Richter (kein Generator), Bewertungsbogen für zwei Menschen. Skript skripte/evaluation/teste_hinweis_dialog.py; Ergebnisse evaluationsdaten/hinweis_dialog_HD-V3N_*. Kein Beleg im Beitrag ohne Abgleich Richter gegen Menschen.
