@@ -764,7 +764,8 @@ MATERIAL_VERWEIS_ERGAENZUNG = re.compile(
 MATERIAL_VERWEIS_V10 = re.compile(
     r"\b(?:bereitgestellt|vorliegend|beigefügt|angehängt)\w*\s+(?:\w+\s+)?"
     r"(?:material\w*|text\w*|unterlagen|informationen|daten|dokument\w*)"
-    r"|\bsuch\w*\s+(?:in|im|nach)\b|\bnach\b[^.?!]{0,60}?\bsuch\w*|\bwas siehst du\b", re.I)
+    r"|\bsuch\w*\s+(?:in|im|nach)\b|\bnach\b[^.?!]{0,60}?\bsuch\w*|\bwas siehst du\b"
+    r"|\bdu hast (?:\w+ ){0,2}(?:gesehen|gelesen)\b", re.I)  # UI-v2: "Du hast gesehen, dass …" (Lernende sehen das Material nicht)
 
 
 def verweist_auf_material(text, erweitert=True, v10=True):
@@ -2538,3 +2539,29 @@ def speichere_fragebogen(sitzungs_id, antworten):
         zeile = [datetime.datetime.now().isoformat(timespec="seconds"), sitzungs_id]
         zeile += [antworten.get(item["id"], "") for item in FRAGEBOGEN_ITEMS]
         writer.writerow(zeile)
+
+
+# === V20 (G-v6) ===
+# G-v6 = G-v5 + L8 (rechnen, wenn alle Werte in der Frage stehen; Grundgleichung erlaubt und gekennzeichnet)
+#              + L9 (mehrteilige Fragen: jede Teilfrage, alle Ergebnisse im ersten Satz).
+# Anlass: Eval300-V4 (Rechenfragen mit RAG): Teilfragen ohne Antwort, "kann nicht berechnet werden" trotz
+# vollständiger Angaben. Allgemeine Regeln ohne Beispiele (P1). Nur mit LERNASSISTENT_G=G-v6.
+SCAFFOLDING_MARKER_VERSIONEN["G-v6"] = {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"}
+_HINWEIS_REGELN["G-v6"] = _HINWEIS_REGELN["G-v2"]
+_HINWEIS_REGELNUMMERN["G-v6"] = "H1 bis H6"
+_LOESUNGS_REGELN["G-v6"] = _LOESUNGS_REGELN["G-v5"] + """
+L8 Stehen alle Zahlenwerte, die für die gefragten Größen nötig sind, in der Frage, dann rechne die Größen aus.
+   Steht die nötige Formel nicht im Lernmaterial, verwende eine allgemein gültige Grundgleichung der Physik oder
+   Technik und kennzeichne sie mit „(Grundgleichung, nicht aus dem Lernmaterial)“. Schreibe nie, dass ein Wert
+   fehlt, der in der Frage steht.
+L9 Besteht die Frage aus mehreren Teilfragen, beantworte jede Teilfrage der Reihe nach und nenne im ersten Satz
+   alle gefragten Ergebnisse."""
+_LOESUNGS_REGELNUMMERN["G-v6"] = "L1 bis L9"
+
+
+def _prompt_g_v6(frage, ausgewaehlte_chunks):
+    """V20: G-v6 = G-v5 + L8, L9. Nur mit LERNASSISTENT_G=G-v6."""
+    return _prompt_g("G-v6", frage, ausgewaehlte_chunks)
+
+
+_PROMPTS["G-v6"] = _prompt_g_v6

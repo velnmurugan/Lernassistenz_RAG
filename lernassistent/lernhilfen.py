@@ -110,6 +110,8 @@ Regeln:
 - Die Übungsfrage muss sich mit dem Lernmaterial unten in ein bis zwei Sätzen beantworten lassen.
 - Keine Rechenaufgabe, keine Zahlen in der Frage.
 - Es darf nicht dieselbe Frage sein wie die gestellte.
+- Frage nach einem anderen Aspekt des Lernmaterials als die gestellte Frage (nicht nach derselben Ursache oder Begründung).
+- Frage nach einem anderen Aspekt des Lernmaterials als die gestellte Frage (nicht nach derselben Ursache oder Begründung).
 - Die Musterantwort besteht aus ein bis zwei Sätzen, die so im Material stehen.
 
 ### Gestellte Frage
@@ -148,11 +150,53 @@ def uebung_bewerten(uebung, antwort, top_chunks):
 
 
 # --- Auswertung -----------------------------------------------------------------------------------------
+def _hinweis_aus_log(inter, ideen, je_frage):
+    """UI-v2: hinweis_nutzung() aus interaktionen.csv + ideen_feedback.csv (Schlüssel: Sitzung + Fragetext)."""
+    mit_hinweis = [(r.get("sitzungs_id"), r.get("frage")) for r in inter
+                   if str(r.get("scaffolding_stufe_erreicht")) == "1" and r.get("status") in ("BEANTWORTET", "TEILWEISE")]
+    je_idee = {}
+    for r in ideen:
+        je_idee.setdefault((r.get("sitzungs_id"), r.get("frage")), []).append(r)
+    fragen = []
+    for k in dict.fromkeys(mit_hinweis):
+        reihe = sorted(je_idee.get(k, []), key=lambda r: int(r.get("versuch_nr") or 0))
+        fragen.append((je_frage.get(k, 1) >= 2, [(r.get("stufe_beim_versuch"), r.get("urteil")) for r in reihe]))
+    return hinweis_nutzung(fragen)
+
+
 def lies_csv(pfad):
     if not pfad.exists():
         return []
     with open(pfad, encoding="utf-8", newline="") as f:
         return list(csv.DictReader(f))
+
+
+URTEIL_RANG = {"keine_idee": 0, "falsch": 1, "teilweise": 2, "richtig": 3}  # UI-v2
+
+
+def hinweis_nutzung(fragen):
+    """UI-v2: Umgang mit dem Hinweis. fragen = Liste (loesung_geoeffnet, [(stufe_beim_versuch, urteil), ...]),
+    nur Fragen mit Hinweis (Status BEANTWORTET/TEILWEISE). Versuche auf Stufe 1 = vor dem Öffnen der Lösung."""
+    n = len(fragen)
+    versucht = geloest = direkt = mehrere = verbessert = 0
+    erster = {"richtig": 0, "teilweise": 0, "falsch": 0, "keine_idee": 0}
+    anzahl = []
+    for geoeffnet, ideen in fragen:
+        vor = [u for s, u in ideen if str(s) == "1"]
+        if not vor:
+            direkt += bool(geoeffnet)
+            continue
+        versucht += 1
+        anzahl.append(len(vor))
+        erster[vor[0]] = erster.get(vor[0], 0) + 1
+        geloest += "richtig" in vor
+        if len(vor) > 1:
+            mehrere += 1
+            r = [URTEIL_RANG.get(u, 0) for u in vor]
+            verbessert += any(r[i] > r[i - 1] for i in range(1, len(r)))
+    return {"fragen": n, "versucht": versucht, "geloest": geloest, "direkt": direkt,
+            "mehrere": mehrere, "verbessert": verbessert, "erster": erster,
+            "versuche_mittel": round(sum(anzahl) / len(anzahl), 1) if anzahl else 0}
 
 
 def auswertung(sitzung=None):
@@ -184,6 +228,7 @@ def auswertung(sitzung=None):
         "fragen": len(je_frage),
         "loesung_geoeffnet": sum(1 for s in je_frage.values() if s >= 2),
         "status": status, "ideen": len(ideen), "urteile": urteile, "hilfen": typen,
+        "hinweis": _hinweis_aus_log(inter, ideen, je_frage),  # UI-v2
         "tabelle": [{"Zeit": r["zeitstempel"][11:16], "Frage": r["frage"],
                      "Stufe": r.get("scaffolding_stufe_erreicht"), "Status": r.get("status")} for r in inter][-30:],
         "ohne_demo": len(ohne_demo),

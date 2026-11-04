@@ -162,3 +162,11 @@ Hinweis-Dialogtest HD-V3 (01 Nov 2026): N100 (70 Fischer + 30 Böge), V11B einge
 
 ## Hinweis-Dialogtest HD-V3N
 Hinweis-Dialogtest HD-V3N (01 Nov 2026): N100 (70 Fischer + 30 Böge), V11B eingefroren. Je Frage bis zu 3 Versuche: simulierte Lernende (anderes Modell, ca. 30 % richtig), Rückmeldung IF-v5, Folgehinweis HD-v2; Rubrik P1-P6 / R1-R4 durch einen Richter (kein Generator), Bewertungsbogen für zwei Menschen. Skript skripte/evaluation/teste_hinweis_dialog.py; Ergebnisse evaluationsdaten/hinweis_dialog_HD-V3N_*. Kein Beleg im Beitrag ohne Abgleich Richter gegen Menschen.
+
+
+## Stand V20 (eingefroren für den Beitrag)
+
+Seit 4. Nov 2026 ist V20 der eingefrorene Stand für den Beitrag (Git-Tag `v20-paper`): G-v6, RP-v13, RB-v8, FS-v3,
+V18=ADEK, V19=AB, Kontext 8192, Retrieval `hybrid_kg_rr`, Wissensbasis v7r, Oberfläche UI-v2. Start: `bash skripte/laeufe/start_demo.sh`.
+Auswertung des eingefrorenen Testsatzes Fragen300: `bash skripte/laeufe/lauf300.sh` (Antworten, Rang, Richter gemma4:12b,
+Faithfulness, Bewertungsbogen). Einzelheiten, Pakete und Ergebnisse: `doku/V20_Stand.md`.

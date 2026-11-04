@@ -30,3 +30,8 @@ evaluationsdaten/ragas_faithfulness_details.csv
 evaluationsdaten/archiv/*/ragas_faithfulness_details.csv
 evaluationsdaten/ideen_feedback_vor_spalten_*.csv
 evaluationsdaten/lernhilfen.csv
+daten/
+evaluationsdaten/
+*.vor_*
+*.tmp
+.venv*/

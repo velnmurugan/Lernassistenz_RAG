@@ -1338,3 +1338,11 @@ Ordered roughly by priority; none of these is implemented yet.
 - Modran, H. A. (2025). Leveraging RAG with ACP & MCP for adaptive intelligent tutoring. (RL)
 - Neagu, A., Wong, J. T. H., Messer, M., Nelson, R., & Johnson, P. B. (2026). Rethinking scaffolding in LLM tutors: The interactional mismatch between benchmarks and real-world deployments. Workshop paper. (RL)
 - Chi (1989, 2000, 2009); Sweller (1988, 2010); Chandler & Sweller (1991): cited in `PROZESSABLAUF.md` for the stage design; full references there.
+
+
+## Stand V20 (eingefroren für den Beitrag)
+
+Seit 4. Nov 2026 ist V20 der eingefrorene Stand für den Beitrag (Git-Tag `v20-paper`): G-v6, RP-v13, RB-v8, FS-v3,
+V18=ADEK, V19=AB, Kontext 8192, Retrieval `hybrid_kg_rr`, Wissensbasis v7r, Oberfläche UI-v2. Start: `bash skripte/laeufe/start_demo.sh`.
+Auswertung des eingefrorenen Testsatzes Fragen300: `bash skripte/laeufe/lauf300.sh` (Antworten, Rang, Richter gemma4:12b,
+Faithfulness, Bewertungsbogen). Einzelheiten, Pakete und Ergebnisse: `doku/V20_Stand.md`.
