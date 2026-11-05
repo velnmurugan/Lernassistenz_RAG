@@ -103,31 +103,45 @@ def _bewerte_gpu(paare):
     modell = _lade()  # geladen auf RERANKER_GERAET ("cpu")
     netz = modell if isinstance(modell, nn.Module) else modell.model
     t, art = _t21.perf_counter(), "gpu"
+    z = {}  # V21-S: Teilzeiten (Terminal)
     with GPU_SPERRE:
+        z["warten"] = _t21.perf_counter() - t
         try:
             if not torch.cuda.is_available():
                 raise RuntimeError("keine GPU")
+            t1 = _t21.perf_counter()
             if not _ollama_entladen():
                 raise RuntimeError("Ollama-Modell nicht entladen")
+            z["entladen"] = _t21.perf_counter() - t1
+            t1 = _t21.perf_counter()
             netz.to("cuda")
-            if hasattr(modell, "_target_device"):
+            if not isinstance(modell, nn.Module) and hasattr(modell, "_target_device"):  # nur alte sentence-transformers
                 modell._target_device = torch.device("cuda")
+            torch.cuda.synchronize()
+            z["zur_gpu"] = _t21.perf_counter() - t1
+            t1 = _t21.perf_counter()
             werte = modell.predict(paare, batch_size=16, show_progress_bar=False)
+            torch.cuda.synchronize()
+            z["rechnen"] = _t21.perf_counter() - t1
         except Exception as e:
             print(f"WARNUNG V21-S Reranker auf GPU nicht möglich ({e}) – CPU wie V20")
             art = "cpu-rueckfall"
             netz.to("cpu")
-            if hasattr(modell, "_target_device"):
+            if not isinstance(modell, nn.Module) and hasattr(modell, "_target_device"):  # nur alte sentence-transformers
                 modell._target_device = torch.device("cpu")
             torch.cuda.empty_cache() if torch.cuda.is_available() else None
             werte = modell.predict(paare, batch_size=16, show_progress_bar=False)
         finally:
+            t1 = _t21.perf_counter()
             netz.to("cpu")
-            if hasattr(modell, "_target_device"):
+            if not isinstance(modell, nn.Module) and hasattr(modell, "_target_device"):  # nur alte sentence-transformers
                 modell._target_device = torch.device("cpu")
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
+            z["zurueck"] = _t21.perf_counter() - t1
     GPU_PROTOKOLL.append((round(_t21.perf_counter() - t, 2), art))
+    print(f"V21-S Reranker {art}: gesamt {_t21.perf_counter() - t:.1f} s | "
+          + " | ".join(f"{k} {v:.1f} s" for k, v in z.items()), flush=True)
     return werte
 
 
