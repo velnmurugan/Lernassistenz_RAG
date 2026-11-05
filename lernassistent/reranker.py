@@ -73,10 +73,70 @@ def _bereinige(text):
     return re.sub(r"\s+", " ", text).strip()
 
 
+import os as _os21, threading as _th21, time as _t21  # V21-S
+_RR_GPU = _os21.environ.get("LERNASSISTENT_RR_GPU") == "1"
+GPU_SPERRE = _th21.RLock()  # V21-S: Reranker und Sprachmodell nie gleichzeitig auf der GPU
+GPU_PROTOKOLL = []  # V21-S: (Sekunden, "gpu" | "cpu-rueckfall") je Aufruf
+
+
+def _ollama_entladen():
+    """V21-S: alle geladenen Ollama-Modelle aus der GPU nehmen (keep_alive 0) und warten, bis sie weg sind."""
+    import requests
+    import rag_pipeline as _rp
+    ps = _rp.OLLAMA_URL.replace("/api/generate", "/api/ps")
+    try:
+        for m in requests.get(ps, timeout=5).json().get("models", []):
+            requests.post(_rp.OLLAMA_URL, json={"model": m["name"], "keep_alive": 0}, timeout=60)
+        for _ in range(80):
+            if not requests.get(ps, timeout=5).json().get("models"):
+                return True
+            _t21.sleep(0.25)
+    except Exception as e:
+        print(f"WARNUNG V21-S Ollama entladen: {e}")
+    return False
+
+
+def _bewerte_gpu(paare):
+    """V21-S: dieselbe Bewertung wie auf der CPU, gerechnet auf der GPU (fp32, gleiches Modell)."""
+    import torch
+    import torch.nn as nn
+    modell = _lade()  # geladen auf RERANKER_GERAET ("cpu")
+    netz = modell if isinstance(modell, nn.Module) else modell.model
+    t, art = _t21.perf_counter(), "gpu"
+    with GPU_SPERRE:
+        try:
+            if not torch.cuda.is_available():
+                raise RuntimeError("keine GPU")
+            if not _ollama_entladen():
+                raise RuntimeError("Ollama-Modell nicht entladen")
+            netz.to("cuda")
+            if hasattr(modell, "_target_device"):
+                modell._target_device = torch.device("cuda")
+            werte = modell.predict(paare, batch_size=16, show_progress_bar=False)
+        except Exception as e:
+            print(f"WARNUNG V21-S Reranker auf GPU nicht möglich ({e}) – CPU wie V20")
+            art = "cpu-rueckfall"
+            netz.to("cpu")
+            if hasattr(modell, "_target_device"):
+                modell._target_device = torch.device("cpu")
+            torch.cuda.empty_cache() if torch.cuda.is_available() else None
+            werte = modell.predict(paare, batch_size=16, show_progress_bar=False)
+        finally:
+            netz.to("cpu")
+            if hasattr(modell, "_target_device"):
+                modell._target_device = torch.device("cpu")
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+    GPU_PROTOKOLL.append((round(_t21.perf_counter() - t, 2), art))
+    return werte
+
+
 def bewerte(frage, texte):
     """Relevanzwert je Text (höher = relevanter). Reihenfolge wie texte."""
     if not texte:
         return []
     paare = [(frage, _bereinige(t)) for t in texte]
+    if _RR_GPU:  # V21-S
+        return [float(w) for w in _bewerte_gpu(paare)]
     werte = _lade().predict(paare, batch_size=16, show_progress_bar=False)
     return [float(w) for w in werte]

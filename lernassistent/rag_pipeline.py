@@ -2382,6 +2382,14 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None, fortschritt=None):
     stufen = parse_g_v1(rohantwort) if ist_g_version() else parse_scaffolding_antwort(rohantwort)
     top_chunks, prompt, stufen = _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, ergebnis, fortschritt)  # ab V12.1 (FS-v2)
     _ende("antwort", t0)
+    if fortschritt is not None and getattr(fortschritt, "_v21", False) and ist_g_version():  # V21-S: Hinweis vorab
+        try:  # Vorschau auf einer Kopie: der weitere Ablauf (Rechenprüfung, Hinweisprüfung) bleibt wie in V20
+            import copy as _cp21
+            _vorab = _cp21.deepcopy(stufen)
+            hinweis_pruefen(frage, _vorab)
+            fortschritt("antwort", "hinweis_vorab", None, _vorab)
+        except Exception as _e21:
+            print(f"WARNUNG V21-S Hinweis vorab: {_e21}")
     t0 = _start("pruefung")
     if ist_g_version():
         rechnung_pruefen(prompt, stufen, frage, top_chunks)  # ab V9d (RP-v1), V10 RP-v2; vor Sicherheits- und Hinweis-Prüfung
@@ -2418,6 +2426,16 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None, fortschritt=None):
 # methodischen Vorgehen). Pseudonymisierte Sitzungs-ID statt Klarnamen
 # entspricht Standardpraxis der Forschungsethik (DSGVO-konform) und dem
 # in Design_Entscheidungen_Literatur.md dokumentierten Datenschutzprinzip.
+# V21-S: Sprachmodell-Aufrufe teilen sich die GPU mit dem Reranker (nur mit LERNASSISTENT_RR_GPU=1)
+if os.environ.get("LERNASSISTENT_RR_GPU") == "1":
+    import reranker as _rr21
+    _frage_llm_v20 = frage_llm
+
+    def frage_llm(*args, **kwargs):  # noqa: F811  V21-S
+        with _rr21.GPU_SPERRE:
+            return _frage_llm_v20(*args, **kwargs)
+
+
 INTERAKTIONS_FELDER = [
     "zeitstempel", "sitzungs_id", "frage", "bester_score",
     "genuegend_relevanz", "hinweis", "erklaerung", "loesung",

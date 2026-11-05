@@ -551,6 +551,9 @@ def zeige_eintrag(idx, eintrag, ist_letzter):
         st.write(eintrag["frage"])
 
     with st.chat_message("assistant"):
+        if eintrag.get("_v21_job") is not None:  # V21-S: Hinweis steht, Lösung wird noch vorbereitet
+            _v21_wartend(idx, eintrag)
+            return
         verweigert = eintrag.get("status") in ("GATE", "NICHT_IM_MATERIAL")
         if verweigert:
             # Keine Treffer im Lernmaterial: ehrliche Rückmeldung statt Stufen und Quellen
@@ -856,9 +859,129 @@ def willkommen():
             st.rerun()
 
 
+_V21_HZ = _os.environ.get("LERNASSISTENT_HINWEIS_ZUERST") == "1"  # V21-S
+
+
+def _v21_job_starten(frage):
+    """V21-S: beantwortet die Frage in einem Hintergrund-Thread (vollständige V20-Pipeline). Der Thread schreibt nur
+    in das dict job (keine Streamlit-Aufrufe); die Oberfläche liest es."""
+    import threading
+    job = {"vorab": None, "ergebnis": None, "fehler": None, "phasen": {}, "quellen": None, "start": time.perf_counter()}
+
+    def rueckruf(phase, ereignis, dauer=None, daten=None):
+        if ereignis == "hinweis_vorab":
+            if (daten or {}).get("status") in ("BEANTWORTET", "TEILWEISE") and (daten or {}).get("hinweis"):
+                job["vorab"] = daten
+        elif ereignis == "quellen":
+            job["quellen"] = daten
+        elif ereignis in ("start", "ende"):
+            job["phasen"][phase] = (ereignis, dauer)
+    rueckruf._v21 = True
+
+    def arbeit():
+        try:
+            job["ergebnis"] = beantworte_frage(frage, CHUNKS, fortschritt=rueckruf)
+        except Exception as fehler:
+            print(f"FEHLER beantworte_frage (V21-S): {type(fehler).__name__}: {fehler}")
+            job["fehler"] = fehler
+    threading.Thread(target=arbeit, daemon=True).start()
+    return job
+
+
+def _v21_status_zeigen(status, job, zeilen):
+    """V21-S: Fortschritt wie fortschritt_anzeige, aber aus dem Job gelesen."""
+    if job["quellen"] and "quellen" not in zeilen:
+        orte = []
+        for c in job["quellen"]:
+            ort = (f"{c['buch']} " if c.get("buch") else "") + (f"S. {c['seite']}" if c.get("seite") else "")
+            if ort.strip() and ort.strip() not in orte:
+                orte.append(ort.strip())
+        zeilen["quellen"] = status.empty()
+        if orte:
+            zeilen["quellen"].markdown("📎 Gefunden: " + " · ".join(orte))
+    for phase in PHASEN:
+        if phase in job["phasen"]:
+            ereignis, dauer = job["phasen"][phase]
+            if phase not in zeilen:
+                zeilen[phase] = status.empty()
+            zeilen[phase].markdown(f"⏳ {PHASEN[phase][0]} …" if ereignis == "start"
+                                   else f"✓ {PHASEN[phase][1]} · {sek(dauer)}")
+
+
+def _v21_fertig(job, frage):
+    """V21-S: Endergebnis (wie V20) oder Fehlerhinweis; Protokoll wie in V20 nach der Antwort."""
+    if job["ergebnis"] is not None:
+        erg = job["ergebnis"]
+        vorab = (job.get("vorab") or {}).get("hinweis")
+        if vorab and vorab != erg.get("hinweis"):
+            print(f"HINWEIS V21-S: Vorab-Hinweis wich vom endgültigen ab ({frage[:60]})")
+        protokolliere_interaktion(st.session_state["sitzungs_id"], erg, scaffolding_stufe_erreicht=1)
+        return erg
+    return {"frage": frage, "status": "GATE", "hinweis": "", "erklaerung": "", "vollstaendig_geparst": False,
+            "loesung": "Die Antwort konnte gerade nicht fertig erzeugt werden. Bitte stelle die Frage noch einmal.",
+            "quellen": [], "top_chunks": [], "sicherheitshinweis": None, "zeiten": {}}
+
+
+def _v21_abschliessen(verlauf):
+    """V21-S: fertige Hintergrund-Jobs durch ihr Endergebnis ersetzen."""
+    for i, e in enumerate(verlauf):
+        job = e.get("_v21_job")
+        if job is not None and (job["ergebnis"] is not None or job["fehler"] is not None):
+            verlauf[i] = _v21_fertig(job, e["frage"])
+
+
+def _frage_hintergrund(frage):
+    """V21-S: Frage starten, auf den Hinweis warten (Fortschritt sichtbar), Lösung im Hintergrund weiterrechnen."""
+    with st.chat_message("user"):
+        st.write(frage)
+    with st.chat_message("assistant"):
+        with st.status("Der Assistent arbeitet …", expanded=True) as status:
+            job, zeilen = _v21_job_starten(frage), {}
+            while job["ergebnis"] is None and job["fehler"] is None and job["vorab"] is None:
+                _v21_status_zeigen(status, job, zeilen)
+                time.sleep(0.3)
+            _v21_status_zeigen(status, job, zeilen)
+            if job["fehler"] is not None:
+                status.update(label="Keine Antwort erzeugt", state="error", expanded=False)
+                st.error("Die Antwort konnte gerade nicht erzeugt werden (das Sprachmodell hat nicht rechtzeitig "
+                         "geantwortet). Bitte stelle die Frage noch einmal.")
+                st.stop()
+            status.update(label=f"{'Fertig' if job['ergebnis'] is not None else 'Hinweis bereit'} · "
+                                f"{sek(time.perf_counter() - job['start'])}", state="complete", expanded=False)
+    if job["ergebnis"] is not None:
+        st.session_state["verlauf"].append(_v21_fertig(job, frage))
+    else:
+        v = job["vorab"]
+        st.session_state["verlauf"].append({
+            "frage": frage, "_v21_job": job, "hinweis": v.get("hinweis", ""), "status": v.get("status", ""),
+            "vollstaendig_geparst": True, "loesung": "", "quellen": [], "top_chunks": [], "sicherheitshinweis": None,
+            "zeiten": {}})
+    st.session_state["fokus"] = None
+    st.rerun()
+
+
+def _v21_wartend(idx, eintrag):
+    """V21-S: Hinweis schon da, Lösung und Rückmeldung werden noch vorbereitet; aktualisiert sich selbst."""
+    schrittleiste(1, False)
+    st.markdown(f"💡 **Hinweis:** {eintrag['hinweis']}")
+    st.caption("⏳ Lösung und Rückmeldung werden noch vorbereitet (die Rechnung wird geprüft). "
+               "Denk schon über den Hinweis nach – gleich kannst du deine Idee eingeben.")
+    job = eintrag["_v21_job"]
+
+    @st.fragment(run_every=2)
+    def _warte():
+        if job["ergebnis"] is not None or job["fehler"] is not None:
+            try:
+                st.rerun(scope="app")
+            except TypeError:
+                st.rerun()
+    _warte()
+
+
 def seite_chat():
     seitenleiste()  # UI-v2
     st.title(f"🎓 {APP_NAME}")
+    _v21_abschliessen(st.session_state["verlauf"])  # V21-S
     verlauf = st.session_state["verlauf"]
     anzahl = len(verlauf)
     fokus = st.session_state.get("fokus")
@@ -879,6 +1002,8 @@ def seite_chat():
     bild = st.session_state.pop("naechstes_bild", None) if frage else None
     suche_frage = st.session_state.pop("naechste_suche", None) if frage else None
     bild_meta = st.session_state.pop("naechste_bild_meta", {}) if frage else {}
+    if frage and _V21_HZ and not bild:  # V21-S: Textfragen mit Hinweis zuerst (Bildfragen wie V20)
+        _frage_hintergrund(frage)
     if frage:
         with st.chat_message("user"):
             if bild:
