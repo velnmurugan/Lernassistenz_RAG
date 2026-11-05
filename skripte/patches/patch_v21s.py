@@ -230,13 +230,48 @@ def _frage_hintergrund(frage):
     st.rerun()
 
 
-def _v21_wartend(idx, eintrag):
-    """V21-S: Hinweis schon da, Lösung und Rückmeldung werden noch vorbereitet; aktualisiert sich selbst."""
+def _v21_warte_auf(job, idx, eintrag):
+    """V21-S: auf das Endergebnis warten, Eintrag ersetzen (Protokoll wie V20) und es zurückgeben."""
+    while job["ergebnis"] is None and job["fehler"] is None:
+        time.sleep(0.4)
+    erg = _v21_fertig(job, eintrag["frage"])
+    st.session_state["verlauf"][idx] = erg
+    return erg
+
+
+def _v21_wartend(idx, eintrag, ist_letzter=True):
+    """V21-S: Hinweis steht; Lösung/Prüfung laufen noch. Bei der jüngsten Frage sind Ideenfeld und Lösungsknopf schon
+    da (sie warten bei Bedarf kurz auf das Endergebnis); ältere wartende Einträge aktualisieren sich selbst."""
     schrittleiste(1, False)
     st.markdown(f"💡 **Hinweis:** {eintrag['hinweis']}")
-    st.caption("⏳ Lösung und Rückmeldung werden noch vorbereitet (die Rechnung wird geprüft). "
-               "Denk schon über den Hinweis nach – gleich kannst du deine Idee eingeben.")
     job = eintrag["_v21_job"]
+    if ist_letzter:
+        text = st.text_area("💭 Deine Idee? (optional) — Was glaubst du, wie die Antwort lautet?",
+                            key=f"idee_text_{idx}_0", height=80, placeholder="Schreib deine Vermutung in eigenen Worten …")
+        if st.button("Idee prüfen lassen", key=f"btn_idee_{idx}_0", type="primary"):
+            idee = (text or "").strip()
+            if not idee:
+                st.warning("Schreib zuerst deine Idee in das Feld.")
+            else:
+                with st.spinner("Die Lösung wird noch geprüft – gleich schaut sich der Assistent deine Idee an …"):
+                    erg = _v21_warte_auf(job, idx, eintrag)
+                    if job["ergebnis"] is not None and erg.get("vollstaendig_geparst") and idee_moeglich(erg):
+                        fb = gib_feedback(erg, idee)
+                        versuche = st.session_state[f"ideen_{idx}"]
+                        versuche.append({"idee": idee, "urteil": fb["urteil"], "rueckmeldung": fb["rueckmeldung"], "stufe": 1})
+                        protokolliere_idee(st.session_state["sitzungs_id"], idx + 1, erg, versuch_nr=len(versuche),
+                                           stufe=1, fb=fb)
+                st.rerun()
+        if st.button("✅ Lösung anzeigen", key=f"btn_loesung_{idx}"):
+            with st.spinner("Die Lösung wird noch geprüft …"):
+                erg = _v21_warte_auf(job, idx, eintrag)
+            if job["ergebnis"] is not None:
+                st.session_state[f"stufe_{idx}"] = 2
+                protokolliere_interaktion(st.session_state["sitzungs_id"], erg, scaffolding_stufe_erreicht=2)
+            st.rerun()
+        st.caption("⏳ Die Lösung wird im Hintergrund noch geprüft – du kannst schon deine Idee aufschreiben.")
+        return
+    st.caption("⏳ Lösung und Rückmeldung werden noch vorbereitet …")
 
     @st.fragment(run_every=2)
     def _warte():
@@ -256,7 +291,7 @@ def seite_chat():
 E.append((APP, '''    with st.chat_message("assistant"):
         verweigert = eintrag.get("status") in ("GATE", "NICHT_IM_MATERIAL")''', '''    with st.chat_message("assistant"):
         if eintrag.get("_v21_job") is not None:  # V21-S: Hinweis steht, Lösung wird noch vorbereitet
-            _v21_wartend(idx, eintrag)
+            _v21_wartend(idx, eintrag, ist_letzter)
             return
         verweigert = eintrag.get("status") in ("GATE", "NICHT_IM_MATERIAL")'''))
 E.append((APP, '''    if frage:
