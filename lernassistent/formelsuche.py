@@ -1,12 +1,11 @@
 """
 formelsuche.py
 --------------
-FS-v1 (V12, 23 Oct 2026): konzeptbasierte Formelsuche für Rechenaufgaben.
+FS: konzeptbasierte Formelsuche für Rechenaufgaben.
 
-Anlass: Aufgabe 1.32 (Magnetkran) im App-Test. Die Formel F = B²·A/(2μ₀) steht im Material (Böge, Chunk pdf_2620),
-wurde aber nicht gefunden: Die Frage spricht von Kran, Träger, Dichte, der Formelabschnitt von Tragkraft und
-Hubmagnet. Die Suche mit der Frage trifft Aufgaben mit denselben Wörtern, nicht die Formel. Ohne Formel im Kontext
-verweigert das Modell die Rechnung, und der Rechenbaustein (RB-v2) startet gar nicht erst.
+Problem: Die Suche mit dem Wortlaut der Frage trifft Aufgaben mit denselben Wörtern, nicht unbedingt die nötige Formel
+(Beispiel: eine Frage zu einem Magnetkran nennt Kran, Träger und Dichte, der Formelabschnitt spricht von Tragkraft und
+Hubmagnet). Ohne Formel im Kontext verweigert das Modell die Rechnung, und die Nachrechnung startet nicht.
 
 Ablauf (nur bei Rechenfragen):
   1. Ein kurzer Aufruf nennt 2-4 Beziehungen, die zur Lösung nötig sind, als Suchbegriffe (ohne Zahlen).
@@ -15,31 +14,31 @@ Ablauf (nur bei Rechenfragen):
      (Gleichheitszeichen mit Rechenausdruck) und noch nicht im Kontext ist. Höchstens FS_MAX_ZUSATZ Chunks.
   4. Die Zusatz-Chunks stehen HINTER den ursprünglichen Chunks im Kontext (Reihenfolge der Hauptsuche bleibt).
 
-Kosten: ein kurzer Modellaufruf (ca. 3-6 s) plus 2-4 Suchen. Bei keinem Fund ändert sich nichts.
+Kosten: ein kurzer Modellaufruf plus 2-4 Suchen. Bei keinem Fund ändert sich nichts.
 Schalter: Umgebungsvariable LERNASSISTENT_FS:
-  "FS-v2" (Standard, ab V12.1) = nur nach Fehlschlag: erst die normale Antwort; nur wenn sie keine Zahl liefert, nicht beantwortet
+  "FS-v2" (Standard) = nur nach Fehlschlag: erst die normale Antwort; nur wenn sie keine Zahl liefert, nicht beantwortet
             oder eine fehlende Formel meldet, wird gesucht und EINMAL neu erzeugt (angenommen nur bei Zahl im Ergebnis UND wenn
-            die Nachrechnung die Formel im Material belegt, ab V12.3).
-  "FS-v1" = immer vor der Antwort (A/B-Test 23 Oct 2026: 15 -> 12 richtige von 22, doppelte Laufzeit, daher nicht Standard).
-  "aus"   = wie V11b.
-Grund für FS-v2: im A/B-Lauf verschlechterten Zusatz-Chunks bei bereits lösbaren Fragen die Antwort (2, 4, 7, 55 von richtig auf falsch).
+            die Nachrechnung die Formel im Material belegt).
+  "FS-v3" = FS-v2 + Auslöser "Ergebnis aus einem Buchbeispiel übernommen".
+  "FS-v1" = immer vor der Antwort (nicht Standard: Zusatz-Chunks können bereits lösbare Fragen verschlechtern).
+  "aus"   = ohne Formelsuche.
 """
 import os
 import re
 import time
 
 FORMELSUCHE_VERSION = os.environ.get("LERNASSISTENT_FS", "FS-v2")  # "FS-v2" = nur nach Fehlschlag (Standard), "FS-v1" = immer, "aus" = ohne,
-# "FS-v3" (V13.2) = FS-v2 + Auslöser "Ergebnis aus einem Buchbeispiel übernommen" (siehe braucht_suche_v3)
+# "FS-v3" = FS-v2 + Auslöser "Ergebnis aus einem Buchbeispiel übernommen" (siehe braucht_suche_v3)
 FS_MAX_PHRASEN = 4
 FS_KANDIDATEN = 6        # Treffer je Suchbegriff, die auf eine Formel geprüft werden
 FS_MAX_ZUSATZ = 2        # höchstens so viele Chunks werden ergänzt
 FS_OPTIONEN = {"temperature": 0, "seed": 42, "num_predict": 100}
-# V19 (28 Oct 2026), Schalter LERNASSISTENT_V19 (Standard aus). Buchstabe A = Formelsuche VORAB bei jeder Rechenfrage (siehe suche_v19):
+# Schalter LERNASSISTENT_V19 (Standard aus). Buchstabe A = Formelsuche VORAB bei jeder Rechenfrage (siehe suche_v19):
 # Lösungsweg in Worten -> Suchbegriffe -> billige Suche je Begriff (ohne Reranker) -> kleiner Cross-Encoder wählt die 2 besten Formel-Chunks.
 V19_A = "A" in os.environ.get("LERNASSISTENT_V19", "")
-V19_ZUSATZ = 1 if "1" in os.environ.get("LERNASSISTENT_V19", "") else FS_MAX_ZUSATZ   # V19c: Ziffer 1 = nur 1 Zusatz-Chunk statt 2
+V19_ZUSATZ = 1 if "1" in os.environ.get("LERNASSISTENT_V19", "") else FS_MAX_ZUSATZ  # Ziffer 1 = nur 1 Zusatz-Chunk statt 2
 V19_KANDIDATEN = 20      # so viele Formel-Chunks (fusionierte Ränge der Suchbegriffe) bewertet der kleine Cross-Encoder
-V19_MODELL = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"   # ~118 Mio. Parameter, CPU, ca. 1,5 s für 20 Chunks (A/B 28 Oct: gleich gut wie bge, 10x schneller)
+V19_MODELL = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"  # ~118 Mio. Parameter, CPU, ca. 1,5 s für 20 Chunks
 V19_OPTIONEN = {"temperature": 0, "seed": 42, "num_predict": 260}
 
 _VERWEIS = re.compile(r"\b(?:Aufgabe|Aufg\.|Beispiel|Bsp\.|Abb\.|Abbildung|Tab\.|Tabelle|Gl\.|Gleichung|Kap\.|Kapitel)"
@@ -73,10 +72,8 @@ def braucht_suche(frage, stufen):
 
 
 def braucht_suche_v3(frage, stufen, kontext):
-    """FS-v3-Auslöser (V13.2): wie FS-v2, zusätzlich wenn die erste Antwort ein Ergebnis aus dem Lernmaterial übernimmt, ohne
-    mit den Werten der Frage zu rechnen (rechenpruefung.pruefe_uebernahme). Anlass: Entwicklungsfall Käfigläufer (26 Oct 2026):
-    Antwort 1401 min⁻¹ aus Buchaufgabe 4.9 mit anderen Werten; die Formelsuche fand die durchgerechnete Lösung (S. 452),
-    die Hauptsuche hatte sie nicht im Top 4."""
+    """FS-v3-Auslöser: wie FS-v2, zusätzlich wenn die erste Antwort ein Ergebnis aus dem Lernmaterial übernimmt, ohne
+    mit den Werten der Frage zu rechnen (rechenpruefung.pruefe_uebernahme)."""
     if braucht_suche(frage, stufen):
         return True
     if not ist_rechenfrage(frage) or (stufen or {}).get("status") != "BEANTWORTET":
@@ -174,9 +171,8 @@ def notiz(info):
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# V19a: Formelsuche vorab (28 Oct 2026). Anlass: Fälle, in denen die Hauptsuche die nötige Formel nicht findet, die erste Antwort
-# aber trotzdem eine Zahl nennt (falsche Physik) – FS-v2/v3 startet dann nie. Messung (diagnose_formelsuche_varianten.py, 11 gültige
-# Aufgaben): Formel im Kontext Hauptsuche Top-4 8/11; + 2 Chunks nach diesem Verfahren 10/11 (Kosten ca. 1,5 s + 1 kurzer Modellaufruf).
+# V19-A: Formelsuche vorab. Für Fälle, in denen die Hauptsuche die nötige Formel nicht findet, die erste Antwort aber
+# trotzdem eine Zahl nennt (falsche Physik) – FS-v2/v3 startet dann nie. Kosten: ca. 1,5 s + 1 kurzer Modellaufruf.
 # ---------------------------------------------------------------------------------------------------------------------
 _P_WEG = """Eine Rechenaufgabe aus der Technik soll gelöst werden. Beschreibe zuerst in 2 bis 4 kurzen Zeilen den Lösungsweg in Worten: welche Größe berechnet man nacheinander (z. B. "Strom aus Leistung und Spannung"). Keine Zahlen.
 Schreibe danach eine Zeile "### Suchbegriffe" und darunter je Schritt einen Fachbegriff (2 bis 6 Wörter), unter dem die dafür nötige Beziehung in einem Lehrbuch steht (Gesetz, Größe, Bauteil, Schaltung). Keine Zahlen, keine Formeln.

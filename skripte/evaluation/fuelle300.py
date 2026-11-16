@@ -1,5 +1,5 @@
 """
-fuelle300.py  (Fragen300, Schritt 5: Bewertungsbogen füllen)
+fuelle300.py  (Studie 1, Schritt 5: Bewertungsbogen füllen)
 Trägt Antworten, Zeiten, Richterurteil (Bewertungsspalte 3, Begründung als Kommentar), Rang und Faithfulness in eine Kopie
 des Bogens ein. Vorhandene Bewertungen 1 und 2 werden nie überschrieben. Fehlende Schritte bleiben leer.
   python skripte/evaluation/fuelle300.py F300-V20 daten/boegen/Fragen300_Bewertung.xlsx <Ziel.xlsx>

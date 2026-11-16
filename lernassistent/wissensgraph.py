@@ -1,7 +1,7 @@
 """
 wissensgraph.py
 ---------------
-V2: Konzept-Wissensgraph als dritte Retrieval-Liste neben dense und BM25.
+Begriffsgraph als dritte Retrieval-Liste neben dense und BM25.
 
 Aufbau (einmalig, danach aus cache/ geladen):
   Knoten   = Fachbegriffe der Wissensbasis (deutsche Substantive, Abkürzungen,
@@ -31,14 +31,12 @@ Retrieval (pro Frage):
 Vorbild: HippoRAG (Gutiérrez et al., NeurIPS 2024) — Begriffsgraph + Synonymie-
 Kanten aus Embeddings + Personalized PageRank ab den Frage-Begriffen.
 Unterschied: Knoten hier per Regeln extrahiert (Großschreibung, Abkürzungen,
-Normen) statt per LLM-OpenIE. Begründung: LLM-Extraktion über ~32.000 Chunks
-wären mit qwen3.5:9b auf der RTX 3070 ca. 20+ Stunden; die regelbasierte
-Variante baut in wenigen Minuten und ist deterministisch. Eine LLM-extrahierte
-Variante (Tripel mit Relationen wie "ist_Teil_von") ist als V2b möglich, falls
-V2a zeigt, dass der Graph-Ansatz grundsätzlich hilft.
+Normen) statt per LLM-OpenIE. Begründung: eine LLM-Extraktion über die ganze
+Wissensbasis dauert auf lokaler Hardware viele Stunden; die regelbasierte Variante
+baut in wenigen Minuten und ist deterministisch.
 Weitere Bezüge: GraphRAG (Edge et al. 2024, Microsoft), LightRAG (Guo et al. 2024).
 
-Alle Schwellen unten sind Startwerte — mit retrieval_vergleich.py kalibrieren.
+Die Schwellen unten wurden auf Entwicklungsfragen gewählt.
 
 Start (Diagnose/Visualisierung):
   python wissensgraph.py --stats
@@ -62,7 +60,7 @@ from scipy import sparse
 import rag_pipeline
 
 # ---------------------------------------------------------------------------
-# Parameter (Startwerte, siehe Modul-Docstring)
+# Parameter (verwendet: kg-v3)
 # ---------------------------------------------------------------------------
 KG_VERSION = "kg-v3"            # bei Logikänderung erhöhen -> Cache wird neu gebaut
 KG_MAX_DF_ANTEIL = 0.05         # Begriffe in > 5 % aller Chunks sind zu allgemein
@@ -73,9 +71,8 @@ KG_KOOK_NACHBARN = 20           # je Begriff nur die 20 stärksten Ko-Vorkommens
                                 # (ohne Grenze hatten "C", "DIN", "System" Grad 2000–5000 -> PageRank
                                 # lief in allgemeine Knoten ab statt zu verwandten Fachbegriffen)
 KG_SYN_MODUS = "aus"            # "aus" | "schreibvariante" | "embedding" (siehe _synonymie_kanten)
-                                # Befund retrieval_vergleich (25 Fragen, hybrid_kg@5): R@4 aus 13,
-                                # schreibvariante 12, embedding 12 -> Synonymie-Kanten ohne messbaren
-                                # Nutzen; Gewinn kommt aus Ko-Vorkommen + PageRank. Einfachste Variante gewählt.
+                                # Synonymie-Kanten brachten auf Entwicklungsfragen keinen messbaren Nutzen;
+                                # der Gewinn kommt aus Ko-Vorkommen + PageRank. Einfachste Variante gewählt.
 KG_SYN_JACCARD = 0.45           # Mindest-Zeichen-Trigramm-Überlappung im Modus "schreibvariante"
 KG_SYN_SCHWELLE = 0.85          # Kosinus für Synonymie-Kanten (0.80 ergab 110k Kanten, zu locker)
 KG_SYN_NACHBARN = 3             # max. Synonymie-Kanten pro Begriff
@@ -115,7 +112,7 @@ _graph_cache = {}
 
 
 def parameter():
-    """Für lauf_<ID>.json (Reproduzierbarkeit)."""
+    """Parameter des Graphen (für die Konfigurationsdatei eines Laufs)."""
     return {k: v for k, v in globals().items() if k.startswith("KG_")}
 
 
@@ -192,7 +189,7 @@ def trigramm_jaccard(a, b):
 def _synonymie_kanten(emb, kandidaten, labels):
     """Top-KG_SYN_NACHBARN Nachbarn je Begriff (nur kandidaten) mit Kosinus >= Schwelle.
 
-    Befund kg-v2 (echte Wissensbasis): Kosinus einzelner Wörter mit MiniLM ist auch
+    Kosinus einzelner Wörter mit MiniLM ist auch
     oberhalb 0.95 unzuverlässig ("Bogenzähnen ~ Gleitscheiben 0.97", "Blättchendicke ~
     Stapelkatze 0.96") — das Modell ist auf Sätze trainiert, isolierte Komposita landen
     eng beieinander. Modus "schreibvariante" verlangt daher zusätzlich Zeichen-Überlappung

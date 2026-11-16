@@ -1,19 +1,17 @@
 """
-eval300_antworten.py  (Eval300, Phase 1: Antworten erzeugen)
+eval300_antworten.py  (Hilfsmodul für antworten300.py: Antworten ohne und mit RAG)
 -------------------------------------------------------------
-Beantwortet die 300 gemischten Fragen (N100 + NEU100 + Fragenset v4) zweimal mit dem Generator
-(Standard qwen3.5:9b, T = 0, Seed 42):
-  OHNE RAG  nur die Frage, Prompt O-v1 (wie in vergleich_mit_ohne_rag.py; vergleichbar mit N100/NEU100)
-  MIT RAG   volle Pipeline (Retrieval hybrid_kg_rr + aktuelle Prompt-Versionen aus den Umgebungsvariablen,
-            V11B: LERNASSISTENT_G=G-v4, LERNASSISTENT_RP=RP-v5, LERNASSISTENT_FS=aus); bewertet wird die LÖSUNG.
-Es wird NICHT bewertet (das macht eval300_richter.py mit einem anderen Modell).
+Beantwortet Fragen zweimal mit dem Generator (Standard qwen3.5:9b, T = 0, Seed 42):
+  OHNE RAG  nur die Frage, Prompt O-v1 (prompt_ohne_rag)
+  MIT RAG   volle Pipeline (Retrieval hybrid_kg_rr + Prompt-Versionen aus den Umgebungsvariablen); bewertet wird die LÖSUNG.
+Es wird NICHT bewertet.
 
 Fortsetzbar: bereits beantwortete Fragen werden übersprungen (gleicher Befehl nach Abbruch).
 Ausgabe (enthält Buchinhalte -> nicht ins Git):
   evaluationsdaten/eval300_antworten_<LABEL>.csv   und   ..._konfig.txt
 
-Start (aus ~/RAG, Umgebung pilot_rag, Ollama läuft):
-  python skripte/evaluation/eval300_antworten.py EVAL300-V11B --kb daten/wissensbasen/knowledge_base_fischer_boege_v7r.json
+Start (Umgebung aktiv, Ollama läuft):
+  python skripte/evaluation/eval300_antworten.py <LABEL> --kb daten/wissensbasen/knowledge_base_fischer_boege_v7r.json
   --limit 6        nur die ersten 6 Fragen (Probelauf)
   --nur ohne|mit   nur eine Seite erzeugen
 """
@@ -36,7 +34,7 @@ FELDER = ["id", "satz", "orig_id", "buch", "typ", "frage", "referenz", "referenz
 
 
 def prompt_ohne_rag(frage):
-    # identisch mit O-v1 in vergleich_mit_ohne_rag.py (Vergleichbarkeit mit N100/NEU100)
+    # Prompt O-v1 (nicht ändern: gpt300.py prüft die Wortgleichheit)
     return (
         "Du bist Fachlehrkraft für Elektrotechnik in der beruflichen Ausbildung. "
         "Beantworte die Frage einer oder eines Auszubildenden fachlich korrekt und knapp "

@@ -1,16 +1,13 @@
 """
 admin_app.py
 -------------
-Admin-Werkzeug zum Aufbau der Wissensbasis per Upload — NUR für dich als
-Forscherin/Forscher, NICHT für Proband:innen gedacht.
+Werkzeug zum Aufbau der Wissensbasis per Upload, für Lehrkräfte und Forschende,
+nicht für Lernende.
 
-Läuft bewusst als SEPARATE App auf einem eigenen Port, damit Studierende
-nie versehentlich auf diese Oberfläche zugreifen (siehe
-Design_Entscheidungen_Literatur.md, Punkt 4: identische Wissensbasis für
-alle Proband:innen — das gilt nur für die Studien-App app.py, nicht für
-dieses Vorbereitungswerkzeug).
+Läuft als separate App auf einem eigenen Port, damit Lernende diese Oberfläche
+nicht erreichen; die Lern-App (app.py) nutzt eine feste Wissensbasis.
 
-Start (auf einem ANDEREN Port als die Studien-App, z. B. 8502):
+Start (auf einem anderen Port als die Lern-App, z. B. 8502):
     streamlit run admin_app.py --server.port 8502 --server.fileWatcherType none
 """
 import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)

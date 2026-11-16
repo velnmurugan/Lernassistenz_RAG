@@ -1,8 +1,8 @@
 """
-richter300.py  (Fragen300, Schritt 3: LLM-Richter ja / teilweise / nein, Prompt R300-J1)
+richter300.py  (Studie 1, Schritt 3: lokaler LLM-Richter ja / teilweise / nein, Prompt R300-J1)
 Richter = anderes Modell als der Generator (Standard gemma4:12b), T = 0, Seed 42. Der Prompt enthält die Bewertungskriterien
-wörtlich aus dem Bewertungsbogen (daten/kriterien.json) und 10 Beispiele aus entfernten Eval300-Fragen mit Vels Urteil
-(daten/richter_beispiele.json; keine davon gehört zu den 300 Testfragen). Ausgabe: BEGRÜNDUNG, dann URTEIL.
+wörtlich aus dem Bewertungsbogen (daten/testfragen/kriterien300.json) und 10 von Hand bewertete Beispiele, die nicht zu den
+300 Testfragen gehören (daten/testfragen/richter_beispiele.json). Ausgabe: BEGRÜNDUNG, dann URTEIL.
 Bewertet werden beide Antworten jeder Frage (ohne RAG, mit RAG), jede einzeln und ohne Hinweis auf die Bedingung.
 Fortsetzbar.
   python skripte/evaluation/richter300.py F300-V20 --richter gemma4:12b [--limit 4]

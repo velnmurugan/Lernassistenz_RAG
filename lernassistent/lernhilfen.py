@@ -1,5 +1,5 @@
 """
-Lernhilfen (UI Drop 2): Anschlussfragen, Übungsfrage, Auswertung des Nutzungsprotokolls.
+Lernhilfen der App: Anschlussfragen, Übungsfrage, Auswertung des Nutzungsprotokolls.
 
 - Anschlussfragen und Übungsfrage entstehen NUR aus den Textabschnitten, die auch für die Antwort
   verwendet wurden (kein Fremdwissen). Die Übungsfrage ist nie eine Rechenaufgabe; ihre Musterantwort
@@ -151,7 +151,7 @@ def uebung_bewerten(uebung, antwort, top_chunks):
 
 # --- Auswertung -----------------------------------------------------------------------------------------
 def _hinweis_aus_log(inter, ideen, je_frage):
-    """UI-v2: hinweis_nutzung() aus interaktionen.csv + ideen_feedback.csv (Schlüssel: Sitzung + Fragetext)."""
+    """hinweis_nutzung() aus interaktionen.csv + ideen_feedback.csv (Schlüssel: Sitzung + Fragetext)."""
     mit_hinweis = [(r.get("sitzungs_id"), r.get("frage")) for r in inter
                    if str(r.get("scaffolding_stufe_erreicht")) == "1" and r.get("status") in ("BEANTWORTET", "TEILWEISE")]
     je_idee = {}
@@ -171,11 +171,11 @@ def lies_csv(pfad):
         return list(csv.DictReader(f))
 
 
-URTEIL_RANG = {"keine_idee": 0, "falsch": 1, "teilweise": 2, "richtig": 3}  # UI-v2
+URTEIL_RANG = {"keine_idee": 0, "falsch": 1, "teilweise": 2, "richtig": 3}
 
 
 def hinweis_nutzung(fragen):
-    """UI-v2: Umgang mit dem Hinweis. fragen = Liste (loesung_geoeffnet, [(stufe_beim_versuch, urteil), ...]),
+    """Umgang mit dem Hinweis. fragen = Liste (loesung_geoeffnet, [(stufe_beim_versuch, urteil), ...]),
     nur Fragen mit Hinweis (Status BEANTWORTET/TEILWEISE). Versuche auf Stufe 1 = vor dem Öffnen der Lösung."""
     n = len(fragen)
     versucht = geloest = direkt = mehrere = verbessert = 0
@@ -228,7 +228,7 @@ def auswertung(sitzung=None):
         "fragen": len(je_frage),
         "loesung_geoeffnet": sum(1 for s in je_frage.values() if s >= 2),
         "status": status, "ideen": len(ideen), "urteile": urteile, "hilfen": typen,
-        "hinweis": _hinweis_aus_log(inter, ideen, je_frage),  # UI-v2
+        "hinweis": _hinweis_aus_log(inter, ideen, je_frage),
         "tabelle": [{"Zeit": r["zeitstempel"][11:16], "Frage": r["frage"],
                      "Stufe": r.get("scaffolding_stufe_erreicht"), "Status": r.get("status")} for r in inter][-30:],
         "ohne_demo": len(ohne_demo),

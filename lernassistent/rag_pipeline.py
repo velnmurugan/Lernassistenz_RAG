@@ -1,20 +1,11 @@
 """
 rag_pipeline.py
-----------------
-Kernlogik des KI-Lernassistenten (Pilotstudie, Phase 2 nach Design-Based
-Research, siehe Reeves 2006 / Design-Based Research Collective 2003).
+---------------
+Kernlogik des Lernassistenten: Wissensbasis laden, Retrieval (dense, BM25, Begriffsgraph, RRF,
+Re-Ranking), Relevanzschwelle, Antwortprompt, Generierung, Rechenprüfung, Hinweisprüfung und Protokoll.
 
-Diese Version ist für die Nutzung durch Auszubildende in einer kontrollierten
-Evaluation gedacht — NICHT mehr für Demo-Zwecke. Entsprechend wurden alle
-"unter die Haube schauen"-Funktionen (Chunking-Demo, PDF-Upload, TF-IDF-
-Vergleich, Embedding-Visualisierung) entfernt: Alle Proband:innen sollen
-exakt dieselbe, kontrollierte Wissensbasis nutzen — das ist eine bewusste
-Entscheidung zur internen Validität der Studie, nicht eine technische
-Einschränkung.
-
-Jede wesentliche Design-Entscheidung ist unten mit einer Quelle referenziert.
-Eine konsolidierte Übersicht steht zusätzlich in
-Design_Entscheidungen_Literatur.md.
+Die Wissensbasis ist fest und für alle Nutzenden identisch; Lernende laden keine eigenen Dokumente hoch.
+Wesentliche Design-Entscheidungen sind an der jeweiligen Stelle mit Literatur belegt.
 """
 
 import hashlib
@@ -38,7 +29,7 @@ MODEL_NAME = os.environ.get("LERNASSISTENT_MODELL", "qwen3.5:9b")   # M-v1 (Mode
 # Verbindung zum lokalen LLM (Ollama)
 # =============================================================================
 def _kandidaten_hosts():
-    """Mögliche Ollama-Adressen, siehe WSL-Netzwerk-Hinweis in README."""
+    """Mögliche Ollama-Adressen: OLLAMA_HOST, localhost und unter WSL das Windows-Gateway."""
     kandidaten = []
     manuell = os.environ.get("OLLAMA_HOST")
     if manuell:
@@ -71,14 +62,9 @@ OLLAMA_URL = f"http://{_OLLAMA_HOST}:11434/api/generate"
 
 
 # =============================================================================
-# Wissensbasis-Aufbau aus echten PDF-Quellen (Offline-Werkzeug für die
-# Forscherin/den Forscher, NICHT Teil der Studien-App selbst)
+# Wissensbasis-Aufbau aus PDF-Quellen (Offline-Werkzeug, nicht Teil der App)
 # =============================================================================
-# Wichtig: Diese Funktionen werden von baue_wissensbasis.py genutzt, um
-# EINMALIG, vor Beginn der Studie, aus echten curricularen PDFs eine feste
-# Wissensbasis zu erzeugen. Studierende laden selbst keine PDFs hoch — das
-# würde die Anforderung "identische Wissensbasis für alle Proband:innen"
-# verletzen (siehe Design_Entscheidungen_Literatur.md, Punkt 4).
+# Diese Funktionen erzeugen einmalig vor der Nutzung eine feste Wissensbasis.
 def lese_pdf_text(pfad):
     """Extrahiert reinen Text aus einer PDF-Datei, Seite für Seite."""
     from pypdf import PdfReader
@@ -92,16 +78,8 @@ def lese_pdf_gliederung(reader):
     Extrahiert die im PDF eingebettete Gliederung (Bookmarks/Outline) als
     flache Liste von (Titel, Seitennummer), aufsteigend nach Seite sortiert.
 
-    Wichtig für umfangreiche Fachbücher (z. B. ein Springer-Handbuch), die
-    ein einzelnes Dokument sind, aber viele unterschiedliche Themen
-    abdecken: Ohne Gliederungserkennung würde der gesamte Inhalt fälschlich
-    EIN Thema (den Dateinamen) erhalten. Fachbücher aus wissenschaftlichen
-    Verlagen enthalten praktisch immer eine navigierbare Gliederung im
-    PDF selbst — diese wird hier statt des Dateinamens als Themenquelle
-    genutzt. Das entspricht dem in der ursprünglichen Chunking-Dokumentation
-    bereits als Ziel benannten "semantischen/abschnittsbasierten Chunking"
-    (siehe chunke_text-Docstring), hier umgesetzt über die vom Verlag
-    bereits vorhandene Struktur statt über eigene NLP-Heuristiken.
+    Umfangreiche Fachbücher decken viele Themen ab; ohne Gliederung erhielte
+    der gesamte Inhalt nur ein Thema (den Dateinamen).
     """
     eintraege = []
 
@@ -153,10 +131,8 @@ def verarbeite_pdf_seitenweise(datei, max_saetze_pro_chunk, fallback_thema, meth
 
     ueberlapp_saetze: Sätze, die am Ende eines Chunks auch am Anfang des
     nächsten wiederholt werden (siehe _gruppen_zu_chunks, Modran 2025).
-    Mindert (löst aber NICHT vollständig) das eigene Testbefund-Muster,
-    dass mehrschrittige Rechenbeispiele über mehrere Chunks fragmentiert
-    werden — wirkt nur INNERHALB einer Seite, nicht über Seitengrenzen
-    hinweg (siehe Trade-off unten).
+    Mindert die Fragmentierung mehrschrittiger Rechenbeispiele; wirkt nur
+    innerhalb einer Seite, nicht über Seitengrenzen hinweg.
 
     Seitenweises statt dokumentweites Chunking ist hier bewusst gewählt,
     damit jeder Chunk zuverlässig einer einzelnen Seite und damit einem
@@ -201,9 +177,8 @@ _PLATZHALTER = "\x00"
 
 
 def _satzsplit(rohtext):
-    """Zerlegt Text in Sätze, mit Schutz bekannter Abkürzungen (siehe
-    Phase-1-Erkenntnis: "Prof. Dr. Bernd Zinn" wurde ohne diesen Schutz
-    in drei Fragmente zerrissen)."""
+    """Zerlegt Text in Sätze und schützt dabei bekannte Abkürzungen (z. B. Titel wie
+    "Prof. Dr.") vor einer Trennung."""
     rohtext = rohtext.strip()
     geschuetzt = rohtext
     for abk in ABKUERZUNGEN:
@@ -219,15 +194,9 @@ def _gruppen_zu_chunks(gruppen, ueberlapp_saetze=0):
     letzten 'ueberlapp_saetze' Sätze des vorherigen Chunks werden dem
     nächsten Chunk vorangestellt.
 
-    Begründung/Quelle: Modran, H. A. (2025). Leveraging RAG with ACP & MCP
-    for Adaptive Intelligent Tutoring — nutzt chunk_size=1200 Tokens mit
-    overlap=200 Tokens. Wir übertragen dasselbe Prinzip auf unsere
-    satzbasierte Chunking-Einheit statt auf Token-Zählung. Zweck: ein
-    Fakt, der exakt an einer Chunk-Grenze liegt, verschwindet dadurch
-    nicht vollständig, sondern erscheint in BEIDEN benachbarten Chunks —
-    direkte Gegenmaßnahme gegen das eigene Testbefund-Muster (mehrschrittige
-    Rechenbeispiele werden über mehrere Chunks fragmentiert, siehe
-    Design_Entscheidungen_Literatur.md, Punkt 14).
+    Begründung: Modran (2025) nutzt chunk_size = 1200 Tokens mit overlap = 200
+    Tokens. Dasselbe Prinzip wird hier auf satzbasierte Chunks übertragen: ein
+    Fakt an einer Chunk-Grenze erscheint in beiden benachbarten Chunks.
 
     Wichtig: löst NICHT das Seitengrenzen-Problem (Chunks werden weiterhin
     nie über Seiten hinweg gebildet, siehe verarbeite_pdf_seitenweise) —
@@ -354,12 +323,10 @@ def chunke_text_semantisch(rohtext, aehnlichkeits_schwelle=0.55, max_saetze_pro_
 # Phänomen (Modell ignoriert Retrieval-Evidenz zugunsten von internem
 # Wissen), das Oche et al. (2025, "A Systematic Review of Key
 # Retrieval-Augmented Generation (RAG) Systems") als zentrales RAG-Risiko
-# beschreiben. Kalibriert empirisch während der Prototyp-Tests (Phase 1).
+# beschreiben. Der Wert wurde auf Entwicklungsfragen kalibriert.
 RELEVANZ_SCHWELLE = 0.35
 
-# Schlüsselwortbasierte Sicherheitsprüfung. Bewusst einfache Version für
-# Phase 1/2 (siehe Systemkonzept-Säule "Sicherheit"); eine echte
-# Klassifikator-Lösung ist für Phase 3 vorgesehen.
+# Schlüsselwortbasierte Sicherheitsprüfung (bewusst einfache Regel).
 SICHERHEITS_SCHLUESSELWOERTER = [
     
 ]
@@ -367,30 +334,22 @@ SICHERHEITS_SCHLUESSELWOERTER = [
 EMBEDDING_MODELL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
 
 # Retrieval-Methode (siehe retrieval()):
-#   "dense"  — nur Embeddings (Baseline V0, bisheriges Verhalten der Studien-App)
-#   "bm25"   — nur Schlüsselwortsuche
-#   "hybrid" — beide Ranglisten per Reciprocal Rank Fusion kombiniert (V1)
-#   "graph"  — nur Konzept-Wissensgraph (Personalized PageRank, siehe wissensgraph.py)
-#   "hybrid_kg" — dense + BM25 + Wissensgraph per RRF (V2)
-#   "<methode>_rr" — Vorstufe <methode>, danach Cross-Encoder-Reranking der besten
-#                 Kandidaten (V3: "hybrid_kg_rr"; Kontrolle ohne Graph: "hybrid_rr"), siehe reranker.py
-# Die Studien-App nutzt diesen Standard; Testläufe können pro Aufruf eine
-# andere Methode übergeben (fuehre_testfragen_aus.py --retrieval ...).
+#   "dense"     — nur Embeddings
+#   "bm25"      — nur Schlüsselwortsuche
+#   "hybrid"    — beide Ranglisten per Reciprocal Rank Fusion kombiniert
+#   "graph"     — nur Begriffsgraph (Personalized PageRank, siehe wissensgraph.py)
+#   "hybrid_kg" — dense + BM25 + Begriffsgraph per RRF
+#   "<methode>_rr" — Vorstufe <methode>, danach Cross-Encoder-Re-Ranking der besten Kandidaten
+#                    (verwendet: "hybrid_kg_rr"), siehe reranker.py
+# Die App setzt die Methode über LERNASSISTENT_RETRIEVAL; Skripte können sie pro Aufruf übergeben.
 RETRIEVAL_METHODE = "dense"
-RRF_K = 5  # Cormack et al. (2009) nutzen 60. V1 (hybrid): k=2 empirisch gewählt (retrieval_vergleich.py,
-           # 25 Testfragen; bestes MRR und R@4+Nachbar; bei k=60 schlugen Chunks, die in beiden Listen
-           # mittelmäßig rangierten, Chunks auf Spitzenplätzen einer Liste). V2 (hybrid_kg): k=5
-           # (R@4 13 vs. 11 bei k=2). Standard = aktuelle Version; V1 nachstellen mit --rrf-k 2.
+RRF_K = 5  # Cormack et al. (2009) nutzen 60; ein kleines k gewichtet Spitzenplätze einer Liste stärker (auf Entwicklungsfragen gewählt)
 
-# Generierungs-Einstellungen für qwen (Studien-App UND Testläufe identisch).
-# Ohne feste Werte nutzt Ollama seine Standard-Stichprobe; derselbe Kontext führte
-# dann mal zu Verweigerung, mal zu Antwort (Befund V1-HYBRID2 vs. V1-HYBRID2-CLEAN:
-# gleiche Retrieval-Ränge, 12 vs. 7 Verweigerungen). temperature=0 + fester seed:
-# (1) reproduzierbare Evaluation, (2) inhaltlich gewollt — ein quellengebundener
-# Lernassistent soll nicht kreativ variieren. Restvarianz durch GPU-Arithmetik möglich.
+# Generierung: temperature 0 und fester Seed für reproduzierbare, quellengebundene Antworten
+# (ohne feste Werte variiert Ollama die Ausgabe). Restvarianz durch GPU-Arithmetik ist möglich.
 GENERIERUNGS_OPTIONEN = {"temperature": 0, "seed": 42}
-# V13.3: Kontextfenster für ALLE Modellaufrufe (Ollama-Standard war 4096 Tokens). Befund 26 Oct 2026 (Käfigläufer, 6 Chunks):
-# Prompt 3001 + Antwort 1095 Tokens = genau 4096 -> die Antwort wurde abgeschnitten. Ohne Schalter unverändert (Reproduktion).
+# Kontextfenster für alle Modellaufrufe (LERNASSISTENT_CTX). Der Ollama-Standard von 4096 Tokens kann lange
+# Antworten abschneiden. Ohne Angabe gilt der Ollama-Standard.
 KONTEXT_TOKENS = int(os.environ.get("LERNASSISTENT_CTX", "0") or 0) or None
 DENK_KONTEXT_TOKENS = 16384
 KG_GEWICHT = 1.0  # Gewicht der Graph-Liste in der RRF-Summe ("hybrid_kg"); 1.0 = gleichrangig
@@ -407,7 +366,7 @@ FRAGEBOGEN_LOG = LOG_VERZEICHNIS / "fragebogen.csv"
 # =============================================================================
 def lade_wissensbasis(pfad="daten/wissensbasen/knowledge_base_boege.json"):
     """
-    Lädt die kuratierte, für ALLE Proband:innen identische Wissensbasis.
+    Lädt die kuratierte, für ALLE Nutzenden identische Wissensbasis.
 
     Identische Wissensbasis für alle Teilnehmenden ist eine Grundvoraussetzung
     für die interne Validität eines kontrollierten Vergleichs (Standard in der
@@ -439,15 +398,8 @@ def berechne_kb_hash(pfad="daten/wissensbasen/knowledge_base_boege.json"):
 # =============================================================================
 # Retrieval (Embeddings)
 # =============================================================================
-# Embedding-basiertes statt wortbasiertes (TF-IDF) Retrieval als alleinige
-# Methode im Studien-Prototyp. Begründung:
-#   1. Grundlagenarbeit: Reimers & Gurevych (2019), "Sentence-BERT:
-#      Sentence Embeddings using Siamese BERT-Networks" — Embeddings
-#      erfassen Bedeutung statt reiner Wortoberfläche.
-#   2. Eigene empirische Erkenntnis aus Phase 1: TF-IDF versagt bei
-#      deutschen Wortformvarianten (z. B. "einfachwirkenden" vs.
-#      "einfachwirkender"), was für Auszubildende mit natürlicher,
-#      variabler Frageformulierung praxisrelevant ist.
+# Begründung für dichte Embeddings: Sie erfassen Bedeutung statt reiner Wortoberfläche
+# (Reimers & Gurevych, 2019) und sind robust gegenüber deutschen Wortformvarianten.
 _embedding_modell = None
 _chunk_embedding_cache = {}
 
@@ -464,8 +416,8 @@ def _embeddings_fuer_chunks(chunks):
     modell = _lade_embedding_modell()
     schluessel = tuple(c["text"] for c in chunks)
     if schluessel not in _chunk_embedding_cache:
-        # Platten-Cache pro Inhalt + Modell: große Wissensbasen (~32.000 Chunks) müssen nach einem
-        # Neustart nicht erneut eingebettet werden. Die Werte sind identisch zur Neuberechnung.
+        # Platten-Cache pro Inhalt + Modell: große Wissensbasen müssen nach einem Neustart
+        # nicht erneut eingebettet werden. Die Werte sind identisch zur Neuberechnung.
         fp = hashlib.sha256(("\x1e".join(schluessel) + "\x1f" + EMBEDDING_MODELL_NAME).encode("utf-8")).hexdigest()[:12]
         datei = BM25_CACHE_VERZEICHNIS / f"embeddings_{fp}.npy"
         embeddings = None
@@ -488,14 +440,11 @@ def _embeddings_fuer_chunks(chunks):
 
 
 # -----------------------------------------------------------------------------
-# BM25 (Schlüsselwortsuche) — Ergänzung für V1 "hybrid"
+# BM25 (Schlüsselwortsuche)
 # -----------------------------------------------------------------------------
-# Begründung: Fachbegriffe (Zweihandverriegelung, D-Anteil, DIN EN 13001-2,
-# CNC) sind exakte Wörter, die ein kleines Embedding-Modell "verwischt".
-# Eigener Testbefund V0 (TEST-01): Recall@4 nur 6/25, Quell-Chunk oft auf
-# Rang > 100. Gegenposition zur ursprünglichen Nur-Embedding-Entscheidung:
-# "From BM25 to Corrective RAG" (EACL 2026) — BM25 bei terminologie- und
-# tabellenlastigen Dokumenten überlegen. BM25: Robertson & Zaragoza (2009).
+# Begründung: Fachbegriffe (z. B. Normbezeichnungen, Abkürzungen) sind exakte Wörter, die ein kleines
+# Embedding-Modell "verwischt". BM25 ist bei terminologie- und tabellenlastigen Dokumenten überlegen
+# (Strich et al., 2026). BM25: Robertson & Zaragoza (2009).
 BM25_STOPPWOERTER = set("""
 aber alle allem allen aller alles als also am an ander andere anderem anderen anderer anderes
 auch auf aus bei beim bin bis bist da damit dann das dass dein deine dem den der des dessen die
@@ -529,7 +478,7 @@ def tokenisiere(text):
 def _bm25_index(chunks):
     """BM25-Index über alle Chunks. Zwischengespeichert im Speicher (pro
     Prozess) und auf Platte (pro Inhalt der Wissensbasis), weil das
-    Tokenisieren von ~32.000 Chunks sonst bei jedem Start ~1 Minute dauert."""
+    Tokenisieren großer Wissensbasen sonst bei jedem Start lange dauert."""
     from rank_bm25 import BM25Okapi
     schluessel = tuple(c["text"] for c in chunks)
     if schluessel not in _bm25_cache:
@@ -559,20 +508,18 @@ def retrieval(frage, chunks, top_k=4, methode=None):
     """
     Retrieval mit wählbarer Methode (Standard: RETRIEVAL_METHODE).
 
-    "dense": Embedding-basiert (Reimers & Gurevych 2019), bisheriges Verhalten.
-    top_k=4 (statt z. B. 2) reduziert das in Phase 1 beobachtete Risiko, dass
-    ein einzelner, kurzer Fakt (z. B. eine konkrete ECTS-Zahl) durch eng
-    verwandte, aber nicht antworttragende Passagen verdrängt wird (siehe
-    Design_Entscheidungen_Literatur.md, "Retrieval-Vollständigkeit").
+    "dense": Embedding-basiert (Reimers & Gurevych 2019). top_k = 4 verringert das
+    Risiko, dass ein kurzer Fakt durch verwandte, aber nicht antworttragende
+    Passagen verdrängt wird.
     "bm25": reine Schlüsselwortsuche (siehe tokenisiere/_bm25_index).
     "hybrid": Reciprocal Rank Fusion beider Ranglisten, score = Σ 1/(RRF_K + rang)
     (Cormack, Clarke & Büttcher 2009). RRF statt gewichteter Score-Summe, weil
     BM25-Werte und Kosinus-Ähnlichkeiten nicht auf derselben Skala liegen.
 
     Wichtig: Das Feld "score" jedes Ergebnisses ist IMMER die Kosinus-
-    Ähnlichkeit (auch bei bm25/hybrid). Damit bleiben RELEVANZ_SCHWELLE und das
-    Feld bester_score im Log zwischen den Varianten identisch definiert — nur
-    die Auswahl der Chunks ändert sich (eine Variable pro Version).
+    Ähnlichkeit (auch bei bm25/hybrid). Damit sind RELEVANZ_SCHWELLE und das
+    Feld bester_score im Log für alle Methoden gleich definiert; nur die
+    Auswahl der Chunks ändert sich.
     Sortiert wird nach "rangwert" (je nach Methode Kosinus, BM25 oder RRF).
     """
     methode = methode or RETRIEVAL_METHODE
@@ -593,9 +540,9 @@ def retrieval(frage, chunks, top_k=4, methode=None):
         else:
             rangwert = 1.0 / (RRF_K + _raenge(dense)) + 1.0 / (RRF_K + _raenge(bm25))
     elif methode in ("graph", "hybrid_kg"):
-        # V2: Konzept-Wissensgraph (HippoRAG-Prinzip, Gutiérrez et al. 2024), siehe
-        # wissensgraph.py. Chunks ohne Graph-Bezug (Score 0) erhalten KEINEN RRF-Beitrag —
-        # findet der Graph nichts, ist "hybrid_kg" damit identisch zu "hybrid" (V1).
+        # Begriffsgraph (HippoRAG-Prinzip, Gutiérrez et al. 2024), siehe wissensgraph.py.
+        # Chunks ohne Graph-Bezug (Score 0) erhalten keinen RRF-Beitrag; findet der Graph
+        # nichts, ist "hybrid_kg" identisch zu "hybrid".
         import wissensgraph
         graph = wissensgraph.graph_scores(frage, chunks, frage_embedding=frage_embedding[0])
         if methode == "graph":
@@ -616,7 +563,7 @@ def retrieval(frage, chunks, top_k=4, methode=None):
     ergebnisse.sort(key=lambda x: x["rangwert"], reverse=True)
 
     if rerank:
-        # V3: die besten Kandidaten der Vorstufe per Cross-Encoder neu ordnen (reranker.py).
+        # Re-Ranking: die besten Kandidaten der Vorstufe per Cross-Encoder neu ordnen (reranker.py).
         # Neu bewertete Kandidaten stehen vorn (Reihenfolge = Reranker-Wert), alle übrigen
         # Chunks folgen in der Reihenfolge der Vorstufe. "score" bleibt der dense-Kosinus
         # (Schwelle unverändert), der Reranker-Wert steht zusätzlich in "rerank_score".
@@ -638,9 +585,8 @@ def retrieval(frage, chunks, top_k=4, methode=None):
 # =============================================================================
 def baue_prompt(frage, ausgewaehlte_chunks):
     """
-    Nicht-abgestuftes Prompt-Design (direkte Antwort). Bleibt als einfachere
-    Alternative verfügbar; für die Studien-App wird standardmäßig
-    baue_scaffolding_prompt() genutzt (siehe dort).
+    Nicht-abgestuftes Prompt-Design (direkte Antwort). Alternative zu
+    baue_scaffolding_prompt().
     """
     kontext = "\n\n".join(
         f"[Quelle {c['id']} – {c['thema']}]: {c['text']}" for c in ausgewaehlte_chunks
@@ -661,65 +607,29 @@ Antwort:"""
 # =============================================================================
 # Pädagogisches Scaffolding
 # =============================================================================
-# V4 (S2-v1, 12 Oct 2026): ZWEI Stufen statt drei — Hinweis -> Lösung mit kurzer
-# Begründung. Dazwischen kann die/der Lernende eine eigene Idee eingeben und
-# bekommt eine Rückmeldung (ideen_feedback.py). Die frühere Erklärungs-Stufe
-# entfällt: Erklärung und Lösung waren in V3 weitgehend redundant (Median 48 vs.
-# 42 Wörter; die Erklärung nannte oft schon das Ergebnis), und die Ideen-Rückmeldung
-# übernimmt die Zwischenstufe ("targeted feedback", Zourlidou et al. 2026).
-# Einordnung (van de Pol et al. 2010, via Chen et al. 2026): Hinweis = hinting,
-# Rückmeldung = feedback, Lösung = explaining + modeling.
-# Zusätzlich die Hinweis-Regeln H1–H3 aus der Projekt-Doku Scaffolding_Spezifikation.md:
-#   H1 Antwort nicht verraten (Jangra et al. 2025; MRBench "Revealing Answer"),
-#   H2 Begriff / Größe / nächsten Denkschritt nennen (Zourlidou-Stufe 1),
-#   H3 nicht auf den Kontext verweisen — die/der Lernende sieht ihn nicht
-#      (V3-Basislinie: 5 von 21 Hinweisen sagten "Suchen Sie im Kontext ...").
-# Feste Längenvorgabe ("3-4 Sätze") entfällt.
-# Verweigerung: Formulierung "Die Lernmaterialien enthalten ... keine ..." wird vom
-# Verweigerungs-Detektor v2 (ragas_auswertung.py) erkannt.
-#
-# Die alte 3-Stufen-Version (S3-v0, V0–V3) bleibt für Reproduzierbarkeit wählbar:
-# SCAFFOLDING_VERSION = "S3-v0".
-#
-# Quellen der Grundstruktur:
-#   - Happe et al. (2025): Hints/Explanations/Solutions als getaggte Abschnitte,
-#     dort von Kursautor:innen vorautoriert statt LLM-generiert.
-#   - Modran (2025): steuerbares hinting_level; unser Stufenmodell ist eine
-#     vereinfachte, nicht-kontinuierliche Variante.
-#   - Neagu et al. (2026): Lernende umgehen Scaffolding oft -> protokolliert wird,
-#     wie weit Proband:innen die Stufen tatsächlich öffnen
-#     (protokolliere_interaktion, Feld "scaffolding_stufe_erreicht").
-#
-# V5 (S2-v2, 13 Oct 2026): Der Hinweis wird in einem ZWEITEN, lösungs-kundigen Aufruf
-# neu erzeugt (Hinweis-Prompt H-v3, siehe baue_hinweis_prompt). Aufruf 1 ist
-# byte-identisch zu S2-v1 -> die Lösung ist bei T=0/seed 42 dieselbe wie in V4, der
-# Vergleich V4 vs. V5 ändert also NUR den Hinweis (eine Änderung pro Version).
-# Grund: in V4 verriet der Hinweis trotz Regeln H1–H3 weiterhin oft die Antwort
-# (manuelle Vorbewertung, 22 Fragen: 6 Teil-Leck + 4 volles Leck). Ein Modell, das den
-# Hinweis gleichzeitig mit der Lösung schreibt, "weiß" nicht explizit, was es nicht
-# verraten darf. Muster übernommen aus ideen_feedback.py (IF-v1): sieht die Lösung,
-# verdecktes Überlegungsfeld vor der Ausgabe.
-#
-# V6 (G-v1, 13 Oct 2026): fester, domänenunabhängiger Prompt-Satz (Projekt-Doku Prompt_Set_Spezifikation.md).
-# EIN Aufruf: STATUS -> LÖSUNG -> verdeckte ÜBERLEGUNG -> HINWEIS. Die Lösung wird zuerst geschrieben,
-# damit der Hinweis "answer-aware" ist (Bhaskar & Hamouda 2025; Petukhova et al. 2026); die
-# Überlegung davor senkt das Verraten (Zhao, Knežević & Käser 2026). STATUS ersetzt den
-# Verweigerungs-Detektor (Regex) und erlaubt Teilantworten (Gala et al. 2026; Oche et al. 2025).
-# Keine Beispiele, keine Fachwörter, keine dokumentspezifischen Hinweise (P1).
-#
-# V8 (G-v2, 14 Oct 2026): nur die Hinweis-Regeln geändert (L-Regeln, Status und Format wie G-v1).
-# Anlass (manuelle Tests 14 Oct 2026, Fischer v7b): Hinweise forderten in 4 von 4 Nachschlage-
-# fragen auf, eine Tabelle/Abbildung/den Text anzusehen ("Schau dir die Tabelle an"), obwohl
-# Lernende nur die Frage sehen. H3 nennt das jetzt ausdrücklich; H6 gibt für reine Nachschlage-
-# fragen eine Alternative (Bedeutung statt Wert). Weiterhin keine Beispiele, nichts Dokumentspezifisches.
-# V9 (G-v3, 14 Oct 2026): G-v2 + Lösungsregel L5. Anlass: Q13 (Schlupf) rechnete mit RAG falsch
-# (75/1500 = 0,02), ohne RAG richtig; im Kontext stand das Buchbeispiel 1440 1/min -> 0,04. L5 trennt
-# Rechenweg (aus dem Material) und Zahlen (aus der Frage). Hinweis-Regeln wie G-v2.
-# V10 (G-v4, 19 Oct 2026): L5 ohne "und rechne jeden Schritt nach". Anlass (Läufe V9D, 14 Oct 2026):
-# Seit G-v3 prüfte das Modell seine Rechnung sichtbar IN der Lösung: Q13 begann mit "0,02 oder 2 %" und
-# korrigierte sich danach ("Momentan habe ich einen Rechenfehler … lass uns das korrigieren … 0,05"),
-# Q27 enthielt eine lange sichtbare Abwägung. Das Nachrechnen übernimmt die Rechenprüfung (RP) in Python.
-SCAFFOLDING_VERSION = os.environ.get("LERNASSISTENT_G", "G-v4")   # V13: "G-v5" = G-v4 + L6, L7 (nur mit Schalter)
+# Entwicklung des Antwortformats (wählbar über LERNASSISTENT_G, ältere Versionen bleiben reproduzierbar):
+#   S3-v0  drei Stufen: Hinweis, Erklärung, Lösung.
+#   S2-v1  zwei Stufen: Hinweis -> Lösung mit kurzer Begründung; dazwischen kann die lernende Person eine
+#          eigene Idee eingeben und erhält eine Rückmeldung (ideen_feedback.py, "targeted feedback",
+#          Zourlidou et al. 2026). Hinweis-Regeln: H1 Antwort nicht verraten (Jangra et al. 2025),
+#          H2 Begriff/Größe/nächsten Denkschritt nennen, H3 nicht auf Material verweisen, das Lernende
+#          nicht sehen. Einordnung nach van de Pol et al. (2010): Hinweis = hinting, Rückmeldung = feedback,
+#          Lösung = explaining + modeling.
+#   S2-v2  wie S2-v1, der Hinweis wird in einem zweiten, lösungskundigen Aufruf erzeugt (H-v3).
+#   G-v1   fester, domänenunabhängiger Prompt-Satz, EIN Aufruf: STATUS -> LÖSUNG -> verdeckte ÜBERLEGUNG
+#          -> HINWEIS. Die Lösung steht zuerst, damit der Hinweis "answer-aware" ist (Bhaskar & Hamouda 2025;
+#          Petukhova et al. 2026); die Überlegung davor senkt das Verraten (Zhao, Knežević & Käser 2026).
+#          STATUS erlaubt Teilantworten und Ablehnungen (Gala et al. 2026; Oche et al. 2025).
+#   G-v2   neue Hinweis-Regeln H3 (kein Verweis auf Tabellen/Abbildungen/Text) und H6 (Nachschlagefragen:
+#          Bedeutung statt Wert).
+#   G-v3   + Lösungsregel L5: Rechenweg aus dem Material, Zahlen aus der Frage.
+#   G-v4   L5 ohne Aufforderung zum Nachrechnen im Text (das Nachrechnen übernimmt die Rechenprüfung).
+#   G-v5   + L6 (Einheit der gefragten Größe) und L7 (Zahlen nur mit ihrem Gegenstand).
+#   G-v6   + L8 (rechnen, wenn alle Werte in der Frage stehen) und L9 (jede Teilfrage beantworten).
+# Grundstruktur nach Happe et al. (2025: Hints/Explanations/Solutions) und Modran (2025: steuerbares
+# hinting_level). Lernende umgehen Scaffolding oft (Neagu et al. 2026); protokolliert wird daher, wie weit
+# die Stufen geöffnet werden (protokolliere_interaktion, Feld "scaffolding_stufe_erreicht").
+SCAFFOLDING_VERSION = os.environ.get("LERNASSISTENT_G", "G-v4")
 STATUS_WERTE = ("BEANTWORTET", "TEILWEISE", "NICHT_IM_MATERIAL")
 SCAFFOLDING_MARKER_VERSIONEN = {
     "S3-v0": {"hinweis": "STUFE1_HINWEIS:", "erklaerung": "STUFE2_ERKLAERUNG:", "loesung": "STUFE3_LOESUNG:"},
@@ -734,43 +644,37 @@ SCAFFOLDING_MARKER_VERSIONEN = {
 
 
 def ist_g_version(version=None):
-    """True für den festen Prompt-Satz ab V6 (G-v1, G-v2, …): STATUS-Feld, ein Aufruf, parse_g_v1."""
+    """True für den festen Prompt-Satz (G-v1, G-v2, …): STATUS-Feld, ein Aufruf, parse_g_v1."""
     return (version or SCAFFOLDING_VERSION).startswith("G-")
 
 
-# Verweis auf Material, das Lernende nicht sehen (H3). Gemeinsam genutzt von stufen_check.py,
-# retrieval_erklaeren.py und ideen_feedback.py (nur Protokoll, kein Eingriff).
+# Verweis auf Material, das Lernende nicht sehen (H3). Auch von ideen_feedback.py genutzt.
 MATERIAL_VERWEIS = re.compile(
     r"\b(kontext\w*|textstelle\w*|im text|im lernmaterial|lernmaterial\w*|im material|im buch|lehrbuch\w*|"
     r"abschnitt\w*|quelle\w*|textausschnitt\w*|tabelle\w*|liste\b|übersicht\w*|aufstellung\w*|"
     r"abbildung\w*|abb\.|diagramm\w*|schaubild\w*|grafik\w*|nachschl\w*|nachzuschl\w*|nachsehen|"
     r"schau dir [^.?!]{0,60}?\ban\b|tabellar\w*|wo (?:du|man) [^.?!]{0,60}?\bfinde\w*)", re.I)
-# 14 Oct 2026 (V8d): "tabellarisch" und "wo du … findest" ergänzt (Hinweis "Überlege, wo du solche
-# tabellarischen Werte findest" wurde vorher nicht erkannt).
 
 
-# V9 (HP-v3 / FP-v2): eigene Unterlagen der lernenden Person ergänzt. Anlass: Rückmeldung "schau in
-# deine Unterlagen nach" (Ideentest V8D-IDEEN) wurde nicht erkannt. Ältere Prüfversionen (HP-v1/HP-v2,
-# FP-v1) nutzen weiter nur MATERIAL_VERWEIS, damit sie reproduzierbar bleiben.
+# Erweiterung: eigene Unterlagen der lernenden Person (ab HP-v3 / FP-v2). Ältere Prüfversionen nutzen
+# weiter nur MATERIAL_VERWEIS, damit sie reproduzierbar bleiben.
 MATERIAL_VERWEIS_ERGAENZUNG = re.compile(
     r"\b(unterlagen\w*|aufzeichnung\w*|mitschrift\w*|formelsammlung\w*|tabellenbuch\w*|"
     r"tabellenwerk\w*|skript\w*|datenblatt\w*|datenbl(?:ä|ae)tter\w*|notizen)\b", re.I)
 
 
-# V10 (HP-v4 / FP-v3, 19 Oct 2026): Suchaufforderungen und "bereitgestelltes Material". Anlass (Ideentest
-# V9D-IDEEN): nicht erkannt wurden "Suche im bereitgestellten Material nach dem Eintrag für Aluminium" und
-# "Wenn du in der elektrochemischen Spannungsreihe nach dem Metall Zink suchst, was siehst du dann …".
+# Erweiterung: Suchaufforderungen und "bereitgestelltes Material" (ab HP-v4 / FP-v3).
 # "wonach du suchst" zählt nicht (kein Wortanfang bei "nach").
 MATERIAL_VERWEIS_V10 = re.compile(
     r"\b(?:bereitgestellt|vorliegend|beigefügt|angehängt)\w*\s+(?:\w+\s+)?"
     r"(?:material\w*|text\w*|unterlagen|informationen|daten|dokument\w*)"
     r"|\bsuch\w*\s+(?:in|im|nach)\b|\bnach\b[^.?!]{0,60}?\bsuch\w*|\bwas siehst du\b"
-    r"|\bdu hast (?:\w+ ){0,2}(?:gesehen|gelesen)\b", re.I)  # UI-v2: "Du hast gesehen, dass …" (Lernende sehen das Material nicht)
+    r"|\bdu hast (?:\w+ ){0,2}(?:gesehen|gelesen)\b", re.I)  # "Du hast gesehen, dass …" (Lernende sehen das Material nicht)
 
 
 def verweist_auf_material(text, erweitert=True, v10=True):
-    """Liste der Fundstellen (leer = kein Verweis). erweitert=False: Stand V8d (für HP-v1/HP-v2, FP-v1).
-    v10=False: Stand V9 (für HP-v3, FP-v2), damit ältere Prüfversionen reproduzierbar bleiben."""
+    """Liste der Fundstellen (leer = kein Verweis). erweitert=False: Stand für HP-v1/HP-v2, FP-v1.
+    v10=False: Stand für HP-v3, FP-v2, damit ältere Prüfversionen reproduzierbar bleiben."""
     funde = [m.group(0) for m in MATERIAL_VERWEIS.finditer(text or "")]
     if erweitert:
         funde += [m.group(0) for m in MATERIAL_VERWEIS_ERGAENZUNG.finditer(text or "")]
@@ -779,22 +683,19 @@ def verweist_auf_material(text, erweitert=True, v10=True):
     return funde
 
 
-# Hinweis-Prüfung HP-v1 (14 Oct 2026, ab V8). Anlass: Auch mit G-v2 verwies der Hinweis bei
-# Nachschlagefragen auf eine Tabelle ("in der Übersicht über die Stoffkonstanten schauen"), weil
-# der Kontext stärker zieht als die Regel H3. Deshalb eine Prüfung NACH der Generierung:
+# Hinweis-Prüfung NACH der Generierung (der Kontext kann stärker wirken als die Regel H3):
 #   ok            Hinweis ohne Materialverweis, unverändert
 #   nachgebessert Verweis gefunden -> EIN zusätzlicher Aufruf schreibt nur den Hinweis neu
 #   ersetzt       auch der neue Hinweis verweist auf Material oder verrät eine Zahl -> fester Ersatztext
 # Nur bei STATUS BEANTWORTET/TEILWEISE (sonst gibt es keinen Hinweis). Der ursprüngliche Hinweis
-# wird protokolliert (Spalte hinweis_original), damit sich Wirkung und Häufigkeit messen lassen.
-HINWEIS_PRUEFUNG_VERSION = "HP-v4"   # None = Prüfung aus (Reproduktion von V6/V7)
-# HP-v4 (V10): wie HP-v3, zusätzlich MATERIAL_VERWEIS_V10 (Suchaufforderungen, "bereitgestelltes Material").
-# HP-v3 (V9): wie HP-v2, aber erweiterte Materialprüfung (MATERIAL_VERWEIS_ERGAENZUNG, "Unterlagen" usw.).
-# HP-v2 (14 Oct 2026): Der neu geschriebene Hinweis von HP-v1 erfand aus "Grundwissen" eine falsche
-# Größenordnung ("wenige Zehntel Ohm pro Meter" statt 0,02857 Ω·mm²/m), und die Rückmeldungen bauten
-# darauf auf. Deshalb: (1) Neuschreib-Prompt ohne Grundwissen als Faktenquelle und ohne Zahlen,
-# Bereiche, Größenordnungen oder Einheiten; (2) zusätzliche Prüfung auf Wertangaben (Ziffern, die
-# nicht in der Frage stehen, und Größenordnungswörter), für den ursprünglichen UND den neuen Hinweis.
+# wird protokolliert (Spalte hinweis_original).
+HINWEIS_PRUEFUNG_VERSION = "HP-v4"   # None = Prüfung aus
+# HP-v1 Materialverweis prüfen und neu schreiben.
+# HP-v2 + Neuschreib-Prompt ohne Grundwissen als Faktenquelle und ohne Zahlen, Bereiche, Größenordnungen oder
+#       Einheiten; zusätzliche Prüfung auf Wertangaben (Ziffern, die nicht in der Frage stehen, und
+#       Größenordnungswörter) für den ursprünglichen und den neuen Hinweis.
+# HP-v3 + erweiterte Materialprüfung (MATERIAL_VERWEIS_ERGAENZUNG, z. B. "Unterlagen").
+# HP-v4 + MATERIAL_VERWEIS_V10 (Suchaufforderungen, "bereitgestelltes Material").
 HINWEIS_ERSATZ = ("Für diese Frage habe ich keinen Hinweis, der ohne das Lernmaterial auskommt. "
                   "Überlege kurz, was du schon über das Thema weißt, und öffne dann die Lösung.")
 _ZAHL = re.compile(r"\d+(?:[.,]\d+)?")
@@ -808,8 +709,6 @@ WERTANGABE = re.compile(
     r"\b(zehntel|hundertstel|tausendstel|millionstel|größenordnung\w*|grössenordnung\w*|"
     r"im bereich (?:von|zwischen)|zwischen \d|einstellig\w*|zweistellig\w*|dreistellig\w*|"
     r"näher an der (?:unteren|oberen) grenze|(?:unteren|oberen) grenze)\b", re.I)  # "Prozent" allein ist keine Wertangabe
-# V8d: einstellig/zweistellig/… und "untere/obere Grenze" ergänzt (Rückmeldungen: "im einstelligen
-# Prozentbereich", "näher an der unteren Grenze").
 
 
 def hinweis_hat_wertangabe(frage, hinweis):
@@ -821,7 +720,7 @@ def hinweis_hat_wertangabe(frage, hinweis):
 
 
 def hinweis_verraet_zahl(frage, hinweis, loesung):
-    """Zahlen im Hinweis, die in der Lösung, aber nicht in der Frage stehen (wie stufen_check.zahlen_leck)."""
+    """Zahlen im Hinweis, die in der Lösung, aber nicht in der Frage stehen."""
     return sorted((_zahlen(hinweis) & _zahlen(loesung)) - _zahlen(frage))
 
 
@@ -857,7 +756,7 @@ def hinweis_pruefen(frage, stufen):
     stufen.setdefault("hinweis_pruefung", "")
     stufen.setdefault("hinweis_original", "")
     if not HINWEIS_PRUEFUNG_VERSION or not ist_g_version() or SCAFFOLDING_VERSION == "G-v1":
-        return stufen  # G-v1 (V6/V7) bleibt ohne Prüfung reproduzierbar
+        return stufen  # G-v1 ohne Prüfung
     hinweis = (stufen.get("hinweis") or "").strip()
     if stufen.get("status") not in ("BEANTWORTET", "TEILWEISE") or not hinweis:
         return stufen
@@ -884,46 +783,37 @@ def hinweis_pruefen(frage, stufen):
     else:
         stufen["hinweis"], stufen["hinweis_pruefung"] = HINWEIS_ERSATZ, "ersetzt"
     return stufen
-# Rechenprüfung RP-v1 (V9d, 14 Oct 2026), siehe rechenpruefung.py. Anlass: Q13 rechnete mit RAG
-# "75 / 1500 = 0,02" (richtig 0,05). Python rechnet ausgeschriebene Rechenschritte der Lösung nach:
-#   ok            keine Abweichung gefunden (auch: keine Rechnung in der Lösung)
-#   nachgebessert Abweichung -> EIN zusätzlicher Aufruf mit dem Befund; neue Lösung rechnet richtig
-#   markiert      auch die neue Lösung weicht ab -> ursprüngliche Lösung + sichtbarer Prüfvermerk
-# Läuft VOR der Hinweis-Prüfung (der Hinweis gehört zur endgültigen Lösung). G-v1/G-v2 ohne Prüfung.
-# RP-v2 (V10, 19 Oct 2026): zusätzlich Konsistenz (Wert im ersten Satz vs. Endergebnis der Rechnung) und
-# sichtbare Überlegung/Selbstkorrektur in der Lösung (Q13, Q27 in Lauf V9D); Details in rechenpruefung.py.
-# Der Neuschreib-Aufruf von RP-v2 verlangt zusätzlich eine Lösung ohne Zwischenüberlegungen.
-# RP-v3 (V10a, 19 Oct 2026): wie RP-v2, aber Variablennamen mit Index ("P1") werden nicht als Zahl gelesen (Q27, Lauf V10).
-# RP-v4 (V11, 20 Oct 2026): RP-v3 + Rechenbaustein RB-v1 (rechenbaustein.py): zweiter, unabhängiger Aufruf stellt die
-# Rechnung als Python-Ausdruck auf, Python führt sie aus; der Wert im ersten Satz der Lösung muss zum Ergebnis passen.
-# Anlass: N100/V10a, 10 von 19 Rechenaufgaben richtig, viele Fehler ohne prüfbare Gleichung (Nr 29, 55, 62).
-# RP-v5 (V11b, 21 Oct 2026): RP-v3 + Rechenbaustein RB-v2 (mehrere Ergebnisse, Formelquelle, jede Zahl mit Einheit im
-# ersten Satz muss zu einem Ergebnis passen) + Namen mit Unterstrich ("I_1N") + bei misslungenem Neuschreiben ersetzt die
-# belegte Nachrechnung die Lösung (rechen_pruefung = ersetzt). Anlass: Live-Test 40 kVA, 5 kV / 400 V (Lösung "2,89 A / 72 A").
-# RP-v7 (V13.1, 26 Oct 2026): RP-v6 + RB-v4 (RB-v2-Prompt zuerst, RB-v3 nur als Retry) + Tokenizer-Korrekturen + Bereinigung
-# mitten im Satz + Kopfsatz-Angleichung (kopf_korrigiert) + kein ungestützter Nachrechnungswert im Warnvermerk.
-# RP-v8 (V13.2, 26 Oct 2026): RP-v7 + (1) Befund "Ergebnis aus Buchbeispiel übernommen" (rechenpruefung.pruefe_uebernahme),
-# (2) Ersetzen nur nach Bestätigung durch eine zweite, anders formulierte Nachrechnung, (3) unbestätigte Nachrechnung: Vermerk
-# ohne Zahlenwert. Anlass: Entwicklungsfall Käfigläufer (1401 aus dem Buch übernommen, dann durch falsche 1471 ersetzt).
-# RP-v9 (V13.3, 26 Oct 2026): RP-v8 + (1) Denkmodus-Wiederholung für Rechenfragen, die nur "markiert" werden konnten
-# (_denk_wiederholung), (2) strenge Bestätigung des ersten Satzes durch die Nachrechnung (gerundet gleich statt 0,5 %).
-# RP-v10 (V13.4, 26 Oct 2026): RP-v9 + RB-v5 (Kettenzeilen, NFKC-Namen, LaTeX, Prozent, Grad), Wurzel/Halbausdruck-Fix in
-# rechenpruefung, "Aufgabe 1.19" als Verweis, bestätigte Nachrechnung ohne Buchformel ersetzt Antworten ohne eigene oder mit
-# falscher eigener Rechnung, kein kopf_korrigiert bei Rechnung mit Buchwerten, Denkmodus liest LaTeX, Buchergebnisse
-# ("ERG::", "Ergebnis:") aus dem Material von Rechenfragen mit geänderten Zahlen. Anlass: RV-v1-Test 26 Oct (7 von 22 richtig).
-# RP-v11 (V13.5, 27 Oct 2026): RP-v10 + RB-v6 (Zuweisungen in einer Zeile, Rechnung unter WERTE, Einheiten in RECHNUNG,
-# Umformungsschritte, Reihenfolge, "-> Korrektur:", Formelsymbol als Wert; Bestätigungs-Rohtext im Protokoll), Übernahme-Befund nur
-# bei Fragen mit anderen Zahlen als das Buch, weitere Denktext-Anfänge, LaTeX-Hochzahlen ("min^{-1}"), Denkmodus-Antwort trotz
-# Konsistenzbefund angenommen, wenn die Nachrechnung genau die Zahl des ersten Satzes nennt. Anlass: RV-Lauf V134 und N100 V134.
-RECHEN_PRUEFUNG_VERSION = os.environ.get("LERNASSISTENT_RP", "RP-v5")   # None = aus; "RP-v1" reproduziert V9d, "RP-v2" V10, "RP-v3" V10a, "RP-v4" V11
-# RP-v12 (V16, 27 Oct 2026) = RP-v11 + drei Zusätze (Schalter RP_V12): zweite Nachrechnung mit Retry, wenn sie nicht lesbar ist;
-# nach Kopfsatz-Angleichung ersetzen, wenn ein weiteres Ergebnis der bestätigten Nachrechnung mit Buchformel widerspricht;
-# Rechenfrage ohne Ergebnis in der Antwort + bestätigte Nachrechnung -> Nachrechnung zeigen. Intern läuft alles Übrige als RP-v11.
-# RP-v13 (V17b, 28 Oct 2026) = RP-v12 + (1) Vergleich erste/zweite Nachrechnung in Grundeinheiten, 0,5 %, ohne die Faktor-10³-Toleranz
-# der Antwortprüfung (N100 F1: 4,8e17 gegen 4,8e-19 galt als bestätigt); (2) nach Kopfsatz-Angleichung wird bei bestätigtem weiterem
-# Widerspruch auch ohne Buchformel ersetzt, mit Vermerk (RV-v2 R17: Kopfsatz 942 N, beide Nachrechnungen 1346 N); (3) bei einer
-# Rechenfrage zählt ein Neuschreiben ohne Ergebnis nicht als nachgebessert. Kein erneutes Würfeln: zusammen mit RB-v8
-# (Dimensionsprüfung) wird eine Nachrechnung verworfen, wenn ihre Einheiten physikalisch nicht zusammenpassen.
+# Rechenprüfung (rechenpruefung.py, rechenbaustein.py). Python prüft die Rechnung der Lösung:
+#   ok                    keine Abweichung gefunden (auch: keine Rechnung in der Lösung)
+#   nachgebessert         Abweichung -> EIN zusätzlicher Aufruf mit dem Befund; die neue Lösung rechnet richtig
+#   markiert              auch die neue Lösung weicht ab -> ursprüngliche Lösung + sichtbarer Prüfvermerk
+#   ersetzt               eine bestätigte Nachrechnung ersetzt die Lösung (Original im Log)
+#   bereinigt             sichtbarer Denktext am Ende der Lösung entfernt
+#   abweichung_ungestuetzt Nachrechnung widerspricht, ihre Formel steht aber nicht im Material (nur Log)
+#   ungeprueft            Rechenfrage, aber nichts war nachprüfbar
+#   denkmodus             neue Antwort aus einem Aufruf im Denkmodus
+# Läuft VOR der Hinweis-Prüfung (der Hinweis gehört zur endgültigen Lösung).
+# Versionen (jede baut auf der vorigen auf):
+#   RP-v1  Rechenschritte der Lösung nachrechnen.
+#   RP-v2  + Konsistenz (Wert im ersten Satz vs. Endergebnis) und sichtbare Überlegung in der Lösung.
+#   RP-v3  Variablennamen mit Index ("P1") werden nicht als Zahl gelesen.
+#   RP-v4  + Nachrechnung RB-v1: ein unabhängiger Aufruf stellt die Rechnung als Python-Ausdruck auf.
+#   RP-v5  + RB-v2 (mehrere Ergebnisse, Formelquelle); misslingt das Neuschreiben, ersetzt eine belegte
+#          Nachrechnung die Lösung.
+#   RP-v6  + RB-v3 (Formatregeln, Retry), Bereinigung von Denktext.
+#   RP-v7  + RB-v4, Angleichung des ersten Satzes an die eigene Rechnung (kopf_korrigiert).
+#   RP-v8  + Prüfung auf ein aus einem Buchbeispiel übernommenes Ergebnis; Ersetzen nur nach Bestätigung
+#          durch eine zweite, anders formulierte Nachrechnung.
+#   RP-v9  + Wiederholung im Denkmodus für Rechenfragen, die nur markiert werden konnten; strenge Bestätigung.
+#   RP-v10 + RB-v5, Ergebniszeilen von Buchaufgaben werden bei geänderten Zahlen aus dem Kontext entfernt.
+#   RP-v11 + RB-v6 (weitere Leseregeln).
+RECHEN_PRUEFUNG_VERSION = os.environ.get("LERNASSISTENT_RP", "RP-v5")   # None = aus
+#   RP-v12 (Schalter RP_V12) = RP-v11 + Retry der zweiten Nachrechnung; Ersetzen nach Angleichung bei
+#          bestätigtem Widerspruch; Rechenfrage ohne Ergebnis + bestätigte Nachrechnung -> Nachrechnung zeigen.
+#   RP-v13 (Schalter RP_V13) = RP-v12 + Vergleich der beiden Nachrechnungen in Grundeinheiten (0,5 %);
+#          Ersetzen nach Angleichung auch ohne Buchformel (mit Vermerk); ein Neuschreiben ohne Ergebnis
+#          zählt nicht als nachgebessert. Zusammen mit RB-v8 (Dimensionsprüfung) wird eine Nachrechnung
+#          verworfen, wenn ihre Einheiten physikalisch nicht zusammenpassen.
 RP_V13 = RECHEN_PRUEFUNG_VERSION == "RP-v13"
 RP_V12 = RECHEN_PRUEFUNG_VERSION in ("RP-v12", "RP-v13")
 if RP_V12:
@@ -975,14 +865,14 @@ def _rechenbaustein(frage, top_chunks, prompt, stufen):
 
 
 def _rechenbaustein_v2(frage, top_chunks, prompt, stufen):
-    """RB-v2 (V11b): wie RB-v1, aber mehrere Ergebnisse und Formelquelle (rechenbaustein.py). Notiert den Ausgang in
-    rechen_befund: "RB-v2 Ergebnis I1N = 4,619 A; I2N = 57,74 A | Formel im Material | nicht im Material | ohne Quelle"."""
+    """RB-v2: wie RB-v1, aber mehrere Ergebnisse und Formelquelle (rechenbaustein.py). Notiert den Ausgang in
+    rechen_befund ("RB-v2 Ergebnis … | Formel im Material | nicht im Material | ohne Quelle")."""
     import rechenbaustein
     if not re.search(r"\d", frage or "") or not rechenbaustein.kopfzahlen(stufen.get("loesung", ""), frage):
         return None
     kontext = _kontext_text(top_chunks) if top_chunks else prompt
     try:
-        roh = frage_llm(rechenbaustein.baue_prompt_v2(frage, kontext), options={**GENERIERUNGS_OPTIONEN, "num_predict": 700})  # V12.2: Obergrenze gegen Schleifen im Zitat
+        roh = frage_llm(rechenbaustein.baue_prompt_v2(frage, kontext), options={**GENERIERUNGS_OPTIONEN, "num_predict": 700})  # Obergrenze gegen Wiederholungsschleifen
         res = rechenbaustein.rechne_v2(rechenbaustein.parse_v2(roh), frage, kontext)
     except Exception as e:  # darf die Antwort nie verhindern
         print(f"WARNUNG Rechenbaustein: {e}")
@@ -998,7 +888,7 @@ def _rechenbaustein_v2(frage, top_chunks, prompt, stufen):
 
 
 def _rechenbaustein_v3(frage, top_chunks, prompt, stufen):
-    """RB-v3 (V13, mit RP-v6): wie RB-v2, dazu (1) Formatregeln im Prompt, (2) ein zweiter Aufruf mit Fehlerbericht, wenn die erste
+    """RB-v3 (mit RP-v6): wie RB-v2, dazu (1) Formatregeln im Prompt, (2) ein zweiter Aufruf mit Fehlerbericht, wenn die erste
     Nachrechnung nicht auswertbar war (wert_unlesbar, auswertung, formatfehler, literal), (3) Rückfall auf Zahlen aus der Frage
     (Antwort = gegebener Wert). Notiert den Ausgang in rechen_befund ("RB-v3 Ergebnis … | Formel … | Retry …")."""
     import rechenbaustein
@@ -1030,16 +920,15 @@ def _rechenbaustein_v3(frage, top_chunks, prompt, stufen):
 
 
 def _rechenbaustein_v4(frage, top_chunks, prompt, stufen):
-    """RB-v4 (V13.1, mit RP-v7): erster Aufruf mit dem bewährten RB-v2-Prompt; nur wenn er nicht auswertbar ist (RETRY_GRUENDE),
-    ein zweiter Aufruf mit dem RB-v3-Prompt (Formatregeln + Fehlerbericht). Anlass V13A/V13B: der RB-v3-Prompt als Erstaufruf
-    war 12-mal nicht verwertbar (F4, F7, F61 blieben falsch statt ersetzt). Log: "RB-v4 Ergebnis … | Formel … | Retry …"."""
+    """RB-v4 (mit RP-v7): erster Aufruf mit dem RB-v2-Prompt; nur wenn er nicht auswertbar ist (RETRY_GRUENDE),
+    ein zweiter Aufruf mit dem RB-v3-Prompt (Formatregeln + Fehlerbericht). Log: "RB-v4 Ergebnis … | Formel … | Retry …"."""
     import rechenbaustein
     if not re.search(r"\d", frage or "") or not rechenbaustein.kopfzahlen_v3(stufen.get("loesung", ""), frage)[0]:
         return None
     kontext = _kontext_text(ohne_buchergebnisse(frage, top_chunks)) if top_chunks else prompt
     optionen = {**GENERIERUNGS_OPTIONEN, "num_predict": 700}
     retry = ""
-    v10 = RECHEN_PRUEFUNG_VERSION in ("RP-v10", "RP-v11")  # V13.4: RB-v5-Lesung (gleiche Prompts), Rohtexte und Fehlerzeile
+    v10 = RECHEN_PRUEFUNG_VERSION in ("RP-v10", "RP-v11")  # RB-v5-Lesung (gleiche Prompts), Rohtexte und Fehlerzeile
     parse, rechne = _rb_leser()
     rechenbaustein.letzte_rohtexte.clear()
     try:
@@ -1087,16 +976,16 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     import rechenpruefung
     import rechenbaustein
     v1 = RECHEN_PRUEFUNG_VERSION == "RP-v1"
-    v11 = RECHEN_PRUEFUNG_VERSION == "RP-v11"  # RP-v11 = RP-v10 + V13.5-Änderungen (v11-Zweige)
-    v10 = RECHEN_PRUEFUNG_VERSION in ("RP-v10", "RP-v11")  # RP-v10 = RP-v9 + V13.4-Änderungen (v10-Zweige)
+    v11 = RECHEN_PRUEFUNG_VERSION == "RP-v11"
+    v10 = RECHEN_PRUEFUNG_VERSION in ("RP-v10", "RP-v11")
     v9 = RECHEN_PRUEFUNG_VERSION in ("RP-v9", "RP-v10", "RP-v11")
-    v8 = RECHEN_PRUEFUNG_VERSION in ("RP-v8", "RP-v9", "RP-v10", "RP-v11")  # RP-v9 = RP-v8 + V13.3-Änderungen (v9-Zweige)
-    v7 = RECHEN_PRUEFUNG_VERSION in ("RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11")  # RP-v8 = RP-v7 + V13.2-Änderungen
-    v6 = RECHEN_PRUEFUNG_VERSION in ("RP-v6", "RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11")  # RP-v7 = RP-v6 + V13.1-Änderungen
+    v8 = RECHEN_PRUEFUNG_VERSION in ("RP-v8", "RP-v9", "RP-v10", "RP-v11")
+    v7 = RECHEN_PRUEFUNG_VERSION in ("RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11")
+    v6 = RECHEN_PRUEFUNG_VERSION in ("RP-v6", "RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11")
     v5 = RECHEN_PRUEFUNG_VERSION in ("RP-v5", "RP-v6", "RP-v7", "RP-v8", "RP-v9", "RP-v10", "RP-v11")
     kontext = _kontext_text(top_chunks) if top_chunks else prompt
     end_ergebnis = (lambda t: _endergebnis_v10(t)) if v10 else rechenpruefung._endergebnis
-    _bestaetigung = []  # V13.4: zweite Nachrechnung höchstens einmal je Antwort
+    _bestaetigung = []  # zweite Nachrechnung höchstens einmal je Antwort
 
     def bestaetigt():
         if not _bestaetigung:
@@ -1104,7 +993,7 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
         return _bestaetigung[0]
     frage = frage if frage is not None else _frage_aus_prompt(prompt)
     vor_bereinigung = ""
-    if v6:  # V13: sichtbaren Denktext am Ende abschneiden, bevor geprüft wird (Original im Log)
+    if v6:  # sichtbaren Denktext am Ende abschneiden, bevor geprüft wird (Original im Log)
         bereinigt_text, entfernt = (rechenpruefung.bereinige_ueberlegung_v11 if v11 else rechenpruefung.bereinige_ueberlegung_v8 if v8 else rechenpruefung.bereinige_ueberlegung_v7 if v7 else rechenpruefung.bereinige_ueberlegung)(
             stufen.get("loesung", ""))
         if entfernt:
@@ -1128,7 +1017,7 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
         b = rechenpruefung.pruefe(text, frage, RECHEN_PRUEFUNG_VERSION)
         if baustein is not None:
             b = b + (rechenbaustein.vergleiche_v3 if v6 else rechenbaustein.vergleiche_v2 if v5 else rechenbaustein.vergleiche)(text, frage, baustein)
-        if v8:  # V13.2: Ergebnis aus einem Buchbeispiel übernommen, ohne mit den Werten der Frage zu rechnen
+        if v8:  # Ergebnis aus einem Buchbeispiel übernommen, ohne mit den Werten der Frage zu rechnen
             ueb = rechenpruefung.pruefe_uebernahme(text, frage, kontext, RECHEN_PRUEFUNG_VERSION if v10 else "")
             if ueb and not _baustein_bestaetigt_kopf(text, frage, baustein, streng=v9):
                 b = b + ueb
@@ -1137,8 +1026,8 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     befunde = befunde_fuer(stufen.get("loesung", ""))
     if not befunde and RP_V12 and baustein is not None and baustein.get("ergebnisse") \
             and not end_ergebnis(stufen.get("loesung", "")) and _ist_rechenfrage(frage) and bestaetigt():
-        # V16: Rechenfrage, die Antwort nennt kein Ergebnis (RV R18 V135: TEILWEISE ohne Zahl, Nachrechnung 0,8 Ω richtig), aber
-        # zwei unabhängige Nachrechnungen stimmen überein -> Nachrechnung zeigen (mit Vermerk, wenn die Formel nicht belegt ist)
+        # RP-v12: Rechenfrage, die Antwort nennt kein Ergebnis, aber zwei unabhängige Nachrechnungen stimmen überein
+        # -> Nachrechnung zeigen (mit Vermerk, wenn die Formel nicht belegt ist)
         loesung = stufen["loesung"]
         stufen["loesung_original"] = vor_bereinigung or loesung
         belegt = baustein.get("formel_im_material") is True
@@ -1150,8 +1039,7 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     if not befunde:
         stufen["rechen_pruefung"] = "bereinigt" if vor_bereinigung else "ok"
         if v9 and baustein is None and not end_ergebnis(stufen.get("loesung", "")):
-            # V13.3.1: Rechenfrage, aber nichts wurde nachgeprüft (Nachrechnung nicht verwertbar, keine Rechnung im Text).
-            # Anlass: App-Test Pumpenmotor (sK 0,15, Rr +25 %): Antwort 1,25 statt 1,23, Status "ok" ohne jede Prüfung.
+            # Rechenfrage, aber nichts wurde nachgeprüft (Nachrechnung nicht verwertbar, keine Rechnung im Text).
             import formelsuche
             if formelsuche.ist_rechenfrage(frage):
                 stufen["rechen_pruefung"] = "ungeprueft"
@@ -1161,14 +1049,13 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     if (v10 and baustein is not None and baustein.get("formel_im_material") is not True
             and all(b.get("art") == "baustein" for b in befunde) and not end_ergebnis(stufen.get("loesung", ""))
             and bestaetigt()):
-        # V13.4: die Antwort hat keine eigene, prüfbare Rechnung, und zwei unabhängige Nachrechnungen stimmen überein (RV-v1
-        # R12: 2890 W statt 159,3 W, R17: 720 N statt 1848 N, beide ohne Vermerk). Dann Neuschreiben mit dem Ergebnis der
-        # Nachrechnung, sonst Ersetzen (Vermerk: Formel nicht im Lernmaterial belegt).
+        # RP-v10: die Antwort hat keine eigene, prüfbare Rechnung, und zwei unabhängige Nachrechnungen stimmen überein.
+        # Dann Neuschreiben mit dem Ergebnis der Nachrechnung, sonst Ersetzen (Vermerk: Formel nicht im Lernmaterial belegt).
         ungestuetzt_bestaetigt = True
     elif (v6 and baustein is not None and baustein.get("formel_im_material") is not True
             and all(b.get("art") == "baustein" for b in befunde)):
-        # V13: die Nachrechnung widerspricht, aber ihre Formel steht nicht im Material (N100 F1: Nachrechnung n = Q/e gegen die
-        # richtige Buchformel). Kein Neuschreiben Richtung Nachrechnung, kein Warnvermerk im Text; nur Log und Hinweis-Chip.
+        # Die Nachrechnung widerspricht, aber ihre Formel steht nicht im Material: kein Neuschreiben Richtung
+        # Nachrechnung, kein Warnvermerk im Text; nur Log und Hinweis-Chip.
         stufen["rechen_pruefung"] = "abweichung_ungestuetzt"
         stufen["rechen_befund"] = "; ".join(b["text"] for b in befunde) + (
             f" | {stufen.get('rechen_befund', '')}" if str(stufen.get("rechen_befund", "")).startswith("RB-v") else "")
@@ -1190,19 +1077,19 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
     if (neu and "loesung" not in neu["format_fehler"] and neu["status"] in ("BEANTWORTET", "TEILWEISE")
             and not befunde_fuer(neu["loesung"])
             and not (RP_V13 and baustein is not None and _ist_rechenfrage(frage) and not end_ergebnis(neu["loesung"]))):
-        # V17: bei einer Rechenfrage zählt ein Neuschreiben ohne Ergebnis nicht als nachgebessert (Test R09)
+        # RP-v13: bei einer Rechenfrage zählt ein Neuschreiben ohne Ergebnis nicht als nachgebessert
         for k in ("hinweis", "loesung", "status", "hinweis_ueberlegung", "vollstaendig_geparst", "format_fehler"):
             stufen[k] = neu[k]
         stufen["rechen_pruefung"] = "nachgebessert"
     elif v7 and (kopf := _kopf_angleichen(loesung, befunde, baustein, befunde_fuer,
                                             (frage, kontext) if v10 else None)):
-        # V13.1: Neuschreiben gescheitert, einziger Zahlenbefund ist "erster Satz ≠ eigene Rechnung", die eigene Rechnung ist
-        # rechnerisch stimmig und widerspricht keiner belegten Nachrechnung -> Zahl im ersten Satz angleichen (N100 F4, F7, F61).
+        # RP-v7: Neuschreiben gescheitert, einziger Zahlenbefund ist "erster Satz ≠ eigene Rechnung", die eigene Rechnung ist
+        # rechnerisch stimmig und widerspricht keiner belegten Nachrechnung -> Zahl im ersten Satz angleichen.
         rest = ([b for b in befunde_fuer(kopf) if b.get("art") == "baustein"] or _weitere_abweichung(kopf, frage, baustein)) \
             if RP_V12 else []
         if rest and baustein is not None and (baustein.get("formel_im_material") is True or RP_V13) and bestaetigt():
-            # V16: nach der Angleichung widerspricht ein weiteres Ergebnis im ersten Satz der bestätigten Nachrechnung mit
-            # Buchformel (RV R01 V15: ΔP angeglichen, Einsparung 960.000 € statt 31,58 Mio €) -> Nachrechnung ersetzt die Lösung
+            # RP-v12: nach der Angleichung widerspricht ein weiteres Ergebnis im ersten Satz der bestätigten Nachrechnung
+            # mit Buchformel -> Nachrechnung ersetzt die Lösung
             stufen["loesung"] = (rechenbaustein.pruefloesung(baustein, loesung) if baustein.get("formel_im_material") is True
                                  else rechenbaustein.pruefloesung_v5(baustein, loesung))
             stufen["rechen_pruefung"] = "ersetzt"
@@ -1217,8 +1104,8 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
           and (not v8 or bestaetigt())):
         # RP-v5: die Nachrechnung ist belegt (Zahlen und Formel aus Frage/Material) und widerspricht der Antwort,
         # das Neuschreiben hat das nicht behoben -> die Nachrechnung ersetzt die Lösung (Original im Log).
-        # V13.4 (RP-v10): auch ohne Buchformel, wenn zwei Nachrechnungen übereinstimmen UND die Antwort keine eigene oder
-        # eine nachweislich falsche eigene Rechnung hat (RV-v1 R13: 20,8 A statt 26 A, R14: 7,84 W statt 4,755 W).
+        # RP-v10: auch ohne Buchformel, wenn zwei Nachrechnungen übereinstimmen UND die Antwort keine eigene oder
+        # eine nachweislich falsche eigene Rechnung hat.
         belegt = baustein.get("formel_im_material") is True
         stufen["loesung"] = (rechenbaustein.pruefloesung(baustein, loesung) if belegt or not v10
                              else rechenbaustein.pruefloesung_v5(baustein, loesung))
@@ -1234,9 +1121,9 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
                   and not (v7 and b.get("art") == "baustein" and (baustein or {}).get("formel_im_material") is not True)
                   and not (v8 and b.get("art") == "baustein" and "nicht bestätigt" in stufen.get("rechen_befund", ""))]
         if v8 and not zahlen and any(b.get("art") == "baustein" for b in befunde):
-            # V13.2: die Nachrechnung widerspricht, ist aber selbst nicht bestätigt -> kein Zahlenwert im Vermerk, aber ein Vermerk
+            # RP-v8: die Nachrechnung widerspricht, ist aber selbst nicht bestätigt -> Vermerk ohne Zahlenwert
             zahlen = ["Das Ergebnis konnte nicht unabhängig bestätigt werden; bitte mit dem Buch prüfen"]
-        # V13.1: Nachrechnung ohne belegte Formel erscheint nicht im Warnvermerk (F4: "W = U * Q / 3600 ergibt 0,001875 J"), nur im Log
+        # RP-v7: eine Nachrechnung ohne belegte Formel erscheint nicht im Warnvermerk, nur im Log
         if zahlen:
             stufen["loesung"] = f"{loesung}\n\n⚠ Automatische Prüfung: {'; '.join(zahlen)}."
             stufen["rechen_pruefung"] = "markiert"
@@ -1248,9 +1135,8 @@ def rechnung_pruefen(prompt, stufen, frage=None, top_chunks=None):
 
 
 def _weitere_abweichung(text, frage, baustein):
-    """V16 (RP-v12): Nachrechnung mit mehreren Ergebnissen; im ersten Satz steht eine Zahl, die zu keinem Ergebnis passt, und ein
-    Ergebnis wird von keiner Zahl getroffen (RV R01: 78,95 MW passt, 960.000 € statt 31,58 Mio € nicht). vergleiche_v3 prüft
-    Zahlen ohne erkannte Einheit (€) nicht einzeln."""
+    """RP-v12: Nachrechnung mit mehreren Ergebnissen; im ersten Satz steht eine Zahl, die zu keinem Ergebnis passt, und ein
+    Ergebnis wird von keiner Zahl getroffen. vergleiche_v3 prüft Zahlen ohne erkannte Einheit (€) nicht einzeln."""
     import rechenbaustein
     import rechenpruefung
     if baustein is None or len(baustein.get("ergebnisse", [])) < 2:
@@ -1270,20 +1156,18 @@ def _ist_rechenfrage(frage):
 
 
 def _endergebnis_v10(text):
-    """V13.4: _endergebnis mit den RP-v10-Tokenizer-Schaltern und LaTeX-Lesung (Denkmodus-Antworten in LaTeX)."""
+    """_endergebnis mit den RP-v10-Tokenizer-Schaltern und LaTeX-Lesung (Denkmodus-Antworten in LaTeX)."""
     import rechenpruefung
     with rechenpruefung.modus("RP-v11" if RECHEN_PRUEFUNG_VERSION == "RP-v11" else "RP-v10"):
         return rechenpruefung._endergebnis(rechenpruefung.entlatexe(text))
 
 
 def _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer, baustein=None):
-    """V13.3 (RP-v9): Rechenfrage, deren Antwort nach allen Prüfungen nur "markiert" werden konnte (V13.3.1: oder gar nicht
-    nachgeprüft werden konnte, Status "ungeprueft") -> EIN neuer Aufruf mit
-    Denkmodus (think=True, Kontext DENK_KONTEXT_TOKENS). Die neue Antwort gilt, wenn sie beantwortet ist, eine Zahl nennt und
-    die Python-Prüfung der eigenen Rechnung besteht (Gleichungsketten, erster Satz = Endergebnis, Einheit, kein übernommenes
-    Buchergebnis, keine sichtbare Überlegung). Die Nachrechnung (RB) zählt hier nicht: sie lief ohne Denkmodus und war in
-    genau diesen Fällen unzuverlässig. Anlass: Käfigläufer 26 Oct 2026: ohne Denkmodus 1401/1420/1471, mit Denkmodus 1431
-    (richtig), 256 s. Status denkmodus; Original im Log."""
+    """RP-v9: Rechenfrage, deren Antwort nach allen Prüfungen nur "markiert" werden konnte (oder gar nicht nachgeprüft
+    werden konnte, Status "ungeprueft") -> EIN neuer Aufruf im Denkmodus (think=True, Kontext DENK_KONTEXT_TOKENS).
+    Die neue Antwort gilt, wenn sie beantwortet ist, eine Zahl nennt und die Python-Prüfung der eigenen Rechnung besteht
+    (Gleichungsketten, erster Satz = Endergebnis, Einheit, kein übernommenes Buchergebnis, keine sichtbare Überlegung).
+    Die Nachrechnung (RB) zählt hier nicht, weil sie ohne Denkmodus lief. Status denkmodus; Original im Log."""
     import formelsuche
     import rechenpruefung
     if not formelsuche.ist_rechenfrage(frage):
@@ -1298,16 +1182,16 @@ def _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer, baustein
     loesung = (rechenpruefung.bereinige_ueberlegung_v11 if v11 else rechenpruefung.bereinige_ueberlegung_v8)(neu.get("loesung", ""))[0]
     v10 = RECHEN_PRUEFUNG_VERSION in ("RP-v10", "RP-v11")
     if v10:
-        stufen["loesung_denk"] = loesung[:3000]  # V13.4: für das Protokoll (RV-v1: 7-mal verworfen, Text unbekannt)
+        stufen["loesung_denk"] = loesung[:3000]  # für das Protokoll
     befunde_d = [b for b in befunde_fuer(loesung) if b.get("art") != "baustein"]
     if v11 and _baustein_bestaetigt_kopf(loesung, frage, baustein, streng=True):
-        # V13.5: die Nachrechnung nennt gerundet genau die Zahl des ersten Satzes -> ein Konsistenzbefund betrifft nur eine
-        # Zwischenzahl der Begründung (RV-v1 Lauf V134 R20: 1,23 richtig, letzte ausgeschriebene Rechnung war s_K2 = 0,1875)
+        # Die Nachrechnung nennt gerundet genau die Zahl des ersten Satzes -> ein Konsistenzbefund betrifft nur eine
+        # Zwischenzahl der Begründung
         befunde_d = [b for b in befunde_d if b.get("art") != "konsistenz"]
     probleme = [b["text"] for b in befunde_d]
     hat_zahl = formelsuche.antwort_hat_ergebnis({**neu, "loesung": loesung})
     if not (_endergebnis_v10(loesung) if v10 else rechenpruefung._endergebnis(loesung)):
-        # V13.3.1: ohne eigene, prüfbare Rechnung gibt es nichts zu bestätigen. V13.4: außer die Nachrechnung nennt gerundet
+        # Ohne eigene, prüfbare Rechnung gibt es nichts zu bestätigen, außer die Nachrechnung nennt gerundet
         # genau die Zahl des ersten Satzes (zwei unabhängige Wege, ein Ergebnis).
         if not (v10 and _baustein_bestaetigt_kopf(loesung, frage, baustein, streng=True)):
             probleme.append("keine nachprüfbare Rechnung")
@@ -1323,9 +1207,9 @@ def _denk_wiederholung(prompt, stufen, frage, top_chunks, befunde_fuer, baustein
 
 
 def _baustein_bestaetigt_kopf(text, frage, baustein, streng=False):
-    """V13.2: True, wenn eine Nachrechnung vorliegt und eine Zahl mit Einheit im ersten Satz zu ihrem Ergebnis passt.
-    streng (V13.3, RP-v9): die Zahl muss gerundet GLEICH dem Ergebnis sein (halbe Einheit der letzten Stelle), nicht nur
-    innerhalb 0,5 %. Anlass: Käfigläufer-Lauf 18:02: Nachrechnung 1399 (falsche Formel) "bestätigte" das übernommene 1401."""
+    """True, wenn eine Nachrechnung vorliegt und eine Zahl mit Einheit im ersten Satz zu ihrem Ergebnis passt.
+    streng (RP-v9): die Zahl muss gerundet GLEICH dem Ergebnis sein (halbe Einheit der letzten Stelle), nicht nur
+    innerhalb 0,5 %."""
     if not baustein or not baustein.get("ergebnisse"):
         return False
     import rechenbaustein
@@ -1342,10 +1226,9 @@ def _baustein_bestaetigt_kopf(text, frage, baustein, streng=False):
 
 
 def _nachrechnung_bestaetigt(frage, top_chunks, prompt, baustein, stufen):
-    """V13.2 (RP-v8): bevor die Nachrechnung eine Lösung ERSETZT, rechnet ein zweiter, unabhängig formulierter Aufruf
-    (RB-v3-Prompt) dieselbe Aufgabe. Ersetzt wird nur, wenn ein Ergebnis beider Nachrechnungen übereinstimmt. Anlass
-    (Entwicklungsfall Käfigläufer, 26 Oct 2026): RB nannte eine Buchformel als Quelle, rechnete aber mit einem erfundenen
-    Schritt (s_Nw = s_N / Faktor) und ersetzte die Antwort durch 1471 min⁻¹ (richtig: 1431 min⁻¹). Vermerk in rechen_befund."""
+    """RP-v8: bevor die Nachrechnung eine Lösung ERSETZT, rechnet ein zweiter, unabhängig formulierter Aufruf
+    (RB-v3-Prompt) dieselbe Aufgabe. Ersetzt wird nur, wenn ein Ergebnis beider Nachrechnungen übereinstimmt.
+    Vermerk in rechen_befund."""
     import rechenbaustein
     import rechenpruefung
     kontext = _kontext_text(ohne_buchergebnisse(frage, top_chunks)) if top_chunks else prompt
@@ -1359,7 +1242,7 @@ def _nachrechnung_bestaetigt(frage, top_chunks, prompt, baustein, stufen):
         zweit = {}
     retry = ""
     if RP_V12 and not zweit.get("ergebnisse") and zweit.get("grund") in rechenbaustein.RETRY_GRUENDE:
-        # V16: zweite Nachrechnung nicht lesbar (N100 F61: "n1 = n/10") -> ein Retry mit Fehlerbericht, wie bei der ersten
+        # RP-v12: zweite Nachrechnung nicht lesbar -> ein Retry mit Fehlerbericht, wie bei der ersten
         grund = zweit.get("grund")
         try:
             zweit = rechne(parse(frage_llm(rechenbaustein.baue_prompt_v3(frage, kontext, (grund, zweit.get("detail", ""))),
@@ -1375,15 +1258,15 @@ def _nachrechnung_bestaetigt(frage, top_chunks, prompt, baustein, stufen):
              "Bestätigung: nicht bestätigt (" + (rechenbaustein.ergebnis_text(zweit) if zweit.get("ergebnisse")
                                                  else f"zweite Nachrechnung nicht verwertbar: {zweit.get('grund', 'Fehler')}") + ")")
     stufen["rechen_befund"] = (stufen.get("rechen_befund") or "") + " | " + notiz + retry
-    if RECHEN_PRUEFUNG_VERSION == "RP-v11" and len(rechenbaustein.letzte_rohtexte) > vorher:  # V13.5: auch dieser Rohtext ins Protokoll
+    if RECHEN_PRUEFUNG_VERSION == "RP-v11" and len(rechenbaustein.letzte_rohtexte) > vorher:  # auch dieser Rohtext ins Protokoll
         neue = rechenbaustein.letzte_rohtexte[vorher:] if RP_V12 else rechenbaustein.letzte_rohtexte[-1:]
         stufen["rb_roh"] = " ||| ".join(x for x in (stufen.get("rb_roh"), *neue) if x)
     return ok
 
 
 def _gleiche_ergebnisse(a, b):
-    """V17 (RP-v13): True, wenn ein Ergebnis von a und eines von b übereinstimmen. Mit Einheit bei beiden: Vergleich in
-    Grundeinheiten, 0,5 % (keine Faktor-10³-Toleranz: N100 F1 galt 1,6e-19 C gegen 1,6e-16 als bestätigt). Sonst wie bisher."""
+    """RP-v13: True, wenn ein Ergebnis von a und eines von b übereinstimmen. Mit Einheit bei beiden: Vergleich in
+    Grundeinheiten, 0,5 % (keine Faktor-10³-Toleranz). Sonst wie bisher."""
     import rechenbaustein
     import rechenpruefung
     if not (a or {}).get("ergebnisse") or not (b or {}).get("ergebnisse"):
@@ -1402,9 +1285,8 @@ def _gleiche_ergebnisse(a, b):
 
 
 def _rechne_mit_dimension(parsed, frage, kontext):
-    """RB-v8 (V17b): rechne_v7, danach Dimensionsprüfung des Rohtexts (dimensionspruefung.pruefe). Passen die Einheiten physikalisch
-    nicht zusammen, ist die Nachrechnung nicht verwertbar (grund "dimension", Retry mit diesem Befund). Anlass RV-v2 R09: Gewichtskraft
-    durch g geteilt (Ergebnis kg, angegeben N), Fläche um den Faktor 100 falsch."""
+    """RB-v8: rechne_v7, danach Dimensionsprüfung des Rohtexts (dimensionspruefung.pruefe). Passen die Einheiten physikalisch
+    nicht zusammen, ist die Nachrechnung nicht verwertbar (grund "dimension", Retry mit diesem Befund)."""
     import rechenbaustein
     import dimensionspruefung
     res = rechenbaustein.rechne_v7(parsed, frage, kontext)
@@ -1419,8 +1301,8 @@ def _rb_leser():
     """Parser und Auswertung der Nachrechnung je RP-Version: RP-v11 -> RB-v6, RP-v10 -> RB-v5, sonst RB-v2."""
     import rechenbaustein
     if RECHEN_PRUEFUNG_VERSION == "RP-v11":
-        if NACHRECHNUNG_VERSION in ("RB-v7", "RB-v8"):  # V15: Einheiten in Grundeinheiten umrechnen statt streichen
-            rechenbaustein.RB_V8 = NACHRECHNUNG_VERSION == "RB-v8"  # V17: zwei Lesekorrekturen + Dimensionsprüfung
+        if NACHRECHNUNG_VERSION in ("RB-v7", "RB-v8"):  # Einheiten in Grundeinheiten umrechnen statt streichen
+            rechenbaustein.RB_V8 = NACHRECHNUNG_VERSION == "RB-v8"  # zwei Lesekorrekturen + Dimensionsprüfung
             if rechenbaustein.RB_V8:
                 return rechenbaustein.parse_v7, _rechne_mit_dimension
             return rechenbaustein.parse_v7, rechenbaustein.rechne_v7
@@ -1434,9 +1316,9 @@ _KONSTANTEN_BUCH = {235.0, 234.5, 273.0, 273.15, 1.257, 8.854, 9.81, 1.602, 0.00
 
 
 def _fremde_buchwerte(loesung, frage, kontext):
-    """V13.4: Zahlen mit mindestens 3 gültigen Ziffern in der Rechnung (nach dem ersten Satz), die im Lernmaterial stehen,
-    aber weder in der Frage noch im ersten Satz (RV-v1 R21: c_M aus nN = 1440 min⁻¹ der Buchaufgabe; kopf_korrigiert machte
-    aus der richtigen 2833,3 die falsche 1777,8). Bekannte Konstanten (235 für Kupfer, μ₀ …) zählen nicht."""
+    """Zahlen mit mindestens 3 gültigen Ziffern in der Rechnung (nach dem ersten Satz), die im Lernmaterial stehen,
+    aber weder in der Frage noch im ersten Satz (= Werte einer Buchaufgabe). Bekannte Konstanten (235 für Kupfer, μ₀ …)
+    zählen nicht."""
     import rechenpruefung as rp
     m = rp._erster_satz_ende(loesung or "")
     kopf, rest = ((loesung or "")[:m.start()], (loesung or "")[m.end():]) if m else (loesung or "", "")
@@ -1453,12 +1335,12 @@ def _fremde_buchwerte(loesung, frage, kontext):
 
 
 def _kopf_angleichen(loesung, befunde, baustein, befunde_fuer, frage_kontext=None):
-    """V13.1 (RP-v7): neuer Text mit angeglichenem ersten Satz oder None. Bedingungen: genau ein Konsistenz-Befund, sonst nur
+    """RP-v7: neuer Text mit angeglichenem ersten Satz oder None. Bedingungen: genau ein Konsistenz-Befund, sonst nur
     Überlegungs- oder Nachrechnungsbefunde; eine Nachrechnung mit belegter Formel muss zur eigenen Rechnung passen; der neue
     Text hat keinen Rechen-, Konsistenz- oder Einheitenbefund mehr."""
     import rechenpruefung
     if frage_kontext and _fremde_buchwerte(loesung, *frage_kontext):
-        return None  # V13.4: die eigene Rechnung nutzt Werte einer Buchaufgabe -> nicht an sie angleichen
+        return None  # die eigene Rechnung nutzt Werte einer Buchaufgabe -> nicht an sie angleichen
     art = lambda b: b.get("art", "rechnung")
     kons = [b for b in befunde if art(b) == "konsistenz"]
     if len(kons) != 1 or any(art(b) not in ("konsistenz", "ueberlegung", "baustein") for b in befunde):
@@ -1487,7 +1369,7 @@ def _kontext_text(ausgewaehlte_chunks):
 
 
 def _prompt_s3_v0(frage, ausgewaehlte_chunks):
-    """V0–V3: drei Stufen (unverändert, für Reproduzierbarkeit)."""
+    """S3-v0: drei Stufen."""
     m = SCAFFOLDING_MARKER_VERSIONEN["S3-v0"]
     return f"""Du bist ein Lernassistent für die technische und berufliche Bildung.
 Beantworte die folgende Frage NUR auf Basis des gegebenen Kontexts, in DREI
@@ -1514,7 +1396,7 @@ Frage: {frage}"""
 
 
 def _prompt_s2_v1(frage, ausgewaehlte_chunks):
-    """V4: zwei Stufen + Hinweis-Regeln H1–H3 (siehe Modulkommentar)."""
+    """S2-v1: zwei Stufen + Hinweis-Regeln H1–H3 (siehe Kommentar bei SCAFFOLDING_VERSION)."""
     m = SCAFFOLDING_MARKER_VERSIONEN["S2-v1"]
     return f"""Du bist ein Lernassistent für Auszubildende in technischen Berufen.
 Beantworte die folgende Frage NUR auf Basis des gegebenen Kontexts, in ZWEI Stufen.
@@ -1607,7 +1489,7 @@ _LOESUNGS_REGELNUMMERN = {"G-v1": "L1 bis L4", "G-v2": "L1 bis L4", "G-v3": "L1 
 
 
 def _prompt_g(version, frage, ausgewaehlte_chunks):
-    """Fester Prompt-Satz G1 (Spezifikation §4.1). Regeln L1–L4, Status, Hinweis-Regeln je Version."""
+    """Fester Prompt-Satz G (Regeln L1–L4, Status, Hinweis-Regeln je Version)."""
     return f"""Du bist ein Lernassistent für Auszubildende. Du beantwortest eine Frage ausschließlich mit dem
 Lernmaterial unten und bereitest dazu einen Denkanstoß vor.
 
@@ -1635,27 +1517,27 @@ HINWEIS: <Hinweis nach {_HINWEIS_REGELNUMMERN[version]}; bei NICHT_IM_MATERIAL: 
 
 
 def _prompt_g_v1(frage, ausgewaehlte_chunks):
-    """V6: G-v1 (unverändert, für Reproduktion von V6/V7)."""
+    """G-v1."""
     return _prompt_g("G-v1", frage, ausgewaehlte_chunks)
 
 
 def _prompt_g_v2(frage, ausgewaehlte_chunks):
-    """V8: G-v2 = G-v1 mit neuer H3 und H6 (siehe Kommentar bei SCAFFOLDING_VERSION)."""
+    """G-v2 = G-v1 mit neuer H3 und H6 (siehe Kommentar bei SCAFFOLDING_VERSION)."""
     return _prompt_g("G-v2", frage, ausgewaehlte_chunks)
 
 
 def _prompt_g_v3(frage, ausgewaehlte_chunks):
-    """V9: G-v3 = G-v2 mit Lösungsregel L5 (Rechenbeispiele im Material)."""
+    """G-v3 = G-v2 mit Lösungsregel L5 (Rechenbeispiele im Material)."""
     return _prompt_g("G-v3", frage, ausgewaehlte_chunks)
 
 
 def _prompt_g_v4(frage, ausgewaehlte_chunks):
-    """V10: G-v4 = G-v3, L5 ohne "rechne jeden Schritt nach" (Nachrechnen macht RP in Python)."""
+    """G-v4 = G-v3, L5 ohne Aufforderung zum Nachrechnen (das übernimmt die Rechenprüfung in Python)."""
     return _prompt_g("G-v4", frage, ausgewaehlte_chunks)
 
 
 def _prompt_g_v5(frage, ausgewaehlte_chunks):
-    """V13: G-v5 = G-v4 + L6 (Einheit der gefragten Größe) und L7 (Zahlen nur mit ihrem Gegenstand). Nur mit LERNASSISTENT_G=G-v5."""
+    """G-v5 = G-v4 + L6 (Einheit der gefragten Größe) und L7 (Zahlen nur mit ihrem Gegenstand). Nur mit LERNASSISTENT_G=G-v5."""
     return _prompt_g("G-v5", frage, ausgewaehlte_chunks)
 
 
@@ -1665,7 +1547,7 @@ _G_SCHLUESSEL = {"STATUS": "status", "LÖSUNG": "loesung", "LOESUNG": "loesung",
 
 
 def parse_g_v1(rohtext):
-    """Zerlegt die G-v1-Antwort (Spezifikation §4.1, Parsing und Fallback).
+    """Zerlegt die Antwort im G-Format (Felder, Parsing und Fallback).
     Rückgabe hat dieselben Schlüssel wie parse_scaffolding_antwort plus status,
     hinweis_ueberlegung und format_fehler."""
     treffer = list(_G_FELD.finditer(rohtext))
@@ -1709,9 +1591,8 @@ _PROMPTS = {"S3-v0": _prompt_s3_v0, "S2-v1": _prompt_s2_v1, "S2-v2": _prompt_s2_
 
 
 def baue_hinweis_prompt(frage, ausgewaehlte_chunks, loesung):
-    """V5 (S2-v2), Hinweis-Prompt H-v3: eigener Aufruf, der die Lösung kennt.
-    Regeln H1–H5 aus der Projekt-Doku Scaffolding_Spezifikation.md §3.1 (Jangra et al. 2025,
-    Abschnitt 4.1; Zourlidou et al. 2026; Wood et al. 1976)."""
+    """S2-v2, Hinweis-Prompt H-v3: eigener Aufruf, der die Lösung kennt.
+    Regeln H1–H5 (Jangra et al. 2025, Abschnitt 4.1; Zourlidou et al. 2026; Wood et al. 1976)."""
     return f"""Du schreibst einen Hinweis (Denkanstoß) für Auszubildende in technischen Berufen.
 Du kennst die Frage, die Lernmaterialien und die richtige Lösung. Die/der Auszubildende
 sieht NUR die Frage, nicht die Lernmaterialien und nicht die Lösung.
@@ -1770,12 +1651,11 @@ def parse_scaffolding_antwort(rohtext):
     damit sie ohne Modell getestet werden kann.
 
     Rückgabe hat immer die Schlüssel hinweis / erklaerung / loesung (bei S2-v1 ist
-    erklaerung leer), damit das Format von interaktionen.csv und alle
-    Auswertungsskripte unverändert bleiben.
+    erklaerung leer), damit das Format von interaktionen.csv gleich bleibt.
 
     Fallback: Fehlt ein Marker (LLMs halten Formatvorgaben nicht immer exakt ein),
-    wird der GESAMTE Rohtext als 'loesung' verwendet und der Rest leer gelassen —
-    die Studien-App zeigt dann direkt die volle Antwort.
+    wird der GESAMTE Rohtext als 'loesung' verwendet und der Rest leer gelassen;
+    die App zeigt dann direkt die volle Antwort.
     """
     marker = scaffolding_marker()
     marker_positionen = {}
@@ -1797,20 +1677,16 @@ def parse_scaffolding_antwort(rohtext):
     return ergebnis
 
 
-RETRIEVAL_FRAGE = None  # V12.7: Suchanfrage statt Frage (Bildfragen)
-BILD_ANHANG = None  # V12.6: base64-Bild, das die App für die aktuelle Frage setzt (nur Hauptantwort)
+RETRIEVAL_FRAGE = None  # Suchanfrage statt Frage (Bildfragen)
+BILD_ANHANG = None  # base64-Bild, das die App für die aktuelle Frage setzt (nur Hauptantwort)
 
 
 def frage_llm(prompt, model=MODEL_NAME, options=None, bild=None, denken=False):
-    """think=False: unterdrückt Qwen3.5s sichtbare Reasoning-Kette, damit
-    Proband:innen eine direkte, nicht durch Zwischenschritte verlängerte
-    Antwort erhalten (relevant für Antwortzeit als Usability-Faktor,
-    vgl. Perceived Ease of Use im TAM, Davis 1989).
+    """think=False: unterdrückt die sichtbare Reasoning-Kette von Qwen3.5, damit die Antwort
+    direkt und ohne lange Wartezeit erscheint (Antwortzeit als Usability-Faktor, vgl.
+    Perceived Ease of Use im TAM, Davis 1989).
 
-    options: optionale Ollama-Parameter (z. B. {"temperature": 0, "seed": 42}).
-    Wird von der Studien-App NICHT gesetzt (unverändertes Verhalten), aber von
-    ragas_auswertung.py genutzt, damit die LLM-als-Richter-Bewertung
-    reproduzierbar ist."""
+    options: optionale Ollama-Parameter (z. B. {"temperature": 0, "seed": 42})."""
     payload = {"model": model, "prompt": prompt, "stream": False, "think": bool(denken)}
     _denken = os.environ.get("LERNASSISTENT_THINK", "aus")
     if not denken:
@@ -1818,15 +1694,14 @@ def frage_llm(prompt, model=MODEL_NAME, options=None, bild=None, denken=False):
             payload["think"] = _denken
         elif _denken == "ohne":
             payload.pop("think", None)
-    if KONTEXT_TOKENS or denken:  # V13.3
+    if KONTEXT_TOKENS or denken:
         options = {**(options or {}), "num_ctx": max(KONTEXT_TOKENS or 0, DENK_KONTEXT_TOKENS if denken else 0)}
     if options:
         payload["options"] = options
     if bild:
         payload["images"] = [bild]
-    # V13.3.1: längere Zeitgrenzen und EIN Wiederholungsversuch bei Zeitüberschreitung/Verbindungsfehler. Anlass: App-Test
-    # 26 Oct 2026: nach einem Denkmodus-Aufruf (num_ctx 16384) lud Ollama das Modell für den nächsten Aufruf neu (anderes
-    # num_ctx) -> ReadTimeout nach 120 s, die App brach ab. Am Antworttext ändert das nichts.
+    # Längere Zeitgrenzen und EIN Wiederholungsversuch bei Zeitüberschreitung/Verbindungsfehler: nach einem
+    # Denkmodus-Aufruf (anderes num_ctx) lädt Ollama das Modell neu. Am Antworttext ändert das nichts.
     zeitgrenze = float(os.environ.get("LERNASSISTENT_TIMEOUT", "0") or 0) or (900 if denken else 300)
     for versuch in (1, 2):
         try:
@@ -1843,19 +1718,17 @@ def frage_llm(prompt, model=MODEL_NAME, options=None, bild=None, denken=False):
 
 
 # =============================================================================
-# V14 (27 Oct 2026): Rechenwerkzeug RW-v1 – die Antwort rechnet selbst über ein Werkzeug (Ollama tool calling)
+# Rechenwerkzeug RW (optional, in V20 aus): die Antwort rechnet selbst über ein Werkzeug
 # =============================================================================
-# Anlass: RV-Läufe V1331/V134 – die meisten Rechenfehler entstehen beim Ausrechnen im Text; die nachträgliche Python-Prüfung
-# (RB) scheiterte oft schon am Format. Nach ToRA (Gou et al., ICLR 2024) und PAL (Gao et al., ICML 2023) ruft das Modell
-# während der Antwort ein Rechenwerkzeug auf: Python rechnet jeden Zahlenschritt, das Modell übernimmt das Ergebnis in den
-# Text. Nur mit LERNASSISTENT_RW=RW-v1 und nur bei Rechenfragen (formelsuche.ist_rechenfrage); sonst unverändert.
+# Nach ToRA (Gou et al., ICLR 2024) und PAL (Gao et al., ICML 2023) ruft das Modell während der Antwort ein
+# Rechenwerkzeug auf: Python rechnet jeden Zahlenschritt, das Modell übernimmt das Ergebnis in den Text.
+# Nur mit LERNASSISTENT_RW und nur bei Rechenfragen (formelsuche.ist_rechenfrage); sonst unverändert.
 # Kein beliebiger Code: das Werkzeug wertet nur Rechenausdrücke aus (rechenbaustein.sicher_auswerten, kein eval).
 # Fällt das Werkzeug aus (Modell ohne tools-Unterstützung, Fehler, keine Endantwort), gilt der normale Aufruf (frage_llm).
-NACHRECHNUNG_VERSION = os.environ.get("LERNASSISTENT_RB", "")  # V15: "" = RB-v6 (mit RP-v11); "RB-v7" = Einheiten umrechnen
-RECHENWERKZEUG_VERSION = os.environ.get("LERNASSISTENT_RW", "")  # "" = aus; "RW-v1", "RW-v2", "RW-v3", "RW-v4", "RW-v5"
-# RW-v2 (V14b): wie RW-v1, Werkzeugregel als Systemnachricht und zwei Schritte (erst rechnen, dann antworten). Anlass: Probe
-# 27 Oct 2026 – mit RW-v1 rief qwen3.5:9b das Werkzeug nie auf (0 Aufrufe), Ollama nahm die Werkzeugliste aber an.
-# RW-v3 (V14b): ohne tool calling – das Modell schreibt Rechenschritte als Platzhalter [[Name = Ausdruck]], Python rechnet
+NACHRECHNUNG_VERSION = os.environ.get("LERNASSISTENT_RB", "")  # "" = RB-v6 (mit RP-v11); "RB-v7" = Einheiten umrechnen; "RB-v8" + Dimensionsprüfung
+RECHENWERKZEUG_VERSION = os.environ.get("LERNASSISTENT_RW", "")  # "" = aus; "RW-v1" … "RW-v5"
+# RW-v2: wie RW-v1, Werkzeugregel als Systemnachricht und zwei Schritte (erst rechnen, dann antworten).
+# RW-v3: ohne tool calling – das Modell schreibt Rechenschritte als Platzhalter [[Name = Ausdruck]], Python rechnet
 # und setzt die Zahlen ein (PAL-Prinzip, Gao et al. 2023, in einem einzigen Aufruf). Funktioniert mit jedem Modell.
 RW_MAX_AUFRUFE = 12
 OLLAMA_CHAT_URL = OLLAMA_URL.replace("/api/generate", "/api/chat")
@@ -2130,11 +2003,9 @@ def sicherheitspruefung(text):
 
 
 def _hinweis_separat(frage, top_chunks, stufen):
-    """V5: zweiter Aufruf für den Hinweis. Kein zweiter Aufruf, wenn Aufruf 1 nicht
-    geparst wurde oder die Lösung eine Verweigerung ist (dann gibt es nichts zu
-    verbergen; der Hinweis aus Aufruf 1 bleibt). Rückgabe ergänzt Diagnosefelder,
-    die NICHT in interaktionen.csv landen (Format unverändert), sondern nur im
-    Batchlauf separat gespeichert werden (fuehre_testfragen_aus.py)."""
+    """S2-v2: zweiter Aufruf für den Hinweis. Kein zweiter Aufruf, wenn Aufruf 1 nicht
+    geparst wurde oder die Lösung eine Verweigerung ist (dann bleibt der Hinweis aus
+    Aufruf 1). Rückgabe ergänzt Diagnosefelder, die nicht in interaktionen.csv landen."""
     zusatz = {"hinweis_aufruf1": stufen["hinweis"], "hinweis_ueberlegung": "",
               "hinweis_quelle": "aufruf1"}
     if not stufen["vollstaendig_geparst"]:
@@ -2155,9 +2026,9 @@ def _hinweis_separat(frage, top_chunks, stufen):
     return zusatz
 
 
-# V13.4 (RP-v10): Ergebniszeilen von Buchaufgaben ("ERG:: R = 2 Ω", "Ergebnis: 14,5 K") stehen im Material direkt hinter der
-# Aufgabe. Bei einer Rechenfrage mit anderen Zahlen als die Buchaufgabe übernahm das Modell sie (RV-v1 R21, R22, R14). Sie werden
-# dann aus dem Material für Antwort und Nachrechnung entfernt (nicht für die Übernahme-Prüfung, die sie erkennen soll).
+# RP-v10: Ergebniszeilen von Buchaufgaben ("ERG:: R = 2 Ω", "Ergebnis: 14,5 K") stehen im Material direkt hinter der
+# Aufgabe. Bei einer Rechenfrage mit anderen Zahlen als die Buchaufgabe werden sie aus dem Material für Antwort und
+# Nachrechnung entfernt (nicht für die Übernahme-Prüfung, die sie erkennen soll), damit das Modell sie nicht übernimmt.
 # Ausgeführte Lösungswege ("Lösung: …" in Beispielen) bleiben stehen; nur kurze Ergebniszeilen fallen weg.
 _BUCHERGEBNIS = re.compile(r"(?:\|\|\s*)?[*_]{0,2}\b(?:ERG\s*:{1,2}|Ergebnis(?:se)?\b\s*:?)[*_]{0,2}", re.I)
 # Wörter, die nach einem Ergebnis einen neuen Satz beginnen (der Rest gehört nicht zum Ergebnis)
@@ -2166,7 +2037,7 @@ _SATZANFANG = {"in", "im", "die", "der", "das", "den", "dem", "bei", "mit", "fü
 
 
 def buchergebnisse(text):
-    """V13.4: Ergebnisangaben von Buchaufgaben als (start, ende)-Bereiche. In der KB v7r stehen sie mitten im Fließtext
+    """Ergebnisangaben von Buchaufgaben als (start, ende)-Bereiche. In der Wissensbasis stehen sie mitten im Fließtext
     ("… Ergebnis: z = 6,25 · 10⁹ Elektrisches Feld …", "Ergebnis R₄ = R₅ = 33,33 Ω Spannungsteiler"), in der alten Extraktion
     als "|| ERG:: …". Der Bereich endet nach der letzten Zahl (mit Einheit) vor dem ersten Wort des folgenden Textes; höchstens
     140 Zeichen; ohne Zahl kein Treffer."""
@@ -2221,8 +2092,8 @@ def ohne_buchergebnisse(frage, top_chunks):
 
 
 def _formelsuche_anwenden(frage, chunks, top_chunks, methode, ergebnis, fortschritt=None):
-    """FS-v1 (V12, nur mit LERNASSISTENT_FS=FS-v1): bei Rechenfragen VOR der Antwort die nötigen Formeln gezielt suchen
-    (formelsuche.py) und hinter die Chunks der Hauptsuche stellen. Standard ab V12.1 ist FS-v2 (_formelsuche_nachher)."""
+    """FS-v1 (nur mit LERNASSISTENT_FS=FS-v1): bei Rechenfragen VOR der Antwort die nötigen Formeln gezielt suchen
+    (formelsuche.py) und hinter die Chunks der Hauptsuche stellen. Standard ist FS-v2/FS-v3 (_formelsuche_nachher)."""
     import formelsuche
     if formelsuche.FORMELSUCHE_VERSION != "FS-v1" or not formelsuche.ist_rechenfrage(frage):
         return top_chunks
@@ -2243,7 +2114,7 @@ def _formelsuche_anwenden(frage, chunks, top_chunks, methode, ergebnis, fortschr
 
 
 def _formelsuche_vorher_v19(frage, chunks, top_chunks, ergebnis, fortschritt=None):
-    """V19a (nur mit LERNASSISTENT_V19=A, nur bei Rechenfragen): VOR der Antwort 2 Formel-Chunks ergänzen (formelsuche.suche_v19).
+    """V19-A (nur mit LERNASSISTENT_V19 mit "A", nur bei Rechenfragen): VOR der Antwort 2 Formel-Chunks ergänzen (formelsuche.suche_v19).
     Anders als FS-v2/v3 läuft das auch, wenn die erste Antwort eine Zahl nennt (falsche Physik wäre sonst nie aufgefallen).
     Die Chunks der Hauptsuche bleiben unverändert vorn; Zusatz-Chunks stehen dahinter. Ohne Fund oder bei Fehler ändert sich nichts."""
     import formelsuche
@@ -2266,7 +2137,7 @@ def _formelsuche_vorher_v19(frage, chunks, top_chunks, ergebnis, fortschritt=Non
 
 
 def _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, ergebnis, fortschritt=None):
-    """FS-v2 (V12.1, Standard): nur nach Fehlschlag der ersten Antwort (keine Zahl, nicht beantwortet, fehlende Formel)
+    """FS-v2/FS-v3: nur nach Fehlschlag der ersten Antwort (keine Zahl, nicht beantwortet, fehlende Formel)
     Formeln suchen und EINMAL neu erzeugen. Die neue Antwort gilt nur, wenn sie beantwortet ist und eine Zahl nennt;
     sonst bleibt die erste Antwort. Gelöste Fragen bleiben unberührt (kein Zusatzkontext, keine Mehrzeit)."""
     import formelsuche
@@ -2288,11 +2159,11 @@ def _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, erg
     roh = frage_llm(neuer_prompt, options=GENERIERUNGS_OPTIONEN)
     stufen2 = parse_g_v1(roh) if ist_g_version() else parse_scaffolding_antwort(roh)
     info["neu"] = True
-    if v3:  # V13.2: auch die neue Antwort darf kein übernommenes Buchergebnis sein
+    if v3:  # auch die neue Antwort darf kein übernommenes Buchergebnis sein
         import rechenpruefung
         info["uebernahme_neu"] = bool(rechenpruefung.pruefe_uebernahme(stufen2.get("loesung", ""), frage, _kontext_text(neue_chunks)))
     if formelsuche.antwort_hat_ergebnis(stufen2) and not info.get("uebernahme_neu"):
-        # V12.3: nur annehmen, wenn die Nachrechnung die Formel im Material belegt (A/B V-1.32: ohne Formel erfand das Modell 0,25 T)
+        # nur annehmen, wenn die Nachrechnung die Formel im Material belegt (sonst kann das Modell Werte erfinden)
         res = _rechenbaustein_v2(frage, neue_chunks, neuer_prompt, stufen2)
         info["formel_belegt"] = bool(res and res.get("formel_im_material") is True)
         stufen2.pop("rechen_befund", None)
@@ -2307,18 +2178,15 @@ def _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, erg
 
 def beantworte_frage(frage, chunks, top_k=4, methode=None, fortschritt=None):
     """
-    Vollständige Pipeline: Retrieval -> Schwellenwert-Prüfung -> gestufte
-    Generierung (Scaffolding) -> Sicherheitsprüfung. Verweigerung statt
+    Vollständige Pipeline: Retrieval -> Schwellenwert-Prüfung -> Generierung im
+    gestuften Format -> Rechen-, Sicherheits- und Hinweisprüfung. Verweigerung statt
     Raten bei bester_score < Schwelle ist die zentrale Sicherheitsmaßnahme
-    des Systems (Systemkonzept-Säule "Sicherheit"; siehe auch
-    Grounding-Prinzip bei Lewis et al. 2020). Die dreistufige Antwort
-    (Hinweis -> Lösung, ab V4; siehe SCAFFOLDING_VERSION) setzt die Säule "Lernunterstützung" um
-    (siehe baue_scaffolding_prompt-Modulkommentar für Quellen).
+    (Grounding-Prinzip, Lewis et al. 2020). Das gestufte Format (Hinweis -> Lösung,
+    siehe SCAFFOLDING_VERSION) setzt die Lernunterstützung um.
 
     methode: Retrieval-Methode (None = RETRIEVAL_METHODE, siehe retrieval()).
     bester_score = höchste Kosinus-Ähnlichkeit über ALLE Chunks, unabhängig von
-    der Methode — bei "dense" identisch zum bisherigen Verhalten, bei
-    bm25/hybrid bleibt die Schwellenprüfung dadurch unverändert.
+    der Methode (die Schwellenprüfung ist damit für alle Methoden gleich).
 
     fortschritt: optionaler Rückruf fortschritt(phase, ereignis, dauer=None) für die Oberfläche
     (phase: "suche" | "antwort" | "pruefung"; ereignis: "start" | "ende"). Ohne Angabe
@@ -2368,22 +2236,22 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None, fortschritt=None):
         ergebnis["sicherheitshinweis"] = None
         return ergebnis
 
-    top_chunks = _formelsuche_anwenden(frage, chunks, top_chunks, methode, ergebnis, fortschritt)  # ab V12 (FS-v1)
-    top_chunks = _formelsuche_vorher_v19(frage, chunks, top_chunks, ergebnis, fortschritt)  # V19a (Schalter LERNASSISTENT_V19=A)
-    prompt_chunks = ohne_buchergebnisse(frage, top_chunks)  # V13.4 (RP-v10), sonst unverändert
+    top_chunks = _formelsuche_anwenden(frage, chunks, top_chunks, methode, ergebnis, fortschritt)  # FS-v1
+    top_chunks = _formelsuche_vorher_v19(frage, chunks, top_chunks, ergebnis, fortschritt)  # V19-A
+    prompt_chunks = ohne_buchergebnisse(frage, top_chunks)  # RP-v10, sonst unverändert
     prompt = baue_scaffolding_prompt(frage, prompt_chunks)
     if prompt_chunks is not top_chunks:
         ergebnis["buchergebnisse_entfernt"] = sum(c.get("buchergebnisse_entfernt", 0) for c in prompt_chunks)
     t0 = _start("antwort")
     if BILD_ANHANG or not _rw_aktiv(frage):
         rohantwort = frage_llm(prompt, options=GENERIERUNGS_OPTIONEN, **({'bild': BILD_ANHANG} if BILD_ANHANG else {}))
-    else:  # V14: Rechenwerkzeug RW-v1
+    else:  # Rechenwerkzeug RW
         rohantwort = frage_llm_rechnend(prompt, frage, ergebnis)
     stufen = parse_g_v1(rohantwort) if ist_g_version() else parse_scaffolding_antwort(rohantwort)
-    top_chunks, prompt, stufen = _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, ergebnis, fortschritt)  # ab V12.1 (FS-v2)
+    top_chunks, prompt, stufen = _formelsuche_nachher(frage, chunks, top_chunks, prompt, stufen, methode, ergebnis, fortschritt)  # FS-v2/FS-v3
     _ende("antwort", t0)
-    if fortschritt is not None and getattr(fortschritt, "_v21", False) and ist_g_version():  # V21-S: Hinweis vorab
-        try:  # Vorschau auf einer Kopie: der weitere Ablauf (Rechenprüfung, Hinweisprüfung) bleibt wie in V20
+    if fortschritt is not None and getattr(fortschritt, "_v21", False) and ist_g_version():  # optional: Hinweis vorab anzeigen
+        try:  # Vorschau auf einer Kopie: der weitere Ablauf (Rechenprüfung, Hinweisprüfung) bleibt unverändert
             import copy as _cp21
             _vorab = _cp21.deepcopy(stufen)
             hinweis_pruefen(frage, _vorab)
@@ -2392,23 +2260,23 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None, fortschritt=None):
             print(f"WARNUNG V21-S Hinweis vorab: {_e21}")
     t0 = _start("pruefung")
     if ist_g_version():
-        rechnung_pruefen(prompt, stufen, frage, top_chunks)  # ab V9d (RP-v1), V10 RP-v2; vor Sicherheits- und Hinweis-Prüfung
+        rechnung_pruefen(prompt, stufen, frage, top_chunks)  # vor Sicherheits- und Hinweis-Prüfung
     ist_relevant, treffer = sicherheitspruefung(frage + " " + stufen["loesung"])
 
     if SCAFFOLDING_VERSION == "S2-v2":
         stufen.update(_hinweis_separat(frage, top_chunks, stufen))
-    hinweis_pruefen(frage, stufen)  # ab V8 (HP-v1); ohne Wirkung bei älteren Versionen
+    hinweis_pruefen(frage, stufen)  # HP; ohne Wirkung bei älteren Versionen
     if os.environ.get("LERNASSISTENT_HG", "aus").strip().lower() not in ("", "aus", "0", "nein"):  # HG-v1: Hinweis-Wächter
         import hinweiswaechter as _hw
         _hw.anwenden(__import__("sys").modules[__name__], frage, top_chunks, stufen)
     _ende("pruefung", t0)
 
     ergebnis.update(stufen)
-    if ergebnis.get("formelsuche"):  # FS-v1: Suchbegriffe und ergänzte Chunks im Protokoll (rechen_befund)
+    if ergebnis.get("formelsuche"):  # Suchbegriffe und ergänzte Chunks im Protokoll (rechen_befund)
         import formelsuche as _fs
         _alt = ergebnis.get("rechen_befund") or ""
         ergebnis["rechen_befund"] = (_alt + " | " if _alt else "") + _fs.notiz(ergebnis["formelsuche"])
-    if ergebnis.get("formelsuche_v19"):  # V19a: Suchbegriffe und ergänzte Chunks im Protokoll
+    if ergebnis.get("formelsuche_v19"):  # V19-A: Suchbegriffe und ergänzte Chunks im Protokoll
         import formelsuche as _fs19
         _alt = ergebnis.get("rechen_befund") or ""
         ergebnis["rechen_befund"] = (_alt + " | " if _alt else "") + _fs19.notiz_v19(ergebnis["formelsuche_v19"])
@@ -2420,18 +2288,14 @@ def beantworte_frage(frage, chunks, top_k=4, methode=None, fortschritt=None):
 # =============================================================================
 # Evaluationsdaten: Interaktionsprotokoll
 # =============================================================================
-# Protokollierung von Nutzungsdaten (Frage, genutzte Quellen, Antwort,
-# Sicherheitshinweis, Zeitstempel) ist im eigenen Forschungskonzept explizit
-# als Datenquelle vorgesehen ("Interviews und Nutzungsdaten" im
-# methodischen Vorgehen). Pseudonymisierte Sitzungs-ID statt Klarnamen
-# entspricht Standardpraxis der Forschungsethik (DSGVO-konform) und dem
-# in Design_Entscheidungen_Literatur.md dokumentierten Datenschutzprinzip.
-# V21-S: Sprachmodell-Aufrufe teilen sich die GPU mit dem Reranker (nur mit LERNASSISTENT_RR_GPU=1)
+# Protokoll der Nutzung (Frage, genutzte Quellen, Antwort, Sicherheitshinweis, Zeitstempel) mit
+# pseudonymisierter Sitzungs-ID statt Klarnamen (DSGVO-konform).
+# Optional: Sprachmodell-Aufrufe teilen sich die GPU mit dem Reranker (nur mit LERNASSISTENT_RR_GPU=1)
 if os.environ.get("LERNASSISTENT_RR_GPU") == "1":
     import reranker as _rr21
     _frage_llm_v20 = frage_llm
 
-    def frage_llm(*args, **kwargs):  # noqa: F811  V21-S
+    def frage_llm(*args, **kwargs):  # noqa: F811
         with _rr21.GPU_SPERRE:
             return _frage_llm_v20(*args, **kwargs)
 
@@ -2441,15 +2305,15 @@ INTERAKTIONS_FELDER = [
     "genuegend_relevanz", "hinweis", "erklaerung", "loesung",
     "scaffolding_stufe_erreicht", "quellen", "sicherheitshinweis",
     "kb_hash", "status", "scaffolding_version",
-    "hinweis_pruefung", "hinweis_original",  # ab V8 (HP-v1)
-    "rechen_pruefung", "rechen_befund", "loesung_original",  # ab V9d (RP-v1)
+    "hinweis_pruefung", "hinweis_original",  # Hinweisprüfung
+    "rechen_pruefung", "rechen_befund", "loesung_original",  # Rechenprüfung
 ]
 
 
 def _log_spalten_sicherstellen():
-    """Ab V6 hat interaktionen.csv die Spalten status und scaffolding_version, ab V8 zusätzlich
-    hinweis_pruefung und hinweis_original, ab V9d rechen_pruefung, rechen_befund, loesung_original. Ältere Logs werden einmalig umgeschrieben (alte Zeilen:
-    neue Spalten leer); vorher Sicherungskopie."""
+    """Neuere Versionen von interaktionen.csv haben zusätzliche Spalten (status, scaffolding_version,
+    hinweis_pruefung, hinweis_original, rechen_pruefung, rechen_befund, loesung_original). Ältere Logs werden
+    einmalig umgeschrieben (alte Zeilen: neue Spalten leer); vorher Sicherungskopie."""
     if not INTERAKTIONS_LOG.exists():
         return
     with open(INTERAKTIONS_LOG, encoding="utf-8", newline="") as f:
@@ -2458,7 +2322,7 @@ def _log_spalten_sicherstellen():
             return
         zeilen = list(r)
     sicherung = INTERAKTIONS_LOG.with_name("interaktionen_vor_V6_sicherung.csv")
-    if sicherung.exists():  # ab V8: jede weitere Spaltenänderung bekommt eine eigene Sicherung
+    if sicherung.exists():  # jede weitere Spaltenänderung bekommt eine eigene Sicherung
         sicherung = INTERAKTIONS_LOG.with_name(
             f"interaktionen_vor_spalten_{datetime.datetime.now():%Y%m%d_%H%M%S}.csv")
     import shutil
@@ -2472,12 +2336,10 @@ def _log_spalten_sicherstellen():
 
 def protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=1):
     """
-    scaffolding_stufe_erreicht: wie weit die/der Proband:in tatsächlich
-    geklickt hat. Ab V4: 1 = nur Hinweis gesehen, 2 = + Lösung.
-    V0–V3 (S3-v0): 1 = Hinweis, 2 = + Erklärung, 3 = + Lösung. Eigenes Uptake-Maß analog zu
-    Neagu et al. (2026), die zeigen, dass Lernende angebotenes Scaffolding oft umgehen.
-    Ab V6 zusätzlich: status (G-v1: BEANTWORTET / TEILWEISE / NICHT_IM_MATERIAL, GATE) und
-    scaffolding_version.
+    scaffolding_stufe_erreicht: wie weit die lernende Person tatsächlich geklickt hat
+    (S2/G: 1 = nur Hinweis gesehen, 2 = + Lösung; S3-v0: 1 = Hinweis, 2 = + Erklärung, 3 = + Lösung).
+    Uptake-Maß analog zu Neagu et al. (2026), die zeigen, dass Lernende angebotenes Scaffolding oft umgehen.
+    Zusätzlich: status (BEANTWORTET / TEILWEISE / NICHT_IM_MATERIAL, GATE) und scaffolding_version.
     """
     _log_spalten_sicherstellen()
     neu = not INTERAKTIONS_LOG.exists()
@@ -2511,13 +2373,9 @@ def protokolliere_interaktion(sitzungs_id, ergebnis, scaffolding_stufe_erreicht=
 # =============================================================================
 # Evaluationsdaten: Fragebogen (Technology Acceptance Model)
 # =============================================================================
-# Das TAM (Technology Acceptance Model, Davis 1989, "Perceived Usefulness,
-# Perceived Ease of Use, and User Acceptance of Information Technology",
-# MIS Quarterly) ist DAS Standardinstrument zur Akzeptanzmessung von
-# Informationssystemen und wird in genau diesem Anwendungsfeld bereits von
-# Happe et al. (2025) für die Evaluation eines KI-Tutors eingesetzt
-# (13 Teilnehmende, PU/PEOU/ITU auf 5-Punkte-Likert-Skala) — direktes
-# methodisches Vorbild für dieses Instrument.
+# Technology Acceptance Model (Davis, 1989): Standardinstrument zur Akzeptanzmessung von
+# Informationssystemen; für die Evaluation eines KI-Tutors z. B. bei Happe et al. (2025)
+# (PU/PEOU/ITU auf 5-Punkte-Likert-Skala).
 FRAGEBOGEN_ITEMS = [
     {"id": "PU1", "dimension": "Wahrgenommener Nutzen (Perceived Usefulness)",
      "text": "Der Lernassistent hat mir geholfen, die Lerninhalte besser zu verstehen."},
@@ -2533,10 +2391,8 @@ FRAGEBOGEN_ITEMS = [
      "text": "Es war für mich nachvollziehbar, woher eine Antwort stammt (Quellenangabe)."},
     {"id": "TRUST3", "dimension": "Vertrauen (Trust)",
      "text": "Ich fand es gut, dass der Assistent auch mal 'Ich weiß es nicht' sagt, statt zu raten."},
-    # Scaffolding-Items: operationalisieren direkt die Systemkonzept-Säule
-    # "Lernunterstützung" (Hinweis -> eigene Idee -> Lösung, ab V4). SCAFF2 misst
-    # bewusst nicht nur Zustimmung, sondern das Bypass-Verhalten selbst
-    # (vgl. Neagu et al. 2026, Instrumentelles vs. exekutives Hilfesuchen).
+    # Scaffolding-Items: Lernunterstützung (Hinweis -> eigene Idee -> Lösung). SCAFF2 misst
+    # das Umgehen der Hinweise (vgl. Neagu et al. 2026, instrumentelles vs. exekutives Hilfesuchen).
     {"id": "SCAFF1", "dimension": "Lernunterstützung / Scaffolding",
      "text": "Die schrittweise Hilfe (Hinweis → eigene Idee mit Rückmeldung → Lösung) hat mir beim eigenständigen Lernen geholfen."},
     {"id": "SCAFF2", "dimension": "Lernunterstützung / Scaffolding",
@@ -2559,11 +2415,10 @@ def speichere_fragebogen(sitzungs_id, antworten):
         writer.writerow(zeile)
 
 
-# === V20 (G-v6) ===
+# === G-v6 ===
 # G-v6 = G-v5 + L8 (rechnen, wenn alle Werte in der Frage stehen; Grundgleichung erlaubt und gekennzeichnet)
 #              + L9 (mehrteilige Fragen: jede Teilfrage, alle Ergebnisse im ersten Satz).
-# Anlass: Eval300-V4 (Rechenfragen mit RAG): Teilfragen ohne Antwort, "kann nicht berechnet werden" trotz
-# vollständiger Angaben. Allgemeine Regeln ohne Beispiele (P1). Nur mit LERNASSISTENT_G=G-v6.
+# Allgemeine Regeln ohne Beispiele. Nur mit LERNASSISTENT_G=G-v6.
 SCAFFOLDING_MARKER_VERSIONEN["G-v6"] = {"hinweis": "HINWEIS:", "loesung": "LÖSUNG:"}
 _HINWEIS_REGELN["G-v6"] = _HINWEIS_REGELN["G-v2"]
 _HINWEIS_REGELNUMMERN["G-v6"] = "H1 bis H6"
@@ -2578,7 +2433,7 @@ _LOESUNGS_REGELNUMMERN["G-v6"] = "L1 bis L9"
 
 
 def _prompt_g_v6(frage, ausgewaehlte_chunks):
-    """V20: G-v6 = G-v5 + L8, L9. Nur mit LERNASSISTENT_G=G-v6."""
+    """G-v6 = G-v5 + L8, L9. Nur mit LERNASSISTENT_G=G-v6."""
     return _prompt_g("G-v6", frage, ausgewaehlte_chunks)
 
 

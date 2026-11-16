@@ -1,19 +1,14 @@
 """
 bildbeschreibung.py
 -------------------
-V7b: Ein kleines Vision-Language-Modell (VLM) beschreibt Abbildungen als Text; der Text
-wird wie ein normaler Chunk indiziert. Läuft nur beim Bau der Wissensbasis (offline),
-nicht während Lernende das System nutzen.
+Ein Vision-Language-Modell (VLM) beschreibt Abbildungen als Text; der Text wird wie ein normaler
+Chunk indiziert. Läuft nur beim Bau der Wissensbasis (offline), nicht während Lernende das System nutzen.
 
-Vorbild: Saucă & Rusnac (2026): lokales VLM (Qwen2-VL-2B, Qwen2.5-VL-3B etwas besser)
-beschreibt Tabellen/Abbildungen auf 8 GB VRAM. Standard hier: qwen2.5vl:3b über Ollama
-(kleines Modell aus Sicherheitsgründen: wenig VRAM, weniger Ausfälle über Nacht).
+Vorbild: Saucă & Rusnac (2026): lokales VLM beschreibt Tabellen/Abbildungen auf 8 GB VRAM.
 
-Prompt B-v2 (B-v1 bis zum Pilot): fest und dokumentunabhängig (gleiche Prinzipien wie der Prompt-Satz,
-doku/Prompt_Set_Spezifikation.md): nur Sichtbares, Beschriftungen wörtlich, keine Deutung.
-Risiko: erfundene Details würden zu "Quellmaterial" -> Beschreibungen werden als
-automatisch erzeugt markiert und vor der Nutzung stichprobenartig von Hand geprüft
-(Prüfdatei bildbeschreibungen_pruefung.csv).
+Prompt B-v3: fest und dokumentunabhängig: nur Sichtbares, Beschriftungen wörtlich, keine Deutung.
+Risiko: erfundene Details würden zu "Quellmaterial" -> Beschreibungen werden als automatisch erzeugt
+markiert und vor der Nutzung stichprobenartig von Hand geprüft (Prüfdatei bildbeschreibungen_pruefung.csv).
 """
 import base64
 import re
@@ -25,7 +20,7 @@ from pathlib import Path
 
 import requests
 
-VLM_MODELL = "qwen2.5vl:7b"  # 13 Oct 2026: 7b statt 3b nach Pilotvergleich (3b erfand Achsen/Bauteile)
+VLM_MODELL = "qwen2.5vl:7b"  # 7b statt 3b: das kleinere Modell erfand Achsen und Bauteile
 BILD_PROMPT_VERSION = "B-v3"
 VLM_OPTIONEN = {"temperature": 0, "seed": 42, "num_predict": 300, "repeat_penalty": 1.15}  # Längenbremse gegen Wiederholungsschleifen
 MIN_KANTE_PX = 80  # kleinere Bilder (Symbole, Zierelemente) werden übersprungen
@@ -37,10 +32,8 @@ def _ollama_url():
 
 
 def bild_prompt(bildunterschrift):
-    """B-v3 (13 Oct 2026). Verlauf: B-v1 -> erfundene Bauteile (Rotor, Stator in einem einfachen
-    Stromkreis). B-v2 -> Wiederholungsschleife (Beschriftungsliste 100-fach) und erfundene
-    Achsen/Kurven bei einer Ersatzschaltung, weil die Achsenregel für jede Abbildung galt.
-    B-v3: kurz (2-4 Sätze), Beschriftungen je einmal, Achsen nur bei echten Diagrammen."""
+    """B-v3: kurz (2-4 Sätze), Beschriftungen je einmal, Achsen nur bei echten Diagrammen (sonst erfindet das Modell
+    Achsen/Kurven). Vorgänger: B-v1 erfand Bauteile, B-v2 geriet in Wiederholungsschleifen."""
     hinweis = f"\nBildunterschrift (nur zur Orientierung, nicht wiederholen): {bildunterschrift}" if bildunterschrift else ""
     return f"""Beschreibe diese Abbildung aus einem technischen Lehrbuch in 2 bis 4 Sätzen. Gib nur wieder, was eindeutig zu sehen ist.
 
@@ -94,8 +87,7 @@ MAX_KANTE_PX = 1024  # Qwen2.5-VL rechnet in nativer Auflösung; große Bilder s
 
 
 def _bild_b64(pfad):
-    """Bild als Base64, längste Kante auf MAX_KANTE_PX verkleinert (Nachtlauf 13 Oct 2026:
-    Ollama stürzte während der Bildbeschreibungen ab; große Bilder sind der wahrscheinlichste Grund)."""
+    """Bild als Base64, längste Kante auf MAX_KANTE_PX verkleinert (große Bilder können Ollama zum Absturz bringen)."""
     try:
         import io
         from PIL import Image

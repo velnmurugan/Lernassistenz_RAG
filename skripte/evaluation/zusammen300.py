@@ -1,5 +1,5 @@
 """
-zusammen300.py  (Fragen300: eigene Bewertungen in den automatisch gefüllten Bogen übernehmen)
+zusammen300.py  (Studie 1: menschliche Bewertungen in den automatisch gefüllten Bogen übernehmen)
 Kopiert die Bewertungsspalten 1 und 2 (ohne und mit RAG) aus dem Bewertungsexemplar in den vom Lauf gefüllten Bogen
 (Antworten, Richter, Rang, Faithfulness) und speichert das Ergebnis als neue Datei. Abgleich über die ID.
   python skripte/evaluation/zusammen300.py <Bewertungsexemplar.xlsx> <Lauf-Bogen.xlsx> <Ziel.xlsx>

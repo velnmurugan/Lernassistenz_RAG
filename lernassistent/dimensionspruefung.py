@@ -1,12 +1,11 @@
-"""DP-v1 (V17b, 28 Oct 2026): Dimensionsprüfung der Python-Nachrechnung.
+"""DP-v1: Dimensionsprüfung der Python-Nachrechnung (gehört zu RB-v8).
 
 Idee: Jede Größe der Nachrechnung trägt eine physikalische Dimension (Exponenten von Länge, Masse, Zeit, Strom, Temperatur,
 Stoffmenge, Lichtstärke und Geld). Die Dimension wird durch FORMEL/WERTE/RECHNUNG mitgeführt, unabhängig vom Sprachmodell.
 Widerspruch = (a) Summe/Differenz verschiedener Dimensionen, (b) berechneter Ausdruck ≠ angegebene Einheit derselben Zeile,
 (c) Ergebnis ≠ Einheit unter EINHEIT. Unbekannt (Zahl ohne Einheit, unbekannte Einheit, nicht lesbarer Ausdruck) führt nie zu
 einem Widerspruch; geprüft wird nur, was eindeutig ist.
-Anlass: RV-v2 R09 (V16): erste Nachrechnung teilte die Gewichtskraft durch g (Ergebnis in kg, angegeben als N), die Fläche war
-um den Faktor 100 falsch; die Zahlenprüfung kann das nicht erkennen, die Dimension schon.
+Beispiel: eine Gewichtskraft durch g geteilt ergibt kg, angegeben ist N; die Zahlenprüfung erkennt das nicht, die Dimension schon.
 Rückgabe von pruefe(roh): {"widerspruch": bool, "detail": str}."""
 import ast
 import re
@@ -123,7 +122,7 @@ _ZAHL_EINHEIT = rb._ZAHL_EINHEIT_V7
 
 def _ausdruck_dim(ausdruck, dims, werte_zahlen=frozenset()):
     """Dimension eines Ausdrucks oder None (unbekannt). Wirft _Widerspruch bei Summe verschiedener bekannter Dimensionen.
-    Zahlen ohne Einheit sind unbekannt (eingesetzte Werte, F14: "0,5 * 0,5 * 4**2"). Ausnahme: kleine Strukturzahlen (2, 1/2 …) in
+    Zahlen ohne Einheit sind unbekannt (eingesetzte Werte, z. B. "0,5 * 0,5 * 4**2"). Ausnahme: kleine Strukturzahlen (2, 1/2 …) in
     einem Ausdruck mit Namen, wenn sie keinem Wert unter WERTE gleichen; Naturkonstanten (9,81 für g, μ₀, e) mit ihrer Dimension."""
     platz = {}
 
@@ -220,7 +219,7 @@ def pruefe(roh):
         for block, rechnung in ((a.get("WERTE", ""), False), (a.get("RECHNUNG", ""), True)):
             for name, wert in rb._zuweisungen_v6(block, rechnung):
                 wert = wert.split("=")[-1].strip() if "=" in wert else wert  # Kettenzeile: letzter Teil
-                ausdruck, angabe = _ausdruck_und_einheit(wert)  # auch in RECHNUNG steht manchmal eine Einheit am Ende (RV R13)
+                ausdruck, angabe = _ausdruck_und_einheit(wert)  # auch in RECHNUNG steht manchmal eine Einheit am Ende
                 try:
                     d = _ausdruck_dim(ausdruck, dims, frozenset(werte_zahlen))
                 except _Widerspruch as e:

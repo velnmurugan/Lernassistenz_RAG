@@ -1,5 +1,5 @@
 """
-rang300.py  (Fragen300, Schritt 2: Rang der Buchstelle in der Trefferliste, für Recall@k und MRR)
+rang300.py  (Studie 1, Schritt 2: Rang der Buchstelle in der Trefferliste, für Recall@k und MRR)
 Dieselbe Suche wie die App (rp.retrieval, hybrid_kg_rr; das Sprachmodell erhält die ersten 4). Ein Abschnitt zählt als Treffer,
 wenn mindestens 40 % seiner Wortfolgen (4 Wörter) auf der Buchseite der Frage stehen (Seitentext aus dem PDF, daten/gold300.json;
 bei zwei Seiten beide). Rang = Platz des ersten Treffers unter den ersten 50, 0 = nicht unter den ersten 50.

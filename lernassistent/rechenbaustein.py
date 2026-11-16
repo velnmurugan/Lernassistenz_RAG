@@ -1,11 +1,8 @@
 """
 rechenbaustein.py
 -----------------
-Rechenbaustein RB-v1 (V11, 20 Oct 2026): unabhängige Nachrechnung per Python.
-
-Anlass: In N100 (V10a) sind 10 von 19 Rechenaufgaben richtig. Die Fehler stehen oft in Antworten ohne
-prüfbare Gleichung ("ω = 1047,2 s⁻¹ … J ≈ 0,25 kg·m²", "U = 8,5 V" statt 13,3 V); RP-v3 sieht nur
-ausgeschriebene Gleichungsketten und meldet dort "ok".
+Rechenbaustein RB: unabhängige Nachrechnung per Python. Die Rechenprüfung (rechenpruefung.py) sieht nur
+ausgeschriebene Gleichungsketten; viele Rechenfehler stehen aber in Antworten ohne prüfbare Gleichung.
 
 Vorgehen (Program-aided: das Modell stellt die Rechnung auf, Python führt sie aus):
   1. Zweiter, unabhängiger Aufruf (Prompt RB-v1): FORMEL, WERTE (Name = Zahl [Einheit]), RECHNUNG (ein
@@ -15,21 +12,20 @@ Vorgehen (Program-aided: das Modell stellt die Rechnung auf, Python führt sie a
      Umrechnungskonstante sein: 60, 100, 1000, 3600, 2, 3 …); sonst gilt die Nachrechnung als nicht verwertbar.
   4. Vergleich: Der Wert im ersten Satz der Lösung (Zahlen aus der Frage zählen nicht) muss zum Ergebnis
      passen (Toleranz wie RP, auch Prozent, Vorsatz-Faktoren 10³). Stimmt nichts überein: Befund.
-Der Befund geht in die vorhandene Reparatur von rag_pipeline.rechnung_pruefen (ein Neuschreib-Aufruf mit dem
+Der Befund geht in die Reparatur von rag_pipeline.rechnung_pruefen (ein Neuschreib-Aufruf mit dem
 Python-Ergebnis, sonst sichtbarer Vermerk). Grenzen: falsch gewählte Formel und falsche Eingangswerte werden
 nicht erkannt, wenn beide Wege denselben Fehler machen; Aufgaben ohne Zahl im ersten Satz werden übersprungen.
 
-RB-v2 (V11b, 21 Oct 2026, gehört zu RP-v5; RB-v1 bleibt für RP-v4 unverändert). Anlass: Live-Test "Drehstrom-Öltransformator
-40 kVA, 5 kV / 400 V: primärer und sekundärer Bemessungsstrom" – die Lösung nannte "2,89 A und 72 A" (Zahlen des
-Buchbeispiels 50 kVA / 10 kV), der Rechenweg darunter ergab 4,62 A und 57,7 A. Änderungen:
+RB-v2 (gehört zu RP-v5; RB-v1 bleibt für RP-v4 unverändert):
   1. Mehrere Ergebnisse: RECHNUNG besteht aus Zeilen "name = ausdruck" (Zwischen- und Endergebnisse, spätere Zeilen
      dürfen frühere Namen nutzen); ERGEBNIS nennt die gesuchten Größen.
   2. Jede Zahl mit Einheit im ersten Satz der Lösung (nicht aus der Frage) muss zu einem Ergebnis passen; Zahlen ohne
-     Einheit zählen nicht (Fall "bei 3 Phasen"). Ohne Zahl mit Einheit gilt wie in RB-v1: mindestens eine muss passen.
+     Einheit zählen nicht. Ohne Zahl mit Einheit gilt wie in RB-v1: mindestens eine muss passen.
   3. Formelquelle: QUELLE nennt die Formel wörtlich aus dem Material oder GRUNDWISSEN; der Auszug wird im Material
      gesucht (`quelle_im_material`). Ergebnis: True / False / None (ohne Quelle).
   4. Geprüfte Lösung (`pruefloesung`): Weicht die Antwort ab und behebt der Neuschreib-Aufruf das nicht, wird die
      Python-Nachrechnung als Lösung gezeigt – nur wenn Zahlen und Formel aus dem Material belegt sind (Quelle True).
+RB-v3 … RB-v8: siehe die Abschnitte weiter unten.
 """
 import ast
 import difflib
@@ -57,10 +53,10 @@ _HOCH_ZIFFER = {"⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": 
 
 
 def normiere_ausdruck(ausdruck):
-    """RB-v3 (V13): Schreibweisen des Modells in einen Python-Ausdruck übersetzen. Neu gegenüber RB-v2:
-    "√2" / "√x" ohne Klammer (vorher "sqrt2" -> Auswertungsfehler, N100 F29), "2π" / "2 pi" / "2 sqrt(2)" / ")(" /
-    ") pi" mit unsichtbarem Malzeichen, Hochzahlen ")²" / "x²", "÷". Reine Einheiten nach einer Zahl ("0,5 m") bleiben
-    unberührt: Malzeichen werden nur vor pi, sqrt, Klammer auf und nach Klammer zu eingefügt."""
+    """RB-v3: Schreibweisen des Modells in einen Python-Ausdruck übersetzen. Neu gegenüber RB-v2:
+    "√2" / "√x" ohne Klammer, "2π" / "2 pi" / "2 sqrt(2)" / ")(" / ") pi" mit unsichtbarem Malzeichen,
+    Hochzahlen ")²" / "x²", "÷". Reine Einheiten nach einer Zahl ("0,5 m") bleiben unberührt: Malzeichen werden
+    nur vor pi, sqrt, Klammer auf und nach Klammer zu eingefügt."""
     t = (ausdruck or "").strip()
     t = t.replace("^", "**").replace("·", "*").replace("×", "*").replace("−", "-").replace("÷", "/")
     t = re.sub(r"(?<=\d),(?=\d)", ".", t)  # deutsche Dezimalkommas
@@ -90,7 +86,7 @@ def sicher_auswerten(ausdruck, namen=None):
             return float(namen[k.id])
         if isinstance(k, ast.BinOp) and type(k.op) in _OPS:
             a, b = w(k.left), w(k.right)
-            if isinstance(k.op, ast.Pow) and abs(b) > (30 if a == 10 else 12):  # V12.2: 10^18 (Elementarladung) erlaubt
+            if isinstance(k.op, ast.Pow) and abs(b) > (30 if a == 10 else 12):  # 10^18 (Elementarladung) erlaubt
                 raise ValueError("Exponent")
             return _OPS[type(k.op)](a, b)
         if isinstance(k, ast.UnaryOp) and type(k.op) in _OPS:
@@ -221,7 +217,7 @@ def vergleiche(loesung, frage, res):
 
 
 # ---------------------------------------------------------------------------------------------------------
-# RB-v2 (V11b)
+# RB-v2
 # ---------------------------------------------------------------------------------------------------------
 RB_VERSION_2 = "RB-v2"
 
@@ -287,7 +283,7 @@ def parse_v2(roh):
     namen = [n.strip() for n in re.split(r"[,;]|\bund\b", gm.group(1)) if n.strip()] if gm else []
     namen = [n for n in namen if any(n == s[0] for s in schritte)] or [schritte[-1][0]]
     fm = re.search(r"FORMEL:\s*(.+)", roh)
-    qm = re.search(r"QUELLE:\s*(.+)", roh)  # eine Zeile; V12.2: auf 400 Zeichen gekürzt (Schleifen)
+    qm = re.search(r"QUELLE:\s*(.+)", roh)  # eine Zeile, auf 400 Zeichen gekürzt
     em = re.search(r"EINHEIT:\s*(.+)", roh)
     return {"rechnung": "; ".join(f"{n} = {a}" for n, a in schritte), "werte": werte, "schritte": schritte,
             "ergebnis_namen": namen, "formel": fm.group(1).strip() if fm else "",
@@ -299,8 +295,8 @@ _SUBZIFFER = str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")
 
 def _norm_formel(text):
     """Vergleichsform einer Formel: klein, ohne Leerraum, Malpunkt/Stern, Klammern, Unterstrich und LaTeX-Reste;
-    Wurzel, Hochzahlen, Tiefzahlen (μ₀ = mu0) vereinheitlicht. V12: Mal-Zeichen und Klammern entfallen ganz, damit
-    "F = B²·A/(2·μ₀)" und "F = (B² · A)/(2 · μ₀)" gleich werden (V11b: falsche Meldung "Formel nicht im Material")."""
+    Wurzel, Hochzahlen, Tiefzahlen (μ₀ = mu0) vereinheitlicht. Mal-Zeichen und Klammern entfallen ganz, damit
+    "F = B²·A/(2·μ₀)" und "F = (B² · A)/(2 · μ₀)" gleich werden."""
     t = (text or "").lower()
     for a, b in (("√", "sqrt"), ("−", "-"), ("–", "-"), ("²", "^2"), ("³", "^3"), ("μ", "mu"), ("µ", "mu"),
                  ("\\cdot", ""), ("\\sqrt", "sqrt"), ("\\left", ""), ("\\right", ""), ("\\frac", "frac"),
@@ -322,7 +318,7 @@ def quelle_im_material(quelle, kontext):
     for nr in re.findall(r"(?:Gl\.?|Gleichung)\s*\(?(\d+\.\d+)\)?", q, re.I):
         if re.search(rf"(?<![\d.]){re.escape(nr)}(?![\d])", kontext or ""):
             return True
-    if "=" not in q:  # V12.2: ein Auszug ohne Gleichung belegt keine Formel (F1: Quelle nannte nur die Ladung von 1 C)
+    if "=" not in q:  # ein Auszug ohne Gleichung belegt keine Formel
         return False
     if V18_B:  # V18-B: nur der Teil vor einer Kürzung („…“) oder vor einem weiteren Zitat zählt
         q = re.split(r"\|\|\||…|\.\.\.", q)[0].strip()
@@ -342,15 +338,14 @@ _FAKTOREN = (1e3, 1e6, 1e9, 1e-3, 1e-6, 1e-9, 100.0, 0.01, 60.0, 3600.0)
 
 
 def _belegt(lit, bekannt):
-    """Zahl `lit` steht in Frage/Material oder ist eine bekannte Zahl mal einem Umrechnungsfaktor (kVA -> VA: 40 -> 40000).
-    RB-v1 prüfte nur die exakte Zahl und wies "40000 VA" bei "40 kVA" in der Frage als erfunden ab (Live-Test 21 Oct 2026)."""
+    """Zahl `lit` steht in Frage/Material oder ist eine bekannte Zahl mal einem Umrechnungsfaktor (kVA -> VA: 40 -> 40000)."""
     if round(lit, 9) in bekannt:
         return True
     return any(round(lit / f, 9) in bekannt or round(lit * f, 9) in bekannt for f in _FAKTOREN)
 
 
 def _ohne_einheit(ausdruck, namen):
-    """V12.2: "500 * (0,5 / x)**2 kg*m**2" -> ("500 * (0,5 / x)**2", Wert). Hängt eine Einheit am Ausdruck, wird der längste
+    """"500 * (0,5 / x)**2 kg*m**2" -> ("500 * (0,5 / x)**2", Wert). Hängt eine Einheit am Ausdruck, wird der längste
     auswertbare Anfang genommen, wenn der Rest wie eine Einheit aussieht (beginnt mit Buchstabe, kein Name aus `namen`)."""
     wert = sicher_auswerten(ausdruck, namen)
     if wert is not None:
@@ -383,9 +378,9 @@ def rechne_v2(parsed, frage, kontext):
         return {"ergebnis": None, "ergebnisse": [], "grund": "keine_rechnung"}
     bekannt = _zahlen_in(frage) | _zahlen_in(kontext) | {round(float(c), 9) for c in ERLAUBTE_KONSTANTEN}
     namen = {}
-    unleserlich = {}  # V12.2: unlesbare Werte brechen nur ab, wenn die Rechnung sie braucht (F29: "R_L = unendlich Ohm")
+    unleserlich = {}  # unlesbare Werte brechen nur ab, wenn die Rechnung sie braucht ("R_L = unendlich Ohm")
     for name, text in parsed["werte"].items():
-        ausdruck, wert = _wert_ausdruck(text, namen)  # V12.2: Werte dürfen frühere Namen und pi nutzen (ω = 2·pi·n)
+        ausdruck, wert = _wert_ausdruck(text, namen)  # Werte dürfen frühere Namen und pi nutzen (ω = 2·pi·n)
         if wert is None:
             unleserlich[name] = text
             continue
@@ -399,7 +394,7 @@ def rechne_v2(parsed, frage, kontext):
         ausdruck_ohne, wert = _ohne_einheit(ausdruck, namen)
         ist_literal = wert is not None and bool(re.fullmatch(r"\s*[-+]?\d+(?:[.,]\d+)?(?:[eE][-+]?\d+)?\s*", ausdruck_ohne))
         if ist_literal and name in berechnet:
-            continue  # V12.2b: "P = 31,4925" nach der Rechnung überschreibt sie nicht (A/B F15: 19,298 statt 18,95)
+            continue  # eine hingeschriebene Zahl nach der Rechnung ("P = 31,4925") überschreibt sie nicht
         if wert is None:
             fehlt = [n for n in unleserlich if re.search(rf"(?<![A-Za-z0-9_]){re.escape(n)}(?![A-Za-z0-9_])", ausdruck)]
             if fehlt:
@@ -503,7 +498,7 @@ def lesbar(s):
 
 def pruefloesung(res, urspruenglich=""):
     """Lösungstext aus der Nachrechnung (nur Python-Werte und die Formel aus dem Material). Format wie die Modelllösung:
-    erster Satz mit den Ergebnissen, dann 'Begründung:' mit Formel, Werten und Rechnung (ab V12 in Lehrbuchschreibweise)."""
+    erster Satz mit den Ergebnissen, dann 'Begründung:' mit Formel, Werten und Rechnung (in Lehrbuchschreibweise)."""
     werte = "; ".join(f"{lesbar(n)} = {lesbar(t)}" for n, t in res.get("werte", {}).items())
     schritte = "; ".join(f"{lesbar(n)} = {lesbar(a)}" for n, a in res.get("schritte", []))
     teile = [f"Formel: {lesbar(res.get('formel', ''))}"] if res.get("formel") else []
@@ -519,12 +514,8 @@ def pruefloesung(res, urspruenglich=""):
 
 
 # ---------------------------------------------------------------------------------------------------------
-# RB-v3 (V13, 25 Oct 2026; gehört zu RP-v6)
+# RB-v3 (gehört zu RP-v6)
 # ---------------------------------------------------------------------------------------------------------
-# Anlass: N100 V11B (21 Oct) – bei F1, F29, F62 und B24 war die Nachrechnung "nicht verwertbar: wert_unlesbar",
-# also wurde nichts geprüft; F29 scheiterte an "2√2" ohne Klammer; F61 (V12.9, alte KB) blieb unbemerkt, weil die
-# Antwort nur eine Zahl aus der Frage nannte; F1 bekam eine falsche Warnung, obwohl die Formel der Nachrechnung
-# nicht im Buch stand. Änderungen:
 #   1. normiere_ausdruck (oben): √2, 2π, ")(", Hochzahlen.
 #   2. Retry: ist die erste Nachrechnung nicht auswertbar (RETRY_GRUENDE), ein zweiter Aufruf mit Fehlerbericht und
 #      Formatbeispiel (baue_prompt_v3).
@@ -543,7 +534,7 @@ def baue_prompt_v3(frage, kontext, fehler=None):
               "- RECHNUNG: nur Namen aus WERTE, Zahlen und + - * / ** ( ) sqrt() pi; Malzeichen immer ausschreiben (2*pi*n,"
               " nicht 2πn); Wurzel als sqrt(x), nie √; Potenzen mit **; keine Einheiten in RECHNUNG.\n"
               "- Beispiel: WERTE: U = 230 V / n = 1500/60 1/s   RECHNUNG: w = 2*pi*n / P = U**2/R\n\n")
-    if V18_A:  # V18-A: jede Größe in eigener Zeile, rechts vom = nur Zahlen; das alte Beispiel zeigte zwei Größen in einer Zeile
+    if V18_A:  # V18-A: jede Größe in eigener Zeile, rechts vom = nur Zahlen
         regeln = ("Schreibweise (wichtig, die Zeilen werden automatisch ausgewertet):\n"
                   "- WERTE: genau eine Größe je Zeile, Form „Name = Zahl Einheit“. Rechts vom = nur Zahlen oder Rechenausdrücke\n"
                   "  mit Zahlen, nie eine Variable oder Gleichung (nicht „n1 = n/10“, sondern „n1 = 1/10“). Keine Platzhalter.\n"
@@ -570,7 +561,7 @@ _EINHEITEN_FOLGE = re.compile(r"(?:%s)+" % rp._EINHEIT.pattern)  # "kgm" in "kgm
 
 def kopfzahlen_v3(loesung, frage):
     """Zahlen mit Einheit im ersten Satz. Nur Zahlen aus der Frage? Dann (liste, True): die Antwort wiederholt vielleicht einen
-    gegebenen Wert (F61 im V12.9-Lauf: "0,02 kgm²"). Rückgabe (liste von (w, stellen, text, hat_einheit), rueckfall)."""
+    gegebenen Wert. Rückgabe (liste von (w, stellen, text, hat_einheit), rueckfall)."""
     eigene = _kopf_mit_einheit(loesung, frage)
     if eigene:
         return eigene, False
@@ -610,18 +601,14 @@ def vergleiche_v3(loesung, frage, res):
 
 
 # ---------------------------------------------------------------------------------------------------------
-# RB-v5 (V13.4, 26 Oct 2026; gehört zu RP-v10)
+# RB-v5 (gehört zu RP-v10): weitere Schreibweisen, die das Modell nutzt
 # ---------------------------------------------------------------------------------------------------------
-# Anlass: Rechenvarianten-Test RV-v1 (26 Oct 2026, 22 Buchaufgaben mit geänderten Zahlen): die Nachrechnung war in 14 von
-# 22 Fragen "nicht verwertbar: auswertung", auch nach dem Retry. Offline nachgestellte Ursachen (Schreibweisen, die das
-# Modell nutzt, die die Auswertung aber nicht las):
 #   1. Kettenzeilen "P2 = P1 * η = 16000" (Ergebnis hinter dem Ausdruck) -> nur der Ausdruck zählt.
 #   2. Namen mit "ϑ", "ϕ", "µ": Python liest Namen in NFKC-Form (ϑ -> θ, µ -> μ), die Werte standen unter dem Originalnamen.
 #   3. "math.sqrt", "np.sqrt", LaTeX (\sqrt{x}, \frac{a}{b}, \cdot), "≈".
-#   4. Prozentwerte "η = 90 %" wurden als 90 gerechnet (still falsch, nicht nur nicht verwertbar).
-#   5. Winkel in Grad (cos(36,87) als Bogenmaß gerechnet, still falsch).
-# Zusätzlich: Rohtexte der Nachrechnung werden für das Protokoll aufbewahrt (letzte_rohtexte), damit ein weiterer
-# Ausfall diagnostizierbar ist.
+#   4. Prozentwerte "η = 90 %" werden als 0,9 gelesen.
+#   5. Winkel in Grad (cos(36,87) ist kein Bogenmaß).
+# Zusätzlich: Rohtexte der Nachrechnung werden für das Protokoll aufbewahrt (letzte_rohtexte).
 import unicodedata
 
 RB_VERSION_5 = "RB-v5"
@@ -709,14 +696,13 @@ def pruefloesung_v5(res, urspruenglich=""):
 
 
 # ---------------------------------------------------------------------------------------------------------
-# RB-v6 (V13.5, 27 Oct 2026; gehört zu RP-v11)
+# RB-v6 (gehört zu RP-v11): weitere Formen der Nachrechnung
 # ---------------------------------------------------------------------------------------------------------
-# Anlass: Rohtexte der Nachrechnung aus dem RV-Lauf V134 (erstmals protokolliert). Die Ausfälle hatten andere Ursachen als
-# vermutet: (1) alle Zuweisungen in EINER Zeile, getrennt durch ";", ", " oder " / " (" / " stammt aus dem Formatbeispiel des
-# RB-v3-Prompts, das Modell übernimmt es), (2) die ganze Rechnung unter WERTE, RECHNUNG fehlt, (3) Einheiten mitten in RECHNUNG
-# ("1,5 mm + 2 * 0,25 mm", "0,5 Ω·mm²/m * l / A"), (4) Umformungsschritte ("R_V = eta*(Ri + RL + R_V)") vor der eigentlichen
-# Formel, (5) "… -> Korrektur: x = …", (6) Formelsymbol als Wert ("M_K = M_K") bei Verhältnisaufgaben. Außerdem: eine bereits
-# berechnete Größe, die das Modell als Zahl wiederholt, erscheint nicht mehr in der angezeigten Rechnung (N100 F15: "n = 19,298").
+# (1) alle Zuweisungen in EINER Zeile, getrennt durch ";", ", " oder " / ", (2) die ganze Rechnung unter WERTE, RECHNUNG
+# fehlt, (3) Einheiten mitten in RECHNUNG ("1,5 mm + 2 * 0,25 mm", "0,5 Ω·mm²/m * l / A"), (4) Umformungsschritte
+# ("R_V = eta*(Ri + RL + R_V)") vor der eigentlichen Formel, (5) "… -> Korrektur: x = …", (6) Formelsymbol als Wert
+# ("M_K = M_K") bei Verhältnisaufgaben. Außerdem: eine bereits berechnete Größe, die das Modell als Zahl wiederholt,
+# erscheint nicht in der angezeigten Rechnung.
 RB_VERSION_6 = "RB-v6"
 _PRUEFE_LITERALE = True  # RB-v7 schaltet die Belegprüfung für die umgerechneten Werte ab (geprüft wird die Originallesung)
 _KOPF_V6 = re.compile(r"(?im)^[ \t*_#-]*(FORMEL|WERTE|RECHNUNG|ERGEBNIS|EINHEIT|QUELLE)[ \t*_]*:")
@@ -771,7 +757,7 @@ def _ohne_einheiten_v6(ausdruck, namen):
         if tok in namen or not _ist_einheit_v6(tok):
             return m.group(0)
         return m.group(1) + rest
-    if V19_B:  # V19b: Potenz an der Einheit gehört zur Einheit ("... kg*m**2"), sonst bliebe "**2" an der Zahl hängen (N100 F62: ^4 statt ^2)
+    if V19_B:  # V19-B: Potenz an der Einheit gehört zur Einheit ("... kg*m**2"), sonst bliebe "**2" an der Zahl hängen
         return re.sub(r"((?:\d|\))\s*)(?<![A-Za-z_])([A-Za-zΩµμ°€%][^\s+\-*()]*(?:\*\*[-+]?\d+)?(?:[*·/][A-Za-zΩµμ°][^\s+\-*()]*(?:\*\*[-+]?\d+)?)*[)\],;]*)(?=\s|$|[*/+\-])",
                       ersetze, ausdruck)
     return re.sub(r"((?:\d|\))\s*)(?<![A-Za-z_])([A-Za-zΩµμ°€%][^\s+\-*()]*(?:[*·/][A-Za-zΩµμ°][^\s+\-*()]*)*[)\],;]*)(?=\s|$|[*/+\-])",
@@ -866,13 +852,13 @@ def rechne_v6(parsed, frage, kontext):
                         continue
                     return {"ergebnis": None, "ergebnisse": [], "grund": "zwischenwert", "detail": f"{name} = {ausdruck} (Zahl {lit})"}
             if ist_literal and name in berechnet:
-                continue  # wiederholte Zahl einer berechneten Größe: weder rechnen noch anzeigen (F15)
+                continue  # wiederholte Zahl einer berechneten Größe: weder rechnen noch anzeigen
             if wert is None:
                 if name in namen or any(n2 == name for n2, _ in schritte[i + 1:]):
                     continue  # (4) Umformungsschritt
                 if V19_B and name not in parsed["ergebnis_namen"] and not any(
                         re.search(rf"(?<![A-Za-z0-9_]){re.escape(name)}(?![A-Za-z0-9_])", a2) for _, a2 in schritte[i + 1:]):
-                    continue  # V19b (5): Zeile, deren Größe weder Ergebnis noch in einem späteren Schritt gebraucht wird (R07: "I_t = 0,25 * I_0")
+                    continue  # V19-B (5): Zeile, deren Größe weder Ergebnis noch in einem späteren Schritt gebraucht wird
                 fehlt = [n for n in unleserlich if re.search(rf"(?<![A-Za-z0-9_]){re.escape(n)}(?![A-Za-z0-9_])", ausdruck)]
                 if fehlt:
                     return {"ergebnis": None, "ergebnisse": [], "grund": "wert_unlesbar", "detail": f"{fehlt[0]} = {unleserlich[fehlt[0]]}"}
@@ -897,7 +883,7 @@ def rechne_v6(parsed, frage, kontext):
 
 
 def _reihenfolge_v6(schritte, namen):
-    """Schritte, die eine erst später berechnete Größe brauchen, rücken hinter deren Berechnung (RV-v1 R01: "P_zu2 = P_ab2 / eta2"
+    """Schritte, die eine erst später berechnete Größe brauchen, rücken hinter deren Berechnung ("P_zu2 = P_ab2 / eta2"
     vor "P_ab2 = P_ab1"). Sonst bleibt die Reihenfolge."""
     definiert = {n for n, _ in schritte}
     rest, out, bekannt = list(schritte), [], set(namen) | set(_KONSTANTEN)
@@ -922,7 +908,7 @@ def _norm_einheit_v6(e):
 
 def vergleiche_v6(loesung, frage, res):
     """Wie vergleiche_v3; zusätzlich: steht hinter der Zahl im ersten Satz dieselbe Einheit wie beim Ergebnis der Nachrechnung,
-    gilt kein Vorsatz-Faktor 10³ (RV-v1 Lauf V134 R14: "300 W" statt 0,3 W galt als passend)."""
+    gilt kein Vorsatz-Faktor 10³ ("300 W" passt nicht zu 0,3 W)."""
     b = vergleiche_v3(loesung, frage, res)
     if b or not res.get("ergebnisse"):
         return b
@@ -958,26 +944,26 @@ def vergleiche_v6(loesung, frage, res):
 
 
 
-# RB-v7 (V15, 27 Oct 2026): Einheiten umrechnen statt streichen. Läufe V134/V14C/V14D: die Python-Nachrechnung rechnete richtig,
-# lag aber um Faktoren 10³ daneben, weil Einheiten nur gestrichen wurden (R01: MWh · €/kWh; R02: Längen in mm mit Ω·mm²/m).
-# RB-v7 rechnet jede Zahl mit Einheit in WERTE und RECHNUNG in die Grundeinheit ohne Vorsilbe um (37 mm -> 0,037; 0,08 €/kWh ->
-# 0,08/3,6·10⁶; 900 min⁻¹ -> 15), rechnet damit und gibt die Ergebnisse in der unter EINHEIT genannten Einheit zurück.
-# Nicht umgerechnet wird bei Zahlenwertgleichungen: enthält ein Rechenschritt eine Zahl, die weder in der Frage steht noch 1, 2, 3, 4
-# oder 0,5 ist (z. B. 60, 1000, 9550), erwartet die Formel bestimmte Einheiten -> Lesung wie RB-v6. Unbekannte Einheiten (°C, Grad)
-# werden wie bisher gestrichen. Die Belegprüfung (erfundene Zahlen) läuft auf der Originallesung.
+# RB-v7: Einheiten umrechnen statt streichen (sonst liegt die Nachrechnung um Faktoren 10³ daneben, z. B. MWh · €/kWh
+# oder Längen in mm mit Ω·mm²/m). RB-v7 rechnet jede Zahl mit Einheit in WERTE und RECHNUNG in die Grundeinheit ohne
+# Vorsilbe um (37 mm -> 0,037; 0,08 €/kWh -> 0,08/3,6·10⁶; 900 min⁻¹ -> 15), rechnet damit und gibt die Ergebnisse in der
+# unter EINHEIT genannten Einheit zurück. Nicht umgerechnet wird bei Zahlenwertgleichungen: enthält ein Rechenschritt eine
+# Zahl, die weder in der Frage steht noch 1, 2, 3, 4 oder 0,5 ist (z. B. 60, 1000, 9550), erwartet die Formel bestimmte
+# Einheiten -> Lesung wie RB-v6. Unbekannte Einheiten (°C, Grad) werden gestrichen. Die Belegprüfung (erfundene Zahlen)
+# läuft auf der Originallesung.
 RB_VERSION_7 = "RB-v7"
-# RB-v8 (V17b, 28 Oct 2026) = RB-v7 + Dimensionsprüfung (dimensionspruefung.py, über rag_pipeline) + zwei Lesekorrekturen (Schalter RB_V8, gesetzt von rag_pipeline bei LERNASSISTENT_RB=RB-v8):
-# (1) Konstanten (pi) gehen vor Einträgen unter WERTE: "pi = pi" wurde als pi = 1 gelesen (RV-v2 R11, Bestätigung 125000 Hz statt
-# 39,79 Hz). (2) Selbst umgerechnete Zahl ("L = 20/1000 H") wird auch dann nicht noch einmal umgerechnet, wenn die Einheit hinter der
-# Umrechnungszahl schon gestrichen ist ("20/1000.0"); vorher wurde 20 mit dem Faktor aus der Frage (20 mH) zu 0,02/1000.
+# RB-v8 = RB-v7 + Dimensionsprüfung (dimensionspruefung.py, über rag_pipeline) + zwei Lesekorrekturen (Schalter RB_V8,
+# gesetzt von rag_pipeline bei LERNASSISTENT_RB=RB-v8): (1) Konstanten (pi) gehen vor Einträgen unter WERTE ("pi = pi" ist
+# nicht pi = 1); (2) eine vom Modell selbst umgerechnete Zahl ("L = 20/1000 H") wird nicht noch einmal umgerechnet, auch
+# wenn die Einheit hinter der Umrechnungszahl schon gestrichen ist.
 RB_V8 = False
-# V18 (28 Oct 2026): LERNASSISTENT_V18 enthält "A" (strengere Schreibweise der Bestätigung) und/oder "B" (Formelbeleg
-# bei Kürzung und kurzen Formeln). Standard: aus.
+# LERNASSISTENT_V18 enthält "A" (strengere Schreibweise der Bestätigung), "B" (Formelbeleg bei Kürzung und kurzen
+# Formeln), "D", "E", "K" (siehe unten und rechenpruefung.py). Standard: aus.
 _V18 = __import__("os").environ.get("LERNASSISTENT_V18", "")
 V18_A = "A" in _V18
 V18_B = "B" in _V18
 V18_D = "D" in _V18  # D: Zahlen in RECHNUNG müssen aus Frage/Material stammen oder vorher berechnet sein
-V19_B = "B" in __import__("os").environ.get("LERNASSISTENT_V19", "")  # V19b: Einheit mit Exponent ("kg*m**2") streichen; unbenutzte Zwischenzeile überspringen
+V19_B = "B" in __import__("os").environ.get("LERNASSISTENT_V19", "")  # V19-B: Einheit mit Exponent ("kg*m**2") streichen; unbenutzte Zwischenzeile überspringen
 V18_E = "E" in _V18  # E: ERGEBNIS muss eine berechnete Größe nennen (kein stiller Rückfall auf den letzten Schritt)
 _STRUKTURZAHLEN_V18 = {0.25, 0.5, 1.5, 1e9, 1e-9}
 _PRAEFIX_V7 = {"T": 1e12, "G": 1e9, "M": 1e6, "k": 1e3, "h": 1e2, "d": 1e-1, "c": 1e-2, "m": 1e-3, "μ": 1e-6, "µ": 1e-6,
@@ -1075,10 +1061,10 @@ def _si_v7(text, namen, nur_entfernen=False):
 
 
 def _gleiche_zahl_v7(block, zuordnung):
-    """Zahl ohne Einheit in RECHNUNG, die als Zahl mit Einheit unter WERTE steht (R02: "A = 1,5**2 * pi / 4" bei "d = 1,5 mm"),
+    """Zahl ohne Einheit in RECHNUNG, die als Zahl mit Einheit unter WERTE steht ("A = 1,5**2 * pi / 4" bei "d = 1,5 mm"),
     erhält denselben Faktor. Nicht für Hochzahlen und nicht für bereits umgerechnete Zahlen (repr mit Punkt und vielen Stellen)."""
     umrechnung = r"(?:10|60|100|1000|3600|1e-?\d+|10\s*(?:\*\*|\^)\s*\(?-?\d+\)?)"
-    if RB_V8:  # V17: auch "1000.0" (Einheit dahinter schon gestrichen) ist eine Umrechnungszahl
+    if RB_V8:  # RB-v8: auch "1000.0" (Einheit dahinter schon gestrichen) ist eine Umrechnungszahl
         umrechnung = r"(?:(?:10|60|100|1000|3600)(?:\.0+)?|1e-?\d+|10\s*(?:\*\*|\^)\s*\(?-?\d+\)?)"
 
     def ersetze(m):
@@ -1112,7 +1098,7 @@ def parse_v7(roh):
 
 def _si_lesung_v7(roh, frage, nur_entfernen=False):
     """Lesung mit Werten in Grundeinheiten oder None (nichts umzurechnen / nicht lesbar). Zahlen ohne Einheit, die in WERTE
-    oder in der Frage mit Einheit stehen, erhalten deren Faktor (R02: "1,5 + 2*0,25 mm", "A = 1,5**2 * pi / 4")."""
+    oder in der Frage mit Einheit stehen, erhalten deren Faktor ("1,5 + 2*0,25 mm", "A = 1,5**2 * pi / 4")."""
     text = _latex_weg(_nfkc(roh or "")).replace("≈", "=")
     a = _abschnitte_v6(text)
     namen = {_nfkc(n) for n, _ in _zuweisungen_v6(a.get("WERTE", ""), False) + _zuweisungen_v6(a.get("RECHNUNG", ""), True)}
@@ -1170,7 +1156,7 @@ def rechne_v7(parsed, frage, kontext):
         return r6
     if _zahlenwertgleichung_v7(parsed, frage):
         # Zahlenwertgleichung: Werte bleiben in den Einheiten des Modells, Einheiten werden nur sauber gestrichen
-        # ("n = 19.298 s^-1" wurde von RB-v6 als "19.298 s - 1" gerechnet)
+        # ("n = 19.298 s^-1" ist nicht "19.298 s - 1")
         p0 = _si_lesung_v7(parsed["_roh"], frage, nur_entfernen=True)
         if not p0:
             return r6

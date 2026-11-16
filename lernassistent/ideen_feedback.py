@@ -1,20 +1,17 @@
 """
 ideen_feedback.py
 -----------------
-"Deine Idee?" — Rückmeldung auf einen eigenen Lösungsversuch der/des Lernenden
-(Scaffolding-Spezifikation S-v1, Entscheidung D2; doku/Scaffolding_Spezifikation.md).
+"Deine Idee?" — Rückmeldung auf einen eigenen Lösungsversuch der lernenden Person.
 
-Ablauf in der Studien-App: Hinweis -> (optional) eigene Idee eintippen ->
-kurze Rückmeldung, die die Lösung NICHT verrät -> Lösung (ab V4 zwei Stufen;
-die Rückmeldung ersetzt die frühere Erklärungs-Stufe).
-Bis zu MAX_VERSUCHE Ideen pro Frage, solange die Lösung noch nicht geöffnet ist.
+Ablauf in der App: Hinweis -> (optional) eigene Idee eintippen -> kurze Rückmeldung, die die Lösung
+NICHT verrät -> Lösung. Bis zu MAX_VERSUCHE Ideen pro Frage, solange die Lösung noch nicht geöffnet ist.
 
-Warum (Quellen aus der Notion-Leseliste, Details in der Spezifikation):
-  - Eigener Versuch vor jeder Hilfestufe: Vendrell & Johnston (2026), P1 + P8.
+Begründung:
+  - Eigener Versuch vor jeder Hilfestufe: Vendrell & Johnston (2026).
   - Rückmeldung = Stufe 2 der Hint-Leiter ("targeted feedback": einen Schritt
     der/des Lernenden prüfen): Zourlidou et al. (2026, AIED).
   - Kompetenzförderliche Rückmeldung (erst was stimmt, dann was fehlt): Klein et
-    al. (2026, CHI), P4.
+    al. (2026, CHI).
   - "Answer-aware": das Modell bekommt die (geheime) Lösung, damit es die Idee
     beurteilen kann, ohne sie zu verraten: Bhaskar & Hamouda (2025); kleine
     Modelle (Qwen3-8B) geben bessere Tutor-Antworten mit Musterlösung:
@@ -46,7 +43,7 @@ IDEEN_LOG_FELDER = [
     "idee", "urteil", "rueckmeldung", "ueberlegung", "geparst", "leck_zahlen",
     "sekunden", "prompt_version", "modell", "kb_hash",
     "neue_zahlen", "verweis_material",  # ab IF-v4 (nur Diagnose)
-    "feedback_pruefung", "rueckmeldung_original",  # ab FP-v1 (V8d)
+    "feedback_pruefung", "rueckmeldung_original",  # ab FP-v1
 ]
 
 # Wird angezeigt, wenn das Modell das Format nicht einhält. Der Rohtext wird NIE
@@ -58,35 +55,21 @@ FALLBACK_RUECKMELDUNG = (
 
 
 def baue_feedback_prompt(frage, top_chunks, hinweis, loesung, idee, version=None):
-    """Fester Prompt-Satz G2 (doku/Prompt_Set_Spezifikation.md §4.2). Die Lösung ist die Referenz;
-    das Lernmaterial wird nicht mitgeschickt (top_chunks bleibt nur für die Schnittstelle).
+    """Fester Prompt-Satz für die Rückmeldung. Die Lösung ist die Referenz; das Lernmaterial wird nicht
+    mitgeschickt (top_chunks bleibt nur für die Schnittstelle).
     Regeln F1–F5: Petukhova et al. (2026); Kochmar et al. (2025); Maurya et al. (2025); Wood et al. (1976);
     Abrar et al. (2027); Knievel et al. (2025). ÜBERLEGUNG zuerst: Zhao, Knežević & Käser (2026).
 
-    IF-v3 (14 Oct 2026), Anlass manuelle Tests (Fischer v7b):
-      - Einleitung: Lernende haben kein Material. Die Rückmeldung hatte einer Person, die richtig
-        sagte "ich habe keine Tabelle", widersprochen ("Deine Aussage ist nicht korrekt"), weil der
-        Hinweis eine Tabelle erwähnte.
+    IF-v3 = IF-v2 +
+      - Einleitung: Lernende haben kein Material (die Rückmeldung darf einer Person, die keine Tabelle sieht,
+        nicht widersprechen).
       - F6: "komme nicht weiter / sehe das nicht" = KEINE_IDEE, nicht widersprechen, kleiner Denkanstoß.
-      - F7: nur Ursachen nennen, die in der Idee erkennbar sind (erfundene Diagnose bei "ungefähr 90 %"),
-        und nicht der Lösung widersprechen (Zähler/Nenner vertauscht in einer Rückmeldung).
-        F7 stammt aus eigenen Beobachtungen, nicht aus der Literatur.
-
-    IF-v4 (14 Oct 2026), Anlass Test mit HP-v1: (a) die Rückmeldung stützte sich auf einen falschen
-    Hinweis ("da der Hinweis … Zehntel andeutet") und übernahm eine falsche Einheit; (b) sie verriet den
-    Wert als Bereich ("zwischen 0,02 und 0,03, näher an der unteren Grenze"; neue Zahlen, die der
-    Zahlen-Check nicht erkennt, weil sie nicht in der Lösung stehen); (c) sie erklärte einen heute
-    üblichen Wert (PV 18–25 %) mit "in der Praxis deutlich niedriger" für falsch, weil das Lehrbuch
-    (2019) 10–13 % nennt. F8: nur die Lösung zählt, Aussagen als "laut Lernmaterial". F9: keine neuen
-    Zahlen/Bereiche. F6 ohne "Grundwissen" (Quelle erfundener Fakten). Eigene Beobachtungen.
-    Neue Protokollspalten: neue_zahlen (Zahlen in der Rückmeldung, die weder in Idee, Frage noch Hinweis
-    stehen) und verweis_material.
-
-    IF-v5 (19 Oct 2026, V10) = IF-v4 + F10. Anlass (Ideentests V8D/V9D, je 6 von 33 Rückmeldungen ohne
-    Sicherheitsbezug mit Teil-Leck): Bei TEILWEISE/FALSCH nannte die Rückmeldung den fehlenden Teil selbst
-    (Vorzeichen des Zinkpotentials, "30 °C addieren", "75 durch 1500 teilen", "Reihenschaltung"). F3 verbietet
-    das Verraten der Lösung, deckt aber den fehlenden Einzelschritt offenbar nicht ab. F10 verlangt, nach der
-    Stelle zu fragen, statt den Schritt zu nennen. Eigene Beobachtung, keine Literaturquelle."""
+      - F7: nur Ursachen nennen, die in der Idee erkennbar sind, und nicht der Lösung widersprechen.
+    IF-v4 = IF-v3 + F8 (nur die Lösung zählt, Aussagen als "laut Lernmaterial") und F9 (keine neuen Zahlen
+      oder Bereiche); F6 ohne "Grundwissen" als Faktenquelle. Neue Protokollspalten: neue_zahlen (Zahlen in
+      der Rückmeldung, die weder in Idee, Frage noch Hinweis stehen) und verweis_material.
+    IF-v5 = IF-v4 + F10: bei TEILWEISE/FALSCH nach der fehlenden Stelle fragen, statt den fehlenden Schritt
+      selbst zu nennen."""
     version = version or FEEDBACK_PROMPT_VERSION
     if version not in ("IF-v2", "IF-v3", "IF-v4", "IF-v5"):
         raise ValueError(f"Unbekannte Feedback-Prompt-Version {version} (verfügbar: IF-v2 bis IF-v5)")
@@ -207,21 +190,17 @@ def neue_zahlen(rueckmeldung, *sichtbar):
     return sorted(_zahlen(rueckmeldung) - bekannt)
 
 
-# Rückmeldungs-Prüfung FP-v1 (14 Oct 2026, V8d), gleiches Prinzip wie die Hinweis-Prüfung HP-v2:
-# Nach IF-v4 erfand die Rückmeldung weiter Größenordnungen ("im einstelligen Prozentbereich", vorher
-# "wenige Zehntel") und verriet Lösungswerte ("laut Lernmaterial nur etwa 10–13 %"). Regeln allein
-# reichten beim 9B-Modell nicht. Deshalb nach der Generierung prüfen:
+# Rückmeldungs-Prüfung nach der Generierung (gleiches Prinzip wie die Hinweis-Prüfung; Regeln allein reichen
+# beim 9B-Modell nicht, um neue Größenordnungen oder verratene Lösungswerte zu verhindern):
 #   ok            keine Lösungszahl, keine neue Zahl, keine Größenordnungsangabe, kein Materialverweis
 #   nachgebessert sonst EIN zusätzlicher Aufruf, der nur die Rückmeldung neu schreibt; danach sauber
 #   ersetzt       auch die neue Rückmeldung fällt durch -> fester Text je Urteil
 # Ausnahme: Urteil RICHTIG wird nicht geprüft (die Idee enthält dann die Lösungswerte selbst).
-FEEDBACK_PRUEFUNG_VERSION = "FP-v3"  # None = aus (Reproduktion)
-# FP-v3 (V10, 19 Oct 2026): wie FP-v2, zusätzlich die Materialmuster von HP-v4 (MATERIAL_VERWEIS_V10:
-# Suchaufforderungen, "bereitgestelltes Material"), damit Hinweis und Rückmeldung gleich geprüft werden.
-# FP-v2 (V9, 14 Oct 2026): (1) "100 %" / "100 Prozent" und Zahlen direkt nach √ (Faktor √3) zählen nicht
-# als neue oder verratene Zahl. Anlass: I32 (Ideentest V8D-IDEEN) — eine sehr gute Rückmeldung ("der
-# Faktor √3 fehlt ... Wirkungsgrad über 100 %") wurde durch den festen Ersatztext ersetzt.
-# (2) erweiterte Materialprüfung wie HP-v3 ("Unterlagen", "Tabellenbuch" usw.).
+FEEDBACK_PRUEFUNG_VERSION = "FP-v3"  # None = aus
+# FP-v2 = FP-v1 + (1) "100 %" / "100 Prozent" und Zahlen direkt nach √ (Faktor √3) zählen nicht als neue oder
+#         verratene Zahl; (2) erweiterte Materialprüfung wie HP-v3 ("Unterlagen", "Tabellenbuch" usw.).
+# FP-v3 = FP-v2 + Materialmuster von HP-v4 (Suchaufforderungen, "bereitgestelltes Material"), damit Hinweis und
+#         Rückmeldung gleich geprüft werden.
 _FP_V2_HARMLOS = re.compile(r"√\s*\d+|\b100\s*(?:%|prozent\b)", re.I)
 FEEDBACK_ERSATZ = {
     "keine_idee": "Schreib ruhig eine Vermutung auf, auch wenn du unsicher bist, oder öffne die Lösung.",
@@ -302,13 +281,13 @@ def feedback_pruefen(fb, ergebnis, idee, sichtbar_extra=""):
 
 def gib_feedback(ergebnis, idee, sichtbar_extra=""):
     """ergebnis: Rückgabe von beantworte_frage (mit top_chunks, hinweis, loesung).
-    sichtbar_extra: weiterer bereits sichtbarer Text (für den Leck-Check; ab V4 meist leer)."""
+    sichtbar_extra: weiterer bereits sichtbarer Text (für den Leck-Check; meist leer)."""
     t0 = time.time()
     prompt = baue_feedback_prompt(ergebnis["frage"], ergebnis["top_chunks"],
                                   ergebnis["hinweis"], ergebnis["loesung"], idee)
     fb = parse_feedback(frage_llm(prompt, options=GENERIERUNGS_OPTIONEN))
     fb["idee"] = idee
-    feedback_pruefen(fb, ergebnis, idee, sichtbar_extra)  # ab V8d (FP-v1)
+    feedback_pruefen(fb, ergebnis, idee, sichtbar_extra)  # FP
     fb["sekunden"] = round(time.time() - t0, 1)
     # Diagnose bezieht sich auf die GEZEIGTE Rückmeldung; die ursprüngliche steht in rueckmeldung_original
     fb["leck_zahlen"] = leck_zahlen(fb["rueckmeldung"], ergebnis["loesung"],

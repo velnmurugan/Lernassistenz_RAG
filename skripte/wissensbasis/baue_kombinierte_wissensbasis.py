@@ -9,8 +9,8 @@ IDs des ERSTEN Buchs ein Präfix (fischer_pdf_0001); die IDs des zweiten Buchs b
 Start (im Projektordner):
   python skripte/wissensbasis/baue_kombinierte_wissensbasis.py \
       daten/wissensbasen/knowledge_base_fischer_v7c.json Fischer \
-      daten/wissensbasen/knowledge_base_boege.json Böge \
-      daten/wissensbasen/knowledge_base_fischer_boege.json
+      daten/wissensbasen/knowledge_base_boege_v7b_ohne_register.json Böge \
+      daten/wissensbasen/knowledge_base_fischer_boege_v7r.json
 """
 import json
 import sys
@@ -35,8 +35,7 @@ def main():
     doppelt = [i for i, n in Counter(c["id"] for c in chunks_a + chunks_b).items() if n > 1]
     if doppelt:
         # Beide Bücher zählen ihre Chunks pdf_0001, pdf_0002, ... -> die IDs des ERSTEN Buchs bekommen
-        # ein Präfix (fischer_pdf_0001). Die IDs des zweiten Buchs bleiben unverändert, damit dessen
-        # Testfragen-CSV weiter gilt. Fischer-Testfragen danach neu zuordnen (ordne_chunks_zu.py).
+        # ein Präfix (fischer_pdf_0001). Die IDs des zweiten Buchs bleiben unverändert.
         praefix = name_a.lower() + "_"
         for c in chunks_a:
             c["id"] = praefix + c["id"]

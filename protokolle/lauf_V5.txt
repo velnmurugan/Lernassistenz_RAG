@@ -1,43 +1,0 @@
-HINWEIS: Code hat nicht committete Änderungen — für saubere Läufe vorher committen.
-Konfiguration: evaluationsdaten/lauf_V5-S2H.json
-30 offene Fragen, 31990 Chunks, kb_hash=97da9ea85ed3, Sitzung=V5-S2H, Retrieval=hybrid_kg_rr, RRF_K=5, Generierung={'temperature': 0, 'seed': 42}, Stufen=S2-v2
-
-Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:  12%|█▏        | 24/199 [00:00<00:00, 221.09it/s]Loading weights:  25%|██▍       | 49/199 [00:00<00:00, 215.18it/s]Loading weights:  70%|███████   | 140/199 [00:00<00:00, 507.92it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 561.44it/s]
-Loading weights:   0%|          | 0/393 [00:00<?, ?it/s]Loading weights:   6%|▌         | 22/393 [00:00<00:01, 219.70it/s]Loading weights:  11%|█         | 44/393 [00:00<00:02, 140.34it/s]Loading weights:  15%|█▌        | 60/393 [00:00<00:02, 128.88it/s]Loading weights:  19%|█▉        | 74/393 [00:00<00:02, 122.81it/s]Loading weights:  22%|██▏       | 88/393 [00:00<00:02, 115.07it/s]Loading weights:  26%|██▋       | 104/393 [00:00<00:02, 119.60it/s]Loading weights:  30%|███       | 118/393 [00:00<00:02, 120.68it/s]Loading weights:  36%|███▌      | 142/393 [00:01<00:01, 147.47it/s]Loading weights:  40%|████      | 158/393 [00:01<00:01, 142.58it/s]Loading weights:  44%|████▍     | 174/393 [00:01<00:01, 146.12it/s]Loading weights:  50%|████▉     | 195/393 [00:01<00:01, 158.71it/s]Loading weights:  54%|█████▍    | 212/393 [00:01<00:01, 157.95it/s]Loading weights:  61%|██████▏   | 241/393 [00:01<00:00, 187.92it/s]Loading weights:  66%|██████▌   | 260/393 [00:01<00:00, 165.73it/s]Loading weights:  72%|███████▏  | 283/393 [00:01<00:00, 181.06it/s]Loading weights:  77%|███████▋  | 302/393 [00:01<00:00, 176.01it/s]Loading weights:  81%|████████▏ | 320/393 [00:02<00:00, 158.60it/s]Loading weights:  86%|████████▌ | 337/393 [00:02<00:00, 132.04it/s]Loading weights:  90%|████████▉ | 352/393 [00:02<00:00, 122.00it/s]Loading weights: 100%|██████████| 393/393 [00:02<00:00, 157.31it/s]
-[ 1] rechnung     score=0.749  Rang 1        81.9s
-[ 2] fakt         score=0.777  Rang 2        23.9s
-[ 3] konzept      score=0.584  Rang 6        27.3s
-[ 4] tabelle      score=0.655  Rang 1        17.7s
-[ 5] konzept      score=0.763  Rang 96       19.1s
-[ 6] konzept      score=0.764  Rang 2        18.5s
-[ 7] tabelle      score=0.720  Rang 1        24.9s
-[ 8] sicherheit   score=0.788  Rang 2        17.2s
-[ 9] konzept      score=0.685  Rang 1        19.9s
-[10] fakt         score=0.837  Rang 1        29.4s
-[11] rechnung     score=0.673  Rang 4        24.4s
-[12] konzept      score=0.678  Rang 147      14.1s
-[13] fakt         score=0.619  Rang 1        23.4s
-[14] konzept      score=0.751  Rang 2        20.6s
-[15] fakt         score=0.825  Rang 2        20.4s
-[16] konzept      score=0.740  Rang 81       18.6s
-[17] konzept      score=0.701  Rang 1        21.7s
-[18] fakt         score=0.900  Rang 2        30.1s
-[19] aufzaehlung  score=0.800  Rang 1        17.9s
-[20] sicherheit   score=0.724  Rang 1        20.4s
-[21] konzept      score=0.693  Rang 3        19.6s
-[22] konzept      score=0.776  Rang 2        30.2s
-[23] teilrelevant score=0.777  Rang 69       23.9s
-[24] teilrelevant score=0.761  Rang 1        21.2s
-[25] teilrelevant score=0.748  Rang 2        34.2s
-[26] ausserhalb   score=0.502  Rang -        16.7s
-[27] ausserhalb   score=0.419  Rang -        30.6s
-[28] ausserhalb   score=0.591  Rang -        34.2s
-[29] ausserhalb   score=0.443  Rang -        52.0s
-[30] ausserhalb   score=0.369  Rang -       324.2s
-
---- Zusammenfassung V5-S2H / hybrid_kg_rr (30/30 Fragen ohne Fehler) ---
-Recall@4 exakt:           20/25
-Recall@4 inkl. Nachbar:   23/25
-Korrekt verweigert (außerhalb): 0/5
-Stufen-Format eingehalten:      29/30
-Bericht: evaluationsdaten/testlauf_retrieval_V5-S2H.csv

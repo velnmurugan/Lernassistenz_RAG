@@ -1,11 +1,11 @@
 """
-gpt300.py  (Fragen300, Arm C: kommerzielles Online-Modell OHNE RAG)
+gpt300.py  (Studie 1, Bedingung C: Cloud-Modell OHNE RAG)
 Beantwortet die Fragen aus fragen300.csv mit einem OpenAI-Modell über die API, mit genau demselben Prompt O-v1
-wie der Arm "ohne RAG" mit qwen3.5:9b (eval300_antworten.prompt_ohne_rag). Es gehen NUR die Fragen online,
+wie die Bedingung "ohne RAG" mit qwen3.5:9b (eval300_antworten.prompt_ohne_rag). Es gehen NUR die Fragen an die API,
 keine Buchinhalte, keine Daten von Lernenden.
 
 Schlüssel nur als Umgebungsvariable (nie in Dateien/Git):   export OPENAI_API_KEY='sk-...'
-Start aus ~/RAG (beliebige Umgebung mit python + requests):
+Start (beliebige Umgebung mit python + requests):
   python skripte/evaluation/gpt300.py --limit 10          # Probelauf: 10 Fragen + Kostenschätzung für alle 300
   python skripte/evaluation/gpt300.py --bis 100           # Q1–Q100
   python skripte/evaluation/gpt300.py                     # alle (setzt nach Abbruch fort, fertige werden übersprungen)
@@ -22,8 +22,12 @@ from pathlib import Path
 import requests
 
 OHNE_RAG_PROMPT_VERSION = "O-v1"
-API = "https://api.openai.com/v1/chat/completions"
-PREISE = {  # USD je 1 Mio. Tokens (Eingabe, Ausgabe), Stand OpenAI-Changelog Nov 2026 – nur für die Schätzung
+ANBIETER = {  # OpenAI-kompatible chat/completions-Endpunkte
+    "openai":  ("https://api.openai.com/v1/chat/completions", "OPENAI_API_KEY"),
+    "mistral": ("https://api.mistral.ai/v1/chat/completions", "MISTRAL_API_KEY"),
+}
+API = ANBIETER["openai"][0]
+PREISE = {  # USD je 1 Mio. Tokens (Eingabe, Ausgabe), nur für die Kostenschätzung
     "gpt-6.1-sol": (2.0, 10.0), "gpt-6-sol": (2.0, 10.0), "gpt-6-luna": (0.10, 0.50),
 }
 FELDER = ["id", "buch", "typ", "frage", "antwort_gpt", "sek_gpt", "modell_gpt", "tokens_ein", "tokens_aus",
@@ -31,7 +35,7 @@ FELDER = ["id", "buch", "typ", "frage", "antwort_gpt", "sek_gpt", "modell_gpt", 
 
 
 def prompt_ohne_rag(frage):
-    # wortgleich mit O-v1 in eval300_antworten.py / vergleich_mit_ohne_rag.py (nicht ändern!)
+    # wortgleich mit O-v1 in eval300_antworten.py (nicht ändern)
     return (
         "Du bist Fachlehrkraft für Elektrotechnik in der beruflichen Ausbildung. "
         "Beantworte die Frage einer oder eines Auszubildenden fachlich korrekt und knapp "
@@ -55,6 +59,14 @@ def pruefe_prompt_gleich():
     return "wortgleich mit eval300_antworten.py"
 
 
+def inhalt(j):
+    """Antworttext; Reasoning-Modelle (z. B. Mistral) liefern teils eine Liste aus Denk- und Textteilen."""
+    c = j["choices"][0]["message"]["content"]
+    if isinstance(c, list):
+        c = "".join(t.get("text", "") for t in c if isinstance(t, dict) and t.get("type") == "text")
+    return (c or "").strip()
+
+
 def frage_gpt(modell, prompt, schluessel, versuche=4):
     for i in range(1, versuche + 1):
         try:
@@ -76,13 +88,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--label", default="F300-GPT61SOL")
     ap.add_argument("--modell", default="gpt-6.1-sol")
+    ap.add_argument("--anbieter", default="openai", choices=list(ANBIETER), help="openai | mistral (gleicher Prompt, gleicher Ablauf)")
+    ap.add_argument("--preis-ein", type=float, help="USD je 1 Mio. Eingabe-Tokens (für die Kostenschätzung)")
+    ap.add_argument("--preis-aus", type=float, help="USD je 1 Mio. Ausgabe-Tokens")
     ap.add_argument("--fragen", default="daten/testfragen/fragen300.csv")
     ap.add_argument("--limit", type=int, help="nur so viele (noch offene) Fragen beantworten")
     ap.add_argument("--bis", type=int, help="nur Q1 bis Q<bis>")
     a = ap.parse_args()
-    schluessel = os.environ.get("OPENAI_API_KEY", "").strip()
+    global API
+    API, _env = ANBIETER[a.anbieter]
+    if a.preis_ein is not None and a.preis_aus is not None:
+        PREISE[a.modell] = (a.preis_ein, a.preis_aus)
+    schluessel = os.environ.get(_env, "").strip()
     if not schluessel:
-        sys.exit("FEHLER: export OPENAI_API_KEY='sk-...' fehlt")
+        sys.exit(f"FEHLER: export {_env}='...' fehlt")
     with open(a.fragen, encoding="utf-8") as f:
         fragen = list(csv.DictReader(f))
     if a.bis:
@@ -94,7 +113,7 @@ def main():
         with open(out, encoding="utf-8") as f:
             alt = {z["id"]: z for z in csv.DictReader(f)}
     pruefung = pruefe_prompt_gleich()
-    konfig = (f"Arm C ohne RAG | Modell {a.modell} (OpenAI API, chat/completions, Standardparameter) | "
+    konfig = (f"Arm C ohne RAG | Modell {a.modell} ({a.anbieter} API, chat/completions, Standardparameter) | "
               f"Prompt {OHNE_RAG_PROMPT_VERSION} ({pruefung}) | Fragen {a.fragen} | Start {dt.datetime.now().isoformat(timespec='seconds')}")
     with open(out.with_name(out.stem + "_konfig.txt"), "a", encoding="utf-8") as f:
         f.write(konfig + "\n")
@@ -110,7 +129,7 @@ def main():
                      fehler=fehler)
             if j:
                 u = j.get("usage", {})
-                z.update(antwort_gpt=j["choices"][0]["message"]["content"].strip(), modell_gpt=j.get("model", a.modell),
+                z.update(antwort_gpt=inhalt(j), modell_gpt=j.get("model", a.modell),
                          tokens_ein=u.get("prompt_tokens", ""), tokens_aus=u.get("completion_tokens", ""),
                          tokens_denken=(u.get("completion_tokens_details") or {}).get("reasoning_tokens", ""))
             neu += 1
@@ -136,7 +155,7 @@ def main():
         p_ein, p_aus = PREISE[a.modell]
         kosten = ein / 1e6 * p_ein + aus / 1e6 * p_aus
         print(f"Tokens: ein {ein}, aus {aus} (davon Denken {sum(int(z.get('tokens_denken') or 0) for z in fertig)})")
-        print(f"Kosten bisher ca. ${kosten:.2f}; hochgerechnet auf {len(fragen)} Fragen ca. ${kosten / len(fertig) * len(fragen):.2f}")
+        print(f"Kosten bisher ca. ${kosten:.4f}; hochgerechnet auf {len(fragen)} Fragen ca. ${kosten / len(fertig) * len(fragen):.2f}")
 
 
 if __name__ == "__main__":

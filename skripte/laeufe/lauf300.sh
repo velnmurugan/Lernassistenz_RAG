@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
-# Fragen300 mit V20: Antworten ohne/mit RAG (qwen3.5:9b), Rang der Buchstelle (Recall@k, MRR), LLM-Richter ja/teilweise/nein
-# (gemma4:12b, Bewertungsspalte 3), Faithfulness ohne/mit RAG (gemma4:12b), Bewertungsbogen nach Downloads.
-# Aus ~/RAG, Umgebung pilot_rag aktiv, Ollama läuft:
-#   bash ~/run300/lauf300.sh einrichten   # Skripte/Daten kopieren, V20-Schalter prüfen, Richtermodell laden (einmal)
-#   bash ~/run300/lauf300.sh pilot        # 3 Fragen komplett (Buch, Rechnung, außerhalb), ca. 10 min
-#   bash ~/run300/lauf300.sh teil 100     # alle Schritte nur für Q1–Q100 (ca. 3 h); "alles" macht später mit Q101–Q300 weiter
-#   bash ~/run300/lauf300.sh zusammen     # danach: eigene Bewertungen (Exemplar) + Lauf-Bogen -> Fragen300_komplett_*.xlsx
-#   bash ~/run300/lauf300.sh alles        # über Nacht: Antworten -> Bogen nach Downloads -> Rang -> Richter -> Faithfulness -> Bogen + Zip
+# Studie 1 (Fragen300) mit V20: Antworten ohne/mit RAG (qwen3.5:9b), Rang der Buchstelle (Recall@k, MRR), LLM-Richter ja/teilweise/nein
+# (gemma4:12b, Bewertungsspalte 3), Faithfulness ohne/mit RAG (gemma4:12b), Bewertungsbogen nach ausgabe/.
+# Umgebung aktiv, Ollama läuft:
+#   bash skripte/laeufe/lauf300.sh einrichten   # Dateien und V20-Schalter prüfen, Richtermodell laden (einmal)
+#   bash skripte/laeufe/lauf300.sh pilot        # 3 Fragen komplett (Buch, Rechnung, außerhalb), ca. 10 min
+#   bash skripte/laeufe/lauf300.sh teil 100     # alle Schritte nur für Q1–Q100 (ca. 3 h); "alles" macht später mit Q101–Q300 weiter
+#   bash skripte/laeufe/lauf300.sh zusammen     # danach: menschliche Bewertungen (Exemplar) + Lauf-Bogen -> Fragen300_komplett_*.xlsx
+#   bash skripte/laeufe/lauf300.sh alles        # alle Schritte (mehrere Stunden): Antworten -> Bogen nach ausgabe/ -> Rang -> Richter -> Faithfulness -> Bogen + Zip
 # Einzelschritte: antworten | rang | richter | faith | bogen. Jeder Schritt setzt nach Abbruch fort (gleicher Befehl).
-cd "${RUN300_ROOT:-$PWD}" || exit 1
-[ -d lernassistent ] || { echo "Bitte aus ~/RAG starten (Ordner lernassistent fehlt)"; exit 1; }
-PAKET="$(cd "$(dirname "$0")" && pwd)"
+cd "${RUN300_ROOT:-$(dirname "$0")/../..}" || exit 1
+[ -d lernassistent ] || { echo "Ordner lernassistent fehlt"; exit 1; }
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONUNBUFFERED=1
 unset LERNASSISTENT_HG LERNASSISTENT_THINK
-# V20 (eingefroren für den Beitrag)
+# V20 (eingefrorene Konfiguration)
 export LERNASSISTENT_G=G-v6 LERNASSISTENT_RP=RP-v13 LERNASSISTENT_RB=RB-v8 LERNASSISTENT_FS=FS-v3 \
        LERNASSISTENT_V18=ADEK LERNASSISTENT_V19=AB LERNASSISTENT_CTX=8192 LERNASSISTENT_RW=
 LABEL="${RUN300_LABEL:-F300-V20}"
@@ -22,19 +21,16 @@ GENERATOR=qwen3.5:9b
 KB=daten/wissensbasen/knowledge_base_fischer_boege_v7r.json
 T=daten/testfragen
 EV=skripte/evaluation
-ZIEL="${RUN300_ZIEL:-/mnt/c/Users/Vel Narayanasamy/Downloads}"
-mkdir -p protokolle evaluationsdaten daten/boegen "$T"
+ZIEL="${RUN300_ZIEL:-ausgabe}"
+mkdir -p protokolle evaluationsdaten daten/boegen "$T" "$ZIEL"
 cmd="${1:?einrichten | pilot | teil N | alles | zusammen | antworten | rang | richter | faith | bogen}"
 TS=$(date +%Y%m%d_%H%M)
 LOG="protokolle/lauf300_${cmd}_$TS.txt"
 
 einrichten() {
-  [ -f "$EV/eval300_antworten.py" ] || { echo "FEHLER: $EV/eval300_antworten.py fehlt (Eval300-Paket)"; exit 1; }
-  [ -f "$EV/ragas_auswertung.py" ] || { echo "FEHLER: $EV/ragas_auswertung.py fehlt"; exit 1; }
-  cp "$PAKET"/antworten300.py "$PAKET"/rang300.py "$PAKET"/richter300.py "$PAKET"/faith300.py "$PAKET"/fuelle300.py "$PAKET"/zusammen300.py "$EV/"
-  cp "$PAKET/daten/fragen300.csv" "$PAKET/daten/gold300.json" "$PAKET/daten/richter_beispiele.json" "$T/"
-  cp "$PAKET/daten/kriterien.json" "$T/kriterien300.json"
-  cp "$PAKET/daten/Fragen300_Bewertung.xlsx" daten/boegen/
+  for f in "$T/fragen300.csv" "$T/gold300.json" "$T/richter_beispiele.json" "$T/kriterien300.json" daten/boegen/Fragen300_Bewertung.xlsx; do
+    [ -f "$f" ] || echo "FEHLT: $f (siehe daten/README.md)"
+  done
   python - <<'PY'
 import sys; sys.path.insert(0, "lernassistent")
 import formelsuche as fs, rechenbaustein as rb, rag_pipeline as rp
@@ -43,7 +39,7 @@ print(f"V20-Schalter: G={rp.SCAFFOLDING_VERSION} RP={'RP-v13' if rp.RP_V13 else 
       f"RB={rp.NACHRECHNUNG_VERSION} FS={fs.FORMELSUCHE_VERSION} CTX={rp.KONTEXT_TOKENS} -> {'OK' if ok else 'FEHLER'}")
 sys.exit(0 if ok else 1)
 PY
-  [ $? -eq 0 ] || { echo "FEHLER: V20 nicht eingespielt (bash ~/v20/v20_lauf.sh einrichten)"; exit 1; }
+  [ $? -eq 0 ] || { echo "FEHLER: V20 nicht eingespielt "; exit 1; }
   python -c "import csv;print(sum(1 for _ in csv.DictReader(open('$T/fragen300.csv',encoding='utf-8'))), 'Fragen')"
   [ -f "$KB" ] || echo "WARNUNG: $KB fehlt"
   ollama list | grep -q "$GENERATOR" || echo "WARNUNG: $GENERATOR fehlt"

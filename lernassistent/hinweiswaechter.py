@@ -1,25 +1,23 @@
 """
-hinweiswaechter.py  –  Hinweis-Wächter HG-v1 (Stand 31 Okt 2026)
+hinweiswaechter.py  –  Hinweis-Wächter HG-v1 (optional, in V20 aus)
 -----------------------------------------------------------------
-Zweck: Ein Hinweis soll die Lösung nicht verraten (Rubrik P1). Nach dem fertigen Hinweis prüft ein Prüfer (Prompt C2, Modell
+Zweck: Ein Hinweis soll die Lösung nicht verraten. Nach dem fertigen Hinweis prüft ein Prüfer (Prompt C2, Modell
 qwen3.5:9b, T=0, Seed 42), ob ein zentraler Teil der Lösung ablesbar ist ("leck"). Bei "leck" wird der Hinweis höchstens
 MAX_NEU-mal neu geschrieben (mit dem Befund des Prüfers im Prompt); bleibt es "leck", ersetzt ein neutraler Ersatzhinweis.
 "teilweise" und "kein_leck" bleiben unverändert.
 
-Schalter (Standard aus, V11B bleibt unverändert):
+Schalter (Standard aus):
     export LERNASSISTENT_HG=HG-v1
     export LERNASSISTENT_HG_MODELL=qwen3.5:9b      # optional, Standard = Generatormodell
 
-Was HG-v1 gegenüber dem Wächter V1 aus HO-V1/HS-V1 ändert (aus den Ergebnissen von HS-V1, 31 Okt 2026):
-  1. Der Wächter sitzt im echten Pfad: beantworte_frage ruft ihn nach hinweis_pruefen auf. (In V11B/G-v4 entsteht der erste
-     Hinweis im Hauptaufruf, nicht in einem getrennten Hinweisaufruf; HS-V1 hatte den ersten Hinweis nachgebaut.)
-  2. Folgehinweise (Versuch 2/3): der Neuschreib-Prompt verlangt, ein Wort oder eine Zahl der letzten Antwort aufzugreifen
-     (bezug_antwort fiel in HS-V1 von 46 % auf 40 %).
-  3. Folgehinweise: der Ersatztext greift die letzte Antwort auf (Ersatztexte waren bei Versuch 2/3 mit 10-12 % am häufigsten).
-  4. Der Hinweis vor dem Wächter wird mitgespeichert (hinweis_vor_waechter), damit "ohne" und "mit" Wächter im selben Lauf
-     gepaart verglichen werden können.
-Grenzen: Der Prüfer erreichte in HO-V1 nur kappa 0.28-0.34 gegen Referenzurteile; HS-V1 zeigte -5 Prozentpunkte Leck (Prüfer-Urteil),
-fast ausschließlich "leck" -> "teilweise". Ob Hinweise dadurch besser werden, entscheidet nur die menschliche Bewertung.
+Eigenschaften:
+  1. beantworte_frage ruft den Wächter nach hinweis_pruefen auf.
+  2. Folgehinweise (Versuch 2/3): der Neuschreib-Prompt verlangt, ein Wort oder eine Zahl der letzten Antwort aufzugreifen.
+  3. Folgehinweise: der Ersatztext greift die letzte Antwort auf.
+  4. Der Hinweis vor dem Wächter wird mitgespeichert (hinweis_vor_waechter), damit "ohne" und "mit" Wächter gepaart
+     verglichen werden können.
+Grenzen: Die Übereinstimmung des Prüfers mit Referenzurteilen ist gering (kappa ca. 0,3). Ob Hinweise dadurch besser werden,
+entscheidet nur die menschliche Bewertung.
 """
 import os
 import re

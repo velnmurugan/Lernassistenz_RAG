@@ -1,5 +1,5 @@
 """
-antworten300.py  (Fragen300, Schritt 1: Antworten ohne und mit RAG, Stand V20)
+antworten300.py  (Studie 1, Schritt 1: Antworten ohne und mit RAG, Stand V20)
 Wie eval300_antworten.py (Prompt O-v1 ohne RAG, volle Pipeline mit RAG, bewertet wird die LÖSUNG), zusätzlich je Antwort
 die Zeiten von Ollama selbst (Modell laden, Prompt lesen, Antwort erzeugen; Summe über alle Aufrufe der Antwort).
 Fortsetzbar: fertige Antworten werden übersprungen.

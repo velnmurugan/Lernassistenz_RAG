@@ -1,7 +1,7 @@
 """
 pdf_struktur.py
 ---------------
-V7: Strukturtreue Extraktion und Chunking (doku/Entwicklung_und_Evaluation.md, V7).
+Strukturtreue Extraktion und Chunking.
 
 1. Extraktion mit MinerU (Layout-Erkennung, Formeln als LaTeX, Tabellen strukturiert,
    Abbildungen als Bildausschnitte, Überschriften). Quelle: MinerU, eingesetzt bei
@@ -13,8 +13,8 @@ V7: Strukturtreue Extraktion und Chunking (doku/Entwicklung_und_Evaluation.md, V
    - Zielgröße ca. 150–300 Tokens, keine Überlappung (Bennani & Moslonka, 2026).
    - Tabellen als eigene Chunks mit Überschrift (T²-RAGBench: Strich et al., 2026).
    - Formeln bleiben als LaTeX im Text.
-   - Abbildungen: eigener Chunk aus Bildunterschrift (V7a) plus optional einer
-     automatischen Bildbeschreibung durch ein kleines VLM (V7b, bildbeschreibung.py;
+   - Abbildungen: eigener Chunk aus Bildunterschrift plus optional einer
+     automatischen Bildbeschreibung durch ein VLM (bildbeschreibung.py;
      Saucă & Rusnac, 2026).
 Alle Regeln sind dokumentunabhängig (keine Sonderfälle für ein bestimmtes Buch).
 """
@@ -75,7 +75,7 @@ _UNTERSCHRIFT = re.compile(r"^\s*(Abb|Bild|Fig)\.?\s?\d")
 
 
 def bildunterschriften_zuordnen(eintraege):
-    """MinerU erkennt Bildunterschriften nicht immer (Pilot: Abb. 2.10 und 4.44 kamen als
+    """MinerU erkennt Bildunterschriften nicht immer (manche kommen als
     normaler Text). Eine Abbildung ohne Unterschrift bekommt den nächstgelegenen Text derselben
     Seite, der mit "Abb./Bild/Fig. <Nr>" beginnt; dieser Text wird dann nicht doppelt geführt."""
     for e in eintraege:
@@ -119,7 +119,7 @@ _AUSPACKEN = {"mathrm", "mathit", "mathbf", "mathsf", "mathtt", "mathcal", "math
               "text", "textrm", "textit", "textbf", "mbox", "operatorname", "underline", "overline",
               "vec", "hat", "bar", "tilde", "dot", "widehat", "overrightarrow", "displaystyle"}
 _WOERTLICH = {"mathrm", "text", "textrm", "mbox", "operatorname", "mathit", "mathbf", "mathsf"}
-_WEGLASSEN = {"bf", "rm", "it", "sf", "tt", "cal",  # alte Schalter "{\bf S}" (V9c: vorher "bf S")
+_WEGLASSEN = {"bf", "rm", "it", "sf", "tt", "cal",  # alte Schalter "{\bf S}"
               "left", "right", "big", "Big", "bigg", "Bigg", "bigl", "bigr", "Bigl", "Bigr",
               "displaystyle", "textstyle", "scriptstyle", "limits", "nolimits", "mathstrut"}
 _HOCH = str.maketrans("0123456789-+", "⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺")
@@ -163,7 +163,7 @@ def _einfach(t):
 
 def _latex(s):
     out, i = [], 0
-    ende_buchstabe = -1  # V9c: Quellposition nach der letzten Schriftgruppe mit EINEM Buchstaben
+    ende_buchstabe = -1  # Quellposition nach der letzten Schriftgruppe mit EINEM Buchstaben
     while i < len(s):
         c = s[i]
         if c == "\\":
@@ -195,11 +195,11 @@ def _latex(s):
                 start = i - len(m.group(0))
                 a, i = _argument(s, i)
                 a = _latex(a)
-                # V9c: OCR schreibt Einheiten Buchstabe für Buchstabe in eigene Schriftgruppen,
-                # "\mathrm { m } \mathbf { m } ^ { 2 }" -> vorher "m m²" (las sich als "Ω m"), jetzt "mm²".
+                # OCR schreibt Einheiten Buchstabe für Buchstabe in eigene Schriftgruppen,
+                # "\mathrm { m } \mathbf { m } ^ { 2 }" -> "mm²" (nicht "m m²", das sich als "Ω m" liest).
                 # Zusammengefügt wird nur, wenn zwischen den Gruppen in der Quelle nur Leerzeichen stehen.
                 einzeln = len(a.strip()) == 1 and a.strip().isalpha() and name in _WOERTLICH
-                # Einheit mit negativem Exponenten steht allein: "m s⁻²" ist m·s⁻², nicht ms⁻² (V9c, Prüfung v7c)
+                # Einheit mit negativem Exponenten steht allein: "m s⁻²" ist m·s⁻², nicht ms⁻²
                 neg_exponent = re.match(r"\s*\^\s*\{?\s*[-−]", s[i:]) is not None
                 if einzeln and not neg_exponent and ende_buchstabe >= 0 and s[ende_buchstabe:start].strip() == "":
                     while out and out[-1] == " ":

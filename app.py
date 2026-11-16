@@ -1,17 +1,17 @@
 """
 app.py
 ------
-KI-Lernassistent — Studien-Prototyp für die Pilotstudie (Phase 2).
+Lernassistent – Lernoberfläche (Streamlit).
 
-Ablauf für Proband:innen:
+Ablauf:
   1. Sitzungs-ID eingeben (pseudonymisiert, keine Klarnamen)
   2. Fragen an den Lernassistenten stellen (beliebig viele)
      Pro Antwort: Hinweis -> optional "Deine Idee?" mit Rückmeldung
-     (ideen_feedback.py) -> Lösung mit Begründung (V4, 2 Stufen)
+     (ideen_feedback.py) -> Lösung mit Begründung
   3. Abschließenden Fragebogen ausfüllen (TAM-basiert, Davis 1989)
 
-Start: streamlit run app.py --server.fileWatcherType none
-(Ollama muss vorher laufen, Modell: qwen3.5:9b)
+Start: bash skripte/laeufe/start_demo.sh  (setzt die Umgebungsvariablen von V20)
+(Ollama muss laufen, Modell: qwen3.5:9b)
 """
 import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
 _sys.path.insert(0, str(next(p for p in _pl.Path(__file__).resolve().parents if (p / "lernassistent").is_dir()) / "lernassistent")); import pfadsetup  # noqa: E402,F401
@@ -34,7 +34,7 @@ from bildeingabe import bildeingabe_ui, chat_eingabe
 
 APP_NAME = "KI-Lernassistent"  # Arbeitsname, an einer Stelle änderbar
 
-st.set_page_config(page_title=APP_NAME, page_icon="🎓", layout="centered", initial_sidebar_state="expanded")  # UI-v2
+st.set_page_config(page_title=APP_NAME, page_icon="🎓", layout="centered", initial_sidebar_state="expanded")
 
 if "seite" not in st.session_state:
     st.session_state["seite"] = "start"
@@ -43,12 +43,11 @@ if "verlauf" not in st.session_state:
 if "sitzungs_id" not in st.session_state:
     st.session_state["sitzungs_id"] = ""
 
-import os as _os, rag_pipeline as _rp  # Test: Wissensbasis/Retrieval per Umgebungsvariable
-# Standard = aktuelle Version V10a (Fischer-Wissensbasis, Hybrid + Wissensgraph + Reranker).
-# Andere Konfiguration weiter über Umgebungsvariablen, z. B. für Böge:
+import os as _os, rag_pipeline as _rp  # Wissensbasis/Retrieval per Umgebungsvariable
+# Konfiguration über Umgebungsvariablen (LERNASSISTENT_KB, LERNASSISTENT_RETRIEVAL, …), z. B. für ein einzelnes Buch:
 #   LERNASSISTENT_KB=daten/wissensbasen/knowledge_base_boege.json streamlit run app.py ...
 KB_OPTIONEN = {  # Anzeigename -> Datei (nur vorhandene Dateien erscheinen in der Auswahl)
-    "Beide Bücher": "daten/wissensbasen/knowledge_base_fischer_boege_v7r.json",  # V13.1: wie N100-Tests (8.805 Chunks)
+    "Beide Bücher": "daten/wissensbasen/knowledge_base_fischer_boege_v7r.json",  # Fischer + Böge, 8.805 Chunks
     "Beide Bücher, alt (Böge pypdf)": "daten/wissensbasen/knowledge_base_fischer_boege.json",
     "Fischer – Elektrotechnik": "daten/wissensbasen/knowledge_base_fischer_v7c.json",
     "Böge – Handbuch": "daten/wissensbasen/knowledge_base_boege.json",
@@ -79,7 +78,7 @@ if st.session_state.get("kb_aktiv", KB_PFAD) != KB_PFAD:  # Wechsel: altes Gespr
 st.session_state["kb_aktiv"] = KB_PFAD
 _rp.RETRIEVAL_METHODE = RETRIEVAL
 import bildabgleich as _ba
-_ba.KB_PFAD = KB_PFAD  # V12.9 (optional)
+_ba.KB_PFAD = KB_PFAD  # optional
 
 
 @st.cache_resource(show_spinner="Lade Lernmaterial und Modelle (einmalig; beim ersten Start mit beiden Büchern mehrere Minuten) …")
@@ -102,7 +101,7 @@ CHUNKS = lade_und_waerme_auf(KB_PFAD, RETRIEVAL)
 # SEITE 1: Start / Einverständnis / Sitzungs-ID
 # =============================================================================
 def seite_start():
-    """UI-v2: kurze Startseite – so funktioniert's in vier Schritten, Name eingeben, los."""
+    """Kurze Startseite: so funktioniert's in vier Schritten, Name eingeben, los."""
     st.title(f"🎓 {APP_NAME}")
     st.markdown("Dein Lernbegleiter für **Elektrotechnik** und **Maschinenbau**. "
                 "Er verrät nicht sofort die Lösung, sondern hilft dir, **selbst draufzukommen**.")
@@ -171,11 +170,11 @@ def fortschritt_anzeige(status):
     return rueckruf
 
 
-PHASEN_KURZ = {"suche": "Suche", "antwort": "Antwort", "pruefung": "Prüfung"}  # UI-v2
+PHASEN_KURZ = {"suche": "Suche", "antwort": "Antwort", "pruefung": "Prüfung"}
 
 
 def zeige_zeiten(eintrag):
-    """UI-v2: Zeit immer sichtbar – Gesamtzeit und Phasen in einer Zeile."""
+    """Zeit immer sichtbar – Gesamtzeit und Phasen in einer Zeile."""
     zeiten = eintrag.get("zeiten") or {}
     if not zeiten:
         return
@@ -200,7 +199,7 @@ def zerlege_loesung(text):
 
 
 def zeige_loesung(loesung, markiert=False):
-    """markiert: True / "markiert" -> Warnkopf; "ersetzt" (V13.2) -> Kopf "aus der Nachrechnung", nie das grüne Häkchen."""
+    """markiert: True / "markiert" -> Warnkopf; "ersetzt" -> Kopf "aus der Nachrechnung", nie das grüne Häkchen."""
     antwort, begruendung, vermerk = zerlege_loesung(loesung)
     if markiert == "ersetzt":
         st.markdown(f"🔁 **Lösung aus der Python-Nachrechnung (bitte mit dem Buch prüfen):** {antwort}")
@@ -388,7 +387,7 @@ def zeige_quellen(eintrag, idx=0):
         gemeinsam = len(_woerter(stelle) & ziel) if stelle else 0
         infos.append(((buch, seite, thema), cs, auszug, stelle, gemeinsam < 3))
     infos.sort(key=lambda t: t[4])  # passende zuerst (stabil: Reihenfolge der Suche bleibt sonst erhalten)
-    (b0, s0, t0), *_ = infos[0]  # UI-v2: erste (passendste) Quelle direkt im Kopf
+    (b0, s0, t0), *_ = infos[0]  # erste (passendste) Quelle direkt im Kopf
     kopf = " · ".join(x for x in (b0, (t0 or "").split(">")[-1].strip(), f"S. {s0}" if s0 else "") if x)
     with st.expander(f"📎 Quellen: {kopf}" + (f"  (+{len(infos) - 1})" if len(infos) > 1 else "")):
         for i, ((buch, seite, thema), cs, auszug, stelle, schwach) in enumerate(infos, start=1):
@@ -417,15 +416,15 @@ def vertrauens_zeile(eintrag, bildfrage=False, thema_fehlt=False):
     if status == "TEILWEISE":
         chips.append("◐ nur teilweise im Lernmaterial")
     elif status == "BEANTWORTET":
-        chips.append("📖 Antwort stützt sich auf das Lernmaterial")  # UI-v2: neutral, kein Richtigkeitsversprechen
+        chips.append("📖 Antwort stützt sich auf das Lernmaterial")  # neutral, kein Richtigkeitsversprechen
     antwort = " ".join(str(eintrag.get(k) or "") for k in ("loesung", "hinweis"))
     gruppen = quellen_gruppen(eintrag)
     gefunden = any(passende_stelle(bereinige_auszug("\n".join(c.get("text") or "" for c in cs)), antwort)
                    for cs in gruppen.values())
-    chips.append("📖 Passende Buchstelle gefunden" if gefunden else "◔ keine eindeutig passende Textstelle – bitte prüfen")  # UI-v2
+    chips.append("📖 Passende Buchstelle gefunden" if gefunden else "◔ keine eindeutig passende Textstelle – bitte prüfen")
     if bildfrage:
         if thema_fehlt:  # ohne Thema in der Eingabe sind die grünen Marken nicht belastbar
-            chips = [c for c in chips if not c.startswith(("✓", "📖"))]  # UI-v2
+            chips = [c for c in chips if not c.startswith(("✓", "📖"))]
         chips.insert(0, "◔ beruht auf automatisch beschriebener Abbildung – bitte mit dem Buch vergleichen")
     rp = eintrag.get("rechen_pruefung") or ""
     if rp == "nachgebessert":
@@ -459,7 +458,7 @@ def zeige_vertrauen(eintrag, bildfrage=False, thema_fehlt=False):
     teile = []
     for c in vertrauens_zeile(eintrag, bildfrage, thema_fehlt):
         ok = c.startswith(("✓", "📖"))
-        farbe = "140,140,140" if ok else "224,140,0"  # UI-v2: neutral grau statt grün; orange = bitte prüfen
+        farbe = "140,140,140" if ok else "224,140,0"  # neutral grau statt grün; orange = bitte prüfen
         teile.append(f"<span style='display:inline-block;margin:2px 6px 2px 0;padding:2px 10px;border-radius:12px;"
                      f"font-size:.82rem;background:rgba({farbe},.16);border:1px solid rgba({farbe},.55)'>{c}</span>")
     st.markdown("".join(teile), unsafe_allow_html=True)
@@ -474,7 +473,7 @@ def sicherheits_thema(frage, loesung):
 
 
 def schrittleiste(stufe, hat_idee):
-    """UI-v2: Lernschritte Hinweis → Dein Versuch → Rückmeldung → Lösung; aktueller Schritt hervorgehoben."""
+    """Lernschritte Hinweis → Dein Versuch → Rückmeldung → Lösung; aktueller Schritt hervorgehoben."""
     namen = ["Hinweis", "Dein Versuch", "Rückmeldung", "Lösung"]
     if stufe >= 2:
         zustand = ["fertig", "fertig" if hat_idee else "aus", "fertig" if hat_idee else "aus", "aktiv"]
@@ -508,7 +507,7 @@ def zeige_ideen(versuche, stufe):
 
 
 def ideen_eingabe(idx, eintrag, versuche, aktuelle_stufe):
-    """Optionales Feld "Deine Idee?" (Scaffolding-Spezifikation S-v1, D2). Der Key
+    """Optionales Feld "Deine Idee?". Der Key
     enthält die Versuchsnummer, damit das Feld nach dem Absenden leer ist."""
     n = len(versuche)
     text = st.text_area(
@@ -516,7 +515,7 @@ def ideen_eingabe(idx, eintrag, versuche, aktuelle_stufe):
         key=f"idee_text_{idx}_{n}", height=80,
         placeholder="Schreib deine Vermutung in eigenen Worten …",
     )
-    if st.button("Idee prüfen lassen", key=f"btn_idee_{idx}_{n}", type="primary"):  # UI-v2: Hauptaktion
+    if st.button("Idee prüfen lassen", key=f"btn_idee_{idx}_{n}", type="primary"):  # Hauptaktion
         idee = text.strip()
         if not idee:
             st.warning("Schreib zuerst deine Idee in das Feld.")
@@ -532,7 +531,7 @@ def ideen_eingabe(idx, eintrag, versuche, aktuelle_stufe):
 
 def zeige_eintrag(idx, eintrag, ist_letzter):
     """Zeigt einen Frage-Antwort-Eintrag mit stufenweiser Freischaltung
-    (V4: Hinweis -> [Deine Idee? + Rückmeldung] -> Lösung). Stufe 1 = Hinweis,
+    (Hinweis -> [Deine Idee? + Rückmeldung] -> Lösung). Stufe 1 = Hinweis,
     Stufe 2 = Lösung geöffnet. Der Fortschritt pro Eintrag wird in
     st.session_state['stufe_' + idx] gehalten, die Ideen in 'ideen_' + idx.
     Das Ideen-Feld erscheint nur bei der jüngsten Frage, solange die Lösung noch
@@ -551,7 +550,7 @@ def zeige_eintrag(idx, eintrag, ist_letzter):
         st.write(eintrag["frage"])
 
     with st.chat_message("assistant"):
-        if eintrag.get("_v21_job") is not None:  # V21-S: Hinweis steht, Lösung wird noch vorbereitet
+        if eintrag.get("_v21_job") is not None:  # Hinweis-zuerst-Modus: Hinweis steht, Lösung wird noch vorbereitet
             _v21_wartend(idx, eintrag, ist_letzter)
             return
         verweigert = eintrag.get("status") in ("GATE", "NICHT_IM_MATERIAL")
@@ -573,7 +572,7 @@ def zeige_eintrag(idx, eintrag, ist_letzter):
             if aktuelle_stufe >= 2:
                 _mk = {"markiert": True, "ersetzt": "ersetzt", "denkmodus": "denkmodus", "ungeprueft": "ungeprueft"}.get(eintrag.get("rechen_pruefung"), False)
                 _ue = st.session_state.get(f"uebung_{idx}") or {}
-                if _ue.get("u") and not _ue.get("fb"):  # UI-v2: während der Übungsfrage eingeklappt
+                if _ue.get("u") and not _ue.get("fb"):  # während der Übungsfrage eingeklappt
                     with st.expander("✅ Lösung (eingeklappt, solange du die Übungsfrage beantwortest)"):
                         zeige_loesung(eintrag["loesung"], _mk)
                 else:
@@ -690,7 +689,7 @@ def zeige_dashboard():
         st.caption("Urteile über Ideen")
         if a["urteile"]:
             st.bar_chart(a["urteile"])
-    if a.get("hinweis", {}).get("fragen"):  # UI-v2
+    if a.get("hinweis", {}).get("fragen"):
         st.markdown("**Umgang mit dem Hinweis**")
         zeige_hinweis_nutzung(a["hinweis"])
     if a["hilfen"]:
@@ -722,7 +721,7 @@ def zeige_ueber():
         )
 
 
-# UI-v2: Beispiele auf der leeren Startseite (abschalten: LERNASSISTENT_BEISPIELE=0)
+# Beispiele auf der leeren Startseite (abschalten: LERNASSISTENT_BEISPIELE=0)
 BEISPIELE = [
     "Warum nimmt man für Spulen im kHz-Bereich keine geblechten Eisenkerne mehr?",
     "Auf dem Leistungsschild eines Verteiltransformators steht die Schaltgruppe Yzn 5. Was bedeuten die Buchstaben und die Kennzahl?",
@@ -754,7 +753,7 @@ def _kurz(text, n=38):
 
 
 def zeige_hinweis_nutzung(h, kompakt=False):
-    """UI-v2: Kennzahlen zum Umgang mit dem Hinweis (Seitenleiste kompakt, Auswertung ausführlich)."""
+    """Kennzahlen zum Umgang mit dem Hinweis (Seitenleiste kompakt, Auswertung ausführlich)."""
     n = h["fragen"]
     if kompakt:
         st.markdown(
@@ -774,7 +773,7 @@ def zeige_hinweis_nutzung(h, kompakt=False):
 
 
 def seitenleiste():
-    """UI-v2: Seitenleiste wie in Chat-Anwendungen – Verlauf (neueste oben, mit Zeit), Sitzungsübersicht, Infos."""
+    """Seitenleiste wie in Chat-Anwendungen – Verlauf (neueste oben, mit Zeit), Sitzungsübersicht, Infos."""
     verlauf = st.session_state["verlauf"]
     fokus = st.session_state.get("fokus")
     with st.sidebar:
@@ -846,7 +845,7 @@ def seitenleiste():
 
 
 def willkommen():
-    """UI-v2: leere Startseite mit kurzer Erklärung und anklickbaren Beispielfragen."""
+    """leere Startseite mit kurzer Erklärung und anklickbaren Beispielfragen."""
     st.markdown("Stell eine Frage zur **Elektrotechnik** oder zum **Maschinenbau**. Du bekommst zuerst einen "
                 "**Hinweis** und kannst selbst eine Idee aufschreiben; die **Lösung** mit den Buchstellen gibt es auf Klick.")
     if _os.environ.get("LERNASSISTENT_BEISPIELE", "1") == "0":
@@ -859,11 +858,11 @@ def willkommen():
             st.rerun()
 
 
-_V21_HZ = _os.environ.get("LERNASSISTENT_HINWEIS_ZUERST") == "1"  # V21-S
+_V21_HZ = _os.environ.get("LERNASSISTENT_HINWEIS_ZUERST") == "1"  # optional: Hinweis vor der fertigen Prüfung zeigen
 
 
 def _v21_job_starten(frage):
-    """V21-S: beantwortet die Frage in einem Hintergrund-Thread (vollständige V20-Pipeline). Der Thread schreibt nur
+    """Hinweis-zuerst-Modus: beantwortet die Frage in einem Hintergrund-Thread (vollständige V20-Pipeline). Der Thread schreibt nur
     in das dict job (keine Streamlit-Aufrufe); die Oberfläche liest es."""
     import threading
     job = {"vorab": None, "ergebnis": None, "fehler": None, "phasen": {}, "quellen": None, "start": time.perf_counter()}
@@ -889,7 +888,7 @@ def _v21_job_starten(frage):
 
 
 def _v21_status_zeigen(status, job, zeilen):
-    """V21-S: Fortschritt wie fortschritt_anzeige, aber aus dem Job gelesen."""
+    """Hinweis-zuerst-Modus: Fortschritt wie fortschritt_anzeige, aber aus dem Job gelesen."""
     if job["quellen"] and "quellen" not in zeilen:
         orte = []
         for c in job["quellen"]:
@@ -909,7 +908,7 @@ def _v21_status_zeigen(status, job, zeilen):
 
 
 def _v21_fertig(job, frage):
-    """V21-S: Endergebnis (wie V20) oder Fehlerhinweis; Protokoll wie in V20 nach der Antwort."""
+    """Hinweis-zuerst-Modus: Endergebnis (wie V20) oder Fehlerhinweis; Protokoll wie in V20 nach der Antwort."""
     if job["ergebnis"] is not None:
         erg = job["ergebnis"]
         vorab = (job.get("vorab") or {}).get("hinweis")
@@ -923,7 +922,7 @@ def _v21_fertig(job, frage):
 
 
 def _v21_abschliessen(verlauf):
-    """V21-S: fertige Hintergrund-Jobs durch ihr Endergebnis ersetzen."""
+    """Hinweis-zuerst-Modus: fertige Hintergrund-Jobs durch ihr Endergebnis ersetzen."""
     for i, e in enumerate(verlauf):
         job = e.get("_v21_job")
         if job is not None and (job["ergebnis"] is not None or job["fehler"] is not None):
@@ -931,7 +930,7 @@ def _v21_abschliessen(verlauf):
 
 
 def _frage_hintergrund(frage):
-    """V21-S: Frage starten, auf den Hinweis warten (Fortschritt sichtbar), Lösung im Hintergrund weiterrechnen."""
+    """Hinweis-zuerst-Modus: Frage starten, auf den Hinweis warten (Fortschritt sichtbar), Lösung im Hintergrund weiterrechnen."""
     with st.chat_message("user"):
         st.write(frage)
     with st.chat_message("assistant"):
@@ -961,7 +960,7 @@ def _frage_hintergrund(frage):
 
 
 def _v21_warte_auf(job, idx, eintrag):
-    """V21-S: auf das Endergebnis warten, Eintrag ersetzen (Protokoll wie V20) und es zurückgeben."""
+    """Hinweis-zuerst-Modus: auf das Endergebnis warten, Eintrag ersetzen (Protokoll wie V20) und es zurückgeben."""
     while job["ergebnis"] is None and job["fehler"] is None:
         time.sleep(0.4)
     erg = _v21_fertig(job, eintrag["frage"])
@@ -970,7 +969,7 @@ def _v21_warte_auf(job, idx, eintrag):
 
 
 def _v21_wartend(idx, eintrag, ist_letzter=True):
-    """V21-S: Hinweis steht; Lösung/Prüfung laufen noch. Bei der jüngsten Frage sind Ideenfeld und Lösungsknopf schon
+    """Hinweis-zuerst-Modus: Hinweis steht; Lösung/Prüfung laufen noch. Bei der jüngsten Frage sind Ideenfeld und Lösungsknopf schon
     da (sie warten bei Bedarf kurz auf das Endergebnis); ältere wartende Einträge aktualisieren sich selbst."""
     schrittleiste(1, False)
     st.markdown(f"💡 **Hinweis:** {eintrag['hinweis']}")
@@ -1014,9 +1013,9 @@ def _v21_wartend(idx, eintrag, ist_letzter=True):
 
 
 def seite_chat():
-    seitenleiste()  # UI-v2
+    seitenleiste()
     st.title(f"🎓 {APP_NAME}")
-    _v21_abschliessen(st.session_state["verlauf"])  # V21-S
+    _v21_abschliessen(st.session_state["verlauf"])
     verlauf = st.session_state["verlauf"]
     anzahl = len(verlauf)
     fokus = st.session_state.get("fokus")
@@ -1031,13 +1030,13 @@ def seite_chat():
         st.caption(f"Frage {fokus + 1} von {anzahl} (aus dem Verlauf) · „📋 Alle Fragen“ zeigt wieder alle.")
         zeige_eintrag(fokus, verlauf[fokus], ist_letzter=(fokus == anzahl - 1))
 
-    bildeingabe_ui()  # ab V12 (BE-v1)
+    bildeingabe_ui()  # Bildeingabe
 
     frage = chat_eingabe("Stelle eine Frage zu den verfügbaren Themen...") or st.session_state.pop("naechste_frage", None)
     bild = st.session_state.pop("naechstes_bild", None) if frage else None
     suche_frage = st.session_state.pop("naechste_suche", None) if frage else None
     bild_meta = st.session_state.pop("naechste_bild_meta", {}) if frage else {}
-    if frage and _V21_HZ and not bild:  # V21-S: Textfragen mit Hinweis zuerst (Bildfragen wie V20)
+    if frage and _V21_HZ and not bild:  # Hinweis-zuerst-Modus: Textfragen mit Hinweis zuerst (Bildfragen wie V20)
         _frage_hintergrund(frage)
     if frage:
         with st.chat_message("user"):
@@ -1052,7 +1051,7 @@ def seite_chat():
                 _rp.RETRIEVAL_FRAGE = suche_frage if bild else None
                 try:
                     ergebnis = beantworte_frage(frage, CHUNKS, fortschritt=fortschritt_anzeige(status))
-                except Exception as fehler:  # V13.3.1: kein Abbruch mit Traceback (z. B. Zeitüberschreitung des Sprachmodells)
+                except Exception as fehler:  # kein Abbruch mit Traceback (z. B. Zeitüberschreitung des Sprachmodells)
                     print(f"FEHLER beantworte_frage: {type(fehler).__name__}: {fehler}")
                     status.update(label="Keine Antwort erzeugt", state="error", expanded=False)
                     st.error("Die Antwort konnte gerade nicht erzeugt werden (das Sprachmodell hat nicht rechtzeitig "
@@ -1068,17 +1067,17 @@ def seite_chat():
             st.session_state.setdefault("bilder", {})[len(st.session_state["verlauf"])] = bild
             st.session_state.setdefault("bild_meta", {})[len(st.session_state["verlauf"])] = bild_meta
         st.session_state["verlauf"].append(ergebnis)
-        st.session_state["fokus"] = None  # UI-v2: neue Frage -> alle zeigen
+        st.session_state["fokus"] = None  # neue Frage -> alle zeigen
         st.rerun()
 
     st.divider()
-    if _ist_dev():  # UI-v2: technische Angaben nur im Entwicklermodus
+    if _ist_dev():  # technische Angaben nur im Entwicklermodus
         st.caption(f"Konfiguration: {_os.path.basename(KB_PFAD)} · {RETRIEVAL} · {_rp.SCAFFOLDING_VERSION}")
-    col1, col2 = st.columns([3, 2])  # UI-v2: Platz für den längeren Knopftext
+    col1, col2 = st.columns([3, 2])  # Platz für den längeren Knopftext
     with col1:
         st.caption(f"Bisher gestellte Fragen: {len(st.session_state['verlauf'])}")
     with col2:
-        if st.button("Feedback zum Lernassistenten →", disabled=len(st.session_state["verlauf"]) == 0):  # UI-v2
+        if st.button("Feedback zum Lernassistenten →", disabled=len(st.session_state["verlauf"]) == 0):
             st.session_state["seite"] = "fragebogen"
             st.rerun()
 

@@ -1,57 +1,39 @@
 """
 ragas_auswertung.py
 -------------------
-Offline-Auswertung der protokollierten Interaktionen nach RAGAS
-(Es, James, Espinosa-Anke & Schockaert, 2023, arXiv:2309.15217).
+Auswertung protokollierter Antworten nach RAGAS (Es, James, Espinosa-Anke & Schockaert, 2023,
+arXiv:2309.15217). Nicht Teil der App; die Funktionen (Aussagen zerlegen, Aussagen prüfen, Verweigerung
+erkennen) nutzen auch faith300.py, faith1200.py und die Bibliothek (ist_modell_verweigerung).
 
-NICHT Teil der Studien-App — läuft nach der Datenerhebung auf
-evaluationsdaten/interaktionen.csv.
-
-Stand: Schritt 5 (Datenschicht + Faithfulness v2 + Answer Relevance v3 +
-Context Relevance v1).
-
-Bewusste Abweichungen vom Original (im Methodenteil zu nennen):
-  - Richter-LLM lokal (Standard qwen3.5:9b, per --judge austauschbar) statt GPT-3.5
+Abweichungen vom Original:
+  - Richter-LLM lokal (per --judge austauschbar) statt GPT-3.5
   - Prompts auf Deutsch (Quellmaterial deutschsprachig)
   - Aussagenprüfung einzeln pro Aussage statt gebündelt (robuster bei kleinen Modellen)
-  - Bewerteter Antworttext = Hinweis + Erklärung + Lösung (alles, was Lernende sehen;
-    ab V4 ohne Erklärung, die Spalte bleibt leer)
+  - Bewerteter Antworttext = alles, was Lernende sehen (Hinweis + Lösung)
   - Meta-Aussagen (Tipps an Lernende, Aussagen über den Kontext) werden verworfen und gezählt
   - Modellseitige Verweigerungen werden erkannt und NICHT bewertet (weder Faithfulness
     noch Answer Relevance), sondern separat gezählt
   - Answer Relevance: Embedding-Modell paraphrase-multilingual-MiniLM-L12-v2 (dasselbe
     wie im Retrieval) statt OpenAI text-embedding-ada-002; bewertet wird nur die
-    Lösung (Stufe 3), da der Hinweis absichtlich indirekt ist
+    Lösung, da der Hinweis absichtlich indirekt ist
   - Context Relevance: Richter wählt benötigte Sätze per NUMMER statt sie wörtlich
-    zu extrahieren (robuster bei kleinen Modellen, kein Abgleich von Textkopien nötig);
-    Satzzerlegung mit _satzsplit aus rag_pipeline (dieselbe wie beim Chunking);
-    identische Sätze aus der 1-Satz-Überlappung benachbarter Chunks zählen nur einmal
+    zu extrahieren (robuster bei kleinen Modellen); Satzzerlegung mit _satzsplit aus
+    rag_pipeline
   - Context Relevance wird auch für modellseitige Verweigerungen berechnet (braucht
     keine Antwort); Gate-Verweigerungen haben keinen geloggten Kontext und entfallen
 
-Prompt-Historie:
-  v1: einfache Zerlegung + strikte Prüfung -> Meta-Aussagen, unaufgelöste
-      Pronomen, zu wörtliche Prüfung, verstümmelte Formeln (TEST-01, F001 = 0.25
-      bei inhaltlich korrekter Antwort). Ergebnisse: ragas_*_prompt_v1.csv
-  v2: Few-Shot-Zerlegung, Meta-Filter, Prüfregeln für Umformulierung/Rechnung,
-      Hinweis auf PDF-Extraktionsartefakte. Danach eingefroren (keine weitere
-      Anpassung an dieselben Testfälle, um Überanpassung zu vermeiden).
-  Answer Relevance v1: Erstversion. Befund: themengleiche, aber ausweichende
-      Antwort (F007) erhielt hohen Score (0.82).
-  Answer Relevance v2: zusätzliches Urteil AUSWEICHEND (noncommittal) wie in der
-      ragas-Referenzimplementierung; ausweichend -> Score 0, Rohwert bleibt als ar_roh erhalten.
-      Befund: Frage und Antwort im selben Prompt -> Richter kopierte die Originalfrage
-      teils wörtlich (Kosinus 1.00), Score aufgebläht (F002: 0.61 -> 0.78).
-  Answer Relevance v3: zwei getrennte Aufrufe — Fragengenerierung sieht NUR die Antwort
-      (wie Es et al. 2023), Ausweich-Urteil separat mit Frage + Antwort.
-  Context Relevance v1: Erstversion.
+Prompt-Versionen:
+  J-v1 (verwendet): fester Prompt-Satz nach Es et al. (2024), ohne Beispiele.
+  F-v2/AR-v3/CR-v1: ältere Fassung mit Few-Shot-Zerlegung, Meta-Filter und Prüfregeln für
+      Umformulierung/Rechnung; Answer Relevance mit getrennter Fragengenerierung (sieht NUR die
+      Antwort, wie Es et al. 2023) und separatem Ausweich-Urteil.
 
 Start:
-  python ragas_auswertung.py TEST --limit 5      # erst 5 Fälle, Details prüfen
-  python ragas_auswertung.py TEST                # alle Fälle
-  python ragas_auswertung.py TEST --judge mistral-nemo:12b
-  python ragas_auswertung.py TEST --metriken ar --limit 5   # nur Answer Relevance testen
-  python ragas_auswertung.py TEST --metriken cr --limit 5   # nur Context Relevance testen
+  python ragas_auswertung.py <LABEL> --limit 5      # erst 5 Fälle, Details prüfen
+  python ragas_auswertung.py <LABEL>                # alle Fälle
+  python ragas_auswertung.py <LABEL> --judge <ollama-modell>
+  python ragas_auswertung.py <LABEL> --metriken ar --limit 5   # nur Answer Relevance
+  python ragas_auswertung.py <LABEL> --metriken cr --limit 5   # nur Context Relevance
   Hinweis: Jeder Lauf überschreibt ragas_ergebnisse.csv mit den Metriken DIESES Laufs.
 """
 import sys as _sys, pathlib as _pl  # Projektpfade (lernassistent/pfadsetup.py)
@@ -70,9 +52,8 @@ from rag_pipeline import (
 KB_PFAD = "daten/wissensbasen/knowledge_base_boege.json"
 JUDGE_MODELL_STANDARD = "mistral-nemo"  # bewusst NICHT der Generator (qwen3.5:9b): Selbstbevorzugung vermeiden
 JUDGE_OPTIONEN = {"temperature": 0, "seed": 42}
-# Richter-Prompts: "J-v1" (ab V6, fester Prompt-Satz nach Es et al. 2024, ohne Beispiel und ohne
-# dokumentspezifische PDF-Hinweise; doku/Prompt_Set_Spezifikation.md §4.3–4.6) oder "F-v2/AR-v3/CR-v1"
-# (V0–V5, zur Reproduktion alter Ergebnisse). Werte sind nur innerhalb derselben Richter-Version vergleichbar.
+# Richter-Prompts: "J-v1" (fester Prompt-Satz nach Es et al. 2024, ohne Beispiel und ohne dokumentspezifische
+# Hinweise) oder "F-v2/AR-v3/CR-v1" (ältere Fassung). Werte sind nur innerhalb derselben Richter-Version vergleichbar.
 RICHTER_PROMPTS = {"J-v1": "J-v1", "F-v2": "F-v2/AR-v3/CR-v1"}
 PROMPT_VERSION = "J-v1"
 AR_ANZAHL_FRAGEN = 3
@@ -140,7 +121,7 @@ def bereite_faelle_vor(zeilen, chunks, kb_hash_aktuell):
             continue
         fall["kontext_chunks"] = kontext
         # Hinweis ist nur bei erfolgreichem Parsen gefüllt (Fallback: alles in loesung).
-        # Gilt für 3 Stufen (V0–V3, S3-v0) und 2 Stufen (ab V4, S2-v1) gleichermaßen.
+        # Gilt für 3 Stufen (S3-v0) und 2 Stufen (S2/G) gleichermaßen.
         fall["geparst"] = bool(fall["hinweis"].strip())
         bewertbar.append(fall)
     return bewertbar, ausgeschlossen
@@ -149,8 +130,7 @@ def bereite_faelle_vor(zeilen, chunks, kb_hash_aktuell):
 # =============================================================================
 # Modellseitige Verweigerung erkennen
 # =============================================================================
-# Abgeleitet aus den tatsächlichen Formulierungen von qwen3.5:9b im Testlauf
-# TEST-01. Nur die ersten 300 Zeichen der Lösung werden geprüft.
+# Abgeleitet aus Formulierungen von qwen3.5:9b. Nur die ersten 300 Zeichen der Lösung werden geprüft.
 # Teilantworten ("lässt sich nicht vollständig beantworten ... erwähnt lediglich")
 # enthalten prüfbaren Inhalt und zählen NICHT als Verweigerung. Bewusst eng
 # gefasst: Wörter wie "lediglich" allein reichen nicht, da auch vollständige
@@ -164,7 +144,7 @@ _VERWEIGERUNG = re.compile(
 )
 _TEILANTWORT = re.compile(r"nicht vollständig|nur teilweise|nur zum teil", re.IGNORECASE)
 
-# Detektor v2 (Befund V2-KG, F004/F012/F021/F028): v1 erkannte Verweigerungen nicht, wenn
+# Detektor v2: v1 erkannte Verweigerungen nicht, wenn
 #   - das Verb VOR der Verneinung steht ("Der Kontext beantwortet Ihre Frage nicht ausreichend"),
 #   - Singular "Information" statt "Informationen" ("enthält keine Information dazu"),
 #   - ohne das Wort "Kontext" ("kann ich Ihnen leider nicht sagen").
@@ -344,14 +324,12 @@ def berechne_faithfulness(fall, modell):
 # Idee (Es et al. 2023): Passt die Antwort zur Frage, dann lassen sich aus
 # der Antwort Fragen rekonstruieren, die der Originalfrage ähneln. Gemessen
 # wird NICHT die Korrektheit, sondern ob die Antwort das Gefragte adressiert.
-# Eine sachlich gestützte, aber am Thema vorbeigehende Antwort (z. B. F002:
-# allgemeine Metalleigenschaften statt der gefragten Gittertypen) soll hier
-# niedrig abschneiden, obwohl ihre Faithfulness ordentlich ist.
+# Eine sachlich gestützte, aber am Thema vorbeigehende Antwort (z. B. allgemeine Eigenschaften statt der
+# gefragten) soll hier niedrig abschneiden, obwohl ihre Faithfulness ordentlich ist.
 def generiere_fragen(loesung, modell, n=AR_ANZAHL_FRAGEN):
-    """Rekonstruiert Fragen AUS DER ANTWORT ALLEIN. Die Originalfrage wird dem
-    Richter hier bewusst NICHT gezeigt: In AR-v2 (Frage im selben Prompt)
-    kopierte das Modell sie teils wörtlich (Kosinus 1.00 bei F002/F007) und
-    blähte so den Score auf. Entspricht dem Vorgehen bei Es et al. (2023)."""
+    """Rekonstruiert Fragen AUS DER ANTWORT ALLEIN. Die Originalfrage wird dem Richter hier bewusst NICHT
+    gezeigt: Steht sie im selben Prompt, kopiert das Modell sie teils wörtlich und bläht so den Score auf.
+    Entspricht dem Vorgehen bei Es et al. (2023)."""
     if PROMPT_VERSION == "J-v1":
         prompt = f"""Formuliere {n} unterschiedliche Fragen, auf die genau diese Antwort passt. Nutze nur, was in der
 Antwort steht.
@@ -388,7 +366,7 @@ def ist_ausweichend(frage, loesung, modell):
     konkret? 'Ausweichend' (noncommittal) = bleibt beim Thema, liefert aber das
     Gesuchte nicht ("Die Texte nennen keine Vergleichswerte"). Solche Antworten
     erzeugen themengleiche Fragen und damit HOHE Kosinuswerte, obwohl sie nichts
-    beantworten (Testbefund F007, AR-v1: 0.82). Die ragas-Referenzimplementierung
+    beantworten. Die ragas-Referenzimplementierung
     erfasst dies ebenfalls als eigenes Urteil und setzt den Score auf 0.
     Rückgabe: True/False/None (None = Urteil nicht lesbar)."""
     if PROMPT_VERSION == "J-v1":

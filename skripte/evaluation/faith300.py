@@ -1,8 +1,8 @@
 """
-faith300.py  (Fragen300, Schritt 4: Faithfulness mit und ohne RAG)
-Wie faithfulness_rag_vs_ohne.py (29 Oct 2026): beide Antworten einer Buchfrage werden gegen DIESELBEN vier Abschnitte geprüft,
-die das System für die Frage abgerufen hat (quellen_mit). Funktionen aus ragas_auswertung.py (Prompts J-v1: Antwort in
-Aussagen zerlegen, jede Aussage gegen den Kontext prüfen), Richter wie in richter300.py (Standard gemma4:12b).
+faith300.py  (Studie 1, Schritt 4: Faithfulness mit und ohne RAG, qwen)
+Beide Antworten einer Buchfrage werden gegen DIESELBEN Abschnitte geprüft, die das System für die Frage abgerufen hat
+(quellen_mit). Funktionen aus ragas_auswertung.py (Prompts J-v1: Antwort in Aussagen zerlegen, jede Aussage gegen den
+Kontext prüfen), Richter wie in richter300.py (Standard gemma4:12b).
 Faithfulness = gestützte Aussagen / prüfbare Aussagen. Nur Buchfragen. Fortsetzbar.
   python skripte/evaluation/faith300.py F300-V20 --richter gemma4:12b [--limit 4]
 """

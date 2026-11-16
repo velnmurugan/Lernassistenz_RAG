@@ -1,7 +1,7 @@
 """
 baue_wissensbasis_struktur.py
 -----------------------------
-V7: Baut aus einer PDF zwei Wissensbasen mit strukturtreuem Chunking:
+Baut aus einer PDF zwei Wissensbasen mit strukturtreuem Chunking:
   <name>_v7a.json  Text, Tabellen, Abbildungen nur mit Bildunterschrift
   <name>_v7b.json  wie v7a, Abbildungen zusätzlich mit VLM-Bildbeschreibung
 So unterscheidet sich v7b von v7a nur durch die Bildbeschreibungen (eine Änderung pro Version).
@@ -14,12 +14,12 @@ Schritte (jeder wird übersprungen, wenn sein Ergebnis schon existiert -> fortse
 
 Start:
   python skripte/wissensbasis/baue_wissensbasis_struktur.py \
-      --pdf daten/quellen/fischer/978-3-658-25644-9.pdf --name fischer
+      --pdf daten/quellen/fischer/<datei>.pdf --name fischer --methode ocr
 Optionen: --methode ocr (alles per OCR), --ohne-vlm, --vlm-modell qwen2.5vl:7b, --max-bilder 20 (Test)
 
 Neue Version neben der alten bauen (alte Wissensbasen bleiben unverändert, z. B. nach einer Änderung
 in pdf_struktur.py; vorhandene Extraktion und Bildbeschreibungen werden wiederverwendet):
-  python skripte/wissensbasis/baue_wissensbasis_struktur.py --pdf daten/quellen/fischer/Fischer.pdf \
+  python skripte/wissensbasis/baue_wissensbasis_struktur.py --pdf daten/quellen/fischer/<datei>.pdf \
       --name fischer --kennung v7c --vergleich daten/wissensbasen/knowledge_base_fischer_v7b.json
   -> nur knowledge_base_fischer_v7c.json (mit Bildbeschreibungen) + Liste der geänderten Chunks
 

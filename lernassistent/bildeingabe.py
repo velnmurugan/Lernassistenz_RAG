@@ -1,20 +1,17 @@
 """
 bildeingabe.py
 --------------
-BE-v1 (V12, 23 Oct 2026): Aufgabe als Foto oder Screenshot hochladen.
+BE-v1: Aufgabe als Foto oder Screenshot hochladen.
 
-Ablauf (ab V12.5): Bild im Eingabefeld anhängen -> Vision-Modell (qwen3.5:9b, dasselbe Modell wie die Antworten) schreibt die
+Ablauf: Bild im Eingabefeld anhängen -> Vision-Modell (qwen3.5:9b, dasselbe Modell wie die Antworten) schreibt die
 Aufgabenstellung ab und beschreibt die Abbildung -> beides läuft sofort als Frage durch die normale Pipeline (Suche, Antwort,
 Rechenprüfung); die Frage im Chat zeigt, was erkannt wurde (Abbildung als "automatisch beschrieben, ohne Gewähr").
 Mit LERNASSISTENT_BILD_PRUEFEN=1 (Entwicklung) erscheint der Text vorher zum Prüfen. Das Bild selbst wird nicht gespeichert,
 nur der Text (bildeingabe.csv).
 
-Grundlage: Bildtest T-v1 (23 Oct 2026, 8 Buchseiten-Screenshots, qwen3.5:9b und qwen2.5vl:7b):
-  - Aufgabentext, Zahlen, Einheiten: in allen 8 Fällen richtig gelesen, qwen3.5 mit saubererem Format (kein LaTeX,
-    Klammern im Bruch erhalten); beide in 2-11 s.
-  - Abbildungen: unzuverlässig (3 von 8 nicht erkannt, erfundene Verschaltung, vertauschte Schalterzustände).
-Trotzdem (Wunsch Vel, 23 Oct 2026: Abbildungen müssen erklärbar sein): die Beschreibung geht gekennzeichnet in die Frage ein;
-Fehler der Beschreibung sind damit sichtbar und werden im Protokoll (roh_text) festgehalten.
+Aufgabentext, Zahlen und Einheiten werden zuverlässig gelesen; Abbildungsbeschreibungen sind weniger zuverlässig. Die
+Beschreibung geht deshalb gekennzeichnet in die Frage ein; Fehler sind damit sichtbar und werden im Protokoll (roh_text)
+festgehalten.
 """
 import base64
 import csv
@@ -129,7 +126,7 @@ def kombiniere(text, abbildung):
 
 def pruefen_verlangt():
     """LERNASSISTENT_BILD_PRUEFEN=1: erkannter Text wird vor dem Senden angezeigt und kann korrigiert werden (Entwicklungsmodus).
-    Standard: Bild lesen und direkt beantworten (V12.5)."""
+    Standard: Bild lesen und direkt beantworten."""
     return os.environ.get("LERNASSISTENT_BILD_PRUEFEN", "") == "1"
 
 
@@ -227,7 +224,7 @@ def chat_eingabe(platzhalter):
     with st.spinner("Das Bild wird gelesen …"):
         erg = lies_aufgabe(dateien[0].getvalue())
     erg["abgleich"] = None
-    try:  # V12.9 (optional, LERNASSISTENT_BILDABGLEICH=1): Abbildung der Wissensbasis zuordnen
+    try:  # optional (LERNASSISTENT_BILDABGLEICH=1): Abbildung der Wissensbasis zuordnen
         import bildabgleich
         idx = bildabgleich.index_fuer_app()
         if idx:
@@ -237,7 +234,7 @@ def chat_eingabe(platzhalter):
     erg["hinweis_text"] = text.strip()  # was die Person zusätzlich ins Feld geschrieben hat
     aufgabe = (erg["text"] + ("\n" + text.strip() if text.strip() else "")).strip()
     if not pruefen_verlangt() and not erg["fehler"] and braucht_standardfrage(aufgabe):
-        aufgabe = (aufgabe + "\n" + STANDARD_FRAGE).strip()  # V12.6: nur Bild/Bildunterschrift -> Abbildung erklären
+        aufgabe = (aufgabe + "\n" + STANDARD_FRAGE).strip()  # nur Bild/Bildunterschrift -> Abbildung erklären
     if pruefen_verlangt() or erg["fehler"] or not aufgabe:
         st.session_state["bild_ergebnis"] = erg  # Fehler oder Entwicklungsmodus: Block mit Text/Meldung
         st.session_state["bild_text"] = aufgabe
@@ -254,10 +251,10 @@ def chat_eingabe(platzhalter):
         except Exception as e:
             print(f"WARNUNG Bildprotokoll: {e}")
         st.session_state["naechste_frage"] = frage
-        # V12.7: Suche nur mit Aufgabentext/Eingabe + Thema-Stichwörtern; die (oft fehlerhafte) Beschreibung geht nur an die Antwort
+        # Suche nur mit Aufgabentext/Eingabe + Thema-Stichwörtern; die (oft fehlerhafte) Beschreibung geht nur an die Antwort
         st.session_state["naechste_suche"] = " ".join(x for x in (aufgabe, erg.get("thema"), such_extra) if x).strip()
-        st.session_state["naechste_bild_meta"] = {"thema_fehlt": not thema_im_text(text) and not erg.get("abgleich")}  # V12.8: nur die Eingabe der Person zählt
-        st.session_state["naechstes_bild"] = dateien[0].getvalue()  # V12.6: Bild im Chat zeigen und an die Antwort geben
+        st.session_state["naechste_bild_meta"] = {"thema_fehlt": not thema_im_text(text) and not erg.get("abgleich")}  # nur die Eingabe der Person zählt
+        st.session_state["naechstes_bild"] = dateien[0].getvalue()  # Bild im Chat zeigen und an die Antwort geben
     st.rerun()
     return None
 
@@ -308,7 +305,7 @@ def _bestaetigung(st, erg):
 
 def bildeingabe_ui():
     """Block über dem Eingabefeld. Mit Datei-Feld im Chat (Streamlit >= 1.43): nur der Bestätigungsblock, sobald ein Bild
-    gelesen wurde. Sonst (ältere Streamlit-Version): Expander mit eigenem Upload-Feld wie in V12.
+    gelesen wurde. Sonst (ältere Streamlit-Version): Expander mit eigenem Upload-Feld.
     Die bestätigte Abschrift geht als st.session_state["naechste_frage"] in die normale Pipeline."""
     import streamlit as st
     erg = st.session_state.get("bild_ergebnis")

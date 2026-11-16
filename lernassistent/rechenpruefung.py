@@ -1,12 +1,9 @@
 """
 rechenpruefung.py
 -----------------
-Rechenprüfung RP-v1 (V9d, 14 Oct 2026): prüft Gleichungsketten in einer Lösung ("A = B = C", auch "≈")
-und meldet Schritte, deren Zahlenwerte nicht zusammenpassen. Python rechnet, nicht das Modell.
-
-Anlass: Q13 (Schlupf) — die Lösung schrieb "(1500 − 1425) / 1500 = 75 / 1500 = 0,02" (richtig 0,05).
-Das Modell kann seine eigene Rechnung nicht zuverlässig prüfen; ein Rechenschritt mit Zahlen lässt sich
-aber deterministisch nachrechnen.
+Rechenprüfung: prüft Gleichungsketten in einer Lösung ("A = B = C", auch "≈") und meldet Schritte, deren
+Zahlenwerte nicht zusammenpassen. Python rechnet, nicht das Modell: ein Sprachmodell kann seine eigene
+Rechnung nicht zuverlässig prüfen, ein Rechenschritt mit Zahlen lässt sich aber deterministisch nachrechnen.
 
 Vorgehen je Gleichungskette:
   1. Einheiten entfernen (Wort direkt nach einer Zahl, Einheitenbrüche wie "K/W", "1/min", "m/s²").
@@ -16,23 +13,14 @@ Vorgehen je Gleichungskette:
 Teile ohne Zahlen ("s", "η", "P₂ / P₁") werden übersprungen. Erkennt nur Fehler in ausgeschriebenen
 Rechenschritten, keine falsch gewählte Formel und keine Zahl ohne Rechnung.
 
-RP-v2 (V10, 19 Oct 2026) = RP-v1 + zwei weitere deterministische Prüfungen (pruefe(text, frage, version)):
-  - Konsistenz: Der Wert im ersten Satz (Ergebnis-Satz nach L2) muss zum Endergebnis der letzten Rechnung
-    passen (auch als Prozent: 0,05 = 5 %). Anlass Q13 (Lauf V9D): "Der Schlupf beträgt 0,02 oder 2 %" im
-    ersten Satz, die Rechnung danach ergibt 0,05; RP-v1 meldete "ok", weil keine Gleichung falsch war.
-  - Sichtbare Überlegung: Selbstkorrekturen und Abwägungen in der Lösung ("Rechenfehler", "korrigieren",
-    "Warte", "Entscheidung:", "STATUS:"). Anlass Q13 und Q27 (Lauf V9D).
-Beide Befunde werden wie RP-v1 behandelt (ein Neuschreib-Aufruf, sonst sichtbarer Vermerk).
-
-RP-v3 (V10a, 19 Oct 2026) = RP-v2 + Variablennamen mit Index ("P1", "U2", "R20") werden nicht mehr als Zahl
-gelesen. Anlass Q27 (Lauf V10): "P1 = 4000 W / 0,815 = 4908 W" ergab den falschen Vermerk
-"4000 / 0,815 ergibt 4908, nicht 1" (die "1" aus "P1"). Folge davon: Ein Ausdruck, der über einen Operator an ein
-Symbol grenzt ("R20 · (1 + 0,004 · 30)"), wird nicht mehr nur zur Hälfte gelesen (sonst falscher Befund).
-RP-v1 und RP-v2 bleiben unverändert (Reproduzierbarkeit).
-
-RP-v5 (V11b, 21 Oct 2026) = RP-v3 + Namen mit Unterstrich-Index ("I_1N", "U_2N", "u_k") werden als ein Variablenname
-gelesen. Anlass: Live-Test "Bemessungsstrom 40 kVA / 5 kV": die Vermerke "(40) / (√3 · 5) ergibt 4,619, nicht 1" und
-"… nicht 2" stammen aus der "1" in "I_1N" und der "2" in "I_2N". RP-v3 und RP-v4 bleiben unverändert.
+Versionen (pruefe(text, frage, version); ältere bleiben reproduzierbar):
+  RP-v1  Gleichungsketten nachrechnen.
+  RP-v2  + Konsistenz: der Wert im ersten Satz muss zum Endergebnis der letzten Rechnung passen (auch als
+         Prozent: 0,05 = 5 %); + sichtbare Überlegung: Selbstkorrekturen und Abwägungen in der Lösung.
+  RP-v3  Variablennamen mit Index ("P1", "U2", "R20") werden nicht als Zahl gelesen; ein Ausdruck, der über
+         einen Operator an ein Symbol grenzt ("R20 · (1 + 0,004 · 30)"), wird nicht zur Hälfte gelesen.
+  RP-v5  + Namen mit Unterstrich-Index ("I_1N", "U_2N", "u_k") als ein Variablenname.
+  RP-v6 … RP-v11: siehe die Abschnitte weiter unten.
 """
 import ast
 import math
@@ -73,13 +61,13 @@ def zahl(text):
 # RP-v3: Buchstabe + 1-2 Ziffern direkt daneben ("P1", "U2", "R20") ist ein Variablenname -> tiefgestellte Ziffern,
 # die der Tokenizer als Teil des Wortes liest. Nur aktiv in pruefe(..., version="RP-v3"); sonst wie RP-v1/v2.
 _INDEX_FIX = False
-_V9_FIX = False  # RP-v9 (V13.3.1): Namen aus 2-4 Buchstaben + Ziffern ("sK2", "UAN1") als ein Name
-_V10_FIX = False  # RP-v10 (V13.4): Wurzel über Klammer, kein halber Ausdruck neben Namen, "Aufgabe 1.19" als Verweis
-_V11_FIX = False  # RP-v11 (V13.5): Zahl vor Klammer mit Anmerkung, LaTeX-Hochzahlen
-# V18-K (28 Oct 2026, LERNASSISTENT_V18 enthält "K"): Hochzahl mit „^“ nach einer entfernten Einheit gehört zur Einheit
-# ("150 cm^2 = 0,015 m^2" wurde als "150 ^ 2 = 0,015 ^ 2" geprüft; RV-v1 R09: richtige Denkmodus-Antwort verworfen)
+_V9_FIX = False  # RP-v9: Namen aus 2-4 Buchstaben + Ziffern ("sK2", "UAN1") als ein Name
+_V10_FIX = False  # RP-v10: Wurzel über Klammer, kein halber Ausdruck neben Namen, "Aufgabe 1.19" als Verweis
+_V11_FIX = False  # RP-v11: Zahl vor Klammer mit Anmerkung, LaTeX-Hochzahlen
+# V18-K (LERNASSISTENT_V18 enthält "K"): Hochzahl mit „^“ nach einer entfernten Einheit gehört zur Einheit
+# ("150 cm^2 = 0,015 m^2" ist keine Rechnung "150 ^ 2 = 0,015 ^ 2")
 _V18_K = "K" in __import__("os").environ.get("LERNASSISTENT_V18", "")
-_V7_FIX = False  # RP-v7 (V13.1): Einheitenbrüche in Klammern, "/s" nach Zahl, Einheit kgm²
+_V7_FIX = False  # RP-v7: Einheitenbrüche in Klammern, "/s" nach Zahl, Einheit kgm²
 _UNTERSTRICH_FIX = False  # RP-v5: "I_1N", "U_2N", "u_k" -> ein Name (siehe pruefe)
 _UNTERSTRICHNAME = re.compile(r"(?<![\w.,])([A-Za-zηφΦϑα-ωΑ-Ω]{1,3})_([A-Za-z0-9]{1,4})\b")
 _NAME_ZIFFER = re.compile(r"(?<![\w.,])([A-Za-zηφΦϑα-ωΑ-Ω]{2,4})(\d{1,2})\b(?![,.]\d)")
@@ -91,8 +79,8 @@ _ZEHNERPOTENZ = re.compile(r"(?<![\d,.])10\s*\^\s*\(?\s*([-−–]?)\s*(\d{1,2})
 
 
 def _zehnerpotenz(m):
-    """"10^18" -> eine Zahl (1000000000000000000), "10^-3" -> 0,001. V12: vorher las die Prüfung "10" und "18" als zwei
-    Zahlen und meldete bei "3 · 6,25 · 10^18 = 18,75 · 10^18" fälschlich "18,75 · 10 ergibt 187,5, nicht 18" (N100 Nr 1)."""
+    """"10^18" -> eine Zahl (1000000000000000000), "10^-3" -> 0,001 (sonst würden "10" und "18" als zwei
+    Zahlen gelesen)."""
     n = int(m.group(2))
     if m.group(1):
         return "0," + "0" * (n - 1) + "1" if n >= 1 else "1"
@@ -103,12 +91,12 @@ def _tokens(teil):
     teil = _ZEHNERPOTENZ.sub(_zehnerpotenz, teil)
     if _UNTERSTRICH_FIX:
         teil = _UNTERSTRICHNAME.sub(lambda m: m.group(1) + m.group(2).translate(_TIEF), teil)
-    if _V9_FIX:  # V13.3.1: "sK2 = 1,25 · 0,15" las die Prüfung als "sK" und "2" (App-Test Pumpenmotor)
+    if _V9_FIX:  # "sK2 = 1,25 · 0,15": Name "sK2", nicht "sK" und "2"
         teil = _NAME_ZIFFER.sub(lambda m: m.group(1) + m.group(2).translate(_TIEF), teil)
     if _INDEX_FIX:
         teil = _INDEXNAME.sub(lambda m: m.group(1) + m.group(2).translate(_TIEF), teil)
     teil = _EINHEITENBRUCH.sub("", _EINHEIT_KEHRWERT.sub(" ", teil))
-    if _V7_FIX:  # V13.1: "J/(°C·kg)" (N100 F7), "16,67 /s" (F62), "kgm²" (F61)
+    if _V7_FIX:  # "J/(°C·kg)", "16,67 /s", "kgm²"
         teil = _EINHEITENBRUCH_KLAMMER.sub("", teil)
         teil = _KEHRWERT_NACH_ZAHL.sub(" ", teil)
         teil = _KGM.sub(" kg", teil)
@@ -122,8 +110,8 @@ def _tokens(teil):
     while i < len(out):
         art, wert = out[i]
         i += 1
-        # V13: Einheitenprodukt "kg·m²", "N·m": das Malzeichen zwischen zwei Einheiten gehört zur Einheit. Vorher blieb
-        # "0,25 ·" als halbes Produkt stehen und die Prüfung übersprang die Zeile (N100 F62: 0,25 statt 0,0114 unbemerkt).
+        # Einheitenprodukt "kg·m²", "N·m": das Malzeichen zwischen zwei Einheiten gehört zur Einheit
+        # (sonst bliebe "0,25 ·" als halbes Produkt stehen und die Zeile würde übersprungen).
         if (art == "op" and wert in ("·", "*") and vorher == "einheit" and i < len(out)
                 and out[i][0] == "wort" and _EINHEIT.fullmatch(out[i][1])):
             i += 1
@@ -186,9 +174,8 @@ def _ausdruck_text(toks):
 
 
 def _wurzel_v10(py):
-    """RP-v10: √ wirkt auf die folgende Zahl oder die ganze folgende Klammer. Vorher wurde "√(2 · 25 / 0,5)" zu
-    "sqrt((2 * 25 / 0.5)" (eine Klammer zu wenig), nicht auswertbar; das Kürzen am Rand nahm dann "(2 · 25 / 0,5)" ohne Wurzel
-    und meldete "ergibt 100, nicht 10" (RV-v1 R10, R13, R22: richtige Rechnungen falsch markiert)."""
+    """RP-v10: √ wirkt auf die folgende Zahl oder die ganze folgende Klammer ("√(2 · 25 / 0,5)" ->
+    "sqrt((2 * 25 / 0.5))"), damit die Wurzel beim Kürzen am Rand nicht verloren geht."""
     py = list(py)
     while "WURZEL" in py:
         i = py.index("WURZEL")
@@ -253,8 +240,7 @@ def _rand(toks, ende):
     if _INDEX_FIX and stopp == "wort" and folge and folge[0 if ende else -1][0] == "op":
         return None
     # RP-v10: auch Hochzahl oder Klammer zu direkt nach einem Namen ("d² · π / 4", "(f₂ / f₁)^1,6") bzw. Klammer auf oder
-    # Wurzel direkt vor einem Namen: der Ausdruck gehört zu einem Produkt mit Symbol, nur ein Teil wäre zu sehen
-    # (RV-v1 R02: "π / 4 = (1,5)² · π / 4 ergibt 0,7854", R14: "… ergibt 2377, nicht 1,6").
+    # Wurzel direkt vor einem Namen: der Ausdruck gehört zu einem Produkt mit Symbol, nur ein Teil wäre zu sehen.
     if _V10_FIX and stopp == "wort" and folge and folge[0 if ende else -1][0] in (
             ("hoch", "zu") if ende else ("auf", "wurzel")):
         # RP-v11: "= 78,95 MW (Hinweis: …)" – eine einzelne Zahl vor einer Klammer mit Text ist ein Ergebnis mit Anmerkung
@@ -291,7 +277,7 @@ def _passt(gerechnet, angegeben, stellen):
         letzte = len(z) - len(z.rstrip("0")) if z.rstrip("0") else exponent
     toleranz = max(0.5 * 10 ** letzte, 0.005 * abs(angegeben), 1e-12)
     if not stellen:  # nur ganze Zahlen mit Endnullen
-        toleranz = min(toleranz, 0.10 * abs(angegeben))  # V12.2: "100" gilt nicht für 75 (A/B F55: ±50 war zu weit)
+        toleranz = min(toleranz, 0.10 * abs(angegeben))  # "100" gilt nicht für 75 (±50 wäre zu weit)
     if abs(gerechnet - angegeben) <= toleranz:
         return True
     # Faktor 10³, 10⁶ … : vermutlich stillschweigende Umrechnung von Vorsätzen (µF -> F, mm -> m),
@@ -306,12 +292,12 @@ def _passt(gerechnet, angegeben, stellen):
 def _zahl_de(x):
     if x == 0:
         return "0"
-    if abs(x) >= 1e9 or abs(x) < 1e-6:  # V12: Zehnerpotenz-Schreibweise statt 19-stelliger Zahl
+    if abs(x) >= 1e9 or abs(x) < 1e-6:  # Zehnerpotenz-Schreibweise statt sehr langer Zahl
         m, e = f"{x:.4e}".split("e")
         return f"{m.rstrip('0').rstrip('.').replace('.', ',')}·10^{int(e)}"
     stellen = max(0, 3 - int(math.floor(math.log10(abs(x)))))
     t = f"{x:.{min(stellen, 6)}f}"
-    if "." in t:  # V13.4: nur Nachkommanullen kürzen (vorher wurde 5840 als "584" und 3920 als "392" angezeigt)
+    if "." in t:  # nur Nachkommanullen kürzen (5840 bleibt 5840)
         t = t.rstrip("0").rstrip(".")
     return t.replace(".", ",")
 
@@ -352,7 +338,7 @@ def pruefe_rechnungen(text):
 
 
 # ---------------------------------------------------------------------------------------------------------
-# RP-v2 (V10): Konsistenz Ergebnis-Satz vs. Endergebnis, sichtbare Überlegung
+# RP-v2: Konsistenz Ergebnis-Satz vs. Endergebnis, sichtbare Überlegung
 # ---------------------------------------------------------------------------------------------------------
 # Wörter und Feldnamen, die in einer fertigen Lösung nicht vorkommen sollen. Bewusst eng gefasst:
 # "Korrektur" nur am Zeilenanfang oder nach "*"/"(" (nicht "Korrekturfaktor", nicht "eine Korrektur der
@@ -364,8 +350,8 @@ UEBERLEGUNG_SICHTBAR = re.compile(
     r"(?:noch ?mal|noch einmal)\s+(?:nachrechn|nachprüf|nachseh|überprüf|überleg|gerechnet|geprüft)\w*)\b"
     r"|(?:^|[\n*(])\s*korrektur\b|\bwarte\b\s*[,.!:…]|\b(?:entscheidung|status|überlegung|ueberlegung)\s*:",
     re.I)
-# 19 Oct 2026: "korrigiert werden muss" (Temperaturkorrektur, Antwort ohne RAG zu T1) ist Fachsprache und
-# zählt nicht; gezählt werden nur Selbstkorrekturen in der 1. Person und "Korrektur" am Zeilenanfang.
+# Fachsprache wie "korrigiert werden muss" (Temperaturkorrektur) zählt nicht; gezählt werden nur
+# Selbstkorrekturen in der 1. Person und "Korrektur" am Zeilenanfang.
 
 # Verweise und Normbezeichnungen enthalten Zahlen, die kein Ergebnis sind ("Beispiel 4.15", "Abb. 5.2",
 # "DIN VDE 0100-410").
@@ -468,10 +454,10 @@ def pruefe_ueberlegung(text):
 
 
 # ---------------------------------------------------------------------------------------------------------
-# RP-v6 (V13, 25 Oct 2026): Einheitenwächter und Bereinigung sichtbarer Überlegungen
+# RP-v6: Einheitenwächter und Bereinigung sichtbarer Überlegungen
 # ---------------------------------------------------------------------------------------------------------
-# Größenart der Frage -> passende und unpassende Einheit der Lösung (Code, kein Prompt: die Prompts bleiben frei von
-# Fachwörtern, P1). Anlass N100 F52: "Welche Scheinleistung …" beantwortet mit "200 kW"; die Prüfung verglich nur Zahlen.
+# Größenart der Frage -> passende und unpassende Einheit der Lösung (im Code, nicht im Prompt: die Prompts bleiben
+# frei von Fachwörtern). Beispiel: "Welche Scheinleistung …" beantwortet mit "200 kW".
 _PRAEFIX = r"[kMGm]?"
 _GROESSEN = [
     ("Scheinleistung", re.compile(r"scheinleistung", re.I), re.compile(_PRAEFIX + r"VA\b"), re.compile(r"(?<![A-Za-z])" + _PRAEFIX + r"W(?![A-Za-z])")),
@@ -504,7 +490,7 @@ _LECK_START = re.compile(r"(?:^|\n)[ \t]*[*_]*[ \t]*(?:Warte|Moment mal|Hmm+|Kor
 
 
 def bereinige_ueberlegung(text):
-    """V13: sichtbarer Denktext am Ende der Lösung ("*Warte, ich muss strikt L1 und L5 beachten.* Korrektur …", N100 F29, F4)
+    """RP-v6: sichtbarer Denktext am Ende der Lösung ("*Warte, ich muss … beachten.* Korrektur …")
     wird abgeschnitten, wenn davor eine vollständige Lösung steht (mindestens 40 Zeichen). Rückgabe (text, entfernt)."""
     t = text or ""
     m = _LECK_START.search(t)
@@ -516,7 +502,7 @@ def bereinige_ueberlegung(text):
 def pruefe(text, frage="", version="RP-v3"):
     """Alle Befunde der gewählten Version. RP-v1 = nur pruefe_rechnungen (unverändert); RP-v2 = + Konsistenz und
     sichtbare Überlegung; RP-v3 = RP-v2 mit Indexnamen-Korrektur; RP-v4 wie RP-v3; RP-v5 = RP-v3 + Unterstrich-Namen;
-    RP-v6 = RP-v5 + Einheitenwächter (V13); RP-v7 = RP-v6 + Tokenizer-Korrekturen (V13.1)."""
+    RP-v6 = RP-v5 + Einheitenwächter; RP-v7 = RP-v6 + Tokenizer-Korrekturen."""
     with modus(version):
         return _pruefe(text, frage, version)
 
@@ -593,9 +579,9 @@ def entlatexe(text):
 
 
 # ---------------------------------------------------------------------------------------------------------
-# RP-v7 (V13.1, 26 Oct 2026): Bereinigung auch mitten im Satz, Kopfsatz an die eigene Rechnung angleichen
+# RP-v7: Bereinigung auch mitten im Satz, Kopfsatz an die eigene Rechnung angleichen
 # ---------------------------------------------------------------------------------------------------------
-# Anlass N100-Lauf V13A/V13B: F4 "… = 6,75 mWh? Nein, hier muss man aufpassen. …", "Warum habe ich oben 23,5 geschrieben?"
+# Beispiele für Denktext: "… = 6,75 mWh? Nein, hier muss man aufpassen. …", "Warum habe ich oben 23,5 geschrieben?"
 _LECK_V7 = re.compile(r"(?:^|\n)[ \t]*[*_]*[ \t]*(?:Warte|Moment mal|Hmm+|Korrektur|Ich muss|Lass mich)\b|"
                       r"\?\s*Nein\b[,.!]|\bNein, (?:hier|das|ich|Rechnung)\b|\bWarte,|\bWarum habe ich\b|"
                       r"\bIch muss (?:die Rechnung|das|noch|strikt|neu)\b|\bMeine vorherige Überlegung\b|\bOkay, das ist\b", re.I)
@@ -641,18 +627,18 @@ def korrigiere_kopf(text, befund):
 
 
 # ---------------------------------------------------------------------------------------------------------
-# RP-v8 (V13.2, 26 Oct 2026): Ergebnis aus einem Buchbeispiel übernommen statt mit den Werten der Frage gerechnet
+# RP-v8: Ergebnis aus einem Buchbeispiel übernommen statt mit den Werten der Frage gerechnet
 # ---------------------------------------------------------------------------------------------------------
-# Anlass (Entwicklungsfall, nicht N100): Frage mit nN = 1455 min⁻¹, sK = 0,25, 150 °C; Antwort "1401 min⁻¹" = Ergebnis der
-# Buchaufgabe mit nN = 1440 min⁻¹, sK = 0,2, 180 °C, ohne eigene Rechnung.
+# Beispiel: die Frage nennt andere Werte als die Buchaufgabe, die Antwort nennt ohne eigene Rechnung das Ergebnis
+# der Buchaufgabe.
 
 
 def pruefe_uebernahme(text, frage, kontext, version=""):
-    """RP-v10: mit version="RP-v10" zählen Aufgabennummern ("Aufgabe 1.19") nicht als Wert (RV-v1 R05) und LaTeX wird gelesen."""
+    """RP-v10: mit version="RP-v10" zählen Aufgabennummern ("Aufgabe 1.19") nicht als Wert, und LaTeX wird gelesen."""
     if version in ("RP-v10", "RP-v11"):
         with modus(version):
             if version == "RP-v11" and _frage_wie_im_buch(frage, kontext):
-                return []  # RP-v11: die Frage hat dieselben Zahlen wie das Buch -> der Buchwert ist die richtige Antwort (N100 F39, B30)
+                return []  # RP-v11: die Frage hat dieselben Zahlen wie das Buch -> der Buchwert ist die richtige Antwort
             return _pruefe_uebernahme(entlatexe(text), frage, kontext)
     return _pruefe_uebernahme(text, frage, kontext)
 
@@ -685,8 +671,8 @@ def _pruefe_uebernahme(text, frage, kontext):
                      f"der Frage fehlt"}]
 
 
-# RP-v8: Meta-Bemerkungen über die eigenen Regeln oder an die Lernenden gerichtete "Logik"-Hinweise (App-Test 26.10.2026:
-# "*(Hinweis zur Logik für dich: … Die Regel L5 sagt: …)") gehören nie in eine Lösung. Abgeschnitten ab dem Klammer- oder
+# RP-v8: Meta-Bemerkungen über die eigenen Regeln oder an die Lernenden gerichtete "Logik"-Hinweise
+# ("*(Hinweis zur Logik für dich: … Die Regel L5 sagt: …)") gehören nie in eine Lösung. Abgeschnitten ab dem Klammer- oder
 # Satzanfang, in dem die erste solche Stelle steht.
 _META_V8 = re.compile(r"\bRegeln?\s+L\d|\bL\d\s+(?:sagt|beachten|befolgen|verlangt)|Hinweis zur Logik|\bfür dich:", re.I)
 
@@ -709,8 +695,8 @@ def bereinige_ueberlegung_v8(text):
     return bereinige_ueberlegung_v7(t)
 
 
-# RP-v11 (V13.5, 27 Oct 2026): weitere Denktext-Anfänge (RV-v1 Lauf V134, R01: "(Hinweis: Hier liegt ein Widerspruch … Ich muss die
-# Werte aus dem Material genau prüfen …" blieb stehen; danach rechnete die Prüfung mit einer Zwischenzahl).
+# RP-v11: weitere Denktext-Anfänge ("(Hinweis: Hier liegt ein Widerspruch … Ich muss die Werte aus dem Material genau
+# prüfen …").
 _LECK_V11 = re.compile(r"\(\s*Hinweis:\s*(?:Hier liegt ein Widerspruch|Ich|Moment|Warte)|\bIch muss (?:die|den|meine|nun|jetzt)\b|"
                        r"\bmeiner (?:Berechnung|Rechnung|Überlegung)\b|\bLass mich\b|\bAber warte\b|\bIst das realistisch\?", re.I)
 

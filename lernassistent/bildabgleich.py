@@ -1,11 +1,11 @@
 """
 bildabgleich.py
 ---------------
-BA-v1 (V12.9, 24 Oct 2026): ordnet ein hochgeladenes Bild einer Abbildung der Wissensbasis zu (ORB-Merkmale + RANSAC-Homographie, OpenCV),
+BA-v1: ordnet ein hochgeladenes Bild einer Abbildung der Wissensbasis zu (ORB-Merkmale + RANSAC-Homographie, OpenCV),
 ohne dass das Sprachmodell das Bild erkennen muss. Die Wissensbasis enthält 'abbildung'-Chunks mit Bildunterschrift, Abschnittspfad (Thema),
 Seite und Bilddatei. Treffer (>= MIN_INLIER Inlier) liefern Thema und Bildunterschrift für die Suche und als Fundstelle in der Frage.
 
-Standard: aus. Einschalten mit LERNASSISTENT_BILDABGLEICH=1 (nach Messung mit skripte/evaluation/teste_bildabgleich.py).
+Standard: aus. Einschalten mit LERNASSISTENT_BILDABGLEICH=1.
 Benötigt opencv-python(-headless) und die extrahierten Buchbilder unter daten/extraktion (LERNASSISTENT_BILDWURZEL). Fehlt etwas, bleibt
 die Funktion still aus (kein Fehler für Lernende). Die Merkmale werden einmal berechnet und in evaluationsdaten/bildabgleich_cache.pkl gehalten.
 """
